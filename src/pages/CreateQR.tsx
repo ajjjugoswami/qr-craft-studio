@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button, Card, Typography, message, Row, Col } from 'antd';
-import { ArrowLeft, Check } from 'lucide-react';
+import { ArrowLeft, Check, Save } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import TemplateSelector from '../components/qr/TemplateSelector';
@@ -32,7 +32,7 @@ const steps = [
 
 const CreateQR: React.FC = () => {
   const navigate = useNavigate();
-  const { saveQRCode } = useQRCodes();
+  const { saveQRCode, saveDraft, getDraft, clearDraft } = useQRCodes();
   const previewRef = useRef<HTMLDivElement>(null);
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -41,6 +41,37 @@ const CreateQR: React.FC = () => {
   const [content, setContent] = useState('https://example.com');
   const [styling, setStyling] = useState<QRStyling>(defaultStyling);
   const [name, setName] = useState('');
+  const [initialized, setInitialized] = useState(false);
+
+  // Load draft on mount
+  useEffect(() => {
+    const draft = getDraft();
+    if (draft) {
+      setTemplate(draft.template);
+      setStyling(draft.styling);
+      setType(draft.type);
+      setContent(draft.content);
+      setName(draft.name);
+      setCurrentStep(draft.currentStep);
+      message.info('Restored your previous draft');
+    }
+    setInitialized(true);
+  }, [getDraft]);
+
+  // Auto-save draft whenever any value changes
+  useEffect(() => {
+    if (!initialized) return;
+    
+    const draft = {
+      template,
+      styling,
+      type,
+      content,
+      name,
+      currentStep,
+    };
+    saveDraft(draft);
+  }, [template, styling, type, content, name, currentStep, saveDraft, initialized]);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -65,16 +96,27 @@ const CreateQR: React.FC = () => {
       name: name.trim(),
       type,
       content,
-      template,
-      styling,
+      template, // Full template config saved
+      styling,  // Full styling config saved
       createdAt: new Date().toISOString(),
       scans: 0,
       status: 'active',
     };
 
     saveQRCode(qrCode);
-    message.success('QR Code saved successfully!');
+    message.success('QR Code saved with all configurations!');
     navigate('/');
+  };
+
+  const handleClearDraft = () => {
+    clearDraft();
+    setTemplate(defaultTemplates[0]);
+    setStyling(defaultStyling);
+    setType('url');
+    setContent('https://example.com');
+    setName('');
+    setCurrentStep(0);
+    message.success('Draft cleared');
   };
 
   const renderStepContent = () => {
@@ -113,15 +155,22 @@ const CreateQR: React.FC = () => {
     <DashboardLayout>
       <div className="animate-fade-in">
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <Button
             type="text"
             icon={<ArrowLeft size={16} />}
             onClick={() => navigate('/')}
-            className="mb-4"
           >
             Back to Dashboard
           </Button>
+          <div className="flex items-center gap-2">
+            <Text type="secondary" className="text-xs flex items-center gap-1">
+              <Save size={12} /> Auto-saved
+            </Text>
+            <Button size="small" onClick={handleClearDraft}>
+              Clear Draft
+            </Button>
+          </div>
         </div>
 
         {/* Custom Steps */}
