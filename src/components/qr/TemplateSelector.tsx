@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Typography, Row, Col, Tabs } from 'antd';
-import { CheckCircleFilled } from '@ant-design/icons';
+import { Typography, Input, Segmented } from 'antd';
+import { SearchOutlined, CheckCircleFilled } from '@ant-design/icons';
 import { QRTemplate, defaultTemplates } from '../../types/qrcode';
 
 const { Title, Text } = Typography;
@@ -10,96 +10,128 @@ interface TemplateSelectorProps {
   onSelect: (template: QRTemplate) => void;
 }
 
+const categories = [
+  { value: 'all', label: 'All' },
+  { value: 'professional', label: 'Professional' },
+  { value: 'vibrant', label: 'Vibrant' },
+  { value: 'minimal', label: 'Minimal' },
+  { value: 'luxury', label: 'Luxury' },
+  { value: 'social', label: 'Social' },
+];
+
+const getCategoryForTemplate = (template: QRTemplate): string => {
+  const name = template.name.toLowerCase();
+  
+  if (name.includes('luxury') || name.includes('premium') || name.includes('gold') || name.includes('wine')) return 'luxury';
+  if (name.includes('neon') || name.includes('sunset') || name.includes('aurora') || name.includes('party') || name.includes('ocean wave')) return 'vibrant';
+  if (name.includes('minimal') || name.includes('elegant') || name.includes('white') || name.includes('slate')) return 'minimal';
+  if (name.includes('instagram') || name.includes('youtube') || name.includes('social')) return 'social';
+  if (name.includes('corporate') || name.includes('professional') || name.includes('business') || name.includes('tech') || name.includes('café') || name.includes('cafe')) return 'professional';
+  
+  return 'professional';
+};
+
 const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   selectedTemplate,
   onSelect,
 }) => {
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('all');
 
-  const categories = [
-    { key: 'all', label: 'All Templates' },
-    { key: 'professional', label: 'Professional' },
-    { key: 'creative', label: 'Creative' },
-    { key: 'minimal', label: 'Minimal' },
-  ];
-
-  const filterTemplates = () => {
-    if (activeCategory === 'all') return defaultTemplates;
-    
-    const categoryMap: Record<string, string[]> = {
-      professional: ['professional-dark', 'corporate-blue', 'slate-modern', 'elegant-white'],
-      creative: ['luxury-gold', 'modern-purple', 'soft-pink', 'warm-orange'],
-      minimal: ['minimalist', 'ocean-teal', 'fresh-green', 'ruby-red'],
-    };
-    
-    return defaultTemplates.filter(t => categoryMap[activeCategory]?.includes(t.id));
-  };
+  const filteredTemplates = defaultTemplates.filter((template) => {
+    const matchesSearch = template.name.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = category === 'all' || getCategoryForTemplate(template) === category;
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="animate-fade-in">
       <div className="mb-6">
         <Title level={4} className="!mb-1">Choose Your Card Template</Title>
         <Text type="secondary">
-          Select a professional template that matches your brand
+          Select a professionally designed template for your QR code card
         </Text>
       </div>
 
-      <Tabs
-        activeKey={activeCategory}
-        onChange={setActiveCategory}
-        items={categories}
-        className="mb-6"
-      />
+      <div className="mb-6 space-y-4">
+        <Input
+          placeholder="Search templates..."
+          prefix={<SearchOutlined className="text-muted-foreground" />}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          size="large"
+          className="max-w-md"
+        />
+        
+        <Segmented
+          value={category}
+          onChange={(value) => setCategory(value as string)}
+          options={categories}
+          size="middle"
+        />
+      </div>
 
-      <Row gutter={[16, 16]}>
-        {filterTemplates().map((template) => (
-          <Col key={template.id} xs={12} sm={8} md={6}>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {filteredTemplates.map((template) => (
+          <div
+            key={template.id}
+            className={`
+              rounded-xl cursor-pointer transition-all overflow-hidden
+              hover:ring-2 hover:ring-primary hover:shadow-lg hover:scale-[1.02]
+              ${selectedTemplate.id === template.id ? 'ring-2 ring-primary shadow-lg scale-[1.02]' : 'ring-1 ring-border'}
+            `}
+            onClick={() => onSelect(template)}
+          >
             <div
-              className={`
-                rounded-xl cursor-pointer transition-all overflow-hidden
-                hover:ring-2 hover:ring-primary hover:shadow-lg
-                ${selectedTemplate.id === template.id ? 'ring-2 ring-primary shadow-lg' : 'ring-1 ring-border'}
-              `}
-              onClick={() => onSelect(template)}
+              className="h-36 flex flex-col items-center justify-center relative p-4"
+              style={{
+                background: template.showGradient && template.gradientColor
+                  ? `linear-gradient(${template.gradientDirection === 'to-bottom' ? '180deg' : template.gradientDirection === 'to-right' ? '90deg' : template.gradientDirection === 'to-top-right' ? '45deg' : '135deg'}, ${template.backgroundColor} 0%, ${template.gradientColor} 100%)`
+                  : template.backgroundColor,
+                color: template.textColor,
+                borderRadius: `${(template.borderRadius || 16) * 0.5}px ${(template.borderRadius || 16) * 0.5}px 0 0`,
+              }}
             >
-              <div
-                className="h-32 flex flex-col items-center justify-center relative p-4"
-                style={{
-                  background: template.showGradient && template.gradientColor
-                    ? `linear-gradient(135deg, ${template.backgroundColor} 0%, ${template.gradientColor} 100%)`
-                    : template.backgroundColor,
-                  color: template.textColor,
+              {selectedTemplate.id === template.id && (
+                <CheckCircleFilled
+                  className="absolute top-2 right-2 text-lg"
+                  style={{ 
+                    color: template.textColor,
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' 
+                  }}
+                />
+              )}
+              <h4 
+                className="font-bold text-sm text-center leading-tight"
+                style={{ 
+                  fontSize: `${Math.min((template.titleFontSize || 24) * 0.5, 14)}px`,
+                  fontFamily: template.fontFamily || 'Inter',
                 }}
               >
-                {selectedTemplate.id === template.id && (
-                  <CheckCircleFilled
-                    className="absolute top-2 right-2 text-lg"
-                    style={{ 
-                      color: template.textColor,
-                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' 
-                    }}
-                  />
-                )}
-                <h4 
-                  className="font-bold text-sm text-center leading-tight"
-                  style={{ fontSize: `${(template.titleFontSize || 24) * 0.5}px` }}
-                >
-                  {template.title}
-                </h4>
-                <p className="text-xs opacity-80 text-center mt-1">
-                  {template.subtitle}
-                </p>
-                <div className="mt-2 w-8 h-8 bg-white rounded flex items-center justify-center shadow">
-                  <div className="w-6 h-6 bg-gray-800 rounded-sm" />
-                </div>
-              </div>
-              <div className="p-3 bg-card text-center border-t border-border">
-                <Text strong className="text-sm">{template.name}</Text>
+                {template.title}
+              </h4>
+              <p 
+                className="text-xs opacity-80 text-center mt-1"
+                style={{ fontFamily: template.fontFamily || 'Inter' }}
+              >
+                {template.subtitle}
+              </p>
+              <div className="mt-2 w-8 h-8 bg-white rounded flex items-center justify-center shadow">
+                <div className="w-6 h-6 bg-gray-800 rounded-sm" />
               </div>
             </div>
-          </Col>
+            <div className="p-3 bg-card text-center border-t border-border">
+              <Text strong className="text-sm truncate block">{template.name}</Text>
+            </div>
+          </div>
         ))}
-      </Row>
+      </div>
+
+      {filteredTemplates.length === 0 && (
+        <div className="text-center py-12">
+          <Text type="secondary">No templates found matching your search</Text>
+        </div>
+      )}
     </div>
   );
 };
