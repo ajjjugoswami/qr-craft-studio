@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { Button, Card, Typography, message, Row, Col, Dropdown } from 'antd';
-import { ArrowLeftOutlined, CheckOutlined, DownloadOutlined, FileImageOutlined, FilePdfOutlined } from '@ant-design/icons';
+import { Button, Card, Typography, message, Row, Col } from 'antd';
+import { ArrowLeft, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import html2canvas from 'html2canvas';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import TemplateSelector from '../components/qr/TemplateSelector';
 import TemplateCustomizer from '../components/qr/TemplateCustomizer';
@@ -42,7 +41,6 @@ const CreateQR: React.FC = () => {
   const [content, setContent] = useState('https://example.com');
   const [styling, setStyling] = useState<QRStyling>(defaultStyling);
   const [name, setName] = useState('');
-  const [downloading, setDownloading] = useState(false);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -55,57 +53,6 @@ const CreateQR: React.FC = () => {
       setCurrentStep(currentStep - 1);
     }
   };
-
-  const handleDownload = async (format: 'png' | 'jpg' | 'svg') => {
-    if (!previewRef.current) return;
-    
-    setDownloading(true);
-    try {
-      const canvas = await html2canvas(previewRef.current, {
-        backgroundColor: null,
-        scale: 3, // Higher quality
-        useCORS: true,
-        logging: false,
-      });
-
-      const link = document.createElement('a');
-      const fileName = `${name || 'qr-code'}-${Date.now()}`;
-      
-      if (format === 'png') {
-        link.download = `${fileName}.png`;
-        link.href = canvas.toDataURL('image/png');
-      } else if (format === 'jpg') {
-        link.download = `${fileName}.jpg`;
-        link.href = canvas.toDataURL('image/jpeg', 0.95);
-      } else {
-        // For SVG, we'll still export as PNG since the preview is a mixed component
-        link.download = `${fileName}.png`;
-        link.href = canvas.toDataURL('image/png');
-      }
-      
-      link.click();
-      message.success(`Downloaded as ${format.toUpperCase()}!`);
-    } catch (error) {
-      message.error('Failed to download. Please try again.');
-    } finally {
-      setDownloading(false);
-    }
-  };
-
-  const downloadMenuItems = [
-    {
-      key: 'png',
-      label: 'PNG (High Quality)',
-      icon: <FileImageOutlined />,
-      onClick: () => handleDownload('png'),
-    },
-    {
-      key: 'jpg',
-      label: 'JPG (Smaller Size)',
-      icon: <FileImageOutlined />,
-      onClick: () => handleDownload('jpg'),
-    },
-  ];
 
   const handleSave = () => {
     if (!name.trim()) {
@@ -169,7 +116,7 @@ const CreateQR: React.FC = () => {
         <div className="mb-6">
           <Button
             type="text"
-            icon={<ArrowLeftOutlined />}
+            icon={<ArrowLeft size={16} />}
             onClick={() => navigate('/')}
             className="mb-4"
           >
@@ -186,7 +133,7 @@ const CreateQR: React.FC = () => {
                   <div className="flex items-center gap-2 mb-1">
                     {index < currentStep ? (
                       <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                        <CheckOutlined className="text-white text-xs" />
+                        <Check size={12} className="text-white" />
                       </div>
                     ) : index === currentStep ? (
                       <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
@@ -225,22 +172,6 @@ const CreateQR: React.FC = () => {
               <Card 
                 title="Live Preview" 
                 className="sticky top-6"
-                extra={
-                  <Dropdown 
-                    menu={{ items: downloadMenuItems }} 
-                    placement="bottomRight"
-                    trigger={['click']}
-                  >
-                    <Button 
-                      type="primary" 
-                      icon={<DownloadOutlined />}
-                      loading={downloading}
-                      size="small"
-                    >
-                      Download
-                    </Button>
-                  </Dropdown>
-                }
               >
                 <div className="flex flex-col items-center">
                   <QRCodePreview

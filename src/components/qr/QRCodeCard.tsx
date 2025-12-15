@@ -1,15 +1,18 @@
-import React from 'react';
-import { Card, Tag, Typography, Space, Tooltip, Popconfirm, message } from 'antd';
+import React, { useRef } from 'react';
+import { Card, Tag, Typography, Space, Tooltip, Popconfirm, message, Modal, Dropdown } from 'antd';
 import {
-  EditOutlined,
-  DownloadOutlined,
-  ShareAltOutlined,
-  BarChartOutlined,
-  CopyOutlined,
-  DeleteOutlined,
-} from '@ant-design/icons';
-import { QRCodeSVG } from 'qrcode.react';
+  Edit,
+  Download,
+  Share2,
+  BarChart3,
+  Copy,
+  Trash2,
+  FileImage,
+  FileType,
+} from 'lucide-react';
+import html2canvas from 'html2canvas';
 import { QRCodeData } from '../../types/qrcode';
+import QRCodePreview from './QRCodePreview';
 
 const { Text } = Typography;
 
@@ -35,27 +38,57 @@ const typeColors: Record<string, string> = {
 };
 
 const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete }) => {
-  const handleDownload = () => {
-    const svg = document.getElementById(`qr-${qrCode.id}`);
-    if (svg) {
-      const svgData = new XMLSerializer().serializeToString(svg);
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-      img.onload = () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx?.drawImage(img, 0, 0);
-        const pngFile = canvas.toDataURL('image/png');
-        const downloadLink = document.createElement('a');
-        downloadLink.download = `${qrCode.name}-qr.png`;
-        downloadLink.href = pngFile;
-        downloadLink.click();
-      };
-      img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [downloadModalOpen, setDownloadModalOpen] = React.useState(false);
+  const [downloading, setDownloading] = React.useState(false);
+
+  const handleDownload = async (format: 'png' | 'jpg') => {
+    if (!previewRef.current) return;
+    
+    setDownloading(true);
+    try {
+      const canvas = await html2canvas(previewRef.current, {
+        backgroundColor: null,
+        scale: 3,
+        useCORS: true,
+        logging: false,
+      });
+
+      const link = document.createElement('a');
+      const fileName = `${qrCode.name}-${Date.now()}`;
+      
+      if (format === 'png') {
+        link.download = `${fileName}.png`;
+        link.href = canvas.toDataURL('image/png');
+      } else {
+        link.download = `${fileName}.jpg`;
+        link.href = canvas.toDataURL('image/jpeg', 0.95);
+      }
+      
+      link.click();
+      message.success(`Downloaded as ${format.toUpperCase()}!`);
+      setDownloadModalOpen(false);
+    } catch (error) {
+      message.error('Failed to download. Please try again.');
+    } finally {
+      setDownloading(false);
     }
-    message.success('QR Code downloaded!');
   };
+
+  const downloadMenuItems = [
+    {
+      key: 'png',
+      label: 'PNG (High Quality)',
+      icon: <FileImage size={16} />,
+      onClick: () => handleDownload('png'),
+    },
+    {
+      key: 'jpg',
+      label: 'JPG (Smaller Size)',
+      icon: <FileType size={16} />,
+      onClick: () => handleDownload('jpg'),
+    },
+  ];
 
   const handleCopy = () => {
     navigator.clipboard.writeText(qrCode.content);
@@ -71,104 +104,145 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete }) => 
   };
 
   return (
-    <Card className="mb-4 hover:shadow-md transition-shadow" bodyStyle={{ padding: '16px 24px' }}>
-      <div className="flex items-center gap-4">
-        {/* QR Preview */}
-        <div
-          className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0"
-          style={{ backgroundColor: qrCode.template.backgroundColor }}
-        >
-          <QRCodeSVG
-            id={`qr-${qrCode.id}`}
-            value={qrCode.content}
-            size={48}
-            fgColor={qrCode.styling.fgColor}
-            bgColor="transparent"
-            level={qrCode.styling.level}
-          />
-        </div>
-
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3 mb-1">
-            <Text strong className="text-base truncate">
-              {qrCode.name}
-            </Text>
-          </div>
-          <Text type="secondary" className="text-sm truncate block">
-            {qrCode.content.substring(0, 50)}
-            {qrCode.content.length > 50 && '...'}
-          </Text>
-          <div className="flex items-center gap-4 mt-2">
-            <Text type="secondary" className="text-xs">
-              <span style={{ color: 'hsl(var(--primary))' }}>{qrCode.scans}</span> scans
-            </Text>
-            <Tag color="success" className="m-0">
-              {qrCode.status}
-            </Tag>
-            <Text type="secondary" className="text-xs">
-              {formatDate(qrCode.createdAt)}
-            </Text>
-          </div>
-        </div>
-
-        {/* Type Badge */}
-        <Tag color={typeColors[qrCode.type]} className="uppercase text-xs">
-          {qrCode.type}
-        </Tag>
-
-        {/* Actions */}
-        <Space size="small">
-          <Tooltip title="Edit">
-            <div
-              className="w-8 h-8 flex items-center justify-center rounded cursor-pointer hover:bg-muted transition-colors"
-              onClick={() => onEdit(qrCode.id)}
-            >
-              <EditOutlined />
-            </div>
-          </Tooltip>
-          <Tooltip title="Download">
-            <div
-              className="w-8 h-8 flex items-center justify-center rounded cursor-pointer hover:bg-muted transition-colors"
-              onClick={handleDownload}
-            >
-              <DownloadOutlined />
-            </div>
-          </Tooltip>
-          <Tooltip title="Copy Content">
-            <div
-              className="w-8 h-8 flex items-center justify-center rounded cursor-pointer hover:bg-muted transition-colors"
-              onClick={handleCopy}
-            >
-              <ShareAltOutlined />
-            </div>
-          </Tooltip>
-          <Tooltip title="Analytics">
-            <div className="w-8 h-8 flex items-center justify-center rounded cursor-pointer hover:bg-muted transition-colors">
-              <BarChartOutlined />
-            </div>
-          </Tooltip>
-          <Tooltip title="Duplicate">
-            <div className="w-8 h-8 flex items-center justify-center rounded cursor-pointer hover:bg-muted transition-colors">
-              <CopyOutlined />
-            </div>
-          </Tooltip>
-          <Popconfirm
-            title="Delete QR Code"
-            description="Are you sure you want to delete this QR code?"
-            onConfirm={() => onDelete(qrCode.id)}
-            okText="Yes"
-            cancelText="No"
+    <>
+      <Card className="mb-4 hover:shadow-md transition-shadow" styles={{ body: { padding: '16px 24px' } }}>
+        <div className="flex items-center gap-4">
+          {/* QR Preview Mini */}
+          <div
+            className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+            style={{ 
+              background: qrCode.template.showGradient && qrCode.template.gradientColor
+                ? `linear-gradient(135deg, ${qrCode.template.backgroundColor} 0%, ${qrCode.template.gradientColor} 100%)`
+                : qrCode.template.backgroundColor 
+            }}
+            onClick={() => setDownloadModalOpen(true)}
           >
-            <Tooltip title="Delete">
-              <div className="w-8 h-8 flex items-center justify-center rounded cursor-pointer hover:bg-destructive/10 text-destructive transition-colors">
-                <DeleteOutlined />
+            <div className="w-10 h-10 bg-white rounded flex items-center justify-center">
+              <div 
+                className="w-8 h-8 rounded-sm"
+                style={{ backgroundColor: qrCode.styling.fgColor }}
+              />
+            </div>
+          </div>
+
+          {/* Info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-3 mb-1">
+              <Text strong className="text-base truncate">
+                {qrCode.name}
+              </Text>
+            </div>
+            <Text type="secondary" className="text-sm truncate block">
+              {qrCode.content.substring(0, 50)}
+              {qrCode.content.length > 50 && '...'}
+            </Text>
+            <div className="flex items-center gap-4 mt-2">
+              <Text type="secondary" className="text-xs">
+                <span style={{ color: 'hsl(var(--primary))' }}>{qrCode.scans}</span> scans
+              </Text>
+              <Tag color="success" className="m-0">
+                {qrCode.status}
+              </Tag>
+              <Text type="secondary" className="text-xs">
+                {formatDate(qrCode.createdAt)}
+              </Text>
+            </div>
+          </div>
+
+          {/* Type Badge */}
+          <Tag color={typeColors[qrCode.type]} className="uppercase text-xs">
+            {qrCode.type}
+          </Tag>
+
+          {/* Actions */}
+          <Space size="small">
+            <Tooltip title="Edit">
+              <div
+                className="w-8 h-8 flex items-center justify-center rounded cursor-pointer hover:bg-muted transition-colors"
+                onClick={() => onEdit(qrCode.id)}
+              >
+                <Edit size={16} />
               </div>
             </Tooltip>
-          </Popconfirm>
-        </Space>
-      </div>
-    </Card>
+            <Dropdown menu={{ items: downloadMenuItems }} placement="bottomRight" trigger={['click']}>
+              <Tooltip title="Download Template">
+                <div className="w-8 h-8 flex items-center justify-center rounded cursor-pointer hover:bg-muted transition-colors">
+                  <Download size={16} />
+                </div>
+              </Tooltip>
+            </Dropdown>
+            <Tooltip title="Copy Content">
+              <div
+                className="w-8 h-8 flex items-center justify-center rounded cursor-pointer hover:bg-muted transition-colors"
+                onClick={handleCopy}
+              >
+                <Share2 size={16} />
+              </div>
+            </Tooltip>
+            <Tooltip title="Analytics">
+              <div className="w-8 h-8 flex items-center justify-center rounded cursor-pointer hover:bg-muted transition-colors">
+                <BarChart3 size={16} />
+              </div>
+            </Tooltip>
+            <Tooltip title="Duplicate">
+              <div className="w-8 h-8 flex items-center justify-center rounded cursor-pointer hover:bg-muted transition-colors">
+                <Copy size={16} />
+              </div>
+            </Tooltip>
+            <Popconfirm
+              title="Delete QR Code"
+              description="Are you sure you want to delete this QR code?"
+              onConfirm={() => onDelete(qrCode.id)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Tooltip title="Delete">
+                <div className="w-8 h-8 flex items-center justify-center rounded cursor-pointer hover:bg-destructive/10 text-destructive transition-colors">
+                  <Trash2 size={16} />
+                </div>
+              </Tooltip>
+            </Popconfirm>
+          </Space>
+        </div>
+      </Card>
+
+      {/* Download Preview Modal */}
+      <Modal
+        title="Download QR Code Template"
+        open={downloadModalOpen}
+        onCancel={() => setDownloadModalOpen(false)}
+        footer={null}
+        width={400}
+        centered
+      >
+        <div className="flex flex-col items-center py-4">
+          <QRCodePreview
+            ref={previewRef}
+            content={qrCode.content}
+            template={qrCode.template}
+            styling={qrCode.styling}
+          />
+          <div className="flex gap-3 mt-6">
+            <button
+              onClick={() => handleDownload('png')}
+              disabled={downloading}
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+            >
+              <FileImage size={18} />
+              Download PNG
+            </button>
+            <button
+              onClick={() => handleDownload('jpg')}
+              disabled={downloading}
+              className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
+            >
+              <FileType size={18} />
+              Download JPG
+            </button>
+          </div>
+        </div>
+      </Modal>
+    </>
   );
 };
 

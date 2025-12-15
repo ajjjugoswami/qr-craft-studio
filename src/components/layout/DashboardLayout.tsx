@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { Layout, Menu, Avatar, Typography } from 'antd';
 import {
-  QrcodeOutlined,
-  BarChartOutlined,
-  QuestionCircleOutlined,
-  MailOutlined,
-  MessageOutlined,
-  LogoutOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-} from '@ant-design/icons';
+  QrCode,
+  BarChart3,
+  HelpCircle,
+  Mail,
+  MessageSquare,
+  LogOut,
+  PanelLeftClose,
+  PanelLeft,
+} from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const { Sider, Content } = Layout;
@@ -27,27 +27,27 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const menuItems = [
     {
       key: '/',
-      icon: <QrcodeOutlined />,
+      icon: <QrCode size={18} />,
       label: 'My QR Codes',
     },
     {
       key: '/analytics',
-      icon: <BarChartOutlined />,
+      icon: <BarChart3 size={18} />,
       label: 'Analytics',
     },
     {
       key: '/faqs',
-      icon: <QuestionCircleOutlined />,
+      icon: <HelpCircle size={18} />,
       label: 'FAQs',
     },
     {
       key: '/contact',
-      icon: <MailOutlined />,
+      icon: <Mail size={18} />,
       label: 'Contact Us',
     },
     {
       key: '/submissions',
-      icon: <MessageOutlined />,
+      icon: <MessageSquare size={18} />,
       label: 'Contact Submissions',
     },
   ];
@@ -95,7 +95,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             className="p-2 flex justify-end cursor-pointer hover:bg-muted mx-2 mt-2 rounded-lg"
             onClick={() => setCollapsed(!collapsed)}
           >
-            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            {collapsed ? <PanelLeft size={18} /> : <PanelLeftClose size={18} />}
           </div>
 
           {/* Menu */}
@@ -114,7 +114,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 collapsed ? 'justify-center' : ''
               }`}
             >
-              <LogoutOutlined />
+              <LogOut size={18} />
               {!collapsed && <span>Logout</span>}
             </div>
           </div>

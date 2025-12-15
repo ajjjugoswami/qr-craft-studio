@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Button, Empty, Spin } from 'antd';
-import { PlusOutlined, QrcodeOutlined } from '@ant-design/icons';
+import { Plus, QrCode } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import QRCodeCard from '../components/qr/QRCodeCard';
@@ -31,7 +31,7 @@ const Dashboard: React.FC = () => {
           <Button
             type="primary"
             size="large"
-            icon={<PlusOutlined />}
+            icon={<Plus size={18} />}
             onClick={() => navigate('/create')}
           >
             Create New
@@ -46,7 +46,7 @@ const Dashboard: React.FC = () => {
         ) : qrCodes.length === 0 ? (
           <div className="flex items-center justify-center h-96">
             <Empty
-              image={<QrcodeOutlined style={{ fontSize: 80, color: 'hsl(var(--muted-foreground))' }} />}
+              image={<QrCode size={80} className="text-muted-foreground" />}
               description={
                 <div className="mt-4">
                   <Title level={4} type="secondary">
@@ -61,7 +61,7 @@ const Dashboard: React.FC = () => {
               <Button
                 type="primary"
                 size="large"
-                icon={<PlusOutlined />}
+                icon={<Plus size={18} />}
                 onClick={() => navigate('/create')}
               >
                 Create Your First QR Code
