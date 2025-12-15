@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Button, Card, Typography, message, Row, Col } from 'antd';
-import { ArrowLeftOutlined, CheckOutlined } from '@ant-design/icons';
+import React, { useState, useRef } from 'react';
+import { Button, Card, Typography, message, Row, Col, Dropdown } from 'antd';
+import { ArrowLeftOutlined, CheckOutlined, DownloadOutlined, FileImageOutlined, FilePdfOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import html2canvas from 'html2canvas';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import TemplateSelector from '../components/qr/TemplateSelector';
 import TemplateCustomizer from '../components/qr/TemplateCustomizer';
@@ -33,6 +34,7 @@ const steps = [
 const CreateQR: React.FC = () => {
   const navigate = useNavigate();
   const { saveQRCode } = useQRCodes();
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const [currentStep, setCurrentStep] = useState(0);
   const [template, setTemplate] = useState<QRTemplate>(defaultTemplates[0]);
@@ -40,6 +42,7 @@ const CreateQR: React.FC = () => {
   const [content, setContent] = useState('https://example.com');
   const [styling, setStyling] = useState<QRStyling>(defaultStyling);
   const [name, setName] = useState('');
+  const [downloading, setDownloading] = useState(false);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -52,6 +55,57 @@ const CreateQR: React.FC = () => {
       setCurrentStep(currentStep - 1);
     }
   };
+
+  const handleDownload = async (format: 'png' | 'jpg' | 'svg') => {
+    if (!previewRef.current) return;
+    
+    setDownloading(true);
+    try {
+      const canvas = await html2canvas(previewRef.current, {
+        backgroundColor: null,
+        scale: 3, // Higher quality
+        useCORS: true,
+        logging: false,
+      });
+
+      const link = document.createElement('a');
+      const fileName = `${name || 'qr-code'}-${Date.now()}`;
+      
+      if (format === 'png') {
+        link.download = `${fileName}.png`;
+        link.href = canvas.toDataURL('image/png');
+      } else if (format === 'jpg') {
+        link.download = `${fileName}.jpg`;
+        link.href = canvas.toDataURL('image/jpeg', 0.95);
+      } else {
+        // For SVG, we'll still export as PNG since the preview is a mixed component
+        link.download = `${fileName}.png`;
+        link.href = canvas.toDataURL('image/png');
+      }
+      
+      link.click();
+      message.success(`Downloaded as ${format.toUpperCase()}!`);
+    } catch (error) {
+      message.error('Failed to download. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const downloadMenuItems = [
+    {
+      key: 'png',
+      label: 'PNG (High Quality)',
+      icon: <FileImageOutlined />,
+      onClick: () => handleDownload('png'),
+    },
+    {
+      key: 'jpg',
+      label: 'JPG (Smaller Size)',
+      icon: <FileImageOutlined />,
+      onClick: () => handleDownload('jpg'),
+    },
+  ];
 
   const handleSave = () => {
     if (!name.trim()) {
@@ -171,16 +225,35 @@ const CreateQR: React.FC = () => {
               <Card 
                 title="Live Preview" 
                 className="sticky top-6"
-                extra={<Text type="secondary" className="text-xs">Click text to edit</Text>}
+                extra={
+                  <Dropdown 
+                    menu={{ items: downloadMenuItems }} 
+                    placement="bottomRight"
+                    trigger={['click']}
+                  >
+                    <Button 
+                      type="primary" 
+                      icon={<DownloadOutlined />}
+                      loading={downloading}
+                      size="small"
+                    >
+                      Download
+                    </Button>
+                  </Dropdown>
+                }
               >
                 <div className="flex flex-col items-center">
                   <QRCodePreview
+                    ref={previewRef}
                     content={content}
                     template={template}
                     styling={styling}
                     editable={true}
                     onTemplateChange={setTemplate}
                   />
+                  <Text type="secondary" className="text-xs mt-4">
+                    Click text to edit inline
+                  </Text>
                 </div>
               </Card>
             </Col>
