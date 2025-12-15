@@ -4,6 +4,7 @@ import { ArrowLeftOutlined, CheckOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import TemplateSelector from '../components/qr/TemplateSelector';
+import TemplateCustomizer from '../components/qr/TemplateCustomizer';
 import QRTypeSelector from '../components/qr/QRTypeSelector';
 import ContentEditor from '../components/qr/ContentEditor';
 import QRDesignTemplates from '../components/qr/QRDesignTemplates';
@@ -94,7 +95,14 @@ const CreateQR: React.FC = () => {
       case 3:
         return <QRDesignTemplates styling={styling} onStyleChange={setStyling} />;
       case 4:
-        return <QRStyleEditor styling={styling} onStyleChange={setStyling} />;
+        return (
+          <div className="space-y-6">
+            <QRStyleEditor styling={styling} onStyleChange={setStyling} />
+            <Card title="Card Customization" size="small">
+              <TemplateCustomizer template={template} onTemplateChange={setTemplate} />
+            </Card>
+          </div>
+        );
       default:
         return null;
     }
@@ -155,7 +163,7 @@ const CreateQR: React.FC = () => {
         <div className="min-h-[500px] mb-6">
           <Row gutter={[24, 24]}>
             <Col xs={24} lg={16}>
-              <Card className="min-h-[450px]">
+              <Card className="min-h-[500px]">
                 {renderStepContent()}
               </Card>
             </Col>
