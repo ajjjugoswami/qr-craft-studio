@@ -2,17 +2,17 @@ import React from 'react';
 import { Typography, Input, ColorPicker, Slider, Select, Switch, Tabs, Segmented, Row, Col, Collapse } from 'antd';
 import type { Color } from 'antd/es/color-picker';
 import { 
-  AlignLeftOutlined, 
-  AlignCenterOutlined, 
-  AlignRightOutlined,
-  ArrowUpOutlined,
-  ArrowDownOutlined,
-  MinusOutlined,
-  FontSizeOutlined,
-  BgColorsOutlined,
-  LayoutOutlined,
-  BorderOutlined
-} from '@ant-design/icons';
+  AlignLeft, 
+  AlignCenter, 
+  AlignRight,
+  ArrowUp,
+  ArrowDown,
+  Minus,
+  Type,
+  Palette,
+  Layout,
+  Square
+} from 'lucide-react';
 import { QRTemplate } from '../../types/qrcode';
 
 const { Text } = Typography;
@@ -47,7 +47,7 @@ const TemplateCustomizer: React.FC<TemplateCustomizerProps> = ({
   const tabItems = [
     {
       key: 'text',
-      label: <span><FontSizeOutlined /> Text</span>,
+      label: <span className="flex items-center gap-1"><Type size={14} /> Text</span>,
       children: (
         <div className="pt-4 space-y-5">
           <Row gutter={16}>
@@ -177,9 +177,9 @@ const TemplateCustomizer: React.FC<TemplateCustomizerProps> = ({
               value={template.textAlign || 'center'}
               onChange={(value) => onTemplateChange({ ...template, textAlign: value as 'left' | 'center' | 'right' })}
               options={[
-                { value: 'left', icon: <AlignLeftOutlined /> },
-                { value: 'center', icon: <AlignCenterOutlined /> },
-                { value: 'right', icon: <AlignRightOutlined /> },
+                { value: 'left', icon: <AlignLeft size={16} /> },
+                { value: 'center', icon: <AlignCenter size={16} /> },
+                { value: 'right', icon: <AlignRight size={16} /> },
               ]}
               block
             />
@@ -189,7 +189,7 @@ const TemplateCustomizer: React.FC<TemplateCustomizerProps> = ({
     },
     {
       key: 'colors',
-      label: <span><BgColorsOutlined /> Colors</span>,
+      label: <span className="flex items-center gap-1"><Palette size={14} /> Colors</span>,
       children: (
         <div className="pt-4 space-y-5">
           <Row gutter={16}>
@@ -286,7 +286,7 @@ const TemplateCustomizer: React.FC<TemplateCustomizerProps> = ({
     },
     {
       key: 'layout',
-      label: <span><LayoutOutlined /> Layout</span>,
+      label: <span className="flex items-center gap-1"><Layout size={14} /> Layout</span>,
       children: (
         <div className="pt-4 space-y-5">
           <div>
@@ -295,9 +295,9 @@ const TemplateCustomizer: React.FC<TemplateCustomizerProps> = ({
               value={template.qrPosition || 'bottom'}
               onChange={(value) => onTemplateChange({ ...template, qrPosition: value as 'top' | 'center' | 'bottom' })}
               options={[
-                { value: 'top', label: 'Top', icon: <ArrowUpOutlined /> },
-                { value: 'center', label: 'Center', icon: <MinusOutlined /> },
-                { value: 'bottom', label: 'Bottom', icon: <ArrowDownOutlined /> },
+                { value: 'top', label: 'Top', icon: <ArrowUp size={14} /> },
+                { value: 'center', label: 'Center', icon: <Minus size={14} /> },
+                { value: 'bottom', label: 'Bottom', icon: <ArrowDown size={14} /> },
               ]}
               block
             />
@@ -358,7 +358,7 @@ const TemplateCustomizer: React.FC<TemplateCustomizerProps> = ({
     },
     {
       key: 'border',
-      label: <span><BorderOutlined /> Border</span>,
+      label: <span className="flex items-center gap-1"><Square size={14} /> Border</span>,
       children: (
         <div className="pt-4 space-y-5">
           <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">

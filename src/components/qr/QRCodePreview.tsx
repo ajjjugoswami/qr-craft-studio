@@ -1,7 +1,8 @@
 import React, { useState, forwardRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Input } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
+import { Input, ColorPicker, Slider, Popover	 } from 'antd';
+import { Pencil, Type, Palette, Move } from 'lucide-react';
+import type { Color } from 'antd/es/color-picker';
 import { QRTemplate, QRStyling } from '../../types/qrcode';
 
 interface QRCodePreviewProps {
@@ -37,6 +38,8 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
 }, ref) => {
   const [editingField, setEditingField] = useState<'title' | 'subtitle' | null>(null);
   const [hovered, setHovered] = useState(false);
+  const [showTitleEditor, setShowTitleEditor] = useState(false);
+  const [showSubtitleEditor, setShowSubtitleEditor] = useState(false);
 
   const cardSize = compact ? 'w-16 h-20' : 'w-80';
   const qrSize = compact ? 48 : styling.size > 160 ? 160 : styling.size;
@@ -62,6 +65,12 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   const handleSubtitleChange = (value: string) => {
     if (onTemplateChange) {
       onTemplateChange({ ...template, subtitle: value });
+    }
+  };
+
+  const handleColorChange = (key: 'backgroundColor' | 'textColor', color: Color) => {
+    if (onTemplateChange) {
+      onTemplateChange({ ...template, [key]: color.toHexString() });
     }
   };
 
@@ -135,22 +144,10 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
       case 'lines':
         return (
           <>
-            <div 
-              className="absolute top-0 left-0 w-full h-1 opacity-20"
-              style={{ backgroundColor: accentColor }}
-            />
-            <div 
-              className="absolute bottom-0 left-0 w-full h-1 opacity-20"
-              style={{ backgroundColor: accentColor }}
-            />
-            <div 
-              className="absolute top-0 left-0 w-1 h-full opacity-20"
-              style={{ backgroundColor: accentColor }}
-            />
-            <div 
-              className="absolute top-0 right-0 w-1 h-full opacity-20"
-              style={{ backgroundColor: accentColor }}
-            />
+            <div className="absolute top-0 left-0 w-full h-1 opacity-20" style={{ backgroundColor: accentColor }} />
+            <div className="absolute bottom-0 left-0 w-full h-1 opacity-20" style={{ backgroundColor: accentColor }} />
+            <div className="absolute top-0 left-0 w-1 h-full opacity-20" style={{ backgroundColor: accentColor }} />
+            <div className="absolute top-0 right-0 w-1 h-full opacity-20" style={{ backgroundColor: accentColor }} />
           </>
         );
       case 'geometric':
@@ -158,22 +155,15 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
           <>
             <div 
               className="absolute top-4 right-4 w-16 h-16 opacity-10 rotate-45"
-              style={{ 
-                border: `2px solid ${accentColor}`,
-              }}
+              style={{ border: `2px solid ${accentColor}` }}
             />
             <div 
               className="absolute bottom-4 left-4 w-12 h-12 opacity-10"
-              style={{ 
-                border: `2px solid ${accentColor}`,
-                borderRadius: '50%',
-              }}
+              style={{ border: `2px solid ${accentColor}`, borderRadius: '50%' }}
             />
             <div 
               className="absolute top-1/2 right-2 w-8 h-8 opacity-5 -translate-y-1/2"
-              style={{ 
-                backgroundColor: accentColor,
-              }}
+              style={{ backgroundColor: accentColor }}
             />
           </>
         );
@@ -182,94 +172,171 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
     }
   };
 
+  // Inline editor popover content for title
+  const titleEditorContent = (
+    <div className="w-64 space-y-3 p-1">
+      <div>
+        <label className="text-xs font-medium block mb-1">Title Text</label>
+        <Input
+          value={template.title}
+          onChange={(e) => handleTitleChange(e.target.value)}
+          size="small"
+        />
+      </div>
+      <div>
+        <label className="text-xs font-medium block mb-1">Font Size: {template.titleFontSize || 24}px</label>
+        <Slider
+          min={14}
+          max={40}
+          value={template.titleFontSize || 24}
+          onChange={(value) => onTemplateChange?.({ ...template, titleFontSize: value })}
+          size="small"
+        />
+      </div>
+      <div>
+        <label className="text-xs font-medium block mb-1">Text Color</label>
+        <ColorPicker
+          value={template.textColor}
+          onChange={(color) => handleColorChange('textColor', color)}
+          size="small"
+        />
+      </div>
+    </div>
+  );
+
+  // Inline editor popover content for subtitle
+  const subtitleEditorContent = (
+    <div className="w-64 space-y-3 p-1">
+      <div>
+        <label className="text-xs font-medium block mb-1">Subtitle Text</label>
+        <Input
+          value={template.subtitle}
+          onChange={(e) => handleSubtitleChange(e.target.value)}
+          size="small"
+        />
+      </div>
+      <div>
+        <label className="text-xs font-medium block mb-1">Font Size: {template.subtitleFontSize || 14}px</label>
+        <Slider
+          min={10}
+          max={24}
+          value={template.subtitleFontSize || 14}
+          onChange={(value) => onTemplateChange?.({ ...template, subtitleFontSize: value })}
+          size="small"
+        />
+      </div>
+    </div>
+  );
+
   const renderTextContent = () => (
     <div 
       className="flex flex-col z-10 w-full"
       style={{ textAlign, fontFamily }}
     >
-      {editingField === 'title' && editable ? (
-        <Input
-          value={template.title}
-          onChange={(e) => handleTitleChange(e.target.value)}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          autoFocus
-          className="font-bold"
+      {/* Title with inline editor */}
+      {editable && !compact ? (
+        <Popover 
+          content={titleEditorContent} 
+          title={<span className="flex items-center gap-2"><Type size={14} /> Edit Title</span>}
+          trigger="click"
+          open={showTitleEditor}
+          onOpenChange={setShowTitleEditor}
+        >
+          <div 
+            className="group flex items-center gap-2 cursor-pointer hover:opacity-80 relative"
+            style={{ justifyContent: textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start' }}
+          >
+            <h3 
+              style={{ 
+                color: template.textColor,
+                fontSize: `${titleFontSize}px`,
+                fontWeight,
+                margin: 0,
+                lineHeight: 1.2,
+                fontFamily,
+                letterSpacing: `${titleLetterSpacing}px`,
+              }}
+            >
+              {template.title}
+            </h3>
+            {hovered && (
+              <div 
+                className="absolute -right-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center opacity-70"
+                style={{ backgroundColor: template.textColor + '30' }}
+              >
+                <Pencil size={10} style={{ color: template.textColor }} />
+              </div>
+            )}
+          </div>
+        </Popover>
+      ) : (
+        <h3 
           style={{ 
-            backgroundColor: 'rgba(255,255,255,0.2)', 
             color: template.textColor,
-            border: 'none',
             fontSize: `${titleFontSize}px`,
             fontWeight,
-            textAlign,
+            margin: 0,
+            lineHeight: 1.2,
             fontFamily,
+            letterSpacing: `${titleLetterSpacing}px`,
           }}
-        />
-      ) : (
-        <div 
-          className={`group flex items-center gap-2 cursor-pointer ${editable && !compact ? 'hover:opacity-80' : ''}`}
-          onClick={() => editable && !compact && setEditingField('title')}
-          style={{ justifyContent: textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start' }}
         >
-          <h3 
-            style={{ 
-              color: template.textColor,
-              fontSize: `${titleFontSize}px`,
-              fontWeight,
-              margin: 0,
-              lineHeight: 1.2,
-              fontFamily,
-              letterSpacing: `${titleLetterSpacing}px`,
-            }}
-          >
-            {template.title}
-          </h3>
-          {editable && !compact && hovered && (
-            <EditOutlined className="text-sm opacity-70" style={{ color: template.textColor }} />
-          )}
-        </div>
+          {template.title}
+        </h3>
       )}
 
-      {editingField === 'subtitle' && editable ? (
-        <Input
-          value={template.subtitle}
-          onChange={(e) => handleSubtitleChange(e.target.value)}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          autoFocus
+      {/* Subtitle with inline editor */}
+      {editable && !compact ? (
+        <Popover 
+          content={subtitleEditorContent} 
+          title={<span className="flex items-center gap-2"><Type size={14} /> Edit Subtitle</span>}
+          trigger="click"
+          open={showSubtitleEditor}
+          onOpenChange={setShowSubtitleEditor}
+        >
+          <div 
+            className="group flex items-center gap-1 cursor-pointer mt-2 hover:opacity-80 relative"
+            style={{ justifyContent: textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start' }}
+          >
+            <p 
+              style={{ 
+                color: template.textColor,
+                fontSize: `${subtitleFontSize}px`,
+                fontWeight: subtitleFontWeight,
+                opacity: 0.85,
+                margin: 0,
+                fontFamily,
+                letterSpacing: `${subtitleLetterSpacing}px`,
+              }}
+            >
+              {template.subtitle}
+            </p>
+            {hovered && (
+              <div 
+                className="absolute -right-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center opacity-70"
+                style={{ backgroundColor: template.textColor + '30' }}
+              >
+                <Pencil size={10} style={{ color: template.textColor }} />
+              </div>
+            )}
+          </div>
+        </Popover>
+      ) : (
+        <p 
           className="mt-2"
           style={{ 
-            backgroundColor: 'rgba(255,255,255,0.2)', 
             color: template.textColor,
-            border: 'none',
             fontSize: `${subtitleFontSize}px`,
-            textAlign,
+            fontWeight: subtitleFontWeight,
+            opacity: 0.85,
+            margin: 0,
+            marginTop: 8,
             fontFamily,
+            letterSpacing: `${subtitleLetterSpacing}px`,
           }}
-        />
-      ) : (
-        <div 
-          className={`group flex items-center gap-1 cursor-pointer mt-2 ${editable && !compact ? 'hover:opacity-80' : ''}`}
-          onClick={() => editable && !compact && setEditingField('subtitle')}
-          style={{ justifyContent: textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start' }}
         >
-          <p 
-            style={{ 
-              color: template.textColor,
-              fontSize: `${subtitleFontSize}px`,
-              fontWeight: subtitleFontWeight,
-              opacity: 0.85,
-              margin: 0,
-              fontFamily,
-              letterSpacing: `${subtitleLetterSpacing}px`,
-            }}
-          >
-            {template.subtitle}
-          </p>
-          {editable && !compact && hovered && (
-            <EditOutlined className="text-xs opacity-70" style={{ color: template.textColor }} />
-          )}
-        </div>
+          {template.subtitle}
+        </p>
       )}
     </div>
   );
