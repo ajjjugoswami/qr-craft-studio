@@ -25,6 +25,13 @@ const typeColors: Record<string, string> = {
   text: 'orange',
   wifi: 'purple',
   email: 'cyan',
+  phone: 'geekblue',
+  sms: 'lime',
+  location: 'volcano',
+  instagram: 'magenta',
+  facebook: 'blue',
+  youtube: 'red',
+  whatsapp: 'green',
 };
 
 const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete }) => {

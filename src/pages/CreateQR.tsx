@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Steps, Button, Card, Typography, Input, message, Row, Col } from 'antd';
-import { ArrowLeftOutlined, ArrowRightOutlined, SaveOutlined } from '@ant-design/icons';
+import { Button, Card, Typography, message, Row, Col } from 'antd';
+import { ArrowLeftOutlined, CheckOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import TemplateSelector from '../components/qr/TemplateSelector';
-import TemplateCustomizer from '../components/qr/TemplateCustomizer';
+import QRTypeSelector from '../components/qr/QRTypeSelector';
 import ContentEditor from '../components/qr/ContentEditor';
+import QRDesignTemplates from '../components/qr/QRDesignTemplates';
 import QRStyleEditor from '../components/qr/QRStyleEditor';
 import QRCodePreview from '../components/qr/QRCodePreview';
 import { useQRCodes } from '../hooks/useQRCodes';
@@ -13,11 +14,12 @@ import {
   QRTemplate,
   QRStyling,
   QRCodeData,
+  QRType,
   defaultTemplates,
   defaultStyling,
 } from '../types/qrcode';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const steps = [
   { title: 'Card Template', description: 'Choose card design (Optional)' },
@@ -33,7 +35,7 @@ const CreateQR: React.FC = () => {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [template, setTemplate] = useState<QRTemplate>(defaultTemplates[0]);
-  const [type, setType] = useState<'url' | 'vcard' | 'text' | 'wifi' | 'email'>('url');
+  const [type, setType] = useState<QRType>('url');
   const [content, setContent] = useState('https://example.com');
   const [styling, setStyling] = useState<QRStyling>(defaultStyling);
   const [name, setName] = useState('');
@@ -78,60 +80,21 @@ const CreateQR: React.FC = () => {
       case 0:
         return <TemplateSelector selectedTemplate={template} onSelect={setTemplate} />;
       case 1:
-        return (
-          <ContentEditor
-            type={type}
-            content={content}
-            onTypeChange={setType}
-            onContentChange={setContent}
-          />
-        );
+        return <QRTypeSelector selectedType={type} onSelect={setType} />;
       case 2:
         return (
           <ContentEditor
             type={type}
             content={content}
-            onTypeChange={setType}
+            name={name}
+            onNameChange={setName}
             onContentChange={setContent}
           />
         );
       case 3:
-        return <QRStyleEditor styling={styling} onStyleChange={setStyling} />;
+        return <QRDesignTemplates styling={styling} onStyleChange={setStyling} />;
       case 4:
-        return (
-          <div className="animate-fade-in">
-            <div className="text-center mb-8">
-              <Title level={3}>Final Touch</Title>
-              <Text type="secondary">Review and name your QR code</Text>
-            </div>
-            <Row gutter={[48, 24]} justify="center" align="middle">
-              <Col xs={24} lg={12}>
-                <Card>
-                  <div className="mb-6">
-                    <Text strong className="block mb-2">QR Code Name *</Text>
-                    <Input
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Enter a name for your QR code"
-                      size="large"
-                    />
-                  </div>
-                  <TemplateCustomizer
-                    template={template}
-                    onTemplateChange={setTemplate}
-                  />
-                </Card>
-              </Col>
-              <Col xs={24} lg={12} className="flex justify-center">
-                <QRCodePreview
-                  content={content}
-                  template={template}
-                  styling={styling}
-                />
-              </Col>
-            </Row>
-          </div>
-        );
+        return <QRStyleEditor styling={styling} onStyleChange={setStyling} />;
       default:
         return null;
     }
@@ -150,44 +113,69 @@ const CreateQR: React.FC = () => {
           >
             Back to Dashboard
           </Button>
-          <Title level={2}>Create QR Code</Title>
         </div>
 
-        {/* Steps */}
+        {/* Custom Steps */}
         <Card className="mb-6">
-          <Steps
-            current={currentStep}
-            items={steps.map((step) => ({
-              title: step.title,
-              description: step.description,
-            }))}
-          />
+          <div className="flex items-center justify-between">
+            {steps.map((step, index) => (
+              <React.Fragment key={index}>
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-2 mb-1">
+                    {index < currentStep ? (
+                      <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                        <CheckOutlined className="text-white text-xs" />
+                      </div>
+                    ) : index === currentStep ? (
+                      <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                        <span className="text-white text-xs font-medium">{index + 1}</span>
+                      </div>
+                    ) : (
+                      <div className="w-6 h-6 rounded-full border-2 border-muted-foreground/30 flex items-center justify-center">
+                        <span className="text-muted-foreground text-xs font-medium">{index + 1}</span>
+                      </div>
+                    )}
+                    <span className={`font-medium text-sm ${index <= currentStep ? 'text-foreground' : 'text-muted-foreground'}`}>
+                      {step.title}
+                    </span>
+                  </div>
+                  <Text type="secondary" className="text-xs hidden sm:block">
+                    {step.description}
+                  </Text>
+                </div>
+                {index < steps.length - 1 && (
+                  <div className={`flex-1 h-0.5 mx-2 ${index < currentStep ? 'bg-primary' : 'bg-muted'}`} />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
         </Card>
 
-        {/* Content Area */}
+        {/* Content Area with Preview */}
         <div className="min-h-[500px] mb-6">
           <Row gutter={[24, 24]}>
-            <Col xs={24} lg={currentStep === 4 ? 24 : 16}>
-              {renderStepContent()}
+            <Col xs={24} lg={16}>
+              <Card className="min-h-[450px]">
+                {renderStepContent()}
+              </Card>
             </Col>
-            {currentStep !== 4 && (
-              <Col xs={24} lg={8}>
-                <Card title="Preview" className="sticky top-6">
-                  <div className="flex flex-col items-center">
-                    <QRCodePreview
-                      content={content}
-                      template={template}
-                      styling={styling}
-                    />
-                    <div className="mt-4 text-center">
-                      <Text type="secondary" className="text-sm">
-                        Live preview of your QR code
-                      </Text>
-                    </div>
-                  </div>
-                </Card>
-              </Col>
-            )}
+            <Col xs={24} lg={8}>
+              <Card 
+                title="Live Preview" 
+                className="sticky top-6"
+                extra={<Text type="secondary" className="text-xs">Click text to edit</Text>}
+              >
+                <div className="flex flex-col items-center">
+                  <QRCodePreview
+                    content={content}
+                    template={template}
+                    styling={styling}
+                    editable={true}
+                    onTemplateChange={setTemplate}
+                  />
+                </div>
+              </Card>
+            </Col>
           </Row>
         </div>
 
@@ -197,7 +185,6 @@ const CreateQR: React.FC = () => {
             size="large"
             onClick={handlePrev}
             disabled={currentStep === 0}
-            icon={<ArrowLeftOutlined />}
           >
             Previous
           </Button>
@@ -207,7 +194,6 @@ const CreateQR: React.FC = () => {
               type="primary"
               size="large"
               onClick={handleSave}
-              icon={<SaveOutlined />}
             >
               Save QR Code
             </Button>
@@ -216,8 +202,6 @@ const CreateQR: React.FC = () => {
               type="primary"
               size="large"
               onClick={handleNext}
-              icon={<ArrowRightOutlined />}
-              iconPosition="end"
             >
               Next
             </Button>
