@@ -1,7 +1,21 @@
+export type QRType = 
+  | 'url' 
+  | 'vcard' 
+  | 'text' 
+  | 'wifi' 
+  | 'email' 
+  | 'phone' 
+  | 'sms' 
+  | 'location' 
+  | 'instagram' 
+  | 'facebook' 
+  | 'youtube' 
+  | 'whatsapp';
+
 export interface QRCodeData {
   id: string;
   name: string;
-  type: 'url' | 'vcard' | 'text' | 'wifi' | 'email';
+  type: QRType;
   content: string;
   template: QRTemplate;
   styling: QRStyling;
@@ -38,6 +52,15 @@ export interface VCardData {
   address: string;
 }
 
+export interface DesignTemplate {
+  id: string;
+  name: string;
+  category: 'business' | 'creative' | 'minimal' | 'vibrant';
+  icon: string;
+  fgColor: string;
+  bgColor: string;
+}
+
 export const defaultStyling: QRStyling = {
   fgColor: '#000000',
   bgColor: '#ffffff',
@@ -45,6 +68,19 @@ export const defaultStyling: QRStyling = {
   level: 'M',
   includeMargin: true,
 };
+
+export const designTemplates: DesignTemplate[] = [
+  { id: 'classic-black', name: 'Classic Black', category: 'minimal', icon: 'square', fgColor: '#000000', bgColor: '#ffffff' },
+  { id: 'modern-gradient', name: 'Modern Gradient', category: 'vibrant', icon: 'sparkles', fgColor: '#8b5cf6', bgColor: '#fef3c7' },
+  { id: 'business-pro', name: 'Business Professional', category: 'business', icon: 'building', fgColor: '#1e40af', bgColor: '#f8fafc' },
+  { id: 'ocean-breeze', name: 'Ocean Breeze', category: 'creative', icon: 'waves', fgColor: '#0891b2', bgColor: '#ecfeff' },
+  { id: 'sunset-vibes', name: 'Sunset Vibes', category: 'vibrant', icon: 'sun', fgColor: '#ea580c', bgColor: '#fff7ed' },
+  { id: 'forest-green', name: 'Forest Green', category: 'creative', icon: 'tree', fgColor: '#166534', bgColor: '#f0fdf4' },
+  { id: 'minimal-dots', name: 'Minimal Dots', category: 'minimal', icon: 'circle', fgColor: '#374151', bgColor: '#ffffff' },
+  { id: 'neon-glow', name: 'Neon Glow', category: 'vibrant', icon: 'bolt', fgColor: '#c026d3', bgColor: '#fdf4ff' },
+  { id: 'corporate-blue', name: 'Corporate Blue', category: 'business', icon: 'briefcase', fgColor: '#1d4ed8', bgColor: '#eff6ff' },
+  { id: 'candy-pop', name: 'Candy Pop', category: 'creative', icon: 'candy', fgColor: '#db2777', bgColor: '#fdf2f8' },
+];
 
 export const defaultTemplates: QRTemplate[] = [
   {

@@ -1,35 +1,28 @@
 import React from 'react';
-import { Form, Input, Select, Typography, Card, Row, Col } from 'antd';
+import { Form, Input, Select, Typography, Row, Col } from 'antd';
 import {
   LinkOutlined,
-  UserOutlined,
-  WifiOutlined,
-  MailOutlined,
-  FileTextOutlined,
+  PhoneOutlined,
+  EnvironmentOutlined,
 } from '@ant-design/icons';
+import { QRType } from '../../types/qrcode';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
 interface ContentEditorProps {
-  type: 'url' | 'vcard' | 'text' | 'wifi' | 'email';
+  type: QRType;
   content: string;
-  onTypeChange: (type: 'url' | 'vcard' | 'text' | 'wifi' | 'email') => void;
+  name: string;
+  onNameChange: (name: string) => void;
   onContentChange: (content: string) => void;
 }
-
-const qrTypes = [
-  { value: 'url', label: 'URL / Website', icon: <LinkOutlined /> },
-  { value: 'vcard', label: 'vCard / Contact', icon: <UserOutlined /> },
-  { value: 'text', label: 'Plain Text', icon: <FileTextOutlined /> },
-  { value: 'wifi', label: 'WiFi Network', icon: <WifiOutlined /> },
-  { value: 'email', label: 'Email', icon: <MailOutlined /> },
-];
 
 const ContentEditor: React.FC<ContentEditorProps> = ({
   type,
   content,
-  onTypeChange,
+  name,
+  onNameChange,
   onContentChange,
 }) => {
   const [form] = Form.useForm();
@@ -70,6 +63,27 @@ END:VCARD`;
       case 'email':
         generatedContent = generateEmailString(values);
         break;
+      case 'phone':
+        generatedContent = `tel:${values.phone || ''}`;
+        break;
+      case 'sms':
+        generatedContent = `sms:${values.phone || ''}${values.message ? `?body=${encodeURIComponent(values.message)}` : ''}`;
+        break;
+      case 'location':
+        generatedContent = `geo:${values.lat || '0'},${values.lng || '0'}`;
+        break;
+      case 'instagram':
+        generatedContent = `https://instagram.com/${values.username || ''}`;
+        break;
+      case 'facebook':
+        generatedContent = `https://facebook.com/${values.username || ''}`;
+        break;
+      case 'youtube':
+        generatedContent = values.channel || '';
+        break;
+      case 'whatsapp':
+        generatedContent = `https://wa.me/${values.phone || ''}${values.message ? `?text=${encodeURIComponent(values.message)}` : ''}`;
+        break;
       default:
         generatedContent = values.content || '';
     }
@@ -93,6 +107,76 @@ END:VCARD`;
               onChange={(e) => onContentChange(e.target.value)}
             />
           </Form.Item>
+        );
+
+      case 'phone':
+        return (
+          <Form.Item name="phone" label="Phone Number" rules={[{ required: true }]}>
+            <Input placeholder="+1 234 567 890" size="large" prefix={<PhoneOutlined />} onChange={handleFormChange} />
+          </Form.Item>
+        );
+
+      case 'sms':
+        return (
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item name="phone" label="Phone Number" rules={[{ required: true }]}>
+                <Input placeholder="+1 234 567 890" size="large" prefix={<PhoneOutlined />} onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item name="message" label="Pre-filled Message (Optional)">
+                <TextArea rows={3} placeholder="Your message..." onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+          </Row>
+        );
+
+      case 'location':
+        return (
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="lat" label="Latitude" rules={[{ required: true }]}>
+                <Input placeholder="40.7128" size="large" prefix={<EnvironmentOutlined />} onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="lng" label="Longitude" rules={[{ required: true }]}>
+                <Input placeholder="-74.0060" size="large" onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+          </Row>
+        );
+
+      case 'instagram':
+      case 'facebook':
+        return (
+          <Form.Item name="username" label="Username" rules={[{ required: true }]}>
+            <Input placeholder="yourusername" size="large" addonBefore="@" onChange={handleFormChange} />
+          </Form.Item>
+        );
+
+      case 'youtube':
+        return (
+          <Form.Item name="channel" label="YouTube Channel/Video URL" rules={[{ required: true }]}>
+            <Input placeholder="https://youtube.com/..." size="large" prefix={<LinkOutlined />} onChange={handleFormChange} />
+          </Form.Item>
+        );
+
+      case 'whatsapp':
+        return (
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item name="phone" label="WhatsApp Number (with country code)" rules={[{ required: true }]}>
+                <Input placeholder="1234567890" size="large" prefix={<PhoneOutlined />} onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item name="message" label="Pre-filled Message (Optional)">
+                <TextArea rows={3} placeholder="Hi! I want to..." onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+          </Row>
         );
 
       case 'vcard':
@@ -203,32 +287,26 @@ END:VCARD`;
 
   return (
     <div className="animate-fade-in">
-      <div className="text-center mb-8">
-        <Title level={3}>Enter Your Content</Title>
-        <Text type="secondary">Choose the QR code type and fill in the details</Text>
+      <div className="mb-6">
+        <Title level={4} className="!mb-1">Enter Content</Title>
       </div>
 
-      <Card className="max-w-2xl mx-auto">
-        <Form form={form} layout="vertical" initialValues={{ content }}>
-          <Form.Item label="QR Code Type" className="mb-6">
-            <Select
-              value={type}
-              onChange={onTypeChange}
-              size="large"
-              options={qrTypes.map((t) => ({
-                value: t.value,
-                label: (
-                  <span className="flex items-center gap-2">
-                    {t.icon} {t.label}
-                  </span>
-                ),
-              }))}
-            />
-          </Form.Item>
+      <Form form={form} layout="vertical" initialValues={{ content }} className="max-w-2xl">
+        <Form.Item 
+          label="QR Code Title" 
+          required
+          tooltip="This helps you identify the QR code in your dashboard"
+        >
+          <Input
+            value={name}
+            onChange={(e) => onNameChange(e.target.value)}
+            placeholder="My awesome QR code"
+            size="large"
+          />
+        </Form.Item>
 
-          {renderContentForm()}
-        </Form>
-      </Card>
+        {renderContentForm()}
+      </Form>
     </div>
   );
 };
