@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, Card, Typography, message, Row, Col } from 'antd';
-import { ArrowLeft, Check, Save } from 'lucide-react';
+import { ArrowLeft, Check, Save, Settings2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import TemplateSelector from '../components/qr/TemplateSelector';
 import TemplateCustomizer from '../components/qr/TemplateCustomizer';
+import TemplateEditorModal from '../components/qr/TemplateEditorModal';
 import QRTypeSelector from '../components/qr/QRTypeSelector';
 import ContentEditor from '../components/qr/ContentEditor';
 import QRDesignTemplates from '../components/qr/QRDesignTemplates';
@@ -42,6 +43,7 @@ const CreateQR: React.FC = () => {
   const [styling, setStyling] = useState<QRStyling>(defaultStyling);
   const [name, setName] = useState('');
   const [initialized, setInitialized] = useState(false);
+  const [showTemplateEditor, setShowTemplateEditor] = useState(false);
 
   // Load draft on mount
   useEffect(() => {
@@ -96,8 +98,8 @@ const CreateQR: React.FC = () => {
       name: name.trim(),
       type,
       content,
-      template, // Full template config saved
-      styling,  // Full styling config saved
+      template,
+      styling,
       createdAt: new Date().toISOString(),
       scans: 0,
       status: 'active',
@@ -212,15 +214,24 @@ const CreateQR: React.FC = () => {
         {/* Content Area with Preview */}
         <div className="min-h-[500px] mb-6">
           <Row gutter={[24, 24]}>
-            <Col xs={24} lg={16}>
+            <Col xs={24} lg={14}>
               <Card className="min-h-[500px]">
                 {renderStepContent()}
               </Card>
             </Col>
-            <Col xs={24} lg={8}>
+            <Col xs={24} lg={10}>
               <Card 
                 title="Live Preview" 
                 className="sticky top-6"
+                extra={
+                  <Button
+                    type="primary"
+                    icon={<Settings2 size={14} />}
+                    onClick={() => setShowTemplateEditor(true)}
+                  >
+                    Edit Template
+                  </Button>
+                }
               >
                 <div className="flex flex-col items-center">
                   <QRCodePreview
@@ -232,7 +243,7 @@ const CreateQR: React.FC = () => {
                     onTemplateChange={setTemplate}
                   />
                   <Text type="secondary" className="text-xs mt-4">
-                    Click text to edit inline
+                    Click text to edit inline • Use "Edit Template" for more options
                   </Text>
                 </div>
               </Card>
@@ -269,6 +280,14 @@ const CreateQR: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Template Editor Modal */}
+      <TemplateEditorModal
+        open={showTemplateEditor}
+        onClose={() => setShowTemplateEditor(false)}
+        template={template}
+        onTemplateChange={setTemplate}
+      />
     </DashboardLayout>
   );
 };

@@ -1,9 +1,9 @@
 import React, { useState, forwardRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Input, ColorPicker, Slider, Popover	 } from 'antd';
-import { Pencil, Type, Palette, Move } from 'lucide-react';
+import { Input, ColorPicker, Slider, Popover } from 'antd';
+import { Pencil, Type } from 'lucide-react';
 import type { Color } from 'antd/es/color-picker';
-import { QRTemplate, QRStyling } from '../../types/qrcode';
+import { QRTemplate, QRStyling, CustomField } from '../../types/qrcode';
 
 interface QRCodePreviewProps {
   content: string;
@@ -36,13 +36,14 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   editable = false,
   onTemplateChange,
 }, ref) => {
-  const [editingField, setEditingField] = useState<'title' | 'subtitle' | null>(null);
   const [hovered, setHovered] = useState(false);
   const [showTitleEditor, setShowTitleEditor] = useState(false);
   const [showSubtitleEditor, setShowSubtitleEditor] = useState(false);
 
-  const cardSize = compact ? 'w-16 h-20' : 'w-80';
-  const qrSize = compact ? 48 : styling.size > 160 ? 160 : styling.size;
+  const isHorizontal = template.qrPosition === 'left' || template.qrPosition === 'right';
+  const cardWidth = compact ? 'w-16' : isHorizontal ? 'w-[380px]' : 'w-80';
+  const cardHeight = compact ? 'h-20' : isHorizontal ? 'min-h-[200px]' : 'min-h-[420px]';
+  const qrSize = compact ? 48 : styling.size > 140 ? 140 : styling.size;
   
   const titleFontSize = compact ? 8 : (template.titleFontSize || 24);
   const subtitleFontSize = compact ? 6 : (template.subtitleFontSize || 14);
@@ -71,16 +72,6 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   const handleColorChange = (key: 'backgroundColor' | 'textColor', color: Color) => {
     if (onTemplateChange) {
       onTemplateChange({ ...template, [key]: color.toHexString() });
-    }
-  };
-
-  const handleBlur = () => {
-    setEditingField(null);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      setEditingField(null);
     }
   };
 
@@ -161,18 +152,57 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
               className="absolute bottom-4 left-4 w-12 h-12 opacity-10"
               style={{ border: `2px solid ${accentColor}`, borderRadius: '50%' }}
             />
-            <div 
-              className="absolute top-1/2 right-2 w-8 h-8 opacity-5 -translate-y-1/2"
-              style={{ backgroundColor: accentColor }}
-            />
           </>
+        );
+      case 'grid':
+        return (
+          <div 
+            className="absolute inset-0 opacity-5"
+            style={{
+              backgroundImage: `
+                linear-gradient(${accentColor} 1px, transparent 1px),
+                linear-gradient(90deg, ${accentColor} 1px, transparent 1px)
+              `,
+              backgroundSize: '20px 20px',
+            }}
+          />
         );
       default:
         return null;
     }
   };
 
-  // Inline editor popover content for title
+  const renderCustomField = (field: CustomField) => {
+    const style: React.CSSProperties = {
+      fontSize: field.style?.fontSize || 14,
+      fontWeight: fontWeightMap[field.style?.fontWeight || 'normal'],
+      color: field.style?.color || template.textColor,
+      letterSpacing: field.style?.letterSpacing ? `${field.style.letterSpacing}px` : undefined,
+      fontStyle: field.style?.italic ? 'italic' : undefined,
+      opacity: field.style?.opacity || 1,
+      backgroundColor: field.style?.backgroundColor,
+      borderRadius: field.style?.borderRadius,
+      padding: field.style?.padding,
+      display: field.style?.backgroundColor ? 'inline-block' : undefined,
+    };
+
+    if (field.type === 'divider') {
+      return (
+        <div 
+          key={field.id}
+          className="w-full h-px my-2"
+          style={{ backgroundColor: template.textColor, opacity: 0.2 }}
+        />
+      );
+    }
+
+    return (
+      <div key={field.id} className="z-10">
+        <span style={style}>{field.value}</span>
+      </div>
+    );
+  };
+
   const titleEditorContent = (
     <div className="w-64 space-y-3 p-1">
       <div>
@@ -190,7 +220,6 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
           max={40}
           value={template.titleFontSize || 24}
           onChange={(value) => onTemplateChange?.({ ...template, titleFontSize: value })}
-          size="small"
         />
       </div>
       <div>
@@ -204,7 +233,6 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
     </div>
   );
 
-  // Inline editor popover content for subtitle
   const subtitleEditorContent = (
     <div className="w-64 space-y-3 p-1">
       <div>
@@ -222,145 +250,206 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
           max={24}
           value={template.subtitleFontSize || 14}
           onChange={(value) => onTemplateChange?.({ ...template, subtitleFontSize: value })}
-          size="small"
         />
       </div>
     </div>
   );
 
-  const renderTextContent = () => (
-    <div 
-      className="flex flex-col z-10 w-full"
-      style={{ textAlign, fontFamily }}
-    >
-      {/* Title with inline editor */}
-      {editable && !compact ? (
-        <Popover 
-          content={titleEditorContent} 
-          title={<span className="flex items-center gap-2"><Type size={14} /> Edit Title</span>}
-          trigger="click"
-          open={showTitleEditor}
-          onOpenChange={setShowTitleEditor}
-        >
-          <div 
-            className="group flex items-center gap-2 cursor-pointer hover:opacity-80 relative"
-            style={{ justifyContent: textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start' }}
-          >
-            <h3 
-              style={{ 
-                color: template.textColor,
-                fontSize: `${titleFontSize}px`,
-                fontWeight,
-                margin: 0,
-                lineHeight: 1.2,
-                fontFamily,
-                letterSpacing: `${titleLetterSpacing}px`,
-              }}
-            >
-              {template.title}
-            </h3>
-            {hovered && (
-              <div 
-                className="absolute -right-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center opacity-70"
-                style={{ backgroundColor: template.textColor + '30' }}
-              >
-                <Pencil size={10} style={{ color: template.textColor }} />
-              </div>
-            )}
-          </div>
-        </Popover>
-      ) : (
-        <h3 
-          style={{ 
-            color: template.textColor,
-            fontSize: `${titleFontSize}px`,
-            fontWeight,
-            margin: 0,
-            lineHeight: 1.2,
-            fontFamily,
-            letterSpacing: `${titleLetterSpacing}px`,
-          }}
-        >
-          {template.title}
-        </h3>
-      )}
+  const renderTextContent = () => {
+    const customFields = template.customFields || [];
+    const fieldsBeforeTitle = customFields.filter(f => f.type === 'label');
+    const fieldsAfterTitle = customFields.filter(f => f.type !== 'label');
 
-      {/* Subtitle with inline editor */}
-      {editable && !compact ? (
-        <Popover 
-          content={subtitleEditorContent} 
-          title={<span className="flex items-center gap-2"><Type size={14} /> Edit Subtitle</span>}
-          trigger="click"
-          open={showSubtitleEditor}
-          onOpenChange={setShowSubtitleEditor}
-        >
-          <div 
-            className="group flex items-center gap-1 cursor-pointer mt-2 hover:opacity-80 relative"
-            style={{ justifyContent: textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start' }}
+    return (
+      <div 
+        className="flex flex-col gap-2 z-10 w-full"
+        style={{ textAlign, fontFamily }}
+      >
+        {/* Custom fields before title (labels) */}
+        {!compact && fieldsBeforeTitle.map(renderCustomField)}
+
+        {/* Title with inline editor */}
+        {editable && !compact ? (
+          <Popover 
+            content={titleEditorContent} 
+            title={<span className="flex items-center gap-2"><Type size={14} /> Edit Title</span>}
+            trigger="click"
+            open={showTitleEditor}
+            onOpenChange={setShowTitleEditor}
           >
-            <p 
-              style={{ 
-                color: template.textColor,
-                fontSize: `${subtitleFontSize}px`,
-                fontWeight: subtitleFontWeight,
-                opacity: 0.85,
-                margin: 0,
-                fontFamily,
-                letterSpacing: `${subtitleLetterSpacing}px`,
-              }}
+            <div 
+              className="group flex items-center gap-2 cursor-pointer hover:opacity-80 relative"
+              style={{ justifyContent: textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start' }}
             >
-              {template.subtitle}
-            </p>
-            {hovered && (
-              <div 
-                className="absolute -right-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center opacity-70"
-                style={{ backgroundColor: template.textColor + '30' }}
+              <h3 
+                style={{ 
+                  color: template.textColor,
+                  fontSize: `${titleFontSize}px`,
+                  fontWeight,
+                  margin: 0,
+                  lineHeight: 1.2,
+                  fontFamily,
+                  letterSpacing: `${titleLetterSpacing}px`,
+                }}
               >
-                <Pencil size={10} style={{ color: template.textColor }} />
-              </div>
-            )}
-          </div>
-        </Popover>
-      ) : (
-        <p 
-          className="mt-2"
-          style={{ 
-            color: template.textColor,
-            fontSize: `${subtitleFontSize}px`,
-            fontWeight: subtitleFontWeight,
-            opacity: 0.85,
-            margin: 0,
-            marginTop: 8,
-            fontFamily,
-            letterSpacing: `${subtitleLetterSpacing}px`,
-          }}
-        >
-          {template.subtitle}
-        </p>
-      )}
-    </div>
-  );
+                {template.title}
+              </h3>
+              {hovered && (
+                <div 
+                  className="absolute -right-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center opacity-70"
+                  style={{ backgroundColor: template.textColor + '30' }}
+                >
+                  <Pencil size={10} style={{ color: template.textColor }} />
+                </div>
+              )}
+            </div>
+          </Popover>
+        ) : (
+          <h3 
+            style={{ 
+              color: template.textColor,
+              fontSize: `${titleFontSize}px`,
+              fontWeight,
+              margin: 0,
+              lineHeight: 1.2,
+              fontFamily,
+              letterSpacing: `${titleLetterSpacing}px`,
+            }}
+          >
+            {template.title}
+          </h3>
+        )}
+
+        {/* Custom fields after title */}
+        {!compact && fieldsAfterTitle.map(renderCustomField)}
+
+        {/* Subtitle with inline editor */}
+        {editable && !compact ? (
+          <Popover 
+            content={subtitleEditorContent} 
+            title={<span className="flex items-center gap-2"><Type size={14} /> Edit Subtitle</span>}
+            trigger="click"
+            open={showSubtitleEditor}
+            onOpenChange={setShowSubtitleEditor}
+          >
+            <div 
+              className="group flex items-center gap-1 cursor-pointer mt-1 hover:opacity-80 relative"
+              style={{ justifyContent: textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start' }}
+            >
+              <p 
+                style={{ 
+                  color: template.textColor,
+                  fontSize: `${subtitleFontSize}px`,
+                  fontWeight: subtitleFontWeight,
+                  opacity: 0.85,
+                  margin: 0,
+                  fontFamily,
+                  letterSpacing: `${subtitleLetterSpacing}px`,
+                  fontStyle: 'italic',
+                }}
+              >
+                {template.subtitle}
+              </p>
+              {hovered && (
+                <div 
+                  className="absolute -right-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center opacity-70"
+                  style={{ backgroundColor: template.textColor + '30' }}
+                >
+                  <Pencil size={10} style={{ color: template.textColor }} />
+                </div>
+              )}
+            </div>
+          </Popover>
+        ) : (
+          <p 
+            className="mt-1"
+            style={{ 
+              color: template.textColor,
+              fontSize: `${subtitleFontSize}px`,
+              fontWeight: subtitleFontWeight,
+              opacity: 0.85,
+              margin: 0,
+              fontFamily,
+              letterSpacing: `${subtitleLetterSpacing}px`,
+              fontStyle: 'italic',
+            }}
+          >
+            {template.subtitle}
+          </p>
+        )}
+      </div>
+    );
+  };
 
   const renderQRCode = () => (
-    <div
-      className="rounded-xl shadow-inner z-10"
-      style={{ 
-        backgroundColor: styling.bgColor,
-        padding: compact ? 4 : 16,
-      }}
-    >
-      <QRCodeSVG
-        value={content || 'https://example.com'}
-        size={qrSize}
-        fgColor={styling.fgColor}
-        bgColor={styling.bgColor}
-        level={styling.level}
-        includeMargin={styling.includeMargin}
-      />
+    <div className="flex flex-col items-center z-10">
+      <div
+        className="rounded-xl shadow-inner"
+        style={{ 
+          backgroundColor: styling.bgColor,
+          padding: compact ? 4 : 12,
+        }}
+      >
+        <QRCodeSVG
+          value={content || 'https://example.com'}
+          size={qrSize}
+          fgColor={styling.fgColor}
+          bgColor={styling.bgColor}
+          level={styling.level}
+          includeMargin={styling.includeMargin}
+        />
+      </div>
+      {!compact && template.qrLabel && (
+        <span 
+          className="mt-2 text-xs opacity-70"
+          style={{ color: template.textColor }}
+        >
+          {template.qrLabel}
+        </span>
+      )}
     </div>
   );
 
+  const renderCTAButton = () => {
+    if (!template.ctaButton || compact) return null;
+    
+    return (
+      <div
+        className="z-10 px-6 py-2 font-semibold text-sm cursor-pointer transition-transform hover:scale-105"
+        style={{
+          backgroundColor: template.ctaButton.backgroundColor,
+          color: template.ctaButton.textColor,
+          borderRadius: template.ctaButton.borderRadius || 8,
+        }}
+      >
+        {template.ctaButton.text}
+      </div>
+    );
+  };
+
   const getContentOrder = () => {
+    if (isHorizontal) {
+      return (
+        <div className="flex items-center gap-6 w-full h-full">
+          {qrPosition === 'left' ? (
+            <>
+              {renderQRCode()}
+              <div className="flex-1 flex flex-col justify-center gap-2">
+                {renderTextContent()}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex-1 flex flex-col justify-center gap-2">
+                {renderTextContent()}
+              </div>
+              {renderQRCode()}
+            </>
+          )}
+        </div>
+      );
+    }
+
     switch (qrPosition) {
       case 'top':
         return (
@@ -368,14 +457,16 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
             {renderQRCode()}
             <div className="flex-1" />
             {renderTextContent()}
+            {renderCTAButton()}
           </>
         );
       case 'center':
         return (
           <>
             {renderTextContent()}
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex flex-col items-center justify-center gap-4">
               {renderQRCode()}
+              {renderCTAButton()}
             </div>
           </>
         );
@@ -386,6 +477,7 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
             {renderTextContent()}
             <div className="flex-1" />
             {renderQRCode()}
+            {renderCTAButton()}
           </>
         );
     }
@@ -394,23 +486,20 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   return (
     <div
       ref={ref}
-      className={`${cardSize} flex flex-col items-center transition-all relative overflow-hidden`}
+      className={`${cardWidth} ${cardHeight} flex flex-col items-center transition-all relative overflow-hidden`}
       style={{
         ...backgroundStyle,
         ...borderStyle,
         color: template.textColor,
         borderRadius: `${borderRadius}px`,
         padding: `${padding}px`,
-        minHeight: compact ? '80px' : '420px',
         boxShadow: shadowStyle(),
         fontFamily,
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Decorative elements */}
       {renderDecorations()}
-
       {getContentOrder()}
 
       {editable && !compact && (
