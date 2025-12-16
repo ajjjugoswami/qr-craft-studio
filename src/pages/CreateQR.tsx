@@ -287,6 +287,8 @@ const CreateQR: React.FC = () => {
         onClose={() => setShowTemplateEditor(false)}
         template={template}
         onTemplateChange={setTemplate}
+        content={content}
+        styling={styling}
       />
     </DashboardLayout>
   );

@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { Modal, Button, Input, Select, Slider, Tabs, ColorPicker, Switch, Space, Card, Empty, Popconfirm } from 'antd';
-import { Plus, Trash2, Type, Calendar, Clock, Image, Minus, AlignCenter, Move, GripVertical } from 'lucide-react';
+import { Modal, Button, Input, Select, Slider, Tabs, ColorPicker, Switch, Card, Empty, Popconfirm } from 'antd';
+import { Trash2, Type, Calendar, Clock, Minus, Move, GripVertical } from 'lucide-react';
 import type { Color } from 'antd/es/color-picker';
-import { QRTemplate, CustomField } from '../../types/qrcode';
+import { QRTemplate, QRStyling, CustomField, defaultStyling } from '../../types/qrcode';
+import QRCodePreview from './QRCodePreview';
 
 interface TemplateEditorModalProps {
   open: boolean;
   onClose: () => void;
   template: QRTemplate;
   onTemplateChange: (template: QRTemplate) => void;
+  content?: string;
+  styling?: QRStyling;
 }
 
 const fieldTypes = [
@@ -33,6 +36,8 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
   onClose,
   template,
   onTemplateChange,
+  content = 'https://example.com',
+  styling = defaultStyling,
 }) => {
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
   const customFields = template.customFields || [];
@@ -120,16 +125,12 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
     onTemplateChange({ ...template, [field]: value });
   };
 
-  const handleColorChange = (key: string, color: Color) => {
-    onTemplateChange({ ...template, [key]: color.toHexString() });
-  };
-
   const tabItems = [
     {
       key: 'fields',
       label: 'Elements',
       children: (
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
           {/* Add Field Buttons */}
           <div className="flex flex-wrap gap-2">
             {fieldTypes.map(ft => (
@@ -188,7 +189,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
                         <span className="text-xs font-medium uppercase text-muted-foreground">
                           {field.type}
                         </span>
-                        <span className="text-sm truncate max-w-[150px]">
+                        <span className="text-sm truncate max-w-[120px]">
                           {field.value || '(empty)'}
                         </span>
                       </div>
@@ -235,7 +236,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
       key: 'style',
       label: 'Element Style',
       children: selectedField ? (
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
           <Card size="small" title={`Editing: ${selectedField.type}`}>
             {selectedField.type !== 'divider' && (
               <div className="space-y-3">
@@ -334,7 +335,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
       key: 'cta',
       label: 'CTA Button',
       children: (
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium">Show CTA Button</label>
             <Switch
@@ -449,14 +450,36 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
       title="Template Editor"
       open={open}
       onCancel={onClose}
-      width={600}
+      width={900}
       footer={[
-        <Button key="close" onClick={onClose}>
+        <Button key="close" type="primary" onClick={onClose}>
           Done
         </Button>,
       ]}
     >
-      <Tabs items={tabItems} />
+      <div className="flex gap-6">
+        {/* Editor Panel */}
+        <div className="flex-1 min-w-0">
+          <Tabs items={tabItems} />
+        </div>
+        
+        {/* Live Preview Panel */}
+        <div className="w-[340px] flex-shrink-0">
+          <div className="sticky top-0">
+            <div className="text-sm font-medium text-muted-foreground mb-3">Live Preview</div>
+            <div className="flex justify-center items-start p-4 bg-muted/30 rounded-lg min-h-[450px]">
+              <div className="transform scale-[0.85] origin-top">
+                <QRCodePreview
+                  content={content}
+                  template={template}
+                  styling={styling}
+                  editable={false}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </Modal>
   );
 };
