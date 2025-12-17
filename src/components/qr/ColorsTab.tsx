@@ -1,5 +1,5 @@
-import React from 'react';
-import { Typography, ColorPicker, Segmented } from 'antd';
+import React, { useState } from 'react';
+import { Typography, ColorPicker, Segmented, Input, Slider } from 'antd';
 import type { Color } from 'antd/es/color-picker';
 import { QRStyling } from '../../types/qrcode';
 
@@ -11,11 +11,60 @@ interface ColorsTabProps {
 }
 
 const ColorsTab: React.FC<ColorsTabProps> = ({ styling, onStyleChange }) => {
+  const [fgGradientType, setFgGradientType] = useState<'solid' | 'linear' | 'radial'>('solid');
+  const [bgGradientType, setBgGradientType] = useState<'solid' | 'linear' | 'radial'>('solid');
+  const [fgGradientColor2, setFgGradientColor2] = useState('#000000');
+  const [bgGradientColor2, setBgGradientColor2] = useState('#ffffff');
+
   const handleColorChange = (key: 'fgColor' | 'bgColor', color: Color) => {
     onStyleChange({
       ...styling,
       [key]: color.toHexString(),
     });
+  };
+
+  const handleGradientChange = (target: 'fg' | 'bg', type: 'solid' | 'linear' | 'radial') => {
+    if (target === 'fg') {
+      setFgGradientType(type);
+      if (type === 'solid') {
+        onStyleChange({
+          ...styling,
+          dotsGradient: undefined,
+        });
+      } else {
+        onStyleChange({
+          ...styling,
+          dotsGradient: {
+            type,
+            rotation: type === 'linear' ? 45 : 0,
+            colorStops: [
+              { offset: 0, color: styling.fgColor },
+              { offset: 1, color: fgGradientColor2 }
+            ]
+          }
+        });
+      }
+    } else {
+      setBgGradientType(type);
+      if (type === 'solid') {
+        onStyleChange({
+          ...styling,
+          backgroundGradient: undefined,
+        });
+      } else {
+        onStyleChange({
+          ...styling,
+          backgroundGradient: {
+            type,
+            rotation: type === 'linear' ? 45 : 0,
+            colorStops: [
+              { offset: 0, color: styling.bgColor },
+              { offset: 1, color: bgGradientColor2 }
+            ]
+          }
+        });
+      }
+    }
   };
 
   return (
@@ -24,7 +73,8 @@ const ColorsTab: React.FC<ColorsTabProps> = ({ styling, onStyleChange }) => {
         <Text strong className="block mb-3">QR Code Color Type</Text>
         <Segmented
           options={['Solid', 'Linear', 'Radial']}
-          defaultValue="Solid"
+          value={fgGradientType === 'solid' ? 'Solid' : fgGradientType === 'linear' ? 'Linear' : 'Radial'}
+          onChange={(value) => handleGradientChange('fg', value === 'Solid' ? 'solid' : value === 'Linear' ? 'linear' : 'radial')}
           block
           className="mb-4"
         />
@@ -32,7 +82,7 @@ const ColorsTab: React.FC<ColorsTabProps> = ({ styling, onStyleChange }) => {
 
       <div className="mb-6">
         <Text strong className="block mb-3">QR Code Color</Text>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 mb-3">
           <ColorPicker
             value={styling.fgColor}
             onChange={(color) => handleColorChange('fgColor', color)}
@@ -41,13 +91,28 @@ const ColorsTab: React.FC<ColorsTabProps> = ({ styling, onStyleChange }) => {
           />
           <Text type="secondary">{styling.fgColor}</Text>
         </div>
+        {fgGradientType !== 'solid' && (
+          <div className="flex items-center gap-3">
+            <ColorPicker
+              value={fgGradientColor2}
+              onChange={(color) => {
+                setFgGradientColor2(color.toHexString());
+                handleGradientChange('fg', fgGradientType);
+              }}
+              showText
+              size="large"
+            />
+            <Text type="secondary">{fgGradientColor2}</Text>
+          </div>
+        )}
       </div>
 
       <div className="mb-6">
         <Text strong className="block mb-3">Background Type</Text>
         <Segmented
           options={['Solid', 'Linear', 'Radial']}
-          defaultValue="Solid"
+          value={bgGradientType === 'solid' ? 'Solid' : bgGradientType === 'linear' ? 'Linear' : 'Radial'}
+          onChange={(value) => handleGradientChange('bg', value === 'Solid' ? 'solid' : value === 'Linear' ? 'linear' : 'radial')}
           block
           className="mb-4"
         />
@@ -55,7 +120,7 @@ const ColorsTab: React.FC<ColorsTabProps> = ({ styling, onStyleChange }) => {
 
       <div className="mb-6">
         <Text strong className="block mb-3">Background Color</Text>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 mb-3">
           <ColorPicker
             value={styling.bgColor}
             onChange={(color) => handleColorChange('bgColor', color)}
@@ -64,6 +129,20 @@ const ColorsTab: React.FC<ColorsTabProps> = ({ styling, onStyleChange }) => {
           />
           <Text type="secondary">{styling.bgColor}</Text>
         </div>
+        {bgGradientType !== 'solid' && (
+          <div className="flex items-center gap-3">
+            <ColorPicker
+              value={bgGradientColor2}
+              onChange={(color) => {
+                setBgGradientColor2(color.toHexString());
+                handleGradientChange('bg', bgGradientType);
+              }}
+              showText
+              size="large"
+            />
+            <Text type="secondary">{bgGradientColor2}</Text>
+          </div>
+        )}
       </div>
     </div>
   );

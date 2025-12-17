@@ -12,7 +12,7 @@ import {
   MinusOutlined,
   HeartOutlined,
 } from '@ant-design/icons';
-import { DesignTemplate, designTemplates, QRStyling } from '../../types/qrcode';
+import { DesignTemplate, designTemplates, QRStyling, defaultStyling } from '../../types/qrcode';
 
 const { Title, Text } = Typography;
 
@@ -47,6 +47,7 @@ const getIcon = (iconName: string) => {
     diamond: <CrownOutlined />,
     fire: <FireOutlined />,
     cpu: <ExperimentOutlined />,
+    crown: <CrownOutlined />,
   };
   return icons[iconName] || <BorderOutlined />;
 };
@@ -62,9 +63,17 @@ const QRDesignTemplates: React.FC<QRDesignTemplatesProps> = ({
     : designTemplates.filter(t => t.category === activeCategory);
 
   const handleSelectTemplate = (template: DesignTemplate) => {
+    const templateStyling = { ...template.styling };
+    delete templateStyling.size;
+    delete templateStyling.level;
+    delete templateStyling.includeMargin;
+    
     onStyleChange({
-      ...styling,
-      ...template.styling,
+      ...defaultStyling,
+      size: styling.size,
+      level: styling.level,
+      includeMargin: styling.includeMargin,
+      ...templateStyling,
     });
   };
 

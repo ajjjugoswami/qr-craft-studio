@@ -113,17 +113,21 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
         dotsOptions: {
           color: styling.fgColor,
           type: styling.dotsType,
+          ...(styling.dotsGradient && { gradient: styling.dotsGradient }),
         },
         backgroundOptions: {
           color: styling.bgColor,
+          ...(styling.backgroundGradient && { gradient: styling.backgroundGradient }),
         },
         cornersSquareOptions: styling.cornersSquareOptions ? {
           color: styling.cornersSquareOptions.color,
           type: styling.cornersSquareOptions.type,
+          ...(styling.cornersSquareOptions.gradient && { gradient: styling.cornersSquareOptions.gradient }),
         } : undefined,
         cornersDotOptions: styling.cornersDotOptions ? {
           color: styling.cornersDotOptions.color,
           type: styling.cornersDotOptions.type,
+          ...(styling.cornersDotOptions.gradient && { gradient: styling.cornersDotOptions.gradient }),
         } : undefined,
         imageOptions: styling.imageOptions ? {
           hideBackgroundDots: styling.imageOptions.hideBackgroundDots,
@@ -134,9 +138,8 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
         shape: styling.shape,
       };
 
-      if (qrCode.current) {
-        qrCode.current.update(options);
-      } else {
+      if (qrRef.current) {
+        qrRef.current.innerHTML = '';
         qrCode.current = new QRCodeStyling(options);
         qrCode.current.append(qrRef.current);
       }

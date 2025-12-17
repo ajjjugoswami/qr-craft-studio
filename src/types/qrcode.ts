@@ -120,12 +120,32 @@ export interface QRStyling {
   cornersSquareOptions?: {
     color: string;
     type: 'dot' | 'square' | 'extra-rounded' | 'rounded' | 'dots' | 'classy' | 'classy-rounded';
+    gradient?: {
+      type: 'linear' | 'radial';
+      rotation?: number;
+      colorStops: { offset: number; color: string }[];
+    };
   };
   cornersDotOptions?: {
     color: string;
     type: 'dot' | 'square' | 'rounded' | 'dots' | 'classy' | 'classy-rounded' | 'extra-rounded';
+    gradient?: {
+      type: 'linear' | 'radial';
+      rotation?: number;
+      colorStops: { offset: number; color: string }[];
+    };
   };
   shape?: 'square' | 'circle';
+  dotsGradient?: {
+    type: 'linear' | 'radial';
+    rotation?: number;
+    colorStops: { offset: number; color: string }[];
+  };
+  backgroundGradient?: {
+    type: 'linear' | 'radial';
+    rotation?: number;
+    colorStops: { offset: number; color: string }[];
+  };
 }
 
 export interface VCardData {
@@ -176,56 +196,56 @@ export const designTemplates: DesignTemplate[] = [
     name: 'Classic Black', 
     category: 'minimal', 
     icon: 'square', 
-    styling: { fgColor: '#000000', bgColor: '#ffffff', dotsType: 'square' } 
+    styling: { ...defaultStyling, fgColor: '#000000', bgColor: '#ffffff', dotsType: 'square' } 
   },
   { 
     id: 'modern-dots', 
     name: 'Modern Dots', 
     category: 'vibrant', 
     icon: 'sparkles', 
-    styling: { fgColor: '#8b5cf6', bgColor: '#fef3c7', dotsType: 'dots' } 
+    styling: { ...defaultStyling, fgColor: '#8b5cf6', bgColor: '#fef3c7', dotsType: 'dots' } 
   },
   { 
     id: 'business-rounded', 
     name: 'Business Rounded', 
     category: 'business', 
     icon: 'building', 
-    styling: { fgColor: '#1e40af', bgColor: '#f8fafc', dotsType: 'rounded' } 
+    styling: { ...defaultStyling, fgColor: '#1e40af', bgColor: '#f8fafc', dotsType: 'rounded' } 
   },
   { 
     id: 'ocean-classy', 
     name: 'Ocean Classy', 
     category: 'creative', 
     icon: 'waves', 
-    styling: { fgColor: '#0891b2', bgColor: '#ecfeff', dotsType: 'classy' } 
+    styling: { ...defaultStyling, fgColor: '#0891b2', bgColor: '#ecfeff', dotsType: 'classy' } 
   },
   { 
     id: 'sunset-extra-rounded', 
     name: 'Sunset Extra Rounded', 
     category: 'vibrant', 
     icon: 'sun', 
-    styling: { fgColor: '#ea580c', bgColor: '#fff7ed', dotsType: 'extra-rounded' } 
+    styling: { ...defaultStyling, fgColor: '#ea580c', bgColor: '#fff7ed', dotsType: 'extra-rounded' } 
   },
   { 
     id: 'forest-classy-rounded', 
     name: 'Forest Classy Rounded', 
     category: 'creative', 
     icon: 'tree', 
-    styling: { fgColor: '#166534', bgColor: '#f0fdf4', dotsType: 'classy-rounded' } 
+    styling: { ...defaultStyling, fgColor: '#166534', bgColor: '#f0fdf4', dotsType: 'classy-rounded' } 
   },
   { 
     id: 'minimal-dots', 
     name: 'Minimal Dots', 
     category: 'minimal', 
     icon: 'circle', 
-    styling: { fgColor: '#374151', bgColor: '#ffffff', dotsType: 'dots' } 
+    styling: { ...defaultStyling, fgColor: '#374151', bgColor: '#ffffff', dotsType: 'dots' } 
   },
   { 
     id: 'tech-circle', 
     name: 'Tech Circle', 
     category: 'business', 
     icon: 'bolt', 
-    styling: { fgColor: '#059669', bgColor: '#ffffff', shape: 'circle', dotsType: 'rounded' } 
+    styling: { ...defaultStyling, fgColor: '#059669', bgColor: '#ffffff', shape: 'circle', dotsType: 'rounded' } 
   },
   { 
     id: 'elegant-frame', 
@@ -233,6 +253,7 @@ export const designTemplates: DesignTemplate[] = [
     category: 'creative', 
     icon: 'briefcase', 
     styling: { 
+      ...defaultStyling, 
       fgColor: '#7c3aed', 
       bgColor: '#ffffff', 
       dotsType: 'classy', 
@@ -246,6 +267,7 @@ export const designTemplates: DesignTemplate[] = [
     category: 'vibrant', 
     icon: 'candy', 
     styling: { 
+      ...defaultStyling, 
       fgColor: '#ec4899', 
       bgColor: '#fce7f3', 
       dotsType: 'extra-rounded', 
@@ -260,6 +282,7 @@ export const designTemplates: DesignTemplate[] = [
     category: 'creative', 
     icon: 'star', 
     styling: { 
+      ...defaultStyling, 
       fgColor: '#d4af37', 
       bgColor: '#1a1a1a', 
       dotsType: 'classy-rounded', 
@@ -273,6 +296,7 @@ export const designTemplates: DesignTemplate[] = [
     category: 'business', 
     icon: 'building', 
     styling: { 
+      ...defaultStyling, 
       fgColor: '#1e40af', 
       bgColor: '#f8fafc', 
       dotsType: 'classy', 
@@ -286,6 +310,7 @@ export const designTemplates: DesignTemplate[] = [
     category: 'creative', 
     icon: 'palette', 
     styling: { 
+      ...defaultStyling, 
       fgColor: '#7c3aed', 
       bgColor: '#faf5ff', 
       dotsType: 'extra-rounded', 
@@ -299,6 +324,7 @@ export const designTemplates: DesignTemplate[] = [
     category: 'vibrant', 
     icon: 'leaf', 
     styling: { 
+      ...defaultStyling, 
       fgColor: '#16a34a', 
       bgColor: '#f0fdf4', 
       dotsType: 'rounded', 
@@ -312,6 +338,7 @@ export const designTemplates: DesignTemplate[] = [
     category: 'minimal', 
     icon: 'minus', 
     styling: { 
+      ...defaultStyling, 
       fgColor: '#ffffff', 
       bgColor: '#000000', 
       dotsType: 'square', 
@@ -325,6 +352,7 @@ export const designTemplates: DesignTemplate[] = [
     category: 'creative', 
     icon: 'diamond', 
     styling: { 
+      ...defaultStyling, 
       fgColor: '#9ca3af', 
       bgColor: '#f9fafb', 
       dotsType: 'classy-rounded', 
@@ -338,6 +366,7 @@ export const designTemplates: DesignTemplate[] = [
     category: 'vibrant', 
     icon: 'fire', 
     styling: { 
+      ...defaultStyling, 
       fgColor: '#dc2626', 
       bgColor: '#fef2f2', 
       dotsType: 'extra-rounded', 
@@ -351,6 +380,7 @@ export const designTemplates: DesignTemplate[] = [
     category: 'business', 
     icon: 'cpu', 
     styling: { 
+      ...defaultStyling, 
       fgColor: '#06b6d4', 
       bgColor: '#ecfeff', 
       dotsType: 'dots', 
@@ -364,6 +394,7 @@ export const designTemplates: DesignTemplate[] = [
     category: 'creative', 
     icon: 'tree', 
     styling: { 
+      ...defaultStyling, 
       fgColor: '#92400e', 
       bgColor: '#fef7ed', 
       dotsType: 'classy', 
@@ -377,12 +408,155 @@ export const designTemplates: DesignTemplate[] = [
     category: 'creative', 
     icon: 'waves', 
     styling: { 
+      ...defaultStyling, 
       fgColor: '#0369a1', 
       bgColor: '#f0f9ff', 
       shape: 'circle', 
       dotsType: 'classy-rounded', 
       cornersSquareOptions: { color: '#0369a1', type: 'classy' },
       cornersDotOptions: { color: '#0369a1', type: 'classy' }
+    } 
+  },
+  // Gradient templates
+  { 
+    id: 'sunset-gradient', 
+    name: 'Sunset Gradient', 
+    category: 'vibrant', 
+    icon: 'fire', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#ea580c', 
+      bgColor: '#ffffff', 
+      dotsType: 'extra-rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 45,
+        colorStops: [
+          { offset: 0, color: '#ea580c' },
+          { offset: 1, color: '#dc2626' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#ea580c', 
+        type: 'extra-rounded',
+        gradient: {
+          type: 'linear',
+          rotation: 45,
+          colorStops: [
+            { offset: 0, color: '#ea580c' },
+            { offset: 1, color: '#dc2626' }
+          ]
+        }
+      },
+      cornersDotOptions: { 
+        color: '#ea580c', 
+        type: 'dot',
+        gradient: {
+          type: 'radial',
+          colorStops: [
+            { offset: 0, color: '#ea580c' },
+            { offset: 1, color: '#dc2626' }
+          ]
+        }
+      }
+    } 
+  },
+  { 
+    id: 'rainbow-dots', 
+    name: 'Rainbow Dots', 
+    category: 'vibrant', 
+    icon: 'palette', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#8b5cf6', 
+      bgColor: '#ffffff', 
+      dotsType: 'dots', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 90,
+        colorStops: [
+          { offset: 0, color: '#ef4444' },
+          { offset: 0.25, color: '#f97316' },
+          { offset: 0.5, color: '#eab308' },
+          { offset: 0.75, color: '#22c55e' },
+          { offset: 1, color: '#3b82f6' }
+        ]
+      }
+    } 
+  },
+  { 
+    id: 'neon-glow', 
+    name: 'Neon Glow', 
+    category: 'vibrant', 
+    icon: 'bolt', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#06b6d4', 
+      bgColor: '#0f172a', 
+      dotsType: 'rounded', 
+      backgroundGradient: {
+        type: 'radial',
+        colorStops: [
+          { offset: 0, color: '#0f172a' },
+          { offset: 1, color: '#1e293b' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#06b6d4', 
+        type: 'extra-rounded',
+        gradient: {
+          type: 'linear',
+          rotation: 135,
+          colorStops: [
+            { offset: 0, color: '#06b6d4' },
+            { offset: 1, color: '#0891b2' }
+          ]
+        }
+      }
+    } 
+  },
+  { 
+    id: 'golden-luxury', 
+    name: 'Golden Luxury', 
+    category: 'creative', 
+    icon: 'crown', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#d4af37', 
+      bgColor: '#1a1a1a', 
+      dotsType: 'classy-rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 45,
+        colorStops: [
+          { offset: 0, color: '#d4af37' },
+          { offset: 0.5, color: '#f59e0b' },
+          { offset: 1, color: '#d97706' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#d4af37', 
+        type: 'extra-rounded',
+        gradient: {
+          type: 'radial',
+          colorStops: [
+            { offset: 0, color: '#d4af37' },
+            { offset: 1, color: '#b45309' }
+          ]
+        }
+      },
+      cornersDotOptions: { 
+        color: '#d4af37', 
+        type: 'dot',
+        gradient: {
+          type: 'linear',
+          rotation: 90,
+          colorStops: [
+            { offset: 0, color: '#d4af37' },
+            { offset: 1, color: '#f59e0b' }
+          ]
+        }
+      }
     } 
   },
 ];
