@@ -189,3 +189,31 @@
   border: 2px solid hsl(var(--primary)) !important;
   box-shadow: 0 0 0 4px hsl(var(--primary) / 0.1);
 }
+
+/* QR Creation Tabs */
+.qr-creation-tabs .ant-tabs-tab {
+  padding: 12px 16px !important;
+  margin: 0 !important;
+  border-radius: 8px !important;
+}
+
+.qr-creation-tabs .ant-tabs-tab-active {
+  background: hsl(var(--primary) / 0.1) !important;
+}
+
+.qr-creation-tabs .ant-tabs-ink-bar {
+  display: none !important;
+}
+
+.qr-creation-tabs .ant-tabs-nav::before {
+  border-bottom: 1px solid hsl(var(--border)) !important;
+}
+
+/* Dashboard Stats */
+.ant-statistic-title {
+  font-size: 13px !important;
+}
+
+.ant-statistic-content {
+  font-size: 28px !important;
+}
