@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Card, Typography, message, Input, Tabs } from 'antd';
-import { ArrowLeft, Check, Save, Settings2, Sparkles } from 'lucide-react';
+import { Button, Card, Typography, message, Row, Col } from 'antd';
+import { ArrowLeft, Check, Save, Settings2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import TemplateSelector from '../components/qr/TemplateSelector';
@@ -21,13 +21,22 @@ import {
   defaultStyling,
 } from '../types/qrcode';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
+
+const steps = [
+  { title: 'Card Template', description: 'Choose card design (Optional)' },
+  { title: 'QR Type', description: 'Choose QR code type' },
+  { title: 'Content', description: 'Enter your content' },
+  { title: 'QR Design', description: 'Customize QR appearance' },
+  { title: 'Final Touch', description: 'Fine-tune everything' },
+];
 
 const CreateQR: React.FC = () => {
   const navigate = useNavigate();
   const { saveQRCode, saveDraft, getDraft, clearDraft } = useQRCodes();
   const previewRef = useRef<HTMLDivElement>(null);
 
+  const [currentStep, setCurrentStep] = useState(0);
   const [template, setTemplate] = useState<QRTemplate>(defaultTemplates[0]);
   const [type, setType] = useState<QRType>('url');
   const [content, setContent] = useState('https://example.com');
@@ -35,7 +44,6 @@ const CreateQR: React.FC = () => {
   const [name, setName] = useState('');
   const [initialized, setInitialized] = useState(false);
   const [showTemplateEditor, setShowTemplateEditor] = useState(false);
-  const [activeTab, setActiveTab] = useState('type');
 
   // Load draft on mount
   useEffect(() => {
@@ -46,6 +54,7 @@ const CreateQR: React.FC = () => {
       setType(draft.type);
       setContent(draft.content);
       setName(draft.name);
+      setCurrentStep(draft.currentStep);
       message.info('Restored your previous draft');
     }
     setInitialized(true);
@@ -61,10 +70,22 @@ const CreateQR: React.FC = () => {
       type,
       content,
       name,
-      currentStep: 0,
+      currentStep,
     };
     saveDraft(draft);
-  }, [template, styling, type, content, name, saveDraft, initialized]);
+  }, [template, styling, type, content, name, currentStep, saveDraft, initialized]);
+
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
 
   const handleSave = () => {
     if (!name.trim()) {
@@ -85,7 +106,7 @@ const CreateQR: React.FC = () => {
     };
 
     saveQRCode(qrCode);
-    message.success('QR Code saved successfully!');
+    message.success('QR Code saved with all configurations!');
     navigate('/dashboard');
   };
 
@@ -96,174 +117,123 @@ const CreateQR: React.FC = () => {
     setType('url');
     setContent('https://example.com');
     setName('');
+    setCurrentStep(0);
     message.success('Draft cleared');
   };
 
-  const tabItems = [
-    {
-      key: 'type',
-      label: (
-        <span className="flex items-center gap-2">
-          <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">1</span>
-          QR Type
-        </span>
-      ),
-      children: <QRTypeSelector selectedType={type} onSelect={setType} />,
-    },
-    {
-      key: 'content',
-      label: (
-        <span className="flex items-center gap-2">
-          <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">2</span>
-          Content
-        </span>
-      ),
-      children: (
-        <ContentEditor
-          type={type}
-          content={content}
-          name={name}
-          onNameChange={setName}
-          onContentChange={setContent}
-        />
-      ),
-    },
-    {
-      key: 'template',
-      label: (
-        <span className="flex items-center gap-2">
-          <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">3</span>
-          Card Template
-        </span>
-      ),
-      children: <TemplateSelector selectedTemplate={template} onSelect={setTemplate} />,
-    },
-    {
-      key: 'qrdesign',
-      label: (
-        <span className="flex items-center gap-2">
-          <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">4</span>
-          QR Design
-        </span>
-      ),
-      children: <QRDesignTemplates styling={styling} onStyleChange={setStyling} />,
-    },
-    {
-      key: 'customize',
-      label: (
-        <span className="flex items-center gap-2">
-          <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">5</span>
-          Fine Tune
-        </span>
-      ),
-      children: (
-        <div className="space-y-6">
-          <QRStyleEditor styling={styling} onStyleChange={setStyling} />
-          <Card title="Card Customization" size="small">
-            <TemplateCustomizer template={template} onTemplateChange={setTemplate} />
-          </Card>
-        </div>
-      ),
-    },
-  ];
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 0:
+        return <TemplateSelector selectedTemplate={template} onSelect={setTemplate} />;
+      case 1:
+        return <QRTypeSelector selectedType={type} onSelect={setType} />;
+      case 2:
+        return (
+          <ContentEditor
+            type={type}
+            content={content}
+            name={name}
+            onNameChange={setName}
+            onContentChange={setContent}
+          />
+        );
+      case 3:
+        return <QRDesignTemplates styling={styling} onStyleChange={setStyling} />;
+      case 4:
+        return (
+          <div className="space-y-6">
+            <QRStyleEditor styling={styling} onStyleChange={setStyling} />
+            <Card title="Card Customization" size="small">
+              <TemplateCustomizer template={template} onTemplateChange={setTemplate} />
+            </Card>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <DashboardLayout>
       <div className="animate-fade-in">
         {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <Button
-              type="text"
-              icon={<ArrowLeft size={16} />}
-              onClick={() => navigate('/dashboard')}
-              className="!px-0"
-            >
-              Back to Dashboard
+        <div className="mb-6 flex items-center justify-between">
+          <Button
+            type="text"
+            icon={<ArrowLeft size={16} />}
+            onClick={() => navigate('/dashboard')}
+          >
+            Back to Dashboard
+          </Button>
+          <div className="flex items-center gap-2">
+            <Text type="secondary" className="text-xs flex items-center gap-1">
+              <Save size={12} /> Auto-saved
+            </Text>
+            <Button size="small" onClick={handleClearDraft}>
+              Clear Draft
             </Button>
-            <div className="flex items-center gap-3">
-              <Text type="secondary" className="text-xs flex items-center gap-1">
-                <Save size={12} /> Auto-saved
-              </Text>
-              <Button size="small" onClick={handleClearDraft}>
-                Clear Draft
-              </Button>
-            </div>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-              <Title level={2} className="!mb-1 flex items-center gap-2">
-                <Sparkles size={24} className="text-primary" />
-                Create QR Code
-              </Title>
-              <Text type="secondary">Design your perfect QR code in minutes</Text>
-            </div>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Left Panel - Editor */}
-          <div className="lg:col-span-3">
-            {/* QR Name Input */}
-            <Card className="mb-4">
-              <div className="flex items-center gap-4">
-                <div className="flex-1">
-                  <label className="text-sm font-medium mb-1 block">QR Code Name *</label>
-                  <Input
-                    size="large"
-                    placeholder="Enter a name for your QR code (e.g., Business Card, Menu)"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="text-base"
-                  />
+        {/* Custom Steps */}
+        <Card className="mb-6">
+          <div className="flex items-center justify-between">
+            {steps.map((step, index) => (
+              <React.Fragment key={index}>
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-2 mb-1">
+                    {index < currentStep ? (
+                      <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                        <Check size={12} className="text-white" />
+                      </div>
+                    ) : index === currentStep ? (
+                      <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                        <span className="text-white text-xs font-medium">{index + 1}</span>
+                      </div>
+                    ) : (
+                      <div className="w-6 h-6 rounded-full border-2 border-muted-foreground/30 flex items-center justify-center">
+                        <span className="text-muted-foreground text-xs font-medium">{index + 1}</span>
+                      </div>
+                    )}
+                    <span className={`font-medium text-sm ${index <= currentStep ? 'text-foreground' : 'text-muted-foreground'}`}>
+                      {step.title}
+                    </span>
+                  </div>
+                  <Text type="secondary" className="text-xs hidden sm:block">
+                    {step.description}
+                  </Text>
                 </div>
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<Check size={18} />}
-                  onClick={handleSave}
-                  disabled={!name.trim()}
-                  className="mt-6"
-                >
-                  Save QR Code
-                </Button>
-              </div>
-            </Card>
-
-            {/* Tabs */}
-            <Card>
-              <Tabs
-                activeKey={activeTab}
-                onChange={setActiveTab}
-                items={tabItems}
-                size="large"
-                className="qr-creation-tabs"
-              />
-            </Card>
+                {index < steps.length - 1 && (
+                  <div className={`flex-1 h-0.5 mx-2 ${index < currentStep ? 'bg-primary' : 'bg-muted'}`} />
+                )}
+              </React.Fragment>
+            ))}
           </div>
+        </Card>
 
-          {/* Right Panel - Preview */}
-          <div className="lg:col-span-2">
-            <Card 
-              className="sticky top-6"
-              title={
-                <div className="flex items-center justify-between">
-                  <span>Live Preview</span>
+        {/* Content Area with Preview */}
+        <div className="min-h-[500px] mb-6">
+          <Row gutter={[24, 24]}>
+            <Col xs={24} lg={14}>
+              <Card className="min-h-[500px]">
+                {renderStepContent()}
+              </Card>
+            </Col>
+            <Col xs={24} lg={10}>
+              <Card 
+                title="Live Preview" 
+                className="sticky top-6"
+                extra={
                   <Button
                     type="primary"
                     icon={<Settings2 size={14} />}
                     onClick={() => setShowTemplateEditor(true)}
-                    size="small"
                   >
                     Edit Template
                   </Button>
-                </div>
-              }
-            >
-              <div className="flex flex-col items-center py-4">
-                <div className="bg-muted/30 rounded-xl p-6 w-full flex justify-center">
+                }
+              >
+                <div className="flex flex-col items-center">
                   <QRCodePreview
                     ref={previewRef}
                     content={content}
@@ -272,24 +242,42 @@ const CreateQR: React.FC = () => {
                     editable={true}
                     onTemplateChange={setTemplate}
                   />
+                  <Text type="secondary" className="text-xs mt-4">
+                    Click text to edit inline • Use "Edit Template" for more options
+                  </Text>
                 </div>
-                <Text type="secondary" className="text-xs mt-4 text-center">
-                  Click on text to edit inline • Use "Edit Template" for advanced options
-                </Text>
-              </div>
-            </Card>
+              </Card>
+            </Col>
+          </Row>
+        </div>
 
-            {/* Quick Tips */}
-            <Card className="mt-4" size="small">
-              <Title level={5} className="!mb-3 !text-sm">💡 Quick Tips</Title>
-              <ul className="text-xs text-muted-foreground space-y-2">
-                <li>• Choose a template that matches your use case</li>
-                <li>• Use high contrast colors for better scanning</li>
-                <li>• Keep your content URL short when possible</li>
-                <li>• Test your QR code before printing</li>
-              </ul>
-            </Card>
-          </div>
+        {/* Navigation Buttons */}
+        <div className="flex justify-between">
+          <Button
+            size="large"
+            onClick={handlePrev}
+            disabled={currentStep === 0}
+          >
+            Previous
+          </Button>
+
+          {currentStep === steps.length - 1 ? (
+            <Button
+              type="primary"
+              size="large"
+              onClick={handleSave}
+            >
+              Save QR Code
+            </Button>
+          ) : (
+            <Button
+              type="primary"
+              size="large"
+              onClick={handleNext}
+            >
+              Next
+            </Button>
+          )}
         </div>
       </div>
 

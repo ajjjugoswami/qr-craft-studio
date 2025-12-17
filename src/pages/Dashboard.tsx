@@ -12,7 +12,7 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { qrCodes, loading, deleteQRCode } = useQRCodes();
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [viewMode, setViewMode] = React.useState<'list' | 'grid'>('list');
+  const [viewMode, setViewMode] = React.useState<'list' | 'grid'>('grid');
 
   const handleEdit = (id: string) => {
     navigate(`/edit/${id}`);
@@ -53,7 +53,7 @@ const Dashboard: React.FC = () => {
         {/* Stats Cards */}
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={8}>
-            <Card className="border-l-4 border-l-primary hover:shadow-md transition-shadow">
+            <Card className="hover:shadow-md transition-shadow">
               <Statistic
                 title={<span className="text-muted-foreground">Total QR Codes</span>}
                 value={qrCodes.length}
@@ -63,7 +63,7 @@ const Dashboard: React.FC = () => {
             </Card>
           </Col>
           <Col xs={24} sm={8}>
-            <Card className="border-l-4 border-l-green-500 hover:shadow-md transition-shadow">
+            <Card className="hover:shadow-md transition-shadow">
               <Statistic
                 title={<span className="text-muted-foreground">Total Scans</span>}
                 value={totalScans}
@@ -73,7 +73,7 @@ const Dashboard: React.FC = () => {
             </Card>
           </Col>
           <Col xs={24} sm={8}>
-            <Card className="border-l-4 border-l-orange-500 hover:shadow-md transition-shadow">
+            <Card className="hover:shadow-md transition-shadow">
               <Statistic
                 title={<span className="text-muted-foreground">Active QR Codes</span>}
                 value={activeQRs}
@@ -162,6 +162,7 @@ const Dashboard: React.FC = () => {
                 qrCode={qrCode}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                viewMode="list"
               />
             ))}
           </div>
@@ -173,6 +174,7 @@ const Dashboard: React.FC = () => {
                   qrCode={qrCode}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
+                  viewMode="grid"
                 />
               </Col>
             ))}
