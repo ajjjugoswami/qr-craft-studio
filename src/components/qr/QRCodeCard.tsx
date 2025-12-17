@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, Tag, Typography, Space, Tooltip, Popconfirm, message, Modal, Dropdown } from 'antd';
 import {
   Edit,
@@ -38,6 +39,7 @@ const typeColors: Record<string, string> = {
 };
 
 const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete }) => {
+  const navigate = useNavigate();
   const previewRef = useRef<HTMLDivElement>(null);
   const [downloadModalOpen, setDownloadModalOpen] = React.useState(false);
   const [downloading, setDownloading] = React.useState(false);
@@ -180,7 +182,10 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete }) => 
               </div>
             </Tooltip>
             <Tooltip title="Analytics">
-              <div className="w-8 h-8 flex items-center justify-center rounded cursor-pointer hover:bg-muted transition-colors">
+              <div 
+                className="w-8 h-8 flex items-center justify-center rounded cursor-pointer hover:bg-muted transition-colors"
+                onClick={() => navigate(`/analytics/${qrCode.id}`)}
+              >
                 <BarChart3 size={16} />
               </div>
             </Tooltip>
