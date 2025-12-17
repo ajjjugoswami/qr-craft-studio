@@ -1,5 +1,5 @@
-import React, { useState, forwardRef } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
+import React, { useState, forwardRef, useEffect, useRef } from 'react';
+import QRCodeStyling from 'qr-code-styling';
 import { getAppOrigin } from '../../lib/config';
 import { Input, ColorPicker, Slider, Popover } from 'antd';
 import { Pencil, Type } from 'lucide-react';
@@ -43,6 +43,8 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   const [hovered, setHovered] = useState(false);
   const [showTitleEditor, setShowTitleEditor] = useState(false);
   const [showSubtitleEditor, setShowSubtitleEditor] = useState(false);
+  const qrRef = useRef<HTMLDivElement>(null);
+  const qrCode = useRef<QRCodeStyling | null>(null);
 
   const isHorizontal = template.qrPosition === 'left' || template.qrPosition === 'right';
   const cardWidth = compact ? 'w-16' : isHorizontal ? 'w-[380px]' : 'w-80';
@@ -78,6 +80,68 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
       onTemplateChange({ ...template, [key]: color.toHexString() });
     }
   };
+
+  const getQRData = () => {
+    try {
+      if (typeof window !== 'undefined') {
+        if (typeof (content) === 'string' && qrId) {
+          // For saved QR codes, point to our frontend redirect route
+          return `${getAppOrigin()}/r/${qrId}`;
+        }
+        // For preview/unsaved QR codes, encode the content into query param
+        if (typeof (content) === 'string') {
+          return `${getAppOrigin()}/r?u=${encodeURIComponent(content)}`;
+        }
+      }
+      return content || 'https://example.com';
+    } catch (e) {
+      return content || 'https://example.com';
+    }
+  };
+
+  useEffect(() => {
+    if (qrRef.current) {
+      const options = {
+        width: qrSize,
+        height: qrSize,
+        data: getQRData(),
+        type: 'svg' as const,
+        margin: styling.includeMargin ? 4 : 0,
+        qrOptions: {
+          errorCorrectionLevel: styling.level,
+        },
+        dotsOptions: {
+          color: styling.fgColor,
+          type: styling.dotsType,
+        },
+        backgroundOptions: {
+          color: styling.bgColor,
+        },
+        cornersSquareOptions: styling.cornersSquareOptions ? {
+          color: styling.cornersSquareOptions.color,
+          type: styling.cornersSquareOptions.type,
+        } : undefined,
+        cornersDotOptions: styling.cornersDotOptions ? {
+          color: styling.cornersDotOptions.color,
+          type: styling.cornersDotOptions.type,
+        } : undefined,
+        imageOptions: styling.imageOptions ? {
+          hideBackgroundDots: styling.imageOptions.hideBackgroundDots,
+          imageSize: styling.imageOptions.imageSize,
+          margin: styling.imageOptions.margin,
+        } : undefined,
+        image: styling.image,
+        shape: styling.shape,
+      };
+
+      if (qrCode.current) {
+        qrCode.current.update(options);
+      } else {
+        qrCode.current = new QRCodeStyling(options);
+        qrCode.current.append(qrRef.current);
+      }
+    }
+  }, [content, styling, qrId, qrSize]);
 
   const gradientDirection = gradientDirectionMap[template.gradientDirection || 'to-bottom-right'];
   const backgroundStyle = template.showGradient && template.gradientColor
@@ -394,30 +458,7 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
           padding: compact ? 4 : 12,
         }}
       >
-        <QRCodeSVG
-          value={(function() {
-            try {
-              if (typeof window !== 'undefined') {
-                if (typeof (content) === 'string' && qrId) {
-                  // For saved QR codes, point to our frontend redirect route
-                  return `${getAppOrigin()}/r/${qrId}`;
-                }
-                // For preview/unsaved QR codes, encode the content into query param
-                if (typeof (content) === 'string') {
-                  return `${getAppOrigin()}/r?u=${encodeURIComponent(content)}`;
-                }
-              }
-              return content || 'https://example.com';
-            } catch (e) {
-              return content || 'https://example.com';
-            }
-          })()}
-          size={qrSize}
-          fgColor={styling.fgColor}
-          bgColor={styling.bgColor}
-          level={styling.level}
-          includeMargin={styling.includeMargin}
-        />
+        <div ref={qrRef} />
       </div>
       {!compact && template.qrLabel && (
         <span 

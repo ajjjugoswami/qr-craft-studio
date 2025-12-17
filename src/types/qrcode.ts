@@ -110,6 +110,22 @@ export interface QRStyling {
   size: number;
   level: 'L' | 'M' | 'Q' | 'H';
   includeMargin: boolean;
+  dotsType: 'square' | 'dots' | 'rounded' | 'extra-rounded' | 'classy' | 'classy-rounded';
+  image?: string;
+  imageOptions?: {
+    hideBackgroundDots: boolean;
+    imageSize: number;
+    margin: number;
+  };
+  cornersSquareOptions?: {
+    color: string;
+    type: 'dot' | 'square' | 'extra-rounded' | 'rounded' | 'dots' | 'classy' | 'classy-rounded';
+  };
+  cornersDotOptions?: {
+    color: string;
+    type: 'dot' | 'square' | 'rounded' | 'dots' | 'classy' | 'classy-rounded' | 'extra-rounded';
+  };
+  shape?: 'square' | 'circle';
 }
 
 export interface VCardData {
@@ -138,6 +154,21 @@ export const defaultStyling: QRStyling = {
   size: 200,
   level: 'M',
   includeMargin: true,
+  dotsType: 'square',
+  imageOptions: {
+    hideBackgroundDots: true,
+    imageSize: 0.4,
+    margin: 0,
+  },
+  cornersSquareOptions: {
+    color: '#000000',
+    type: 'square',
+  },
+  cornersDotOptions: {
+    color: '#000000',
+    type: 'square',
+  },
+  shape: 'square',
 };
 
 export const designTemplates: DesignTemplate[] = [
