@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Typography, Divider, message } from 'antd';
+import { Card, Input, Button, Typography, Divider, message, Spin } from 'antd';
 import { QrCode, Mail, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -8,10 +8,18 @@ const { Title, Text, Paragraph } = Typography;
 
 const SignUp: React.FC = () => {
   const navigate = useNavigate();
-  const { user, signup } = useAuth();
+  const { user, signup, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (user) navigate('/dashboard');

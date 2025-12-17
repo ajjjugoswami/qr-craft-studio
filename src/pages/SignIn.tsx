@@ -8,7 +8,7 @@ const { Title, Text, Paragraph } = Typography;
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
-  const { user, signin } = useAuth();
+  const { user, signin, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -16,6 +16,15 @@ const SignIn: React.FC = () => {
   useEffect(() => {
     if (user) navigate('/dashboard');
   }, [user, navigate]);
+
+  // If auth is initializing, show loading state to avoid flash of sign-in page
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

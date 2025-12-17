@@ -44,7 +44,7 @@ const Dashboard: React.FC = () => {
             size="large"
             icon={<Plus size={18} />}
             onClick={() => navigate('/create')}
-            className="h-12 px-6 text-base font-medium"
+            className="h-10 px-4 text-base font-medium"
           >
             Create New QR Code
           </Button>
