@@ -47,10 +47,8 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   return (
     <div className="animate-fade-in">
       <div className="mb-6">
-        <Title level={4} className="!mb-1">Choose Your Card Template</Title>
-        <Text type="secondary">
-          Select a professionally designed template for your QR code card
-        </Text>
+        <Title level={4} >Choose Your Card Template</Title>
+ 
       </div>
 
       <div className="mb-6 space-y-4">
@@ -61,6 +59,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
           onChange={(e) => setSearch(e.target.value)}
           size="large"
           className="max-w-md"
+          style={{display:"none"}}
         />
         
         <Segmented
