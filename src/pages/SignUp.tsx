@@ -78,11 +78,11 @@ const SignUp: React.FC = () => {
         </div>
 
         <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-16 xl:px-20">
-          <div className="max-w-[340px] mx-auto w-full">
+          <div className="max-w-[480px] mx-auto w-full">
             {/* Header */}
             <div className="mb-4">
               <h1 className="text-2xl sm:text-[28px] font-semibold text-foreground mb-2 flex items-center gap-2">
-                Create Account <Sparkles className="w-6 h-6 text-amber-500" />
+                Create Account 
               </h1>
               <p className="text-[#8A8A8A] text-[13px] leading-relaxed">
                 Start your journey today.
