@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Typography, Card, Table, Tag, Button, Empty, Statistic, Row, Col, Spin, message } from 'antd';
@@ -211,19 +212,6 @@ const QRAnalytics: React.FC = () => {
       )
     },
   ];
-
-  if (!qrCode) {
-    return (
-      <DashboardLayout>
-        <div className="flex flex-col items-center justify-center h-96">
-          <Empty description="QR Code not found" />
-          <Button type="primary" className="mt-4" onClick={() => navigate('/')}>
-            Go Back
-          </Button>
-        </div>
-      </DashboardLayout>
-    );
-  }
 
   const DeviceIcon = ({ type }: { type: string }) => {
     if (type === 'mobile') return <Smartphone size={18} className="text-blue-500" />;

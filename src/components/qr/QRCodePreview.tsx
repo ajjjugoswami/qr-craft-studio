@@ -1,5 +1,6 @@
 import React, { useState, forwardRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import { getAppOrigin } from '../../lib/config';
 import { Input, ColorPicker, Slider, Popover } from 'antd';
 import { Pencil, Type } from 'lucide-react';
 import type { Color } from 'antd/es/color-picker';
@@ -37,6 +38,7 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   compact = false,
   editable = false,
   onTemplateChange,
+  qrId,
 }, ref) => {
   const [hovered, setHovered] = useState(false);
   const [showTitleEditor, setShowTitleEditor] = useState(false);
@@ -398,11 +400,11 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
               if (typeof window !== 'undefined') {
                 if (typeof (content) === 'string' && qrId) {
                   // For saved QR codes, point to our frontend redirect route
-                  return `${window.location.origin}/r/${qrId}`;
+                  return `${getAppOrigin()}/r/${qrId}`;
                 }
                 // For preview/unsaved QR codes, encode the content into query param
                 if (typeof (content) === 'string') {
-                  return `${window.location.origin}/r?u=${encodeURIComponent(content)}`;
+                  return `${getAppOrigin()}/r?u=${encodeURIComponent(content)}`;
                 }
               }
               return content || 'https://example.com';

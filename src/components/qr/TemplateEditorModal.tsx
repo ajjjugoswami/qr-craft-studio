@@ -11,8 +11,7 @@ interface TemplateEditorModalProps {
   template: QRTemplate;
   onTemplateChange: (template: QRTemplate) => void;
   content?: string;
-  styling?: QRStyling;
-}
+  styling?: QRStyling;  qrId?: string;}
 
 const fieldTypes = [
   { value: 'label', label: 'Label', icon: <Type size={14} /> },
@@ -38,6 +37,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
   onTemplateChange,
   content = 'https://example.com',
   styling = defaultStyling,
+  qrId,
 }) => {
   const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
   const customFields = template.customFields || [];
@@ -473,8 +473,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
                   content={content}
                   template={template}
                   styling={styling}
-                  editable={false}
-                />
+                  editable={false}                  qrId={qrId}                />
               </div>
             </div>
           </div>

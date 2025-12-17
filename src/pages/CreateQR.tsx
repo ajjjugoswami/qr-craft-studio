@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, Card, Typography, message, Row, Col } from 'antd';
 import { ArrowLeft, Check, Save, Settings2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { qrCodeAPI } from '@/lib/api';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import TemplateSelector from '../components/qr/TemplateSelector';
 import TemplateCustomizer from '../components/qr/TemplateCustomizer';
@@ -33,8 +34,11 @@ const steps = [
 
 const CreateQR: React.FC = () => {
   const navigate = useNavigate();
-  const { saveQRCode, saveDraft, getDraft, clearDraft } = useQRCodes();
+  const { saveQRCode, updateQRCode, getQRCode, saveDraft, getDraft, clearDraft } = useQRCodes();
   const previewRef = useRef<HTMLDivElement>(null);
+
+  const { id } = useParams<{ id?: string }>();
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const [currentStep, setCurrentStep] = useState(0);
   const [template, setTemplate] = useState<QRTemplate>(defaultTemplates[0]);
@@ -59,6 +63,45 @@ const CreateQR: React.FC = () => {
     }
     setInitialized(true);
   }, [getDraft]);
+
+  // If an edit id is present in the route, load the existing QR code
+  useEffect(() => {
+    const loadForEdit = async () => {
+      if (!id) return;
+      setEditingId(id);
+
+      // Try from cached list first
+      const existing = getQRCode(id);
+      if (existing) {
+        setTemplate(existing.template);
+        setStyling(existing.styling);
+        setType(existing.type);
+        setContent(existing.content);
+        setName(existing.name);
+        message.info('Loaded QR code for editing');
+        return;
+      }
+
+      // Fallback to fetching from API
+      try {
+        const res = await qrCodeAPI.getOne(id);
+        const q = res.qrCode;
+        if (q) {
+          setTemplate(q.template || defaultTemplates[0]);
+          setStyling(q.styling || defaultStyling);
+          setType(q.type || 'url');
+          setContent(q.content || 'https://example.com');
+          setName(q.name || '');
+          message.info('Loaded QR code for editing');
+        }
+      } catch (err) {
+        console.error('Failed to load QR for edit:', err);
+        message.error('Failed to load QR for editing');
+      }
+    };
+
+    loadForEdit();
+  }, [id, getQRCode]);
 
   // Auto-save draft whenever any value changes
   useEffect(() => {
@@ -94,8 +137,13 @@ const CreateQR: React.FC = () => {
     }
 
     try {
-      const created = await saveQRCode({ name: name.trim(), type, content, template, styling });
-      message.success('QR Code saved with all configurations!');
+      if (editingId) {
+        await updateQRCode(editingId, { name: name.trim(), type, content, template, styling });
+        message.success('QR Code updated');
+      } else {
+        const created = await saveQRCode({ name: name.trim(), type, content, template, styling });
+        message.success('QR Code saved with all configurations!');
+      }
       navigate('/dashboard');
     } catch (err) {
       // error messages are handled in the hook
@@ -233,6 +281,7 @@ const CreateQR: React.FC = () => {
                     styling={styling}
                     editable={true}
                     onTemplateChange={setTemplate}
+                    qrId={editingId || undefined}
                   />
                   <Text type="secondary" className="text-xs mt-4">
                     Click text to edit inline • Use "Edit Template" for more options
@@ -281,6 +330,7 @@ const CreateQR: React.FC = () => {
         onTemplateChange={setTemplate}
         content={content}
         styling={styling}
+        qrId={editingId || undefined}
       />
     </DashboardLayout>
   );

@@ -71,3 +71,8 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Important: Public app origin for QR codes
+
+- If you plan to generate QR codes for scanning on other devices (phones), ensure the app uses a public origin when building. Set the environment variable `VITE_APP_ORIGIN` to your deployed URL (e.g. `https://app.example.com`). This value is used to build shareable QR links like `/r/:id` and `/r?u=...` so scanned QR codes point to a reachable server that will record scans and redirect users.
+

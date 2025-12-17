@@ -201,7 +201,6 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
               template={qrCode.template}
               styling={qrCode.styling}
               qrId={qrCode.id}
-              qrId={qrCode.id}
             />
             <div className="flex gap-3 mt-6">
               <button
@@ -336,6 +335,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
             content={qrCode.content}
             template={qrCode.template}
             styling={qrCode.styling}
+            qrId={qrCode.id}
           />
           <div className="flex gap-3 mt-6">
             <button
