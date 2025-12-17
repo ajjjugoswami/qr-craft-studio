@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useEffect, useState } from 'react';
-import { Typography, Card, Row, Col, Statistic, Table, Tag, Empty, Spin, message, Segmented } from 'antd';
+import { Typography, Card, Row, Col, Statistic, Table, Tag, Empty, message, Segmented } from 'antd';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Eye, QrCode, TrendingUp, Users, Smartphone, Monitor, Globe } from 'lucide-react';
 import { AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import DashboardLayout from '../components/layout/DashboardLayout';
@@ -189,8 +190,84 @@ const Analytics: React.FC = () => {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center h-64">
-          <Spin size="large" />
+        <div className="animate-fade-in space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <Skeleton className="h-6 w-72 mb-2" />
+              <Skeleton className="h-4 w-48" />
+            </div>
+            <Skeleton className="h-8 w-36" />
+          </div>
+
+          {/* Stats Overview skeletons */}
+          <Row gutter={[16,16]}>
+            {Array.from({length:4}).map((_, i) => (
+              <Col key={i} xs={24} sm={12} lg={6}>
+                <Card className="hover:shadow-md transition-shadow">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-8 w-24" />
+                    <Skeleton className="h-3 w-40 mt-2" />
+                  </div>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+
+          {/* Main Charts skeleton */}
+          <Row gutter={[16,16]}>
+            <Col xs={24} lg={16}>
+              <Card className="h-full">
+                <Skeleton className="w-full h-72 rounded-lg" />
+              </Card>
+            </Col>
+            <Col xs={24} lg={8}>
+              <Card className="h-full">
+                <Skeleton className="w-full h-72 rounded-lg" />
+              </Card>
+            </Col>
+          </Row>
+
+          {/* Secondary Charts skeleton */}
+          <Row gutter={[16,16]}>
+            <Col xs={24} lg={8}>
+              <Card className="h-full">
+                <Skeleton className="w-full h-48 rounded-lg" />
+              </Card>
+            </Col>
+            <Col xs={24} lg={8}>
+              <Card className="h-full">
+                <Skeleton className="w-full h-48 rounded-lg" />
+              </Card>
+            </Col>
+            <Col xs={24} lg={8}>
+              <Card className="h-full">
+                <Skeleton className="w-full h-48 rounded-lg" />
+              </Card>
+            </Col>
+          </Row>
+
+          {/* Top Performing & Recent Activity skeletons */}
+          <Row gutter={[16,16]}>
+            <Col xs={24} lg={12}>
+              <Card>
+                <Skeleton className="w-full h-56 rounded-lg" />
+              </Card>
+            </Col>
+            <Col xs={24} lg={12}>
+              <Card>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-40" />
+                  {Array.from({length:5}).map((_, idx) => (
+                    <div key={idx} className="flex items-center justify-between">
+                      <Skeleton className="h-4 w-48" />
+                      <Skeleton className="h-4 w-20" />
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </Col>
+          </Row>
         </div>
       </DashboardLayout>
     );

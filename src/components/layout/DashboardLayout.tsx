@@ -94,7 +94,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             selectedKeys={[location.pathname === '/' ? '/dashboard' : location.pathname]}
             items={menuItems}
             onClick={({ key }) => navigate(key)}
-            className="flex-1 border-none"
+            className="flex-1 border-none mt-2"
           />
 
           {/* User Section */}
