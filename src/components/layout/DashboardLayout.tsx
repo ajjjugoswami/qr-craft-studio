@@ -93,18 +93,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             )}
           </div>
 
-          {/* Create Button */}
-          <div className="px-3 py-4">
-            <Tooltip title={collapsed ? 'Create QR' : ''} placement="right">
-              <button
-                onClick={() => navigate('/create')}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary/90 transition-colors ${collapsed ? 'justify-center' : ''}`}
-              >
-                <Plus size={20} />
-                {!collapsed && <span>Create New</span>}
-              </button>
-            </Tooltip>
-          </div>
+ 
 
           {/* Collapse Button */}
           <div

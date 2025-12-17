@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Typography, Card, Table, Tag, Button, Empty, Statistic, Row, Col, Spin, message } from 'antd';
+import { Typography, Card, Table, Tag, Button, Empty, Statistic, Row, Col, Spin, message, Segmented } from 'antd';
 import { ArrowLeft, MapPin, Smartphone, Monitor, Tablet, Globe, Eye, Calendar, TrendingUp } from 'lucide-react';
 import { AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import DashboardLayout from '../components/layout/DashboardLayout';
@@ -12,41 +12,9 @@ import { useAuth } from '@/hooks/useAuth';
 
 const { Title, Text } = Typography;
 
-// Mock scan data generator for demo
-const generateMockScanData = (count: number): ScanData[] => {
-  const browsers = ['Chrome', 'Safari', 'Firefox', 'Edge', 'Samsung Browser', 'Mobile Chrome', 'Mobile Safari'];
-  const oses = ['iOS 17.2', 'iOS 18.0', 'Android 14', 'Windows 11', 'macOS 14', 'Android 13'];
-  const devices: Array<'mobile' | 'tablet' | 'desktop'> = ['mobile', 'tablet', 'desktop'];
-  const vendors = ['Apple', 'Samsung', 'Google', 'Dell', 'HP', 'OnePlus', 'Xiaomi'];
-  const models = ['iPhone 15', 'iPhone 14', 'Galaxy S24', 'Pixel 8', 'iPad Pro', 'MacBook Pro', 'Windows PC'];
-  const locations = [
-    { city: 'Kaithal', region: 'HR', country: 'IN', lat: 29.8015, lng: 76.4, timezone: 'Asia/Kolkata' },
-    { city: 'New Delhi', region: 'DL', country: 'IN', lat: 28.6139, lng: 77.209, timezone: 'Asia/Kolkata' },
-    { city: 'Mumbai', region: 'MH', country: 'IN', lat: 19.076, lng: 72.8777, timezone: 'Asia/Kolkata' },
-    { city: 'New York', region: 'NY', country: 'US', lat: 40.7128, lng: -74.006, timezone: 'America/New_York' },
-    { city: 'London', region: 'ENG', country: 'UK', lat: 51.5074, lng: -0.1278, timezone: 'Europe/London' },
-  ];
+import { generateMockScanData, getDemoQRCodeAnalytics } from '@/lib/hardCodeQRCodeAnalyticsData';
 
-  return Array.from({ length: count }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - Math.floor(Math.random() * 30));
-    const deviceType = devices[Math.floor(Math.random() * devices.length)];
-    const location = locations[Math.floor(Math.random() * locations.length)];
-    
-    return {
-      id: `scan-${i + 1}`,
-      date: date.toLocaleDateString('en-GB'),
-      time: `${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'am' : 'pm'}`,
-      browser: browsers[Math.floor(Math.random() * browsers.length)] + ` ${Math.floor(Math.random() * 50) + 100}.0.${Math.floor(Math.random() * 10000)}.${Math.floor(Math.random() * 1000)}`,
-      os: oses[Math.floor(Math.random() * oses.length)],
-      deviceType,
-      deviceVendor: vendors[Math.floor(Math.random() * vendors.length)],
-      deviceModel: models[Math.floor(Math.random() * models.length)],
-      ipAddress: `${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}`,
-      location,
-    };
-  });
-};
+// NOTE: Demo scan generation now lives in `hardCodeQRCodeAnalyticsData` (imported above)
 
 const CHART_COLORS = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
 
@@ -61,13 +29,25 @@ const QRAnalytics: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [scanData, setScanData] = useState<ScanData[]>([]);
   const [analytics, setAnalytics] = useState<any>(null);
+  const [mode, setMode] = useState<'real' | 'demo'>('real');
 
-  // Fetch analytics and scans
+  // Fetch analytics and scans (or use demo data when mode is 'demo')
   useEffect(() => {
     let mounted = true;
     const load = async () => {
       if (!id) return;
       setLoading(true);
+
+      if (mode === 'demo') {
+        // Use demo module to construct analytics & scans
+        const demo = getDemoQRCodeAnalytics();
+        if (!mounted) return;
+        setAnalytics(demo);
+        setScanData(generateMockScanData(15));
+        setLoading(false);
+        return;
+      }
+
       try {
         const [aRes, sRes] = await Promise.all([
           qrCodeAPI.getAnalytics(id),
@@ -118,11 +98,15 @@ const QRAnalytics: React.FC = () => {
 
     load();
     return () => { mounted = false; };
-  }, [id, qrCode?.scans, signout]);
+  }, [id, qrCode?.scans, signout, mode]);
 
   // Process data for charts
   const deviceTypeData = useMemo(() => {
     // Prefer analytics.devices if present
+    if (mode === 'demo' && analytics?.analytics?.devices) {
+      return Object.entries(analytics.analytics.devices).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
+    }
+
     if (analytics?.analytics?.devices) {
       return Object.entries(analytics.analytics.devices).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
     }
@@ -132,9 +116,13 @@ const QRAnalytics: React.FC = () => {
       return acc;
     }, {} as Record<string, number>);
     return Object.entries(counts).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
-  }, [scanData, analytics]);
+  }, [scanData, analytics, mode]);
 
   const browserData = useMemo(() => {
+    if (mode === 'demo' && analytics?.analytics?.browsers) {
+      return Object.entries(analytics.analytics.browsers).map(([name, value]) => ({ name, value }));
+    }
+
     if (analytics?.analytics?.browsers) {
       return Object.entries(analytics.analytics.browsers).map(([name, value]) => ({ name, value }));
     }
@@ -145,9 +133,13 @@ const QRAnalytics: React.FC = () => {
       return acc;
     }, {} as Record<string, number>);
     return Object.entries(counts).map(([name, value]) => ({ name, value })).slice(0, 5);
-  }, [scanData, analytics]);
+  }, [scanData, analytics, mode]);
 
   const locationData = useMemo(() => {
+    if (mode === 'demo' && analytics?.analytics?.countries) {
+      return Object.entries(analytics.analytics.countries).map(([name, value]) => ({ name, value }));
+    }
+
     if (analytics?.analytics?.countries) {
       return Object.entries(analytics.analytics.countries).map(([name, value]) => ({ name, value }));
     }
@@ -158,7 +150,7 @@ const QRAnalytics: React.FC = () => {
       return acc;
     }, {} as Record<string, number>);
     return Object.entries(counts).map(([name, value]) => ({ name, value })).slice(0, 5);
-  }, [scanData, analytics]);
+  }, [scanData, analytics, mode]);
 
   const scansOverTime = useMemo(() => {
     // Prefer analytics scansByDate if present
@@ -244,6 +236,14 @@ const QRAnalytics: React.FC = () => {
           <div>
             <Title level={2} className="!mb-0">{qrCode.name}</Title>
             <Text type="secondary">QR Code Analytics & Scan Details</Text>
+          </div>
+          <div className="ml-auto">
+            <Segmented
+              options={[{ label: 'Real', value: 'real' }, { label: 'Demo', value: 'demo' }]}
+              value={mode}
+              onChange={(val: string | number) => setMode(val as 'real' | 'demo')}
+              size="middle"
+            />
           </div>
         </div>
 
