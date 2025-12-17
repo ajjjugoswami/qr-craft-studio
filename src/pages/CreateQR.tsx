@@ -48,6 +48,7 @@ const CreateQR: React.FC = () => {
   const [name, setName] = useState('');
   const [initialized, setInitialized] = useState(false);
   const [showTemplateEditor, setShowTemplateEditor] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // Load draft on mount
   useEffect(() => {
@@ -136,6 +137,7 @@ const CreateQR: React.FC = () => {
       return;
     }
 
+    setSaving(true);
     try {
       if (editingId) {
         await updateQRCode(editingId, { name: name.trim(), type, content, template, styling });
@@ -147,6 +149,8 @@ const CreateQR: React.FC = () => {
       navigate('/dashboard');
     } catch (err) {
       // error messages are handled in the hook
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -183,9 +187,7 @@ const CreateQR: React.FC = () => {
         return (
           <div className="space-y-6">
             <QRStyleEditor styling={styling} onStyleChange={setStyling} />
-            <Card title="Card Customization" size="small">
-              <TemplateCustomizer template={template} onTemplateChange={setTemplate} />
-            </Card>
+            
           </div>
         );
       default:
@@ -307,8 +309,10 @@ const CreateQR: React.FC = () => {
               type="primary"
               size="large"
               onClick={handleSave}
+              loading={saving}
+              disabled={saving}
             >
-              Save QR Code
+              {saving ? 'Saving...' : 'Save QR Code'}
             </Button>
           ) : (
             <Button
