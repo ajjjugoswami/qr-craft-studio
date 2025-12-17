@@ -34,7 +34,7 @@ const steps = [
 
 const CreateQR: React.FC = () => {
   const navigate = useNavigate();
-  const { saveQRCode, updateQRCode, getQRCode, saveDraft, getDraft, clearDraft } = useQRCodes();
+  const { saveQRCode, updateQRCode, getQRCode } = useQRCodes();
   const previewRef = useRef<HTMLDivElement>(null);
 
   const { id } = useParams<{ id?: string }>();
@@ -50,20 +50,10 @@ const CreateQR: React.FC = () => {
   const [showTemplateEditor, setShowTemplateEditor] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Load draft on mount
+  // Initialization complete
   useEffect(() => {
-    const draft = getDraft();
-    if (draft) {
-      setTemplate(draft.template);
-      setStyling(draft.styling);
-      setType(draft.type);
-      setContent(draft.content);
-      setName(draft.name);
-      setCurrentStep(draft.currentStep);
-      message.info('Restored your previous draft');
-    }
     setInitialized(true);
-  }, [getDraft]);
+  }, []);
 
   // If an edit id is present in the route, load the existing QR code
   useEffect(() => {
@@ -104,20 +94,10 @@ const CreateQR: React.FC = () => {
     loadForEdit();
   }, [id, getQRCode]);
 
-  // Auto-save draft whenever any value changes
+  // No draft persistence — drafts feature removed
   useEffect(() => {
-    if (!initialized) return;
-    
-    const draft = {
-      template,
-      styling,
-      type,
-      content,
-      name,
-      currentStep,
-    };
-    saveDraft(draft);
-  }, [template, styling, type, content, name, currentStep, saveDraft, initialized]);
+    // no-op, keep initialized dependency if needed later
+  }, [initialized]);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -154,16 +134,7 @@ const CreateQR: React.FC = () => {
     }
   };
 
-  const handleClearDraft = () => {
-    clearDraft();
-    setTemplate(defaultTemplates[0]);
-    setStyling(defaultStyling);
-    setType('url');
-    setContent('https://example.com');
-    setName('');
-    setCurrentStep(0);
-    message.success('Draft cleared');
-  };
+  // Draft functionality removed — no clear draft handler needed
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -198,25 +169,7 @@ const CreateQR: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="animate-fade-in">
-        {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <Button
-            type="text"
-            icon={<ArrowLeft size={16} />}
-            onClick={() => navigate('/dashboard')}
-          >
-            Back to Dashboard
-          </Button>
-          <div className="flex items-center gap-2">
-            <Text type="secondary" className="text-xs flex items-center gap-1">
-              <Save size={12} /> Auto-saved
-            </Text>
-            <Button size="small" onClick={handleClearDraft}>
-              Clear Draft
-            </Button>
-          </div>
-        </div>
-
+         
         {/* Custom Steps */}
         <Card className="mb-6">
           <div className="flex items-center justify-between">
