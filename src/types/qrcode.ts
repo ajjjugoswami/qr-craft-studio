@@ -144,8 +144,7 @@ export interface DesignTemplate {
   name: string;
   category: 'business' | 'creative' | 'minimal' | 'vibrant';
   icon: string;
-  fgColor: string;
-  bgColor: string;
+  styling: Partial<QRStyling>;
 }
 
 export const defaultStyling: QRStyling = {
@@ -172,16 +171,220 @@ export const defaultStyling: QRStyling = {
 };
 
 export const designTemplates: DesignTemplate[] = [
-  { id: 'classic-black', name: 'Classic Black', category: 'minimal', icon: 'square', fgColor: '#000000', bgColor: '#ffffff' },
-  { id: 'modern-gradient', name: 'Modern Gradient', category: 'vibrant', icon: 'sparkles', fgColor: '#8b5cf6', bgColor: '#fef3c7' },
-  { id: 'business-pro', name: 'Business Professional', category: 'business', icon: 'building', fgColor: '#1e40af', bgColor: '#f8fafc' },
-  { id: 'ocean-breeze', name: 'Ocean Breeze', category: 'creative', icon: 'waves', fgColor: '#0891b2', bgColor: '#ecfeff' },
-  { id: 'sunset-vibes', name: 'Sunset Vibes', category: 'vibrant', icon: 'sun', fgColor: '#ea580c', bgColor: '#fff7ed' },
-  { id: 'forest-green', name: 'Forest Green', category: 'creative', icon: 'tree', fgColor: '#166534', bgColor: '#f0fdf4' },
-  { id: 'minimal-dots', name: 'Minimal Dots', category: 'minimal', icon: 'circle', fgColor: '#374151', bgColor: '#ffffff' },
-  { id: 'neon-glow', name: 'Neon Glow', category: 'vibrant', icon: 'bolt', fgColor: '#c026d3', bgColor: '#fdf4ff' },
-  { id: 'corporate-blue', name: 'Corporate Blue', category: 'business', icon: 'briefcase', fgColor: '#1d4ed8', bgColor: '#eff6ff' },
-  { id: 'candy-pop', name: 'Candy Pop', category: 'creative', icon: 'candy', fgColor: '#db2777', bgColor: '#fdf2f8' },
+  { 
+    id: 'classic-black', 
+    name: 'Classic Black', 
+    category: 'minimal', 
+    icon: 'square', 
+    styling: { fgColor: '#000000', bgColor: '#ffffff', dotsType: 'square' } 
+  },
+  { 
+    id: 'modern-dots', 
+    name: 'Modern Dots', 
+    category: 'vibrant', 
+    icon: 'sparkles', 
+    styling: { fgColor: '#8b5cf6', bgColor: '#fef3c7', dotsType: 'dots' } 
+  },
+  { 
+    id: 'business-rounded', 
+    name: 'Business Rounded', 
+    category: 'business', 
+    icon: 'building', 
+    styling: { fgColor: '#1e40af', bgColor: '#f8fafc', dotsType: 'rounded' } 
+  },
+  { 
+    id: 'ocean-classy', 
+    name: 'Ocean Classy', 
+    category: 'creative', 
+    icon: 'waves', 
+    styling: { fgColor: '#0891b2', bgColor: '#ecfeff', dotsType: 'classy' } 
+  },
+  { 
+    id: 'sunset-extra-rounded', 
+    name: 'Sunset Extra Rounded', 
+    category: 'vibrant', 
+    icon: 'sun', 
+    styling: { fgColor: '#ea580c', bgColor: '#fff7ed', dotsType: 'extra-rounded' } 
+  },
+  { 
+    id: 'forest-classy-rounded', 
+    name: 'Forest Classy Rounded', 
+    category: 'creative', 
+    icon: 'tree', 
+    styling: { fgColor: '#166534', bgColor: '#f0fdf4', dotsType: 'classy-rounded' } 
+  },
+  { 
+    id: 'minimal-dots', 
+    name: 'Minimal Dots', 
+    category: 'minimal', 
+    icon: 'circle', 
+    styling: { fgColor: '#374151', bgColor: '#ffffff', dotsType: 'dots' } 
+  },
+  { 
+    id: 'tech-circle', 
+    name: 'Tech Circle', 
+    category: 'business', 
+    icon: 'bolt', 
+    styling: { fgColor: '#059669', bgColor: '#ffffff', shape: 'circle', dotsType: 'rounded' } 
+  },
+  { 
+    id: 'elegant-frame', 
+    name: 'Elegant Frame', 
+    category: 'creative', 
+    icon: 'briefcase', 
+    styling: { 
+      fgColor: '#7c3aed', 
+      bgColor: '#ffffff', 
+      dotsType: 'classy', 
+      cornersSquareOptions: { color: '#7c3aed', type: 'extra-rounded' },
+      cornersDotOptions: { color: '#7c3aed', type: 'dot' }
+    } 
+  },
+  { 
+    id: 'playful-candy', 
+    name: 'Playful Candy', 
+    category: 'vibrant', 
+    icon: 'candy', 
+    styling: { 
+      fgColor: '#ec4899', 
+      bgColor: '#fce7f3', 
+      dotsType: 'extra-rounded', 
+      cornersSquareOptions: { color: '#ec4899', type: 'rounded' },
+      cornersDotOptions: { color: '#ec4899', type: 'rounded' }
+    } 
+  },
+  // More classy templates
+  { 
+    id: 'luxury-gold', 
+    name: 'Luxury Gold', 
+    category: 'creative', 
+    icon: 'star', 
+    styling: { 
+      fgColor: '#d4af37', 
+      bgColor: '#1a1a1a', 
+      dotsType: 'classy-rounded', 
+      cornersSquareOptions: { color: '#d4af37', type: 'extra-rounded' },
+      cornersDotOptions: { color: '#d4af37', type: 'dot' }
+    } 
+  },
+  { 
+    id: 'corporate-blue', 
+    name: 'Corporate Blue', 
+    category: 'business', 
+    icon: 'building', 
+    styling: { 
+      fgColor: '#1e40af', 
+      bgColor: '#f8fafc', 
+      dotsType: 'classy', 
+      cornersSquareOptions: { color: '#1e40af', type: 'square' },
+      cornersDotOptions: { color: '#1e40af', type: 'square' }
+    } 
+  },
+  { 
+    id: 'artistic-purple', 
+    name: 'Artistic Purple', 
+    category: 'creative', 
+    icon: 'palette', 
+    styling: { 
+      fgColor: '#7c3aed', 
+      bgColor: '#faf5ff', 
+      dotsType: 'extra-rounded', 
+      cornersSquareOptions: { color: '#7c3aed', type: 'classy' },
+      cornersDotOptions: { color: '#7c3aed', type: 'classy-rounded' }
+    } 
+  },
+  { 
+    id: 'retro-green', 
+    name: 'Retro Green', 
+    category: 'vibrant', 
+    icon: 'leaf', 
+    styling: { 
+      fgColor: '#16a34a', 
+      bgColor: '#f0fdf4', 
+      dotsType: 'rounded', 
+      cornersSquareOptions: { color: '#16a34a', type: 'dots' },
+      cornersDotOptions: { color: '#16a34a', type: 'dots' }
+    } 
+  },
+  { 
+    id: 'minimalist-white', 
+    name: 'Minimalist White', 
+    category: 'minimal', 
+    icon: 'minus', 
+    styling: { 
+      fgColor: '#ffffff', 
+      bgColor: '#000000', 
+      dotsType: 'square', 
+      cornersSquareOptions: { color: '#ffffff', type: 'square' },
+      cornersDotOptions: { color: '#ffffff', type: 'square' }
+    } 
+  },
+  { 
+    id: 'elegant-silver', 
+    name: 'Elegant Silver', 
+    category: 'creative', 
+    icon: 'diamond', 
+    styling: { 
+      fgColor: '#9ca3af', 
+      bgColor: '#f9fafb', 
+      dotsType: 'classy-rounded', 
+      cornersSquareOptions: { color: '#9ca3af', type: 'extra-rounded' },
+      cornersDotOptions: { color: '#9ca3af', type: 'dot' }
+    } 
+  },
+  { 
+    id: 'bold-red', 
+    name: 'Bold Red', 
+    category: 'vibrant', 
+    icon: 'fire', 
+    styling: { 
+      fgColor: '#dc2626', 
+      bgColor: '#fef2f2', 
+      dotsType: 'extra-rounded', 
+      cornersSquareOptions: { color: '#dc2626', type: 'classy-rounded' },
+      cornersDotOptions: { color: '#dc2626', type: 'classy-rounded' }
+    } 
+  },
+  { 
+    id: 'tech-gradient', 
+    name: 'Tech Gradient', 
+    category: 'business', 
+    icon: 'cpu', 
+    styling: { 
+      fgColor: '#06b6d4', 
+      bgColor: '#ecfeff', 
+      dotsType: 'dots', 
+      cornersSquareOptions: { color: '#06b6d4', type: 'rounded' },
+      cornersDotOptions: { color: '#06b6d4', type: 'rounded' }
+    } 
+  },
+  { 
+    id: 'nature-brown', 
+    name: 'Nature Brown', 
+    category: 'creative', 
+    icon: 'tree', 
+    styling: { 
+      fgColor: '#92400e', 
+      bgColor: '#fef7ed', 
+      dotsType: 'classy', 
+      cornersSquareOptions: { color: '#92400e', type: 'extra-rounded' },
+      cornersDotOptions: { color: '#92400e', type: 'dot' }
+    } 
+  },
+  { 
+    id: 'ocean-circle', 
+    name: 'Ocean Circle', 
+    category: 'creative', 
+    icon: 'waves', 
+    styling: { 
+      fgColor: '#0369a1', 
+      bgColor: '#f0f9ff', 
+      shape: 'circle', 
+      dotsType: 'classy-rounded', 
+      cornersSquareOptions: { color: '#0369a1', type: 'classy' },
+      cornersDotOptions: { color: '#0369a1', type: 'classy' }
+    } 
+  },
 ];
 
 export const defaultTemplates: QRTemplate[] = [

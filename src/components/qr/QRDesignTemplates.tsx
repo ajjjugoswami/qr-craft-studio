@@ -6,6 +6,11 @@ import {
   BgColorsOutlined,
   BorderOutlined,
   ThunderboltOutlined,
+  FireOutlined,
+  CrownOutlined,
+  ExperimentOutlined,
+  MinusOutlined,
+  HeartOutlined,
 } from '@ant-design/icons';
 import { DesignTemplate, designTemplates, QRStyling } from '../../types/qrcode';
 
@@ -35,6 +40,13 @@ const getIcon = (iconName: string) => {
     bolt: <ThunderboltOutlined />,
     briefcase: <AppstoreOutlined />,
     candy: <StarOutlined />,
+    star: <StarOutlined />,
+    palette: <BgColorsOutlined />,
+    leaf: <StarOutlined />,
+    minus: <MinusOutlined />,
+    diamond: <CrownOutlined />,
+    fire: <FireOutlined />,
+    cpu: <ExperimentOutlined />,
   };
   return icons[iconName] || <BorderOutlined />;
 };
@@ -52,13 +64,18 @@ const QRDesignTemplates: React.FC<QRDesignTemplatesProps> = ({
   const handleSelectTemplate = (template: DesignTemplate) => {
     onStyleChange({
       ...styling,
-      fgColor: template.fgColor,
-      bgColor: template.bgColor,
+      ...template.styling,
     });
   };
 
-  const isSelected = (template: DesignTemplate) => 
-    styling.fgColor === template.fgColor && styling.bgColor === template.bgColor;
+  const isSelected = (template: DesignTemplate) => {
+    // Check if the template's styling matches the current styling
+    const templateStyling = template.styling;
+    return Object.keys(templateStyling).every(key => {
+      const k = key as keyof QRStyling;
+      return styling[k] === templateStyling[k];
+    });
+  };
 
   const tabItems = [
     { key: 'all', label: 'All' },
@@ -99,7 +116,7 @@ const QRDesignTemplates: React.FC<QRDesignTemplatesProps> = ({
             >
               <span 
                 className="text-3xl"
-                style={{ color: template.fgColor }}
+                style={{ color: template?.styling.fgColor }}
               >
                 {getIcon(template.icon)}
               </span>
