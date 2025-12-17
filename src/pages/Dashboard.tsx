@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography, Button, Empty, Spin, Card, Row, Col, Statistic, Input } from 'antd';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Plus, QrCode, Eye, TrendingUp, Search, LayoutGrid, List } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
@@ -54,32 +55,53 @@ const Dashboard: React.FC = () => {
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={8}>
             <Card className="hover:shadow-md transition-shadow">
-              <Statistic
-                title={<span className="text-muted-foreground">Total QR Codes</span>}
-                value={qrCodes.length}
-                prefix={<QrCode size={20} className="text-primary mr-2" />}
-                valueStyle={{ color: '#6366f1', fontWeight: 600 }}
-              />
+              {loading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-8 w-24" />
+                </div>
+              ) : (
+                <Statistic
+                  title={<span className="text-muted-foreground">Total QR Codes</span>}
+                  value={qrCodes.length}
+                  prefix={<QrCode size={20} className="text-primary mr-2" />}
+                  valueStyle={{ color: '#6366f1', fontWeight: 600 }}
+                />
+              )}
             </Card>
           </Col>
           <Col xs={24} sm={8}>
             <Card className="hover:shadow-md transition-shadow">
-              <Statistic
-                title={<span className="text-muted-foreground">Total Scans</span>}
-                value={totalScans}
-                prefix={<Eye size={20} className="text-green-500 mr-2" />}
-                valueStyle={{ color: '#22c55e', fontWeight: 600 }}
-              />
+              {loading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-8 w-24" />
+                </div>
+              ) : (
+                <Statistic
+                  title={<span className="text-muted-foreground">Total Scans</span>}
+                  value={totalScans}
+                  prefix={<Eye size={20} className="text-green-500 mr-2" />}
+                  valueStyle={{ color: '#22c55e', fontWeight: 600 }}
+                />
+              )}
             </Card>
           </Col>
           <Col xs={24} sm={8}>
             <Card className="hover:shadow-md transition-shadow">
-              <Statistic
-                title={<span className="text-muted-foreground">Active QR Codes</span>}
-                value={activeQRs}
-                prefix={<TrendingUp size={20} className="text-orange-500 mr-2" />}
-                valueStyle={{ color: '#f59e0b', fontWeight: 600 }}
-              />
+              {loading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-8 w-24" />
+                </div>
+              ) : (
+                <Statistic
+                  title={<span className="text-muted-foreground">Active QR Codes</span>}
+                  value={activeQRs}
+                  prefix={<TrendingUp size={20} className="text-orange-500 mr-2" />}
+                  valueStyle={{ color: '#f59e0b', fontWeight: 600 }}
+                />
+              )}
             </Card>
           </Col>
         </Row>
@@ -115,9 +137,70 @@ const Dashboard: React.FC = () => {
 
         {/* Content */}
         {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <Spin size="large" />
-          </div>
+          <>
+            {/* Stats skeletons (top) */}
+            <Row gutter={[16, 16]} className="mt-4">
+              <Col xs={24} sm={8}>
+                <Card className="hover:shadow-md transition-shadow">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-8 w-24" />
+                  </div>
+                </Card>
+              </Col>
+              <Col xs={24} sm={8}>
+                <Card className="hover:shadow-md transition-shadow">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-8 w-24" />
+                  </div>
+                </Card>
+              </Col>
+              <Col xs={24} sm={8}>
+                <Card className="hover:shadow-md transition-shadow">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-8 w-24" />
+                  </div>
+                </Card>
+              </Col>
+            </Row>
+
+            {/* QR Cards skeleton */}
+            {viewMode === 'list' ? (
+              <div className="space-y-3 mt-6">
+                {Array.from({length: 4}).map((_, i) => (
+                  <Card key={i} className="mb-4">
+                    <div className="flex items-center gap-4">
+                      <Skeleton className="w-16 h-16 rounded-lg" />
+                      <div className="flex-1">
+                        <Skeleton className="h-4 w-40 mb-2" />
+                        <Skeleton className="h-3 w-64 mb-1" />
+                        <Skeleton className="h-3 w-32" />
+                      </div>
+                      <div>
+                        <Skeleton className="h-8 w-8 rounded-md" />
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Row gutter={[16, 16]} className="mt-6">
+                {Array.from({length: 8}).map((_, i) => (
+                  <Col key={i} xs={24} sm={12} lg={8} xl={6}>
+                    <Card>
+                      <div className="flex flex-col items-center">
+                        <Skeleton className="w-full h-48 rounded-lg mb-4" />
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-20 mt-2" />
+                      </div>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            )}
+          </>
         ) : qrCodes.length === 0 ? (
           <Card className="py-16">
             <Empty
