@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import CreateQR from "./pages/CreateQR";
 import Analytics from "./pages/Analytics";
 import QRAnalytics from "./pages/QRAnalytics";
+import Redirector from "./pages/Redirector";
 import FAQs from "./pages/FAQs";
 import Contact from "./pages/Contact";
 import Submissions from "./pages/Submissions";
@@ -59,6 +60,11 @@ const App = () => (
               <Route path="/faqs" element={<FAQs />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/submissions" element={<ProtectedRoute><Submissions /></ProtectedRoute>} />
+
+              {/* Public redirect route for scanned QR codes (no auth required) */}
+              <Route path="/r/:id" element={<Redirector />} />
+              <Route path="/r" element={<Redirector />} />
+
               <Route path="*" element={<NotFound />}/>
             </Routes>
           </BrowserRouter>

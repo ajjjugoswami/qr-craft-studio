@@ -12,6 +12,8 @@ interface QRCodePreviewProps {
   compact?: boolean;
   editable?: boolean;
   onTemplateChange?: (template: QRTemplate) => void;
+  // Optional QR id — if provided, QR encodes a frontend redirect URL (/r/:id)
+  qrId?: string;
 }
 
 const fontWeightMap = {
@@ -391,7 +393,23 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
         }}
       >
         <QRCodeSVG
-          value={content || 'https://example.com'}
+          value={(function() {
+            try {
+              if (typeof window !== 'undefined') {
+                if (typeof (content) === 'string' && qrId) {
+                  // For saved QR codes, point to our frontend redirect route
+                  return `${window.location.origin}/r/${qrId}`;
+                }
+                // For preview/unsaved QR codes, encode the content into query param
+                if (typeof (content) === 'string') {
+                  return `${window.location.origin}/r?u=${encodeURIComponent(content)}`;
+                }
+              }
+              return content || 'https://example.com';
+            } catch (e) {
+              return content || 'https://example.com';
+            }
+          })()}
           size={qrSize}
           fgColor={styling.fgColor}
           bgColor={styling.bgColor}
