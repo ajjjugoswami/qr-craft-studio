@@ -144,6 +144,7 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
         qrCode.current.append(qrRef.current);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [content, styling, qrId, qrSize]);
 
   const gradientDirection = gradientDirectionMap[template.gradientDirection || 'to-bottom-right'];
