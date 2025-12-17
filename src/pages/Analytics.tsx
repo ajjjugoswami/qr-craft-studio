@@ -186,17 +186,11 @@ const Analytics: React.FC = () => {
     },
   ];
 
-  if (qrCodes.length === 0) {
+  if (loading) {
     return (
       <DashboardLayout>
-        <div className="animate-fade-in">
-          <Title level={2} className="mb-8">Analytics Overview</Title>
-          <Card className="h-96 flex items-center justify-center">
-            <Empty
-              image={<QrCode size={64} className="text-muted-foreground" />}
-              description="Create QR codes to see analytics data"
-            />
-          </Card>
+        <div className="flex items-center justify-center h-64">
+          <Spin size="large" />
         </div>
       </DashboardLayout>
     );
