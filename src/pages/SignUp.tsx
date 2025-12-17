@@ -24,7 +24,7 @@ const SignUp: React.FC = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="h-screen flex items-center justify-center bg-background">
         <Spin size="large" />
       </div>
     );
@@ -63,124 +63,115 @@ const SignUp: React.FC = () => {
     message.info('Google sign-up coming soon');
   };
 
- 
-
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="h-screen flex bg-background overflow-hidden">
       {/* Left Side - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-between px-6 sm:px-12 lg:px-16 xl:px-24 py-8">
-        <div className="flex-1 flex flex-col justify-center max-w-[360px] mx-auto w-full">
-          {/* Header */}
-          <div className="mb-6">
-            <h1 className="text-[28px] font-semibold italic text-foreground mb-3">
-              Create Account ✨
-            </h1>
-            <p className="text-[#8A8A8A] text-[15px] leading-relaxed">
-    
-              Sign up to create and manage your QR codes.
-            </p>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="text-[13px] font-medium text-foreground mb-1.5 block">
-                Full Name
-              </label>
-              <Input
-                size="large"
-                type="text"
-                placeholder="John Doe"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="h-11 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-[14px]"
-              />
+      <div className="w-full lg:w-1/2 h-full flex flex-col">
+        <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-16 xl:px-20">
+          <div className="max-w-[340px] mx-auto w-full">
+            {/* Header */}
+            <div className="mb-4">
+              <h1 className="text-2xl sm:text-[28px] font-semibold italic text-foreground mb-2">
+                Create Account ✨
+              </h1>
+              <p className="text-[#8A8A8A] text-[13px] leading-relaxed">
+                Start your journey today.
+                <br className="hidden sm:block" />
+                Sign up to create and manage your QR codes.
+              </p>
             </div>
 
-            <div>
-              <label className="text-[13px] font-medium text-foreground mb-1.5 block">
-                Email
-              </label>
-              <Input
-                size="large"
-                type="email"
-                placeholder="Example@email.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="h-11 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-[14px]"
-              />
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <div>
+                <label className="text-xs font-medium text-foreground mb-1 block">Full Name</label>
+                <Input
+                  size="large"
+                  type="text"
+                  placeholder="John Doe"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="h-10 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-foreground mb-1 block">Email</label>
+                <Input
+                  size="large"
+                  type="email"
+                  placeholder="Example@email.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="h-10 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-foreground mb-1 block">Password</label>
+                <Input
+                  size="large"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="At least 8 characters"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  suffix={
+                    <button 
+                      type="button" 
+                      onClick={() => setShowPassword(!showPassword)} 
+                      className="text-[#A0AEC0] hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  }
+                  className="h-10 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-foreground mb-1 block">Confirm Password</label>
+                <Input
+                  size="large"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="Confirm your password"
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  suffix={
+                    <button 
+                      type="button" 
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
+                      className="text-[#A0AEC0] hover:text-foreground transition-colors"
+                    >
+                      {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  }
+                  className="h-10 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-sm"
+                />
+              </div>
+
+              <Button 
+                type="primary" 
+                htmlType="submit" 
+                loading={loading} 
+                className="w-full h-10 text-sm font-semibold rounded-lg bg-[#162D3A] hover:bg-[#1a3847] border-none !mt-4"
+              >
+                Sign up
+              </Button>
+            </form>
+
+            {/* Divider */}
+            <div className="flex items-center my-4">
+              <div className="flex-1 h-px bg-[#E8E8E8]"></div>
+              <span className="px-3 text-[#8A8A8A] text-xs">Or</span>
+              <div className="flex-1 h-px bg-[#E8E8E8]"></div>
             </div>
 
-            <div>
-              <label className="text-[13px] font-medium text-foreground mb-1.5 block">
-                Password
-              </label>
-              <Input
-                size="large"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="At least 8 characters"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                suffix={
-                  <button 
-                    type="button" 
-                    onClick={() => setShowPassword(!showPassword)} 
-                    className="text-[#A0AEC0] hover:text-foreground transition-colors"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                }
-                className="h-11 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-[14px]"
-              />
-            </div>
-
-            <div>
-              <label className="text-[13px] font-medium text-foreground mb-1.5 block">
-                Confirm Password
-              </label>
-              <Input
-                size="large"
-                type={showConfirmPassword ? 'text' : 'password'}
-                placeholder="Confirm your password"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                suffix={
-                  <button 
-                    type="button" 
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
-                    className="text-[#A0AEC0] hover:text-foreground transition-colors"
-                  >
-                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                }
-                className="h-11 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-[14px]"
-              />
-            </div>
-
-            <Button 
-              type="primary" 
-              htmlType="submit" 
-              loading={loading} 
-              className="w-full h-11 text-[15px] font-semibold rounded-lg bg-[#162D3A] hover:bg-[#1a3847] border-none mt-2"
-            >
-              Sign up
-            </Button>
-          </form>
-
-          {/* Divider */}
-          <div className="flex items-center my-5">
-            <div className="flex-1 h-px bg-[#E8E8E8]"></div>
-            <span className="px-4 text-[#8A8A8A] text-[13px]">Or</span>
-            <div className="flex-1 h-px bg-[#E8E8E8]"></div>
-          </div>
-
-          {/* Social Buttons */}
-          <div className="space-y-3">
+            {/* Social Button */}
             <button
               onClick={handleGoogleSignUp}
-              className="w-full h-11 flex items-center justify-center gap-3 rounded-lg bg-[#F9F5EB] hover:bg-[#f5f0e3] transition-colors text-foreground text-[14px] font-medium"
+              className="w-full h-10 flex items-center justify-center gap-2 rounded-lg bg-[#F9F5EB] hover:bg-[#f5f0e3] transition-colors text-foreground text-sm font-medium"
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -189,26 +180,24 @@ const SignUp: React.FC = () => {
               Sign up with Google
             </button>
 
- 
-          </div>
-
-          {/* Sign In Link */}
-          <div className="text-center mt-6">
-            <span className="text-[#8A8A8A] text-[14px]">Already have an account? </span>
-            <Link to="/signin" className="text-primary hover:text-primary/80 text-[14px] font-semibold transition-colors">
-              Sign in
-            </Link>
+            {/* Sign In Link */}
+            <div className="text-center mt-4">
+              <span className="text-[#8A8A8A] text-sm">Already have an account? </span>
+              <Link to="/signin" className="text-primary hover:text-primary/80 text-sm font-semibold transition-colors">
+                Sign in
+              </Link>
+            </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="text-center pt-6">
-          <p className="text-[#8A8A8A] text-[12px]">© 2023 ALL RIGHTS RESERVED</p>
+        <div className="text-center py-4">
+          <p className="text-[#8A8A8A] text-[11px]">© 2023 ALL RIGHTS RESERVED</p>
         </div>
       </div>
 
       {/* Right Side - Image */}
-      <div className="hidden lg:block lg:w-1/2 p-3">
+      <div className="hidden lg:block lg:w-1/2 p-3 h-full">
         <div className="h-full w-full rounded-3xl overflow-hidden">
           <img 
             src={authImage} 
