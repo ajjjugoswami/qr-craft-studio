@@ -12,15 +12,7 @@ const SignUp: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Spin size="large" />
-      </div>
-    );
-  }
-
+ 
   useEffect(() => {
     if (user) navigate('/dashboard');
   }, [user, navigate]);

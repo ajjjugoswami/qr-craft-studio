@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Typography, Divider, message } from 'antd';
+import { Card, Input, Button, Typography, Divider, message, Spin } from 'antd';
 import { QrCode, Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
