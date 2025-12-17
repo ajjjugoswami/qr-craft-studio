@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Input, Button, message, Spin } from 'antd';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, QrCode, Sparkles, Shield, Zap } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import authImage from '@/assets/auth-qr-templates.jpg';
@@ -50,18 +50,40 @@ const SignIn: React.FC = () => {
     <div className="h-screen flex bg-background overflow-hidden">
       {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 h-full flex flex-col">
+        {/* Logo Header */}
+        <div className="px-6 sm:px-12 lg:px-16 xl:px-20 pt-6">
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-lg bg-[#162D3A] flex items-center justify-center">
+              <QrCode className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-lg font-bold text-foreground">QR Studio</span>
+          </div>
+        </div>
+
         <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-16 xl:px-20">
           <div className="max-w-[340px] mx-auto w-full">
             {/* Header */}
             <div className="mb-5">
-              <h1 className="text-2xl sm:text-[28px] font-semibold italic text-foreground mb-2">
-                Welcome Back 👋
+              <h1 className="text-2xl sm:text-[28px] font-semibold text-foreground mb-2 flex items-center gap-2">
+                Welcome Back <Sparkles className="w-6 h-6 text-amber-500" />
               </h1>
               <p className="text-[#8A8A8A] text-[13px] leading-relaxed">
                 Today is a new day. It's your day. You shape it.
                 <br className="hidden sm:block" />
                 Sign in to start managing your projects.
               </p>
+            </div>
+
+            {/* Features */}
+            <div className="flex gap-4 mb-5">
+              <div className="flex items-center gap-1.5 text-xs text-[#8A8A8A]">
+                <Shield className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Secure</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-[#8A8A8A]">
+                <Zap className="w-3.5 h-3.5 text-amber-500" />
+                <span>Fast</span>
+              </div>
             </div>
 
             {/* Form */}
