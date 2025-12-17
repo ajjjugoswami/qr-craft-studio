@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Avatar, Typography } from 'antd';
+import { Layout, Menu, Avatar, Typography, Tooltip } from 'antd';
 import {
   QrCode,
   BarChart3,
@@ -9,6 +9,7 @@ import {
   LogOut,
   PanelLeftClose,
   PanelLeft,
+  Plus,
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -26,7 +27,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
   const menuItems = [
     {
-      key: '/',
+      key: '/dashboard',
       icon: <QrCode size={18} />,
       label: 'My QR Codes',
     },
@@ -48,7 +49,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     {
       key: '/submissions',
       icon: <MessageSquare size={18} />,
-      label: 'Contact Submissions',
+      label: 'Submissions',
     },
   ];
 
@@ -59,7 +60,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         collapsed={collapsed}
         onCollapse={setCollapsed}
         trigger={null}
-        width={240}
+        width={260}
         collapsedWidth={80}
         style={{
           position: 'fixed',
@@ -68,66 +69,103 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           bottom: 0,
           zIndex: 100,
         }}
+        className="shadow-sm"
       >
         <div className="flex flex-col h-full">
-          {/* Header */}
+          {/* Logo & Brand */}
           <div className="p-4 flex items-center gap-3 border-b border-border">
-            <Avatar
-              style={{ backgroundColor: 'hsl(var(--primary))' }}
-              size={collapsed ? 32 : 40}
+            <div 
+              className={`rounded-xl bg-primary flex items-center justify-center transition-all ${collapsed ? 'w-10 h-10' : 'w-11 h-11'}`}
             >
-              A
-            </Avatar>
+              <QrCode size={collapsed ? 20 : 24} className="text-white" />
+            </div>
             {!collapsed && (
               <div className="flex flex-col">
-                <Text strong className="text-sm">
-                  User
+                <Text strong className="text-lg leading-tight">
+                  QR Studio
                 </Text>
                 <Text type="secondary" className="text-xs">
-                  Premium User
+                  Pro Dashboard
                 </Text>
               </div>
             )}
           </div>
 
+          {/* Create Button */}
+          <div className="px-3 py-4">
+            <Tooltip title={collapsed ? 'Create QR' : ''} placement="right">
+              <button
+                onClick={() => navigate('/create')}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary/90 transition-colors ${collapsed ? 'justify-center' : ''}`}
+              >
+                <Plus size={20} />
+                {!collapsed && <span>Create New</span>}
+              </button>
+            </Tooltip>
+          </div>
+
           {/* Collapse Button */}
           <div
-            className="p-2 flex justify-end cursor-pointer hover:bg-muted mx-2 mt-2 rounded-lg"
+            className="px-3 pb-2 flex justify-end cursor-pointer"
             onClick={() => setCollapsed(!collapsed)}
           >
-            {collapsed ? <PanelLeft size={18} /> : <PanelLeftClose size={18} />}
+            <div className="p-2 rounded-lg hover:bg-muted transition-colors">
+              {collapsed ? <PanelLeft size={18} /> : <PanelLeftClose size={18} />}
+            </div>
           </div>
 
           {/* Menu */}
           <Menu
             mode="inline"
-            selectedKeys={[location.pathname]}
+            selectedKeys={[location.pathname === '/' ? '/dashboard' : location.pathname]}
             items={menuItems}
             onClick={({ key }) => navigate(key)}
-            className="flex-1 mt-2"
+            className="flex-1 border-none"
           />
 
-          {/* Logout */}
-          <div className="p-4 border-t border-border">
-            <div
-              className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer border border-destructive text-destructive hover:bg-destructive/5 transition-colors ${
-                collapsed ? 'justify-center' : ''
-              }`}
-            >
-              <LogOut size={18} />
-              {!collapsed && <span>Logout</span>}
+          {/* User Section */}
+          <div className="p-3 border-t border-border">
+            <div className={`flex items-center gap-3 p-2 rounded-xl hover:bg-muted transition-colors cursor-pointer ${collapsed ? 'justify-center' : ''}`}>
+              <Avatar
+                style={{ backgroundColor: 'hsl(var(--primary))' }}
+                size={36}
+              >
+                A
+              </Avatar>
+              {!collapsed && (
+                <div className="flex flex-col flex-1 min-w-0">
+                  <Text strong className="text-sm truncate">
+                    User
+                  </Text>
+                  <Text type="secondary" className="text-xs truncate">
+                    user@example.com
+                  </Text>
+                </div>
+              )}
             </div>
+          </div>
+
+          {/* Logout */}
+          <div className="p-3 border-t border-border">
+            <Tooltip title={collapsed ? 'Logout' : ''} placement="right">
+              <div
+                className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border border-destructive/30 text-destructive hover:bg-destructive/5 transition-colors ${collapsed ? 'justify-center' : ''}`}
+              >
+                <LogOut size={18} />
+                {!collapsed && <span className="font-medium">Logout</span>}
+              </div>
+            </Tooltip>
           </div>
         </div>
       </Sider>
 
       <Layout
         style={{
-          marginLeft: collapsed ? 80 : 240,
+          marginLeft: collapsed ? 80 : 260,
           transition: 'margin-left 0.2s',
         }}
       >
-        <Content className="p-6 min-h-screen">{children}</Content>
+        <Content className="p-6 min-h-screen bg-background">{children}</Content>
       </Layout>
     </Layout>
   );
