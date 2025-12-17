@@ -29,6 +29,26 @@ export interface CustomField {
   };
 }
 
+export interface ScanData {
+  id: string;
+  date: string;
+  time: string;
+  browser: string;
+  os: string;
+  deviceType: 'mobile' | 'tablet' | 'desktop';
+  deviceVendor: string;
+  deviceModel: string;
+  ipAddress: string;
+  location: {
+    city: string;
+    region: string;
+    country: string;
+    lat: number;
+    lng: number;
+    timezone: string;
+  };
+}
+
 export interface QRCodeData {
   id: string;
   name: string;
@@ -38,6 +58,7 @@ export interface QRCodeData {
   styling: QRStyling;
   createdAt: string;
   scans: number;
+  scanHistory?: ScanData[];
   status: 'active' | 'inactive';
 }
 

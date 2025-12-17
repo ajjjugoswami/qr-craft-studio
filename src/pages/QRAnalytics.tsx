@@ -1,0 +1,327 @@
+import React, { useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Typography, Card, Table, Tag, Button, Empty, Statistic, Row, Col } from 'antd';
+import { ArrowLeft, MapPin, Smartphone, Monitor, Tablet, Globe, Eye, Calendar, TrendingUp } from 'lucide-react';
+import { AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import DashboardLayout from '../components/layout/DashboardLayout';
+import { useQRCodes } from '../hooks/useQRCodes';
+import type { ScanData } from '../types/qrcode';
+
+const { Title, Text } = Typography;
+
+// Mock scan data generator for demo
+const generateMockScanData = (count: number): ScanData[] => {
+  const browsers = ['Chrome', 'Safari', 'Firefox', 'Edge', 'Samsung Browser', 'Mobile Chrome', 'Mobile Safari'];
+  const oses = ['iOS 17.2', 'iOS 18.0', 'Android 14', 'Windows 11', 'macOS 14', 'Android 13'];
+  const devices: Array<'mobile' | 'tablet' | 'desktop'> = ['mobile', 'tablet', 'desktop'];
+  const vendors = ['Apple', 'Samsung', 'Google', 'Dell', 'HP', 'OnePlus', 'Xiaomi'];
+  const models = ['iPhone 15', 'iPhone 14', 'Galaxy S24', 'Pixel 8', 'iPad Pro', 'MacBook Pro', 'Windows PC'];
+  const locations = [
+    { city: 'Kaithal', region: 'HR', country: 'IN', lat: 29.8015, lng: 76.4, timezone: 'Asia/Kolkata' },
+    { city: 'New Delhi', region: 'DL', country: 'IN', lat: 28.6139, lng: 77.209, timezone: 'Asia/Kolkata' },
+    { city: 'Mumbai', region: 'MH', country: 'IN', lat: 19.076, lng: 72.8777, timezone: 'Asia/Kolkata' },
+    { city: 'New York', region: 'NY', country: 'US', lat: 40.7128, lng: -74.006, timezone: 'America/New_York' },
+    { city: 'London', region: 'ENG', country: 'UK', lat: 51.5074, lng: -0.1278, timezone: 'Europe/London' },
+  ];
+
+  return Array.from({ length: count }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - Math.floor(Math.random() * 30));
+    const deviceType = devices[Math.floor(Math.random() * devices.length)];
+    const location = locations[Math.floor(Math.random() * locations.length)];
+    
+    return {
+      id: `scan-${i + 1}`,
+      date: date.toLocaleDateString('en-GB'),
+      time: `${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')} ${Math.random() > 0.5 ? 'am' : 'pm'}`,
+      browser: browsers[Math.floor(Math.random() * browsers.length)] + ` ${Math.floor(Math.random() * 50) + 100}.0.${Math.floor(Math.random() * 10000)}.${Math.floor(Math.random() * 1000)}`,
+      os: oses[Math.floor(Math.random() * oses.length)],
+      deviceType,
+      deviceVendor: vendors[Math.floor(Math.random() * vendors.length)],
+      deviceModel: models[Math.floor(Math.random() * models.length)],
+      ipAddress: `${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 256)}`,
+      location,
+    };
+  });
+};
+
+const CHART_COLORS = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
+
+const QRAnalytics: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { getQRCode } = useQRCodes();
+
+  const qrCode = id ? getQRCode(id) : undefined;
+  const scanData = useMemo(() => generateMockScanData(qrCode?.scans || 15), [qrCode?.scans]);
+
+  // Process data for charts
+  const deviceTypeData = useMemo(() => {
+    const counts = scanData.reduce((acc, scan) => {
+      acc[scan.deviceType] = (acc[scan.deviceType] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    return Object.entries(counts).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
+  }, [scanData]);
+
+  const browserData = useMemo(() => {
+    const counts = scanData.reduce((acc, scan) => {
+      const browser = scan.browser.split(' ')[0];
+      acc[browser] = (acc[browser] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    return Object.entries(counts).map(([name, value]) => ({ name, value })).slice(0, 5);
+  }, [scanData]);
+
+  const locationData = useMemo(() => {
+    const counts = scanData.reduce((acc, scan) => {
+      const loc = `${scan.location.city}, ${scan.location.country}`;
+      acc[loc] = (acc[loc] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    return Object.entries(counts).map(([name, value]) => ({ name, value })).slice(0, 5);
+  }, [scanData]);
+
+  const scansOverTime = useMemo(() => {
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (6 - i));
+      return d.toLocaleDateString('en-US', { weekday: 'short' });
+    });
+    return last7Days.map(day => ({
+      day,
+      scans: Math.floor(Math.random() * 10) + 1,
+    }));
+  }, []);
+
+  const columns = [
+    { title: 'Scan Date', dataIndex: 'date', key: 'date', width: 100 },
+    { title: 'Scan Time', dataIndex: 'time', key: 'time', width: 90 },
+    { title: 'Browser', dataIndex: 'browser', key: 'browser', width: 200, ellipsis: true },
+    { title: 'Operating System', dataIndex: 'os', key: 'os', width: 120 },
+    { 
+      title: 'Device Type', 
+      dataIndex: 'deviceType', 
+      key: 'deviceType',
+      width: 100,
+      render: (type: string) => (
+        <Tag color={type === 'mobile' ? 'blue' : type === 'tablet' ? 'purple' : 'green'}>
+          {type}
+        </Tag>
+      )
+    },
+    { title: 'Device Vendor', dataIndex: 'deviceVendor', key: 'deviceVendor', width: 110 },
+    { title: 'Device Model', dataIndex: 'deviceModel', key: 'deviceModel', width: 110 },
+    { title: 'IP Address', dataIndex: 'ipAddress', key: 'ipAddress', width: 130 },
+    { 
+      title: 'Location', 
+      key: 'location', 
+      width: 250,
+      render: (_: any, record: ScanData) => (
+        <span className="text-xs">
+          {record.location.city}, {record.location.region}, {record.location.country} (Lat {record.location.lat}, Lng {record.location.lng} - {record.location.timezone})
+        </span>
+      )
+    },
+  ];
+
+  if (!qrCode) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center h-96">
+          <Empty description="QR Code not found" />
+          <Button type="primary" className="mt-4" onClick={() => navigate('/')}>
+            Go Back
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const DeviceIcon = ({ type }: { type: string }) => {
+    if (type === 'mobile') return <Smartphone size={18} className="text-blue-500" />;
+    if (type === 'tablet') return <Tablet size={18} className="text-purple-500" />;
+    return <Monitor size={18} className="text-green-500" />;
+  };
+
+  return (
+    <DashboardLayout>
+      <div className="animate-fade-in space-y-6">
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-6">
+          <Button 
+            icon={<ArrowLeft size={18} />} 
+            onClick={() => navigate('/')}
+          />
+          <div>
+            <Title level={2} className="!mb-0">{qrCode.name}</Title>
+            <Text type="secondary">QR Code Analytics & Scan Details</Text>
+          </div>
+        </div>
+
+        {/* Stats Overview */}
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className="hover:shadow-md transition-shadow">
+              <Statistic 
+                title="Total Scans" 
+                value={scanData.length} 
+                prefix={<Eye size={20} className="text-primary mr-2" />}
+                valueStyle={{ color: '#6366f1' }}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className="hover:shadow-md transition-shadow">
+              <Statistic 
+                title="Today's Scans" 
+                value={Math.floor(Math.random() * 5) + 1} 
+                prefix={<Calendar size={20} className="text-green-500 mr-2" />}
+                valueStyle={{ color: '#22c55e' }}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className="hover:shadow-md transition-shadow">
+              <Statistic 
+                title="Unique Locations" 
+                value={locationData.length} 
+                prefix={<MapPin size={20} className="text-orange-500 mr-2" />}
+                valueStyle={{ color: '#f59e0b' }}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <Card className="hover:shadow-md transition-shadow">
+              <Statistic 
+                title="Growth Rate" 
+                value={12.5} 
+                suffix="%" 
+                prefix={<TrendingUp size={20} className="text-purple-500 mr-2" />}
+                valueStyle={{ color: '#8b5cf6' }}
+              />
+            </Card>
+          </Col>
+        </Row>
+
+        {/* Charts Row */}
+        <Row gutter={[16, 16]}>
+          {/* Scans Over Time */}
+          <Col xs={24} lg={12}>
+            <Card title="Scans Over Time" className="h-full">
+              <ResponsiveContainer width="100%" height={250}>
+                <AreaChart data={scansOverTime}>
+                  <defs>
+                    <linearGradient id="colorScans" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--card))', 
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px'
+                    }} 
+                  />
+                  <Area type="monotone" dataKey="scans" stroke="#6366f1" strokeWidth={2} fillOpacity={1} fill="url(#colorScans)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </Card>
+          </Col>
+
+          {/* Device Distribution */}
+          <Col xs={24} lg={12}>
+            <Card title="Device Distribution" className="h-full">
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie
+                    data={deviceTypeData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={90}
+                    paddingAngle={5}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {deviceTypeData.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </Card>
+          </Col>
+        </Row>
+
+        {/* More Charts */}
+        <Row gutter={[16, 16]}>
+          {/* Browser Stats */}
+          <Col xs={24} lg={12}>
+            <Card title="Top Browsers" className="h-full">
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={browserData} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={12} width={80} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--card))', 
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px'
+                    }} 
+                  />
+                  <Bar dataKey="value" fill="#6366f1" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </Col>
+
+          {/* Top Locations */}
+          <Col xs={24} lg={12}>
+            <Card title="Top Locations" className="h-full">
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={locationData} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={12} width={100} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--card))', 
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px'
+                    }} 
+                  />
+                  <Bar dataKey="value" fill="#22c55e" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </Col>
+        </Row>
+
+        {/* Scan Details Table */}
+        <Card title="Scan Details" className="overflow-hidden">
+          <Table
+            columns={columns}
+            dataSource={scanData}
+            rowKey="id"
+            scroll={{ x: 1200 }}
+            pagination={{ 
+              pageSize: 10, 
+              showSizeChanger: true, 
+              showTotal: (total) => `Total ${total} scans` 
+            }}
+            size="small"
+          />
+        </Card>
+      </div>
+    </DashboardLayout>
+  );
+};
+
+export default QRAnalytics;
