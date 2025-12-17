@@ -70,7 +70,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signout = () => {
     persist(null, null);
-    localStorage.removeItem('token');
     message.info('Signed out');
   };
 

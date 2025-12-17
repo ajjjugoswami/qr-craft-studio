@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useEffect, useState } from 'react';
-import { Typography, Card, Row, Col, Statistic, Table, Tag, Empty, Spin, message } from 'antd';
+import { Typography, Card, Row, Col, Statistic, Table, Tag, Empty, Spin, message, Segmented } from 'antd';
 import { Eye, QrCode, TrendingUp, Users, Smartphone, Monitor, Globe } from 'lucide-react';
 import { AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { useQRCodes } from '../hooks/useQRCodes';
 import { scansAPI } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
+import { getDemoScansOverTime, demoDeviceData, demoTopQRCodes, demoLocations, getDemoWeeklyData } from '@/lib/hardCodeAnalyticsData';
 
 const { Title, Text } = Typography;
 
@@ -18,12 +19,31 @@ const Analytics: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
   const [scans, setScans] = useState<any[]>([]);
+  const [analytics, setAnalytics] = useState<any | null>(null);
+  const [mode, setMode] = useState<'real' | 'demo'>('real');
 
-  const totalScans = useMemo(() => scans.length || qrCodes.reduce((acc, qr) => acc + qr.scans, 0), [scans, qrCodes]);
+  const totalScans = useMemo(() => (mode === 'real' ? (analytics?.totalScans ?? scans.length) : undefined), [mode, scans, analytics]);
   const activeQRs = useMemo(() => qrCodes.filter(qr => qr.status === 'active').length, [qrCodes]);
 
-  // Scans timeline (last 30 days) computed from scans
+  // Demo data is imported from shared module `hardCodeAnalyticsData.ts`
+  // (see src/lib/hardCodeAnalyticsData.ts)
+
+  // Scans timeline (last 30 days)
   const scansOverTime = useMemo(() => {
+    if (mode === 'demo') return getDemoScansOverTime();
+
+    // Prefer analytics.scansByDate when available
+    if (analytics?.analytics?.scansByDate) {
+      const map: Record<string, number> = {};
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const key = d.toISOString().split('T')[0];
+        map[key] = analytics.analytics.scansByDate[key] || 0;
+      }
+      return Object.entries(map).map(([date, scans]) => ({ date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), scans }));
+    }
+
     const map: Record<string, number> = {};
     for (let i = 29; i >= 0; i--) {
       const d = new Date();
@@ -38,55 +58,86 @@ const Analytics: React.FC = () => {
     });
 
     return Object.entries(map).map(([date, scans]) => ({ date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), scans }));
-  }, [scans]);
+  }, [scans, analytics, mode]);
 
   const weeklyData = useMemo(() => {
+    if (mode === 'demo') {
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      return days.map(day => ({ day, scans: Math.floor(Math.random() * 100) + 20 }));
+    }
+
     const map: Record<string, number> = { Mon:0, Tue:0, Wed:0, Thu:0, Fri:0, Sat:0, Sun:0 };
     scans.forEach(s => {
       const day = new Date(s.createdAt).toLocaleDateString('en-US', { weekday: 'short' });
       map[day] = (map[day] || 0) + 1;
     });
     return Object.entries(map).map(([day, scans]) => ({ day, scans }));
-  }, [scans]);
+  }, [scans, mode]);
 
   const deviceData = useMemo(() => {
+    if (mode === 'demo') return demoDeviceData;
+
+    if (analytics?.analytics?.devices) {
+      return Object.entries(analytics.analytics.devices).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
+    }
+
     const counts: Record<string, number> = {};
     scans.forEach(s => { const t = s.device?.type || 'desktop'; counts[t] = (counts[t]||0)+1; });
     return Object.entries(counts).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
-  }, [scans]);
+  }, [scans, analytics, mode]);
 
   const topQRCodes = useMemo(() => {
+    if (mode === 'demo') return demoTopQRCodes;
+
+    if (analytics?.analytics?.topQRCodes) {
+      return analytics.analytics.topQRCodes.map((t: any) => ({ name: t.name || 'Untitled', scans: t.count }));
+    }
+
     const groups: Record<string, number> = {};
     scans.forEach(s => { const name = s.qrCode?.name || 'Unknown'; groups[name] = (groups[name]||0)+1; });
     return Object.entries(groups).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([name, scans]) => ({ name, scans }));
-  }, [scans]);
-
+  }, [scans, analytics, mode]);
   const qrTypeDistribution = useMemo(() => {
     const counts = qrCodes.reduce((acc, qr) => { acc[qr.type] = (acc[qr.type]||0)+1; return acc; }, {} as Record<string, number>);
     return Object.entries(counts).map(([name, value]) => ({ name, value }));
   }, [qrCodes]);
 
   const locationData = useMemo(() => {
+    if (mode === 'demo') return demoLocations;
+
+    if (analytics?.analytics?.countries) {
+      return Object.entries(analytics.analytics.countries).map(([country, scans]) => ({ country, scans }));
+    }
+
     const counts: Record<string, number> = {};
     scans.forEach(s => { const c = s.location?.country || 'Unknown'; counts[c] = (counts[c]||0)+1; });
     return Object.entries(counts).map(([country, scans]) => ({ country, scans })).slice(0, 10);
-  }, [scans]);
+  }, [scans, analytics, mode]);
 
-  // Load scans for user
+  // Load scans & analytics for user when in REAL mode
   useEffect(() => {
     let mounted = true;
     const load = async () => {
+      if (mode === 'demo') {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
-        const res = await scansAPI.getAll();
+        const [scanRes, analyticsRes] = await Promise.all([
+          scansAPI.getAll(),
+          scansAPI.getAnalytics(),
+        ]);
         if (!mounted) return;
-        setScans(res.scans || []);
+        setScans(scanRes.scans || []);
+        setAnalytics(analyticsRes);
       } catch (err: any) {
         if (err?.response?.status === 401) {
           message.error('Session expired, please sign in again');
           signout();
         } else {
-          message.error('Failed to load scans');
+          message.error('Failed to load scans/analytics');
         }
       } finally {
         if (mounted) setLoading(false);
@@ -95,7 +146,13 @@ const Analytics: React.FC = () => {
 
     load();
     return () => { mounted = false; };
-  }, [signout]);
+  }, [signout, mode]);
+  const demoScans = useMemo(() => getDemoScansOverTime(), []);
+  const demoTotalScans = useMemo(() => demoScans.reduce((acc, d) => acc + d.scans, 0), [demoScans]);
+
+  const displayedTotalScans = mode === 'real' ? (analytics?.totalScans ?? scans.length) : demoTotalScans;
+  const avgScansPerQR = qrCodes.length ? Math.round(displayedTotalScans / qrCodes.length) : 0;
+
   const recentActivity = useMemo(() => {
     return qrCodes.slice(0, 5).map((qr, i) => ({
       key: qr.id,
@@ -148,9 +205,19 @@ const Analytics: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="animate-fade-in space-y-6">
-        <div>
-          <Title level={2} className="!mb-1">Analytics Overview</Title>
-          <Text type="secondary">Track performance across all your QR codes</Text>
+        <div className="flex items-center justify-between">
+          <div>
+            <Title level={2} className="!mb-1">Analytics Overview</Title>
+            <Text type="secondary">Track performance across all your QR codes</Text>
+          </div>
+          <div>
+            <Segmented
+              options={[{ label: 'Real', value: 'real' }, { label: 'Demo', value: 'demo' }]}
+              value={mode}
+              onChange={(val: string | number) => setMode(val as 'real' | 'demo')}
+              size="middle"
+            />
+          </div>
         </div>
 
         {/* Stats Overview */}
@@ -159,7 +226,7 @@ const Analytics: React.FC = () => {
             <Card className="hover:shadow-md transition-shadow border-l-4 border-l-primary">
               <Statistic 
                 title="Total Scans" 
-                value={totalScans || 156} 
+                value={displayedTotalScans || 0} 
                 prefix={<Eye size={20} className="text-primary mr-2" />}
                 valueStyle={{ color: '#6366f1', fontSize: '28px' }}
               />
@@ -181,7 +248,7 @@ const Analytics: React.FC = () => {
             <Card className="hover:shadow-md transition-shadow border-l-4 border-l-orange-500">
               <Statistic 
                 title="Avg. Scans/QR" 
-                value={qrCodes.length ? Math.round(totalScans / qrCodes.length) : 24} 
+                value={avgScansPerQR || 24} 
                 prefix={<TrendingUp size={20} className="text-orange-500 mr-2" />}
                 valueStyle={{ color: '#f59e0b', fontSize: '28px' }}
               />
@@ -192,7 +259,7 @@ const Analytics: React.FC = () => {
             <Card className="hover:shadow-md transition-shadow border-l-4 border-l-purple-500">
               <Statistic 
                 title="Unique Visitors" 
-                value={Math.round((totalScans || 156) * 0.7)} 
+                value={Math.round((displayedTotalScans || 0) * 0.7)} 
                 prefix={<Users size={20} className="text-purple-500 mr-2" />}
                 valueStyle={{ color: '#8b5cf6', fontSize: '28px' }}
               />

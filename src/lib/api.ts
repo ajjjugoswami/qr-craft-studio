@@ -10,20 +10,17 @@ const api = axios.create({
   },
 });
 
-// Add token to requests
+// Add token to requests (use `qc_auth` only)
 api.interceptors.request.use(
   (config) => {
-    // Support both legacy 'token' and our stored 'qc_auth' object
-    let token = localStorage.getItem('token');
-    if (!token) {
-      const stored = localStorage.getItem('qc_auth');
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          token = parsed?.token ?? null;
-        } catch (err) {
-          // ignore parse errors
-        }
+    let token: string | null = null;
+    const stored = localStorage.getItem('qc_auth');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        token = parsed?.token ?? null;
+      } catch (err) {
+        // ignore parse errors
       }
     }
 
@@ -41,7 +38,12 @@ api.interceptors.response.use(
   (error) => {
     if (error?.response?.status === 401) {
       // clear stored auth and redirect to signin
-      try { localStorage.removeItem('qc_auth'); localStorage.removeItem('token'); } catch (e) {}
+      try {
+        localStorage.removeItem('qc_auth');
+      } catch (e) {
+        // ignore
+        console.warn('Failed to clear local auth:', e);
+      }
       if (typeof window !== 'undefined') {
         window.location.href = '/signin';
       }
@@ -182,6 +184,12 @@ export const scansAPI = {
     return response.data;
   },
   
+  // Get aggregated analytics for the current user (across all QR codes)
+  getAnalytics: async () => {
+    const response = await api.get('/scans/analytics');
+    return response.data;
+  },
+
   // Get scans by QR code ID
   getByQRCodeId: async (id: string) => {
     const response = await api.get(`/qrcodes/${id}/scans`);
