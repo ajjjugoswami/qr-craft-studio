@@ -18,6 +18,7 @@ import Submissions from "./pages/Submissions";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 
 const queryClient = new QueryClient();
 
@@ -63,7 +64,7 @@ const App = () => (
               />
               <Route path="/faqs" element={<FAQs />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/submissions" element={<ProtectedRoute><Submissions /></ProtectedRoute>} />
+              <Route path="/submissions" element={<AdminRoute><Submissions /></AdminRoute>} />
 
               {/* Public redirect route for scanned QR codes (no auth required) */}
               <Route path="/r/:id" element={<Redirector />} />

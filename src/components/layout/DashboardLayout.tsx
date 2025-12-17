@@ -48,12 +48,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       icon: <Mail size={18} />,
       label: 'Contact Us',
     },
-    {
+  ];
+
+  // Show submissions only for admin users
+  if (user?.isAdmin) {
+    menuItems.push({
       key: '/submissions',
       icon: <MessageSquare size={18} />,
       label: 'Submissions',
-    },
-  ];
+    });
+  }
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
