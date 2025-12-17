@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Tabs, Row, Col, Tag } from 'antd';
+import { Typography, Tabs, Row, Col, Tag, Pagination } from 'antd';
 import {
   AppstoreOutlined,
   StarOutlined,
@@ -57,10 +57,21 @@ const QRDesignTemplates: React.FC<QRDesignTemplatesProps> = ({
   onStyleChange,
 }) => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const pageSize = 12;
 
   const filteredTemplates = activeCategory === 'all' 
     ? designTemplates 
     : designTemplates.filter(t => t.category === activeCategory);
+
+  const totalTemplates = filteredTemplates.length;
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const currentTemplates = filteredTemplates.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const handleSelectTemplate = (template: DesignTemplate) => {
     const templateStyling = { ...template.styling };
@@ -98,18 +109,20 @@ const QRDesignTemplates: React.FC<QRDesignTemplatesProps> = ({
     <div className="animate-fade-in">
       <div className="mb-6">
         <Title level={4} className="!mb-1">Choose Design Template</Title>
-        <Text type="secondary">Optional: Pick a pre-designed template to apply professional styling instantly</Text>
       </div>
 
       <Tabs
         activeKey={activeCategory}
-        onChange={setActiveCategory}
+        onChange={(key) => {
+          setActiveCategory(key);
+          setCurrentPage(1); // Reset to first page when category changes
+        }}
         items={tabItems}
         className="mb-6"
       />
 
       <Row gutter={[16, 16]}>
-        {filteredTemplates.map((template) => (
+        {currentTemplates.map((template) => (
           <Col key={template.id} xs={12} sm={8} md={6}>
             <div
               onClick={() => handleSelectTemplate(template)}
@@ -137,6 +150,20 @@ const QRDesignTemplates: React.FC<QRDesignTemplatesProps> = ({
           </Col>
         ))}
       </Row>
+
+      {totalTemplates > pageSize && (
+        <div className="flex justify-center mt-8">
+          <Pagination
+            current={currentPage}
+            total={totalTemplates}
+            pageSize={pageSize}
+            onChange={handlePageChange}
+            showSizeChanger={false}
+            showQuickJumper={false}
+            showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} templates`}
+          />
+        </div>
+      )}
     </div>
   );
 };

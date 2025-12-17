@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Input, Segmented } from 'antd';
+import { Typography, Input, Segmented, Pagination } from 'antd';
 import { SearchOutlined, CheckCircleFilled } from '@ant-design/icons';
 import { QRTemplate, defaultTemplates } from '../../types/qrcode';
 
@@ -37,12 +37,28 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
 }) => {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 12;
 
   const filteredTemplates = defaultTemplates.filter((template) => {
     const matchesSearch = template.name.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = category === 'all' || getCategoryForTemplate(template) === category;
     return matchesSearch && matchesCategory;
   });
+
+  const totalTemplates = filteredTemplates.length;
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const currentTemplates = filteredTemplates.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setCategory(value);
+    setCurrentPage(1); // Reset to first page when category changes
+  };
 
   return (
     <div className="animate-fade-in">
@@ -56,7 +72,10 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
           placeholder="Search templates..."
           prefix={<SearchOutlined className="text-muted-foreground" />}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1); // Reset to first page when search changes
+          }}
           size="large"
           className="max-w-md"
           style={{display:"none"}}
@@ -64,14 +83,14 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
         
         <Segmented
           value={category}
-          onChange={(value) => setCategory(value as string)}
+          onChange={handleCategoryChange}
           options={categories}
           size="middle"
         />
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {filteredTemplates.map((template) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+        {currentTemplates.map((template) => (
           <div
             key={template.id}
             className={`
@@ -125,6 +144,20 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
           </div>
         ))}
       </div>
+
+      {totalTemplates > pageSize && (
+        <div className="flex justify-center mt-8">
+          <Pagination
+            current={currentPage}
+            total={totalTemplates}
+            pageSize={pageSize}
+            onChange={handlePageChange}
+            showSizeChanger={false}
+            showQuickJumper={false}
+            showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} templates`}
+          />
+        </div>
+      )}
 
       {filteredTemplates.length === 0 && (
         <div className="text-center py-12">
