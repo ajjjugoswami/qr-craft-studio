@@ -88,16 +88,13 @@
 
 .ant-menu-item {
   border-radius: 8px !important;
-  margin: 4px 8px !important;
+  /* more right-side gap so selected highlights don't touch the sider border */
+  margin: 4px 12px !important;
 }
 
 .ant-menu-item-selected {
   background: hsl(var(--sidebar-accent)) !important;
   color: hsl(var(--sidebar-primary)) !important;
-}
-
-.ant-menu-item:hover:not(.ant-menu-item-selected) {
-  background: hsl(var(--muted)) !important;
 }
 
 .ant-btn-primary {

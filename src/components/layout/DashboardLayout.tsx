@@ -68,15 +68,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         }}
         className="shadow-sm"
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full pr-3">
           {/* Logo & Brand */}
-          <div className="p-4 flex items-center gap-3 border-b border-border">
-            <div 
-              className={`rounded-xl bg-primary flex items-center justify-center transition-all w-11 h-11`}
-            >
-              <QrCode size={24} className="text-white" />
-            </div>
-            <div className="flex flex-col">
+          <div className="p-2 flex items-center gap-3 border-b border-border">
+            
+              <img src="/logo.png" alt="QR Studio" className="w-16 h-16 object-contain" />
+             <div className="flex flex-col">
               <Text strong className="text-lg leading-tight">
                 QR Studio
               </Text>

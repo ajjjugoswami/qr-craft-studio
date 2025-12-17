@@ -70,9 +70,7 @@ const SignUp: React.FC = () => {
         {/* Logo Header */}
         <div className="px-6 sm:px-12 lg:px-16 xl:px-20 pt-6">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-lg bg-[#162D3A] flex items-center justify-center">
-              <QrCode className="w-5 h-5 text-white" />
-            </div>
+           <img src="/logo.png" alt="QR Studio" className="w-16 h-16 object-contain" />
             <span className="text-lg font-bold text-foreground">QR Studio</span>
           </div>
         </div>
