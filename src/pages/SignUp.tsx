@@ -22,13 +22,7 @@ const SignUp: React.FC = () => {
     if (user) navigate('/dashboard');
   }, [user, navigate]);
 
-  if (authLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-background">
-        <Spin size="large" />
-      </div>
-    );
-  }
+ 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
