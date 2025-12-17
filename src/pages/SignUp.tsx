@@ -62,67 +62,66 @@ const SignUp: React.FC = () => {
       {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 h-full flex flex-col">
         {/* Logo Header */}
-        <div className="px-6 sm:px-12 lg:px-16 xl:px-20 pt-6">
-          <div className="flex items-center gap-2">
+        <div className="px-6 sm:px-12 lg:px-16 xl:px-20 pt-8">
+          <div className="flex items-center gap-3">
            <img src="/logo.png" alt="QR Studio" className="w-16 h-16 object-contain" />
-            <span className="text-lg font-bold text-foreground">QR Studio</span>
+            <span className="text-xl font-bold text-foreground">QR Studio</span>
           </div>
         </div>
 
         <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-16 xl:px-20">
           <div className="max-w-[480px] mx-auto w-full">
             {/* Header */}
-            <div className="mb-4">
-              <h1 className="text-2xl sm:text-[28px] font-semibold text-foreground mb-2 flex items-center gap-2">
+            <div className="mb-6">
+              <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3 flex items-center gap-2">
                 Create Account 
               </h1>
-              <p className="text-[#8A8A8A] text-[13px] leading-relaxed">
+              <p className="text-[#8A8A8A] text-sm leading-relaxed">
                 Start your journey today.
                 <br className="hidden sm:block" />
-                Sign up to create and manage your QR codes.
               </p>
             </div>
 
             {/* Features */}
-            <div className="flex gap-4 mb-4">
-              <div className="flex items-center gap-1.5 text-xs text-[#8A8A8A]">
-                <Shield className="w-3.5 h-3.5 text-emerald-500" />
+            <div className="flex gap-6 mb-6">
+              <div className="flex items-center gap-2 text-sm text-[#8A8A8A]">
+                <Shield className="w-4 h-4 text-emerald-500" />
                 <span>Secure</span>
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-[#8A8A8A]">
-                <Zap className="w-3.5 h-3.5 text-amber-500" />
+              <div className="flex items-center gap-2 text-sm text-[#8A8A8A]">
+                <Zap className="w-4 h-4 text-amber-500" />
                 <span>Fast</span>
               </div>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="text-xs font-medium text-foreground mb-1 block">Full Name</label>
+                <label className="text-sm font-medium text-foreground mb-2 block">Full Name</label>
                 <Input
                   size="large"
                   type="text"
                   placeholder="John Doe"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="h-10 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-sm"
+                  className="h-11 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-sm"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-medium text-foreground mb-1 block">Email</label>
+                <label className="text-sm font-medium text-foreground mb-2 block">Email</label>
                 <Input
                   size="large"
                   type="email"
                   placeholder="Example@email.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="h-10 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-sm"
+                  className="h-11 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-sm"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-medium text-foreground mb-1 block">Password</label>
+                <label className="text-sm font-medium text-foreground mb-2 block">Password</label>
                 <Input
                   size="large"
                   type={showPassword ? 'text' : 'password'}
@@ -138,12 +137,12 @@ const SignUp: React.FC = () => {
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   }
-                  className="h-10 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-sm"
+                  className="h-11 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-sm"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-medium text-foreground mb-1 block">Confirm Password</label>
+                <label className="text-sm font-medium text-foreground mb-2 block">Confirm Password</label>
                 <Input
                   size="large"
                   type={showConfirmPassword ? 'text' : 'password'}
@@ -159,7 +158,7 @@ const SignUp: React.FC = () => {
                       {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   }
-                  className="h-10 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-sm"
+                  className="h-11 rounded-lg border-0 bg-[#F0F5FA] placeholder:text-[#A0AEC0] text-sm"
                 />
               </div>
 
@@ -167,23 +166,23 @@ const SignUp: React.FC = () => {
                 type="primary" 
                 htmlType="submit" 
                 loading={loading} 
-                className="w-full h-10 text-sm font-semibold rounded-lg bg-[#162D3A] hover:bg-[#1a3847] border-none !mt-4"
+                className="w-full h-11 text-sm font-semibold rounded-lg bg-[#162D3A] hover:bg-[#1a3847] border-none !mt-4"
               >
                 Sign up
               </Button>
             </form>
 
             {/* Divider */}
-            <div className="flex items-center my-4">
+            <div className="flex items-center my-6">
               <div className="flex-1 h-px bg-[#E8E8E8]"></div>
-              <span className="px-3 text-[#8A8A8A] text-xs">Or</span>
+              <span className="px-4 text-[#8A8A8A] text-sm">Or</span>
               <div className="flex-1 h-px bg-[#E8E8E8]"></div>
             </div>
 
             {/* Social Button */}
             <button
               onClick={handleGoogleSignUp}
-              className="w-full h-10 flex items-center justify-center gap-2 rounded-lg bg-[#F9F5EB] hover:bg-[#f5f0e3] transition-colors text-foreground text-sm font-medium"
+              className="w-full h-11 flex items-center justify-center gap-3 rounded-lg bg-[#F9F5EB] hover:bg-[#f5f0e3] transition-colors text-foreground text-sm font-medium"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -195,9 +194,9 @@ const SignUp: React.FC = () => {
             </button>
 
             {/* Sign In Link */}
-            <div className="text-center mt-4">
+            <div className="text-center mt-6">
               <span className="text-[#8A8A8A] text-sm">Already have an account? </span>
-              <Link to="/signin" className="text-primary hover:text-primary/80 text-sm font-semibold transition-colors">
+              <Link to="/sign-in" className="text-primary hover:text-primary/80 text-sm font-semibold transition-colors">
                 Sign in
               </Link>
             </div>
@@ -205,8 +204,8 @@ const SignUp: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="text-center py-4">
-          <p className="text-[#8A8A8A] text-[11px]">© 2023 ALL RIGHTS RESERVED</p>
+        <div className="text-center py-6">
+          <p className="text-[#8A8A8A] text-xs">© 2026 ALL RIGHTS RESERVED</p>
         </div>
       </div>
 

@@ -40,7 +40,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/signin" element={<SignIn />} />
+              <Route path="/sign-in" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
               <Route
                 path="/dashboard"

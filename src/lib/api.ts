@@ -45,7 +45,7 @@ api.interceptors.response.use(
         console.warn('Failed to clear local auth:', e);
       }
       if (typeof window !== 'undefined') {
-        window.location.href = '/signin';
+        window.location.href = '/sign-in';
       }
     }
     return Promise.reject(error);
