@@ -215,68 +215,71 @@ const CreateQR: React.FC = () => {
               </Card>
             </Col>
             <Col xs={24} lg={10}>
-              <Card 
-                title="Live Preview" 
-                className="sticky top-6"
-                extra={
+              <div className="lg:sticky lg:top-6">
+                <Card 
+                  title="Live Preview" 
+                  extra={
+                    <Button
+                      type="primary"
+                      icon={<Settings2 size={14} />}
+                      onClick={() => setShowTemplateEditor(true)}
+                    >
+                      Edit Template
+                    </Button>
+                  }
+                >
+                  <div className="flex flex-col items-center">
+                    <QRCodePreview
+                      ref={previewRef}
+                      content={content}
+                      template={template}
+                      styling={styling}
+                      editable={true}
+                      onTemplateChange={setTemplate}
+                      qrId={editingId || undefined}
+                    />
+                    <Text type="secondary" className="text-xs mt-4">
+                      Click text to edit inline • Use "Edit Template" for more options
+                    </Text>
+                  </div>
+                </Card>
+
+                {/* Navigation buttons directly below the Live Preview card */}
+                <div className="mt-4 flex justify-between w-full">
                   <Button
-                    type="primary"
-                    icon={<Settings2 size={14} />}
-                    onClick={() => setShowTemplateEditor(true)}
+                    size="middle"
+                    onClick={handlePrev}
+                    disabled={currentStep === 0}
                   >
-                    Edit Template
+                    Previous
                   </Button>
-                }
-              >
-                <div className="flex flex-col items-center">
-                  <QRCodePreview
-                    ref={previewRef}
-                    content={content}
-                    template={template}
-                    styling={styling}
-                    editable={true}
-                    onTemplateChange={setTemplate}
-                    qrId={editingId || undefined}
-                  />
-                  <Text type="secondary" className="text-xs mt-4">
-                    Click text to edit inline • Use "Edit Template" for more options
-                  </Text>
+
+                  {currentStep === steps.length - 1 ? (
+                    <Button
+                      type="primary"
+                      size="middle"
+                      onClick={handleSave}
+                      loading={saving}
+                      disabled={saving}
+                    >
+                      {saving ? 'Saving...' : 'Save QR Code'}
+                    </Button>
+                  ) : (
+                    <Button
+                      type="primary"
+                      size="middle"
+                      onClick={handleNext}
+                    >
+                      Next
+                    </Button>
+                  )}
                 </div>
-              </Card>
+              </div>
             </Col>
           </Row>
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between">
-          <Button
-            size="large"
-            onClick={handlePrev}
-            disabled={currentStep === 0}
-          >
-            Previous
-          </Button>
 
-          {currentStep === steps.length - 1 ? (
-            <Button
-              type="primary"
-              size="large"
-              onClick={handleSave}
-              loading={saving}
-              disabled={saving}
-            >
-              {saving ? 'Saving...' : 'Save QR Code'}
-            </Button>
-          ) : (
-            <Button
-              type="primary"
-              size="large"
-              onClick={handleNext}
-            >
-              Next
-            </Button>
-          )}
-        </div>
       </div>
 
       {/* Template Editor Modal */}
