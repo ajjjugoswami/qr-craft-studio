@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Card, Input, Button, Typography, Divider, message } from 'antd';
 import { QrCode, Mail, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 const { Title, Text, Paragraph } = Typography;
 
 const Auth: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -17,27 +19,40 @@ const Auth: React.FC = () => {
     password: '',
   });
 
+  // Redirect to dashboard if already signed in
+  React.useEffect(() => {
+    if (user) navigate('/dashboard');
+  }, [user, navigate]);
+
+  const { signin, signup } = useAuth();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.email || !formData.password) {
       message.error('Please fill in all required fields');
       return;
     }
-    
+
     if (!isLogin && !formData.name) {
       message.error('Please enter your name');
       return;
     }
 
     setLoading(true);
-    
-    // Simulate auth (replace with actual Supabase auth)
-    setTimeout(() => {
-      setLoading(false);
-      message.success(isLogin ? 'Welcome back!' : 'Account created successfully!');
+
+    try {
+      if (isLogin) {
+        await signin(formData.email, formData.password);
+      } else {
+        await signup(formData.name, formData.email, formData.password);
+      }
       navigate('/dashboard');
-    }, 1000);
+    } catch (err) {
+      // errors are displayed inside hook via antd message
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

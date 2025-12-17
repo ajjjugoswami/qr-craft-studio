@@ -87,27 +87,19 @@ const CreateQR: React.FC = () => {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!name.trim()) {
       message.error('Please enter a name for your QR code');
       return;
     }
 
-    const qrCode: QRCodeData = {
-      id: Date.now().toString(),
-      name: name.trim(),
-      type,
-      content,
-      template,
-      styling,
-      createdAt: new Date().toISOString(),
-      scans: 0,
-      status: 'active',
-    };
-
-    saveQRCode(qrCode);
-    message.success('QR Code saved with all configurations!');
-    navigate('/dashboard');
+    try {
+      const created = await saveQRCode({ name: name.trim(), type, content, template, styling });
+      message.success('QR Code saved with all configurations!');
+      navigate('/dashboard');
+    } catch (err) {
+      // error messages are handled in the hook
+    }
   };
 
   const handleClearDraft = () => {

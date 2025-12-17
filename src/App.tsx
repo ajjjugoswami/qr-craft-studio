@@ -5,7 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ConfigProvider } from "antd";
 import Index from "./pages/Index";
-import Auth from "./pages/Auth";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
 import CreateQR from "./pages/CreateQR";
 import Analytics from "./pages/Analytics";
@@ -14,6 +15,8 @@ import FAQs from "./pages/FAQs";
 import Contact from "./pages/Contact";
 import Submissions from "./pages/Submissions";
 import NotFound from "./pages/NotFound";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -31,20 +34,35 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/create" element={<CreateQR />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/analytics/:id" element={<QRAnalytics />} />
-            <Route path="/faqs" element={<FAQs />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/submissions" element={<Submissions />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route
+                path="/dashboard"
+                element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
+              />
+              <Route
+                path="/create"
+                element={<ProtectedRoute><CreateQR /></ProtectedRoute>}
+              />
+              <Route
+                path="/analytics"
+                element={<ProtectedRoute><Analytics /></ProtectedRoute>}
+              />
+              <Route
+                path="/analytics/:id"
+                element={<ProtectedRoute><QRAnalytics /></ProtectedRoute>}
+              />
+              <Route path="/faqs" element={<FAQs />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/submissions" element={<ProtectedRoute><Submissions /></ProtectedRoute>} />
+              <Route path="*" element={<NotFound />}/>
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
       </TooltipProvider>
     </ConfigProvider>
   </QueryClientProvider>

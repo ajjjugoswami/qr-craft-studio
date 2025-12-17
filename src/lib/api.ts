@@ -1,0 +1,201 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import axios from 'axios';
+
+export const API_URL = 'https://be-link-generator.vercel.app/api';
+
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add token to requests
+api.interceptors.request.use(
+  (config) => {
+    // Support both legacy 'token' and our stored 'qc_auth' object
+    let token = localStorage.getItem('token');
+    if (!token) {
+      const stored = localStorage.getItem('qc_auth');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          token = parsed?.token ?? null;
+        } catch (err) {
+          // ignore parse errors
+        }
+      }
+    }
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Auth API
+export const authAPI = {
+  signup: async (data: { name: string; email: string; password: string }) => {
+    const response = await api.post('/auth/signup', data);
+    return response.data;
+  },
+  
+  signin: async (data: { email: string; password: string }) => {
+    const response = await api.post('/auth/signin', data);
+    return response.data;
+  },
+  
+  getProfile: async () => {
+    const response = await api.get('/auth/profile');
+    return response.data;
+  },
+
+  // Get current user (me)
+  getCurrentUser: async () => {
+    const response = await api.get('/auth/me');
+    return response.data;
+  },
+};
+
+// QR Code API
+export const qrCodeAPI = {
+  // Get all QR codes for current user
+  getAll: async () => {
+    const response = await api.get('/qrcodes');
+    return response.data;
+  },
+
+  // Get single QR code
+  getOne: async (id: string) => {
+    const response = await api.get(`/qrcodes/${id}`);
+    return response.data;
+  },
+
+  // Create new QR code
+  create: async (data: {
+    type: 'url' | 'text' | 'email' | 'phone' | 'sms' | 'wifi' | 'location' | 'upi' | 'vcard' | 'instagram' | 'facebook' | 'youtube' | 'whatsapp';
+    content: string;
+    name: string;
+    template?: {
+      id: string;
+      name: string;
+      backgroundColor: string;
+      textColor: string;
+      title: string;
+      subtitle: string;
+      titleFontSize?: number;
+      subtitleFontSize?: number;
+      titleFontWeight?: 'normal' | 'medium' | 'semibold' | 'bold';
+      subtitleFontWeight?: 'normal' | 'medium' | 'semibold' | 'bold';
+      fontFamily?: string;
+      textAlign?: 'left' | 'center' | 'right';
+      qrPosition?: 'bottom' | 'center' | 'top';
+      borderRadius?: number;
+      showGradient?: boolean;
+      gradientColor?: string;
+      gradientDirection?: 'to-bottom' | 'to-right' | 'to-bottom-right' | 'to-top-right';
+      padding?: number;
+      shadowIntensity?: 'none' | 'light' | 'medium' | 'strong';
+      decorativeStyle?: 'none' | 'circles' | 'dots' | 'lines' | 'geometric';
+      accentColor?: string;
+    };
+    styling?: {
+      fgColor: string;
+      bgColor: string;
+      size: number;
+      level: 'L' | 'M' | 'Q' | 'H';
+      includeMargin: boolean;
+    };
+    previewImage?: string;
+  }) => {
+    const response = await api.post('/qrcodes', data);
+    return response.data;
+  },
+
+  // Update QR code
+  update: async (id: string, data: any) => {
+    const response = await api.put(`/qrcodes/${id}`, data);
+    return response.data;
+  },
+
+  // Delete QR code
+  delete: async (id: string) => {
+    const response = await api.delete(`/qrcodes/${id}`);
+    return response.data;
+  },
+
+  // Increment scan count
+  incrementScan: async (id: string) => {
+    const response = await api.post(`/qrcodes/${id}/scan`);
+    return response.data;
+  },
+
+  // Get scans for a QR code
+  getScans: async (id: string) => {
+    const response = await api.get(`/qrcodes/${id}/scans`);
+    return response.data;
+  },
+
+  // Get analytics for a QR code
+  getAnalytics: async (id: string) => {
+    const response = await api.get(`/qrcodes/${id}/analytics`);
+    return response.data;
+  },
+  
+  // Track scan (for redirect page)
+  trackScan: async (id: string) => {
+    const response = await api.post(`/qrcodes/${id}/scan`);
+    return response.data;
+  },
+};
+
+// Uploads API
+export const uploadsAPI = {
+  uploadLogo: async (dataUrl: string) => {
+    const response = await api.post('/uploads/logo', { dataUrl });
+    return response.data;
+  },
+};
+
+// Scans API
+export const scansAPI = {
+  // Get all scans for current user
+  getAll: async () => {
+    const response = await api.get('/scans');
+    return response.data;
+  },
+  
+  // Get scans by QR code ID
+  getByQRCodeId: async (id: string) => {
+    const response = await api.get(`/qrcodes/${id}/scans`);
+    return response.data;
+  },
+};
+
+// Contact API
+export const contactAPI = {
+  create: async (data: { name: string; email: string; subject: string; message: string }) => {
+    const response = await api.post('/contacts', data);
+    return response.data;
+  },
+  
+  getAll: async () => {
+    const response = await api.get('/contacts');
+    return response.data;
+  },
+  
+  updateStatus: async (id: string, status: string) => {
+    const response = await api.put(`/contacts/${id}`, { status });
+    return response.data;
+  },
+  
+  delete: async (id: string) => {
+    const response = await api.delete(`/contacts/${id}`);
+    return response.data;
+  },
+};
+
+export default api;
+

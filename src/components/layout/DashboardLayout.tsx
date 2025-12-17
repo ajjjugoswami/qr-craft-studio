@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Layout, Menu, Avatar, Typography, Tooltip } from 'antd';
+import { useAuth } from '@/hooks/useAuth';
 import {
   QrCode,
   BarChart3,
@@ -24,6 +25,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, signout } = useAuth();
 
   const menuItems = [
     {
@@ -126,35 +128,34 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           {/* User Section */}
           <div className="p-3 border-t border-border">
             <div className={`flex items-center gap-3 p-2 rounded-xl hover:bg-muted transition-colors cursor-pointer ${collapsed ? 'justify-center' : ''}`}>
-              <Avatar
-                style={{ backgroundColor: 'hsl(var(--primary))' }}
-                size={36}
-              >
-                A
-              </Avatar>
-              {!collapsed && (
-                <div className="flex flex-col flex-1 min-w-0">
-                  <Text strong className="text-sm truncate">
-                    User
-                  </Text>
-                  <Text type="secondary" className="text-xs truncate">
-                    user@example.com
-                  </Text>
-                </div>
-              )}
-            </div>
+            <Avatar
+              style={{ backgroundColor: 'hsl(var(--primary))' }}
+              size={36}
+            >
+              {/** Show first char of name if available */}
+              {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+            </Avatar>
+            {!collapsed && (
+              <div className="flex flex-col flex-1 min-w-0">
+                <Text strong className="text-sm truncate">{user?.name ?? 'User'}</Text>
+                <Text type="secondary" className="text-xs truncate">{user?.email ?? ''}</Text>
+              </div>
+            )}
+          </div>
           </div>
 
           {/* Logout */}
           <div className="p-3 border-t border-border">
             <Tooltip title={collapsed ? 'Logout' : ''} placement="right">
-              <div
-                className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border border-destructive/30 text-destructive hover:bg-destructive/5 transition-colors ${collapsed ? 'justify-center' : ''}`}
-              >
-                <LogOut size={18} />
-                {!collapsed && <span className="font-medium">Logout</span>}
-              </div>
-            </Tooltip>
+            <div
+              role="button"
+              onClick={() => signout()}
+              className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border border-destructive/30 text-destructive hover:bg-destructive/5 transition-colors ${collapsed ? 'justify-center' : ''}`}
+            >
+              <LogOut size={18} />
+              {!collapsed && <span className="font-medium">Logout</span>}
+            </div>
+          </Tooltip>
           </div>
         </div>
       </Sider>
