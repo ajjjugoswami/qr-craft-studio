@@ -35,6 +35,21 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Global response handler for auth errors
+api.interceptors.response.use(
+  (res) => res,
+  (error) => {
+    if (error?.response?.status === 401) {
+      // clear stored auth and redirect to signin
+      try { localStorage.removeItem('qc_auth'); localStorage.removeItem('token'); } catch (e) {}
+      if (typeof window !== 'undefined') {
+        window.location.href = '/signin';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Auth API
 export const authAPI = {
   signup: async (data: { name: string; email: string; password: string }) => {

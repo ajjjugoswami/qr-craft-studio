@@ -9,10 +9,14 @@ const { TextArea } = Input;
 const Contact: React.FC = () => {
   const [form] = Form.useForm();
 
-  const handleSubmit = (values: Record<string, string>) => {
-    console.log('Contact form submitted:', values);
-    message.success('Message sent successfully!');
-    form.resetFields();
+  const handleSubmit = async (values: Record<string, string>) => {
+    try {
+      const res = await (await import('@/lib/api')).contactAPI.create(values as any);
+      message.success(res?.message || 'Message sent successfully!');
+      form.resetFields();
+    } catch (err: any) {
+      message.error(err?.response?.data?.message || 'Failed to send message');
+    }
   };
 
   return (

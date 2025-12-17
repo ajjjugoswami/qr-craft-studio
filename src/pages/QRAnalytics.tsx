@@ -1,11 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Typography, Card, Table, Tag, Button, Empty, Statistic, Row, Col } from 'antd';
+import { Typography, Card, Table, Tag, Button, Empty, Statistic, Row, Col, Spin, message } from 'antd';
 import { ArrowLeft, MapPin, Smartphone, Monitor, Tablet, Globe, Eye, Calendar, TrendingUp } from 'lucide-react';
 import { AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { useQRCodes } from '../hooks/useQRCodes';
 import type { ScanData } from '../types/qrcode';
+import { qrCodeAPI } from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
 
 const { Title, Text } = Typography;
 
@@ -51,38 +53,122 @@ const QRAnalytics: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getQRCode } = useQRCodes();
+  const { signout } = useAuth();
 
   const qrCode = id ? getQRCode(id) : undefined;
-  const scanData = useMemo(() => generateMockScanData(qrCode?.scans || 15), [qrCode?.scans]);
+
+  const [loading, setLoading] = useState(true);
+  const [scanData, setScanData] = useState<ScanData[]>([]);
+  const [analytics, setAnalytics] = useState<any>(null);
+
+  // Fetch analytics and scans
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      if (!id) return;
+      setLoading(true);
+      try {
+        const [aRes, sRes] = await Promise.all([
+          qrCodeAPI.getAnalytics(id),
+          qrCodeAPI.getScans(id),
+        ]);
+
+        if (!mounted) return;
+
+        // aRes: { success, totalScans, analytics }
+        setAnalytics(aRes.analytics ? aRes : { success: true, totalScans: 0, analytics: {} });
+
+        // sRes: { success, count, scans }
+        const scans = (sRes.scans || []).map((s: any) => ({
+          id: s._id,
+          date: new Date(s.createdAt).toLocaleDateString('en-GB'),
+          time: new Date(s.createdAt).toLocaleTimeString('en-GB'),
+          browser: `${s.browser?.name ?? 'Unknown'} ${s.browser?.version ?? ''}`.trim(),
+          os: `${s.os?.name ?? 'Unknown'} ${s.os?.version ?? ''}`.trim(),
+          deviceType: s.device?.type || 'desktop',
+          deviceVendor: s.device?.vendor || '',
+          deviceModel: s.device?.model || '',
+          ipAddress: s.ip || s.ipAddress || '',
+          location: {
+            city: s.location?.city || '',
+            region: s.location?.region || '',
+            country: s.location?.country || '',
+            lat: s.location?.latitude || s.location?.lat || 0,
+            lng: s.location?.longitude || s.location?.lng || 0,
+            timezone: s.location?.timezone || '',
+          },
+        } as ScanData));
+
+        setScanData(scans.length ? scans : generateMockScanData(15));
+
+      } catch (err: any) {
+        if (err?.response?.status === 401) {
+          message.error('Session expired, please sign in again');
+          signout();
+        } else {
+          message.error('Failed to load analytics');
+        }
+        // fallback to mock
+        setScanData(generateMockScanData(qrCode?.scans || 15));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+    return () => { mounted = false; };
+  }, [id, qrCode?.scans, signout]);
 
   // Process data for charts
   const deviceTypeData = useMemo(() => {
+    // Prefer analytics.devices if present
+    if (analytics?.analytics?.devices) {
+      return Object.entries(analytics.analytics.devices).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
+    }
+
     const counts = scanData.reduce((acc, scan) => {
       acc[scan.deviceType] = (acc[scan.deviceType] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
     return Object.entries(counts).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
-  }, [scanData]);
+  }, [scanData, analytics]);
 
   const browserData = useMemo(() => {
+    if (analytics?.analytics?.browsers) {
+      return Object.entries(analytics.analytics.browsers).map(([name, value]) => ({ name, value }));
+    }
+
     const counts = scanData.reduce((acc, scan) => {
       const browser = scan.browser.split(' ')[0];
       acc[browser] = (acc[browser] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
     return Object.entries(counts).map(([name, value]) => ({ name, value })).slice(0, 5);
-  }, [scanData]);
+  }, [scanData, analytics]);
 
   const locationData = useMemo(() => {
+    if (analytics?.analytics?.countries) {
+      return Object.entries(analytics.analytics.countries).map(([name, value]) => ({ name, value }));
+    }
+
     const counts = scanData.reduce((acc, scan) => {
       const loc = `${scan.location.city}, ${scan.location.country}`;
       acc[loc] = (acc[loc] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
     return Object.entries(counts).map(([name, value]) => ({ name, value })).slice(0, 5);
-  }, [scanData]);
+  }, [scanData, analytics]);
 
   const scansOverTime = useMemo(() => {
+    // Prefer analytics scansByDate if present
+    if (analytics?.analytics?.scansByDate) {
+      // analytics.analytics.scansByDate is { 'YYYY-MM-DD': count }
+      const entries = Object.entries(analytics.analytics.scansByDate)
+        .slice(-7)
+        .map(([date, count]) => ({ day: new Date(date).toLocaleDateString('en-US', { weekday: 'short' }), scans: count }));
+      return entries;
+    }
+
     const last7Days = Array.from({ length: 7 }, (_, i) => {
       const d = new Date();
       d.setDate(d.getDate() - (6 - i));
@@ -92,7 +178,7 @@ const QRAnalytics: React.FC = () => {
       day,
       scans: Math.floor(Math.random() * 10) + 1,
     }));
-  }, []);
+  }, [analytics]);
 
   const columns = [
     { title: 'Scan Date', dataIndex: 'date', key: 'date', width: 100 },
@@ -119,7 +205,8 @@ const QRAnalytics: React.FC = () => {
       width: 250,
       render: (_: any, record: ScanData) => (
         <span className="text-xs">
-          {record.location.city}, {record.location.region}, {record.location.country} (Lat {record.location.lat}, Lng {record.location.lng} - {record.location.timezone})
+          {record.location.city}, {record.location.region}, {record.location.country} {record.location.city ? `(${record.location.city})` : ''}
+          {record.location.lat ? ` (Lat ${record.location.lat}, Lng ${record.location.lng})` : ''}
         </span>
       )
     },
@@ -144,6 +231,19 @@ const QRAnalytics: React.FC = () => {
     return <Monitor size={18} className="text-green-500" />;
   };
 
+  // Show loading while fetching analytics
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <Spin size="large" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const totalScans = analytics?.totalScans ?? scanData.length;
+
   return (
     <DashboardLayout>
       <div className="animate-fade-in space-y-6">
@@ -165,7 +265,7 @@ const QRAnalytics: React.FC = () => {
             <Card className="hover:shadow-md transition-shadow">
               <Statistic 
                 title="Total Scans" 
-                value={scanData.length} 
+                value={totalScans} 
                 prefix={<Eye size={20} className="text-primary mr-2" />}
                 valueStyle={{ color: '#6366f1' }}
               />
@@ -185,7 +285,7 @@ const QRAnalytics: React.FC = () => {
             <Card className="hover:shadow-md transition-shadow">
               <Statistic 
                 title="Unique Locations" 
-                value={locationData.length} 
+                value={(analytics && analytics.analytics && Object.keys(analytics.analytics.countries || {}).length) || locationData.length} 
                 prefix={<MapPin size={20} className="text-orange-500 mr-2" />}
                 valueStyle={{ color: '#f59e0b' }}
               />

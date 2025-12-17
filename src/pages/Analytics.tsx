@@ -1,9 +1,12 @@
-import React, { useMemo } from 'react';
-import { Typography, Card, Row, Col, Statistic, Table, Tag, Empty } from 'antd';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useMemo, useEffect, useState } from 'react';
+import { Typography, Card, Row, Col, Statistic, Table, Tag, Empty, Spin, message } from 'antd';
 import { Eye, QrCode, TrendingUp, Users, Smartphone, Monitor, Globe } from 'lucide-react';
 import { AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { useQRCodes } from '../hooks/useQRCodes';
+import { scansAPI } from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
 
 const { Title, Text } = Typography;
 
@@ -11,59 +14,88 @@ const CHART_COLORS = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#0
 
 const Analytics: React.FC = () => {
   const { qrCodes } = useQRCodes();
-  
-  const totalScans = useMemo(() => qrCodes.reduce((acc, qr) => acc + qr.scans, 0), [qrCodes]);
+  const { signout } = useAuth();
+
+  const [loading, setLoading] = useState(true);
+  const [scans, setScans] = useState<any[]>([]);
+
+  const totalScans = useMemo(() => scans.length || qrCodes.reduce((acc, qr) => acc + qr.scans, 0), [scans, qrCodes]);
   const activeQRs = useMemo(() => qrCodes.filter(qr => qr.status === 'active').length, [qrCodes]);
 
-  // Mock data for charts
+  // Scans timeline (last 30 days) computed from scans
   const scansOverTime = useMemo(() => {
-    return Array.from({ length: 30 }, (_, i) => {
+    const map: Record<string, number> = {};
+    for (let i = 29; i >= 0; i--) {
       const d = new Date();
-      d.setDate(d.getDate() - (29 - i));
-      return {
-        date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        scans: Math.floor(Math.random() * 50) + 10,
-      };
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().split('T')[0];
+      map[key] = 0;
+    }
+
+    scans.forEach(s => {
+      const key = new Date(s.createdAt).toISOString().split('T')[0];
+      if (map[key] !== undefined) map[key] += 1;
     });
-  }, []);
+
+    return Object.entries(map).map(([date, scans]) => ({ date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), scans }));
+  }, [scans]);
 
   const weeklyData = useMemo(() => {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return days.map(day => ({
-      day,
-      scans: Math.floor(Math.random() * 100) + 20,
-    }));
-  }, []);
+    const map: Record<string, number> = { Mon:0, Tue:0, Wed:0, Thu:0, Fri:0, Sat:0, Sun:0 };
+    scans.forEach(s => {
+      const day = new Date(s.createdAt).toLocaleDateString('en-US', { weekday: 'short' });
+      map[day] = (map[day] || 0) + 1;
+    });
+    return Object.entries(map).map(([day, scans]) => ({ day, scans }));
+  }, [scans]);
 
-  const deviceData = useMemo(() => [
-    { name: 'Mobile', value: 65, icon: Smartphone },
-    { name: 'Desktop', value: 25, icon: Monitor },
-    { name: 'Tablet', value: 10, icon: Globe },
-  ], []);
+  const deviceData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    scans.forEach(s => { const t = s.device?.type || 'desktop'; counts[t] = (counts[t]||0)+1; });
+    return Object.entries(counts).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
+  }, [scans]);
 
   const topQRCodes = useMemo(() => {
-    return [...qrCodes]
-      .sort((a, b) => b.scans - a.scans)
-      .slice(0, 5)
-      .map(qr => ({ name: qr.name, scans: qr.scans, type: qr.type }));
-  }, [qrCodes]);
+    const groups: Record<string, number> = {};
+    scans.forEach(s => { const name = s.qrCode?.name || 'Unknown'; groups[name] = (groups[name]||0)+1; });
+    return Object.entries(groups).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([name, scans]) => ({ name, scans }));
+  }, [scans]);
 
   const qrTypeDistribution = useMemo(() => {
-    const counts = qrCodes.reduce((acc, qr) => {
-      acc[qr.type] = (acc[qr.type] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const counts = qrCodes.reduce((acc, qr) => { acc[qr.type] = (acc[qr.type]||0)+1; return acc; }, {} as Record<string, number>);
     return Object.entries(counts).map(([name, value]) => ({ name, value }));
   }, [qrCodes]);
 
-  const locationData = useMemo(() => [
-    { country: 'India', scans: 450 },
-    { country: 'USA', scans: 320 },
-    { country: 'UK', scans: 180 },
-    { country: 'Germany', scans: 120 },
-    { country: 'Canada', scans: 90 },
-  ], []);
+  const locationData = useMemo(() => {
+    const counts: Record<string, number> = {};
+    scans.forEach(s => { const c = s.location?.country || 'Unknown'; counts[c] = (counts[c]||0)+1; });
+    return Object.entries(counts).map(([country, scans]) => ({ country, scans })).slice(0, 10);
+  }, [scans]);
 
+  // Load scans for user
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      setLoading(true);
+      try {
+        const res = await scansAPI.getAll();
+        if (!mounted) return;
+        setScans(res.scans || []);
+      } catch (err: any) {
+        if (err?.response?.status === 401) {
+          message.error('Session expired, please sign in again');
+          signout();
+        } else {
+          message.error('Failed to load scans');
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    load();
+    return () => { mounted = false; };
+  }, [signout]);
   const recentActivity = useMemo(() => {
     return qrCodes.slice(0, 5).map((qr, i) => ({
       key: qr.id,
