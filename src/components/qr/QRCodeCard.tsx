@@ -8,10 +8,12 @@ import {
   Trash2,
   FileImage,
   FileType,
+  Eye,
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { QRCodeData } from '../../types/qrcode';
 import QRCodePreview from './QRCodePreview';
+import QRCodeOnly from './QRCodeOnly';
 
 const { Text } = Typography;
 
@@ -109,20 +111,15 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
         >
           {/* QR Preview */}
           <div 
-            className="w-full aspect-square rounded-lg flex items-center justify-center mb-3 relative overflow-hidden"
-            style={{ 
-              background: qrCode.template.showGradient && qrCode.template.gradientColor
-                ? `linear-gradient(135deg, ${qrCode.template.backgroundColor} 0%, ${qrCode.template.gradientColor} 100%)`
-                : qrCode.template.backgroundColor 
-            }}
-            onClick={() => setDownloadModalOpen(true)}
+            className="w-full min-h-[150px] rounded-lg flex items-center justify-center mb-3 relative overflow-hidden"
           >
-            <div 
-              className="w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow-sm"
-            >
-              <div 
-                className="w-12 h-12 rounded"
-                style={{ backgroundColor: qrCode.styling.fgColor }}
+            <div className="  flex items-center justify-center bg-white rounded-lg">
+              <QRCodeOnly
+                content={qrCode.content}
+                template={qrCode.template}
+                styling={qrCode.styling}
+                qrId={qrCode.id}
+                size={150}
               />
             </div>
           </div>
@@ -143,6 +140,14 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
 
           {/* Actions Row */}
           <div className="flex items-center justify-between pt-2 border-t border-border">
+            <Tooltip title="Preview">
+              <button
+                className="p-2 rounded hover:bg-muted transition-colors"
+                onClick={() => setDownloadModalOpen(true)}
+              >
+                <Eye size={16} />
+              </button>
+            </Tooltip>
             <Tooltip title="Edit">
               <button
                 className="p-2 rounded hover:bg-muted transition-colors"
@@ -179,15 +184,12 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
                 </button>
               </Tooltip>
             </Popconfirm>
-            <Text className="text-xs text-muted-foreground">
-              {formatDate(qrCode.createdAt)}
-            </Text>
           </div>
         </Card>
 
-        {/* Download Preview Modal */}
+        {/* Preview Modal */}
         <Modal
-          title="Download QR Code Template"
+          title="QR Code Preview"
           open={downloadModalOpen}
           onCancel={() => setDownloadModalOpen(false)}
           footer={null}
@@ -233,7 +235,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
         <div className="flex items-center gap-4">
           {/* QR Preview Mini */}
           <div
-            className="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+            className="w-20 h-20 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
             style={{ 
               background: qrCode.template.showGradient && qrCode.template.gradientColor
                 ? `linear-gradient(135deg, ${qrCode.template.backgroundColor} 0%, ${qrCode.template.gradientColor} 100%)`
@@ -241,10 +243,13 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
             }}
             onClick={() => setDownloadModalOpen(true)}
           >
-            <div className="w-10 h-10 bg-white rounded flex items-center justify-center">
-              <div 
-                className="w-8 h-8 rounded-sm"
-                style={{ backgroundColor: qrCode.styling.fgColor }}
+            <div className="w-16 h-16 bg-white rounded flex items-center justify-center">
+              <QRCodeOnly
+                content={qrCode.content}
+                template={qrCode.template}
+                styling={qrCode.styling}
+                qrId={qrCode.id}
+                size={58}
               />
             </div>
           </div>

@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useEffect, useRef } from 'react';
+import React, { useState, forwardRef, useEffect, useRef, useMemo } from 'react';
 import QRCodeStyling from 'qr-code-styling';
 import { getAppOrigin } from '../../lib/config';
 import { Input, ColorPicker, Slider, Popover } from 'antd';
@@ -45,6 +45,24 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   const [showSubtitleEditor, setShowSubtitleEditor] = useState(false);
   const qrRef = useRef<HTMLDivElement>(null);
   const qrCode = useRef<QRCodeStyling | null>(null);
+
+  // Memoize safe styling to prevent unnecessary recalculations
+  const safeStyling = useMemo(() => ({
+    ...styling,
+    imageOptions: styling.imageOptions || {
+      hideBackgroundDots: true,
+      imageSize: 0.4,
+      margin: 0,
+    },
+    cornersSquareOptions: styling.cornersSquareOptions || {
+      color: styling.fgColor,
+      type: 'square',
+    },
+    cornersDotOptions: styling.cornersDotOptions || {
+      color: styling.fgColor,
+      type: 'square',
+    },
+  }), [styling]);
 
   const isHorizontal = template.qrPosition === 'left' || template.qrPosition === 'right';
   const cardWidth = compact ? 'w-16' : isHorizontal ? 'w-[380px]' : 'w-80';
@@ -101,24 +119,6 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
 
   useEffect(() => {
     if (qrRef.current) {
-      // Ensure styling has all required properties with defaults
-      const safeStyling = {
-        ...styling,
-        imageOptions: styling.imageOptions || {
-          hideBackgroundDots: true,
-          imageSize: 0.4,
-          margin: 0,
-        },
-        cornersSquareOptions: styling.cornersSquareOptions || {
-          color: styling.fgColor,
-          type: 'square',
-        },
-        cornersDotOptions: styling.cornersDotOptions || {
-          color: styling.fgColor,
-          type: 'square',
-        },
-      };
-
       const options = {
         width: qrSize,
         height: qrSize,
@@ -163,7 +163,7 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [content, styling, qrId, qrSize]);
+  }, [content, safeStyling, qrId, qrSize]);
 
   const gradientDirection = gradientDirectionMap[template.gradientDirection || 'to-bottom-right'];
   const backgroundStyle = template.showGradient && template.gradientColor
@@ -599,4 +599,4 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
 
 QRCodePreview.displayName = 'QRCodePreview';
 
-export default QRCodePreview;
+export default React.memo(QRCodePreview);
