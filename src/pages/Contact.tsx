@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Card, Form, Input, Button, message } from 'antd';
-import { MailOutlined, UserOutlined, MessageOutlined } from '@ant-design/icons';
+import { MailOutlined, UserOutlined, MessageOutlined, TagOutlined } from '@ant-design/icons';
 import DashboardLayout from '../components/layout/DashboardLayout';
 
 const { Title, Text } = Typography;
@@ -46,6 +46,14 @@ const Contact: React.FC = () => {
               ]}
             >
               <Input prefix={<MailOutlined />} placeholder="your@email.com" size="large" />
+            </Form.Item>
+
+            <Form.Item
+              name="subject"
+              label="Subject"
+              rules={[{ required: true, message: 'Please enter a subject' }]}
+            >
+              <Input prefix={<TagOutlined />} placeholder="What's this about?" size="large" />
             </Form.Item>
 
             <Form.Item
