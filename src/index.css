@@ -15,9 +15,9 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 250 84% 54%;
+    --primary: 262 83% 58%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 250 84% 96%;
+    --primary-light: 262 83% 96%;
 
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
@@ -25,7 +25,7 @@
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 250 84% 54%;
+    --accent: 262 83% 58%;
     --accent-foreground: 0 0% 100%;
 
     --success: 142 76% 36%;
@@ -39,15 +39,15 @@
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 250 84% 54%;
+    --ring: 262 83% 58%;
 
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
     --sidebar-border: 214 32% 91%;
-    --sidebar-primary: 250 84% 54%;
-    --sidebar-accent: 250 84% 96%;
+    --sidebar-primary: 262 83% 58%;
+    --sidebar-accent: 262 83% 96%;
   }
 
   .dark {
@@ -55,7 +55,7 @@
     --foreground: 210 40% 98%;
     --card: 222 47% 15%;
     --card-foreground: 210 40% 98%;
-    --primary: 250 84% 60%;
+    --primary: 262 83% 65%;
     --primary-foreground: 0 0% 100%;
   }
 }
@@ -103,8 +103,9 @@
 }
 
 .ant-btn-primary:hover {
-  background: hsl(250 84% 48%) !important;
-  border-color: hsl(250 84% 48%) !important;
+  background: hsl(var(--primary)) !important;
+  border-color: hsl(var(--primary)) !important;
+  opacity: 0.9;
 }
 
 .ant-steps-item-process .ant-steps-item-icon {

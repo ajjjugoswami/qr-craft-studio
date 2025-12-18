@@ -96,7 +96,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
           {/* User Section */}
           <div className="p-3 border-t border-border">
-            <div className={`flex items-center gap-3 p-2 rounded-xl hover:bg-muted transition-colors cursor-pointer`}>
+            <div
+              className={`flex items-center gap-3 p-2 rounded-xl hover:bg-muted transition-colors cursor-pointer`}
+              onClick={() => navigate('/profile')}
+            >
             <Avatar
               style={{ backgroundColor: 'hsl(var(--primary))' }}
               size={36}
