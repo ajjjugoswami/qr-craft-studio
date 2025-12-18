@@ -1,6 +1,6 @@
-import React from 'react';
-import { Layout, Menu, Avatar, Typography } from 'antd';
-import { useAuth } from '@/hooks/useAuth';
+import React from "react";
+import { Layout, Menu, Avatar, Typography } from "antd";
+import { useAuth } from "@/hooks/useAuth";
 import {
   QrCode,
   BarChart3,
@@ -8,8 +8,9 @@ import {
   Mail,
   MessageSquare,
   LogOut,
-} from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+  Settings,
+} from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const { Sider, Content } = Layout;
 const { Text } = Typography;
@@ -25,42 +26,48 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
   const menuItems = [
     {
-      key: '/dashboard',
+      key: "/dashboard",
       icon: <QrCode size={18} />,
-      label: 'My QR Codes',
+      label: "My QR Codes",
     },
     {
-      key: '/analytics',
+      key: "/analytics",
       icon: <BarChart3 size={18} />,
-      label: 'Analytics',
+      label: "Analytics",
     },
+
     {
-      key: '/faqs',
+      key: "/faqs",
       icon: <HelpCircle size={18} />,
-      label: 'FAQs',
+      label: "FAQs",
     },
     {
-      key: '/contact',
+      key: "/contact",
       icon: <Mail size={18} />,
-      label: 'Contact Us',
+      label: "Contact Us",
+    },
+    {
+      key: "/settings",
+      icon: <Settings size={18} />,
+      label: "Settings",
     },
   ];
 
   // Show submissions only for admin users
   if (user?.isAdmin) {
     menuItems.push({
-      key: '/submissions',
+      key: "/submissions",
       icon: <MessageSquare size={18} />,
-      label: 'Submissions',
+      label: "Submissions",
     });
   }
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ minHeight: "100vh" }}>
       <Sider
         width={230}
         style={{
-          position: 'fixed',
+          position: "fixed",
           left: 0,
           top: 0,
           bottom: 0,
@@ -71,9 +78,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         <div className="flex flex-col h-full pr-3">
           {/* Logo & Brand */}
           <div className="p-2 flex items-center gap-3 border-b border-border">
-            
-              <img src="/logo.png" alt="QR Studio" className="w-16 h-16 object-contain" />
-             <div className="flex flex-col">
+            <img
+              src="/logo.png"
+              alt="QR Studio"
+              className="w-16 h-16 object-contain"
+            />
+            <div className="flex flex-col">
               <Text strong className="text-lg leading-tight">
                 QR Studio
               </Text>
@@ -83,12 +93,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             </div>
           </div>
 
- 
-
           {/* Menu */}
           <Menu
             mode="inline"
-            selectedKeys={[location.pathname === '/' ? '/dashboard' : location.pathname]}
+            selectedKeys={[
+              location.pathname === "/" ? "/dashboard" : location.pathname,
+            ]}
             items={menuItems}
             onClick={({ key }) => navigate(key)}
             className="flex-1 border-none mt-2"
@@ -98,18 +108,22 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           <div className="p-3 border-t border-border">
             <div
               className={`flex items-center gap-3 p-2 rounded-xl hover:bg-muted transition-colors cursor-pointer`}
-              onClick={() => navigate('/profile')}
+              onClick={() => navigate("/settings")}
             >
-            <Avatar
-              style={{ backgroundColor: 'hsl(var(--primary))' }}
-              size={36}
-            >
-              {/** Show first char of name if available */}
-              {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-            </Avatar>
+              <Avatar
+                style={{ backgroundColor: "hsl(var(--primary))" }}
+                size={36}
+              >
+                {/** Show first char of name if available */}
+                {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+              </Avatar>
               <div className="flex flex-col flex-1 min-w-0">
-                <Text strong className="text-sm truncate">{user?.name ?? 'User'}</Text>
-                <Text type="secondary" className="text-xs truncate">{user?.email ?? ''}</Text>
+                <Text strong className="text-sm truncate">
+                  {user?.name ?? "User"}
+                </Text>
+                <Text type="secondary" className="text-xs truncate">
+                  {user?.email ?? ""}
+                </Text>
               </div>
             </div>
           </div>

@@ -10,20 +10,10 @@ const api = axios.create({
   },
 });
 
-// Add token to requests (use `qc_auth` only)
+// Add token to requests (use `qc-token` key)
 api.interceptors.request.use(
   (config) => {
-    let token: string | null = null;
-    const stored = localStorage.getItem('qc_auth');
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        token = parsed?.token ?? null;
-      } catch (err) {
-        // ignore parse errors
-      }
-    }
-
+    const token = localStorage.getItem('qc-token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -40,6 +30,7 @@ api.interceptors.response.use(
       // clear stored auth and redirect to signin
       try {
         localStorage.removeItem('qc_auth');
+        localStorage.removeItem('qc-token');
       } catch (e) {
         // ignore
         console.warn('Failed to clear local auth:', e);
@@ -72,6 +63,12 @@ export const authAPI = {
   // Get current user (me)
   getCurrentUser: async () => {
     const response = await api.get('/auth/me');
+    return response.data;
+  },
+
+  // Update user theme
+  updateTheme: async (theme: string) => {
+    const response = await api.put('/auth/theme', { theme });
     return response.data;
   },
 };

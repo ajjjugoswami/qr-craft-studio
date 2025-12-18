@@ -3,6 +3,7 @@ export type User = {
   name: string;
   email: string;
   isAdmin?: boolean;
+  theme?: string;
 };
 
 export type AuthContextType = {

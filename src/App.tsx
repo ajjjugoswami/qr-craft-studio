@@ -38,8 +38,8 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <ThemeProvider>
-          <AuthProvider>
+        <AuthProvider>
+          <ThemeProvider>
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -66,7 +66,7 @@ const App = () => (
                   element={<ProtectedRoute><QRAnalytics /></ProtectedRoute>}
                 />
                 <Route
-                  path="/profile"
+                  path="/settings"
                   element={<ProtectedRoute><Profile /></ProtectedRoute>}
                 />
                 <Route path="/faqs" element={<FAQs />} />
@@ -80,8 +80,8 @@ const App = () => (
                 <Route path="*" element={<NotFound />}/>
               </Routes>
             </BrowserRouter>
-          </AuthProvider>
-        </ThemeProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </TooltipProvider>
     </ConfigProvider>
   </QueryClientProvider>
