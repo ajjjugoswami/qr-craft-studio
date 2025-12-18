@@ -80,7 +80,7 @@ const QRAnalytics: React.FC = () => {
           },
         } as ScanData));
 
-        setScanData(scans.length ? scans : generateMockScanData(15));
+        setScanData(scans);
 
       } catch (err: any) {
         if (err?.response?.status === 401) {
@@ -89,8 +89,12 @@ const QRAnalytics: React.FC = () => {
         } else {
           message.error('Failed to load analytics');
         }
-        // fallback to mock
-        setScanData(generateMockScanData(qrCode?.scans || 15));
+        // fallback to mock only in demo mode
+        if (mode === 'real') {
+          setScanData([]);
+        } else {
+          setScanData(generateMockScanData(15));
+        }
       } finally {
         setLoading(false);
       }
@@ -256,16 +260,6 @@ const QRAnalytics: React.FC = () => {
                 value={totalScans} 
                 prefix={<Eye size={20} className="text-primary mr-2" />}
                 valueStyle={{ color: '#6366f1' }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <Card className="hover:shadow-md transition-shadow">
-              <Statistic 
-                title="Today's Scans" 
-                value={Math.floor(Math.random() * 5) + 1} 
-                prefix={<Calendar size={20} className="text-green-500 mr-2" />}
-                valueStyle={{ color: '#22c55e' }}
               />
             </Card>
           </Col>
