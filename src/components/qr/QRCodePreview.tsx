@@ -101,41 +101,59 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
 
   useEffect(() => {
     if (qrRef.current) {
+      // Ensure styling has all required properties with defaults
+      const safeStyling = {
+        ...styling,
+        imageOptions: styling.imageOptions || {
+          hideBackgroundDots: true,
+          imageSize: 0.4,
+          margin: 0,
+        },
+        cornersSquareOptions: styling.cornersSquareOptions || {
+          color: styling.fgColor,
+          type: 'square',
+        },
+        cornersDotOptions: styling.cornersDotOptions || {
+          color: styling.fgColor,
+          type: 'square',
+        },
+      };
+
       const options = {
         width: qrSize,
         height: qrSize,
         data: getQRData(),
         type: 'svg' as const,
-        margin: styling.includeMargin ? 4 : 0,
+        margin: safeStyling.includeMargin ? 4 : 0,
         qrOptions: {
-          errorCorrectionLevel: styling.level,
+          errorCorrectionLevel: safeStyling.level,
         },
         dotsOptions: {
-          color: styling.fgColor,
-          type: styling.dotsType,
-          ...(styling.dotsGradient && { gradient: styling.dotsGradient }),
+          color: safeStyling.fgColor,
+          type: safeStyling.dotsType,
+          ...(safeStyling.dotsGradient && { gradient: safeStyling.dotsGradient }),
         },
         backgroundOptions: {
-          color: styling.bgColor,
-          ...(styling.backgroundGradient && { gradient: styling.backgroundGradient }),
+          color: safeStyling.bgColor,
+          ...(safeStyling.backgroundGradient && { gradient: safeStyling.backgroundGradient }),
         },
-        cornersSquareOptions: styling.cornersSquareOptions ? {
-          color: styling.cornersSquareOptions.color,
-          type: styling.cornersSquareOptions.type,
-          ...(styling.cornersSquareOptions.gradient && { gradient: styling.cornersSquareOptions.gradient }),
+        cornersSquareOptions: safeStyling.cornersSquareOptions ? {
+          color: safeStyling.cornersSquareOptions.color ?? safeStyling.fgColor,
+          type: safeStyling.cornersSquareOptions.type ?? 'square',
+          ...(safeStyling.cornersSquareOptions.gradient && { gradient: safeStyling.cornersSquareOptions.gradient }),
         } : undefined,
-        cornersDotOptions: styling.cornersDotOptions ? {
-          color: styling.cornersDotOptions.color,
-          type: styling.cornersDotOptions.type,
-          ...(styling.cornersDotOptions.gradient && { gradient: styling.cornersDotOptions.gradient }),
+        cornersDotOptions: safeStyling.cornersDotOptions ? {
+          color: safeStyling.cornersDotOptions.color ?? safeStyling.fgColor,
+          type: safeStyling.cornersDotOptions.type ?? 'square',
+          ...(safeStyling.cornersDotOptions.gradient && { gradient: safeStyling.cornersDotOptions.gradient }),
         } : undefined,
-        imageOptions: styling.imageOptions ? {
-          hideBackgroundDots: styling.imageOptions.hideBackgroundDots,
-          imageSize: styling.imageOptions.imageSize,
-          margin: styling.imageOptions.margin,
+        imageOptions: safeStyling.imageOptions ? {
+          hideBackgroundDots: safeStyling.imageOptions.hideBackgroundDots ?? true,
+          imageSize: safeStyling.imageOptions.imageSize ?? 0.4,
+          margin: safeStyling.imageOptions.margin ?? 0,
         } : undefined,
-        image: styling.image,
-        shape: styling.shape,
+        image: safeStyling.image,
+        shape: safeStyling.shape,
       };
 
       if (qrRef.current) {
