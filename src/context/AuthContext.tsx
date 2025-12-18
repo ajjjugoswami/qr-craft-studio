@@ -111,8 +111,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     message.info('Signed out');
   };
 
+  const updateUser = (userData: Partial<User>) => {
+    if (user) {
+      const updatedUser = { ...user, ...userData };
+      setUser(updatedUser);
+      // Update stored user data
+      const storedToken = localStorage.getItem(TOKEN_KEY);
+      if (storedToken) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: updatedUser }));
+      }
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, signin, signup, signout }}>
+    <AuthContext.Provider value={{ user, token, loading, signin, signup, signout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

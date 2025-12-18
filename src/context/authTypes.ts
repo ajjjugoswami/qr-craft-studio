@@ -4,6 +4,9 @@ export type User = {
   email: string;
   isAdmin?: boolean;
   theme?: string;
+  mobile?: string;
+  country?: string;
+  city?: string;
 };
 
 export type AuthContextType = {
@@ -13,4 +16,5 @@ export type AuthContextType = {
   signin: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
   signout: () => void;
+  updateUser: (userData: Partial<User>) => void;
 };

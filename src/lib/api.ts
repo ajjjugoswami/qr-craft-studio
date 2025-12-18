@@ -71,6 +71,12 @@ export const authAPI = {
     const response = await api.put('/auth/theme', { theme });
     return response.data;
   },
+
+  // Update user profile
+  updateProfile: async (data: { name: string; mobile?: string; country?: string; city?: string }) => {
+    const response = await api.put('/auth/profile', data);
+    return response.data;
+  },
 };
 
 // QR Code API
