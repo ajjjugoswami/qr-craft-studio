@@ -17,10 +17,18 @@ const categories = [
   { value: 'minimal', label: 'Minimal' },
   { value: 'luxury', label: 'Luxury' },
   { value: 'social', label: 'Social' },
+  { value: 'themed', label: 'Themed' },
 ];
 
 const getCategoryForTemplate = (template: QRTemplate): string => {
   const name = template.name.toLowerCase();
+  const id = template.id.toLowerCase();
+  
+  // Themed templates
+  if (id.includes('tech-cyber') || id.includes('podcast-episode') || id.includes('product-launch-tech') || 
+      id.includes('download-app') || id.includes('artisan-guild') || id.includes('velvet-lounge') ||
+      id.includes('cosmic') || id.includes('dragon') || id.includes('silk-sage') || 
+      id.includes('iron-spark') || id.includes('quick-checkin') || id.includes('my-work-portfolio')) return 'themed';
   
   if (name.includes('luxury') || name.includes('premium') || name.includes('gold') || name.includes('wine')) return 'luxury';
   if (name.includes('neon') || name.includes('sunset') || name.includes('aurora') || name.includes('party') || name.includes('ocean wave')) return 'vibrant';
