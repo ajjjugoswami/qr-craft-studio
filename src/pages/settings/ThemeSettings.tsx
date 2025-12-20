@@ -1,13 +1,13 @@
 import React from 'react';
-import { Card, Typography, message } from 'antd';
-import { Palette } from 'lucide-react';
+import { Card, Typography, message, Segmented } from 'antd';
+import { Palette, Sun, Moon, Monitor } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
-import { themes, ThemeName } from '../../context/themeTypes';
+import { themes, ThemeName, ColorMode } from '../../context/themeTypes';
 
 const { Title, Text } = Typography;
 
 const ThemeSettings: React.FC = () => {
-  const { currentTheme, setTheme } = useTheme();
+  const { currentTheme, colorMode, setTheme, setColorMode } = useTheme();
 
   const handleThemeChange = (themeName: string) => {
     const theme = themeName as ThemeName;
@@ -15,20 +15,74 @@ const ThemeSettings: React.FC = () => {
     message.success(`Theme changed to ${themes[theme].label}`);
   };
 
+  const handleColorModeChange = (mode: string | number) => {
+    setColorMode(mode as ColorMode);
+    message.success(`Color mode changed to ${mode}`);
+  };
+
   return (
     <div className="space-y-6">
+      {/* Color Mode Selection */}
+      <Card className="shadow-sm">
+        <div className="flex items-center mb-4">
+          <Sun className="mr-3 text-primary" size={24} />
+          <Title level={4} className="!mb-0">Appearance</Title>
+        </div>
+
+        <Text type="secondary" className="mb-6 block">
+          Choose how the app looks. Select a mode or let it match your system settings.
+        </Text>
+
+        <div className="flex flex-wrap gap-4">
+          <Segmented
+            value={colorMode}
+            onChange={handleColorModeChange}
+            size="large"
+            options={[
+              {
+                label: (
+                  <div className="flex items-center gap-2 px-2 py-1">
+                    <Sun size={18} />
+                    <span className="hidden sm:inline">Light</span>
+                  </div>
+                ),
+                value: 'light',
+              },
+              {
+                label: (
+                  <div className="flex items-center gap-2 px-2 py-1">
+                    <Moon size={18} />
+                    <span className="hidden sm:inline">Dark</span>
+                  </div>
+                ),
+                value: 'dark',
+              },
+              {
+                label: (
+                  <div className="flex items-center gap-2 px-2 py-1">
+                    <Monitor size={18} />
+                    <span className="hidden sm:inline">System</span>
+                  </div>
+                ),
+                value: 'system',
+              },
+            ]}
+          />
+        </div>
+      </Card>
+
       {/* Theme Selection Card */}
       <Card className="shadow-sm">
         <div className="flex items-center mb-4">
           <Palette className="mr-3 text-primary" size={24} />
-          <Title level={4} className="mb-0">Theme Preferences</Title>
+          <Title level={4} className="!mb-0">Color Theme</Title>
         </div>
 
         <Text type="secondary" className="mb-6 block">
-          Choose your preferred color theme. Your selection will be saved automatically.
+          Choose your preferred accent color. Your selection will be saved automatically.
         </Text>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
           {Object.entries(themes).map(([key, theme]) => {
             const isGradient = key.startsWith('gradient_');
             const isSelected = currentTheme === key;
@@ -36,7 +90,7 @@ const ThemeSettings: React.FC = () => {
             return (
               <div
                 key={key}
-                className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 ${
+                className={`relative p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 ${
                   isSelected
                     ? 'border-primary shadow-lg ring-2 ring-primary/20'
                     : 'border-border hover:border-primary/50'
@@ -49,40 +103,30 @@ const ThemeSettings: React.FC = () => {
                 onClick={() => handleThemeChange(key)}
               >
                 {isSelected && (
-                  <div className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
-                    <div className="w-2 h-2 bg-primary-foreground rounded-full" />
+                  <div className="absolute top-1 right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 bg-primary-foreground rounded-full" />
                   </div>
                 )}
 
                 <div className="text-center">
-                  <div className="flex justify-center space-x-1 mb-2">
+                  <div className="flex justify-center gap-0.5 mb-1.5">
                     <div
-                      className="w-4 h-4 rounded-full border border-white/20"
+                      className="w-3 h-3 rounded-full border border-white/20"
                       style={{ backgroundColor: `hsl(${theme.colors.primary})` }}
                     />
                     <div
-                      className="w-4 h-4 rounded-full border border-white/20"
+                      className="w-3 h-3 rounded-full border border-white/20"
                       style={{ backgroundColor: `hsl(${theme.colors.accent})` }}
-                    />
-                    <div
-                      className="w-4 h-4 rounded-full border border-white/20"
-                      style={{ backgroundColor: `hsl(${theme.colors.sidebarPrimary})` }}
                     />
                   </div>
 
                   <Text
                     strong
-                    className={`text-sm ${isGradient ? 'text-white' : ''}`}
+                    className={`text-xs ${isGradient ? 'text-white' : ''}`}
                     style={{ color: isGradient ? 'white' : `hsl(${theme.colors.primary})` }}
                   >
                     {theme.label}
                   </Text>
-
-                  {isGradient && (
-                    <div className="mt-1">
-                      <Text className="text-xs text-white/80">Gradient</Text>
-                    </div>
-                  )}
                 </div>
               </div>
             );
