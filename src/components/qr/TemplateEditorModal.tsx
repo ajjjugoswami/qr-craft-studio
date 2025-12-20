@@ -11,6 +11,9 @@ import {
   Card,
   Empty,
   Popconfirm,
+  Collapse,
+  Popover,
+  Tooltip,
 } from "antd";
 import {
   Trash2,
@@ -20,8 +23,14 @@ import {
   Minus,
   ChevronUp,
   ChevronDown,
-  Move,
   GripVertical,
+  Plus,
+  Smile,
+  Settings2,
+  Palette,
+  Layout,
+  MousePointerClick,
+  QrCode,
 } from "lucide-react";
 import type { Color } from "antd/es/color-picker";
 import {
@@ -44,8 +53,6 @@ interface TemplateEditorModalProps {
 
 const fieldTypes = [
   { value: "label", label: "Label", icon: <Type size={14} /> },
-  { value: "title", label: "Title", icon: <Type size={14} /> },
-  { value: "subtitle", label: "Subtitle", icon: <Type size={14} /> },
   { value: "text", label: "Text", icon: <Type size={14} /> },
   { value: "date", label: "Date", icon: <Calendar size={14} /> },
   { value: "time", label: "Time", icon: <Clock size={14} /> },
@@ -59,6 +66,74 @@ const fontWeightOptions = [
   { value: "bold", label: "Bold" },
 ];
 
+const fontFamilyOptions = [
+  { value: "Inter", label: "Inter" },
+  { value: "Space Grotesk", label: "Space Grotesk" },
+  { value: "Playfair Display", label: "Playfair Display" },
+  { value: "Poppins", label: "Poppins" },
+  { value: "Roboto", label: "Roboto" },
+  { value: "Montserrat", label: "Montserrat" },
+  { value: "Open Sans", label: "Open Sans" },
+  { value: "Lato", label: "Lato" },
+  { value: "Oswald", label: "Oswald" },
+  { value: "Raleway", label: "Raleway" },
+  { value: "Source Sans Pro", label: "Source Sans Pro" },
+  { value: "Ubuntu", label: "Ubuntu" },
+  { value: "Nunito", label: "Nunito" },
+  { value: "Quicksand", label: "Quicksand" },
+  { value: "Bebas Neue", label: "Bebas Neue" },
+  { value: "Archivo Black", label: "Archivo Black" },
+  { value: "Satisfy", label: "Satisfy (Script)" },
+  { value: "Dancing Script", label: "Dancing Script" },
+  { value: "Pacifico", label: "Pacifico" },
+  { value: "Lobster", label: "Lobster" },
+];
+
+// Common emojis for quick access
+const emojiCategories = [
+  {
+    name: "Popular",
+    emojis: ["✨", "🎉", "🚀", "💡", "🔥", "⭐", "💫", "🎯", "💪", "👋", "❤️", "💜", "💙", "💚", "🧡"],
+  },
+  {
+    name: "Business",
+    emojis: ["📱", "💼", "📊", "📈", "🏢", "💰", "🎁", "📦", "🛒", "💳", "📧", "📞", "🔗", "📍", "🏆"],
+  },
+  {
+    name: "Social",
+    emojis: ["👤", "👥", "🤝", "💬", "🎵", "🎬", "📸", "🎨", "🎧", "🎮", "📺", "🎭", "🎪", "🎡", "🎢"],
+  },
+  {
+    name: "Food & Nature",
+    emojis: ["🍕", "🍔", "🍜", "☕", "🍷", "🍰", "🌿", "🌸", "🌺", "🌻", "🍀", "🌙", "☀️", "🌈", "🌊"],
+  },
+  {
+    name: "Arrows & Symbols",
+    emojis: ["→", "←", "↑", "↓", "↔", "•", "◆", "■", "▶", "★", "☆", "✓", "✗", "♦", "♣"],
+  },
+];
+
+const EmojiPicker: React.FC<{ onSelect: (emoji: string) => void }> = ({ onSelect }) => (
+  <div className="w-72 max-h-64 overflow-y-auto">
+    {emojiCategories.map((category) => (
+      <div key={category.name} className="mb-3">
+        <div className="text-xs font-medium text-muted-foreground mb-2">{category.name}</div>
+        <div className="flex flex-wrap gap-1">
+          {category.emojis.map((emoji) => (
+            <button
+              key={emoji}
+              onClick={() => onSelect(emoji)}
+              className="w-8 h-8 flex items-center justify-center text-lg hover:bg-muted rounded transition-colors"
+            >
+              {emoji}
+            </button>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
   open,
   onClose,
@@ -68,9 +143,8 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
   styling = defaultStyling,
   qrId,
 }) => {
-  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
+  const [expandedFields, setExpandedFields] = useState<string[]>([]);
   const customFields = template.customFields || [];
-  const selectedField = customFields.find((f) => f.id === selectedFieldId);
 
   const generateId = () =>
     `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -104,7 +178,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
       ...template,
       customFields: [...customFields, newField],
     });
-    setSelectedFieldId(newField.id);
+    setExpandedFields([...expandedFields, newField.id]);
   };
 
   const updateField = (fieldId: string, updates: Partial<CustomField>) => {
@@ -133,9 +207,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
       ...template,
       customFields: customFields.filter((f) => f.id !== fieldId),
     });
-    if (selectedFieldId === fieldId) {
-      setSelectedFieldId(null);
-    }
+    setExpandedFields(expandedFields.filter((id) => id !== fieldId));
   };
 
   const moveField = (fieldId: string, direction: "up" | "down") => {
@@ -157,282 +229,573 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
     });
   };
 
-  const handleMainFieldChange = (
-    field: "title" | "subtitle",
-    value: string
-  ) => {
-    onTemplateChange({ ...template, [field]: value });
+  const insertEmoji = (fieldId: string, emoji: string, currentValue: string) => {
+    updateField(fieldId, { value: currentValue + emoji });
   };
 
-  const tabItems = [
-    {
-      key: "fields",
-      label: "Elements",
-      children: (
-        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
-          {/* Add Field Buttons */}
-          <div className="flex flex-wrap gap-2">
-            {fieldTypes.map((ft) => (
-              <Button
-                key={ft.value}
-                size="small"
-                icon={ft.icon}
-                onClick={() => addField(ft.value as CustomField["type"])}
-              >
-                {ft.label}
-              </Button>
-            ))}
-          </div>
+  const insertEmojiToMain = (field: "title" | "subtitle", emoji: string) => {
+    onTemplateChange({ ...template, [field]: template[field] + emoji });
+  };
 
-          {/* Main Fields */}
-          <Card size="small" title="Main Fields">
-            <div className="space-y-3">
+  // Render inline element editor
+  const renderFieldEditor = (field: CustomField, index: number) => (
+    <Card
+      key={field.id}
+      size="small"
+      className="mb-3 border-border"
+      styles={{ body: { padding: "12px" } }}
+    >
+      <div className="space-y-3">
+        {/* Header with type, move, delete */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <GripVertical size={14} className="text-muted-foreground cursor-move" />
+            <span className="text-xs font-semibold uppercase text-primary bg-primary/10 px-2 py-0.5 rounded">
+              {field.type}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Tooltip title="Move up">
+              <Button
+                size="small"
+                type="text"
+                icon={<ChevronUp size={14} />}
+                onClick={() => moveField(field.id, "up")}
+                disabled={index === 0}
+              />
+            </Tooltip>
+            <Tooltip title="Move down">
+              <Button
+                size="small"
+                type="text"
+                icon={<ChevronDown size={14} />}
+                onClick={() => moveField(field.id, "down")}
+                disabled={index === customFields.length - 1}
+              />
+            </Tooltip>
+            <Popconfirm
+              title="Delete this element?"
+              onConfirm={() => removeField(field.id)}
+              okText="Delete"
+              cancelText="Cancel"
+            >
+              <Button size="small" type="text" danger icon={<Trash2 size={14} />} />
+            </Popconfirm>
+          </div>
+        </div>
+
+        {field.type !== "divider" && (
+          <>
+            {/* Content with emoji picker */}
+            <div className="flex gap-2">
+              <Input
+                value={field.value}
+                onChange={(e) => updateField(field.id, { value: e.target.value })}
+                placeholder="Enter content..."
+                className="flex-1"
+              />
+              <Popover
+                content={<EmojiPicker onSelect={(emoji) => insertEmoji(field.id, emoji, field.value)} />}
+                trigger="click"
+                placement="bottomRight"
+              >
+                <Button icon={<Smile size={16} />} />
+              </Popover>
+            </div>
+
+            {/* Inline style controls */}
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium block mb-1">Title</label>
-                <Input
-                  value={template.title}
-                  onChange={(e) =>
-                    handleMainFieldChange("title", e.target.value)
-                  }
-                  placeholder="Enter title"
+                <label className="text-xs text-muted-foreground mb-1 block">Size</label>
+                <Slider
+                  min={8}
+                  max={48}
+                  value={field.style?.fontSize || 14}
+                  onChange={(v) => updateFieldStyle(field.id, { fontSize: v })}
+                  tooltip={{ formatter: (v) => `${v}px` }}
                 />
               </div>
               <div>
-                <label className="text-xs font-medium block mb-1">
-                  Subtitle
-                </label>
-                <Input
-                  value={template.subtitle}
-                  onChange={(e) =>
-                    handleMainFieldChange("subtitle", e.target.value)
-                  }
-                  placeholder="Enter subtitle"
+                <label className="text-xs text-muted-foreground mb-1 block">Weight</label>
+                <Select
+                  value={field.style?.fontWeight || "normal"}
+                  onChange={(v) => updateFieldStyle(field.id, { fontWeight: v })}
+                  options={fontWeightOptions}
+                  className="w-full"
+                  size="small"
                 />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Color</label>
+                <ColorPicker
+                  value={field.style?.color || template.textColor}
+                  onChange={(c) => updateFieldStyle(field.id, { color: c.toHexString() })}
+                  size="small"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Spacing</label>
+                <Slider
+                  min={0}
+                  max={10}
+                  value={field.style?.letterSpacing || 0}
+                  onChange={(v) => updateFieldStyle(field.id, { letterSpacing: v })}
+                  tooltip={{ formatter: (v) => `${v}px` }}
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Opacity</label>
+                <Slider
+                  min={0.1}
+                  max={1}
+                  step={0.1}
+                  value={field.style?.opacity || 1}
+                  onChange={(v) => updateFieldStyle(field.id, { opacity: v })}
+                  tooltip={{ formatter: (v) => `${Math.round((v || 1) * 100)}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Switch
+                  size="small"
+                  checked={field.style?.italic || false}
+                  onChange={(v) => updateFieldStyle(field.id, { italic: v })}
+                />
+                <label className="text-xs text-muted-foreground">Italic</label>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-xs text-muted-foreground">BG:</label>
+                <ColorPicker
+                  value={field.style?.backgroundColor || "transparent"}
+                  onChange={(c) => updateFieldStyle(field.id, { backgroundColor: c.toHexString() })}
+                  allowClear
+                  size="small"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-xs text-muted-foreground">Radius:</label>
+                <Slider
+                  min={0}
+                  max={24}
+                  value={field.style?.borderRadius || 0}
+                  onChange={(v) => updateFieldStyle(field.id, { borderRadius: v })}
+                  className="w-16"
+                />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </Card>
+  );
+
+  const tabItems = [
+    {
+      key: "content",
+      label: (
+        <span className="flex items-center gap-2">
+          <Type size={14} />
+          Content
+        </span>
+      ),
+      children: (
+        <div className="space-y-4 h-[520px] overflow-y-auto pr-2">
+          {/* Main Title & Subtitle */}
+          <Card size="small" title="Main Text" className="border-border">
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-medium block mb-1">Title</label>
+                <div className="flex gap-2">
+                  <Input
+                    value={template.title}
+                    onChange={(e) => onTemplateChange({ ...template, title: e.target.value })}
+                    placeholder="Enter title"
+                    className="flex-1"
+                  />
+                  <Popover
+                    content={<EmojiPicker onSelect={(emoji) => insertEmojiToMain("title", emoji)} />}
+                    trigger="click"
+                    placement="bottomRight"
+                  >
+                    <Button icon={<Smile size={16} />} />
+                  </Popover>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Title Size</label>
+                  <Slider
+                    min={14}
+                    max={48}
+                    value={template.titleFontSize || 24}
+                    onChange={(v) => onTemplateChange({ ...template, titleFontSize: v })}
+                    tooltip={{ formatter: (v) => `${v}px` }}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Title Weight</label>
+                  <Select
+                    value={template.titleFontWeight || "bold"}
+                    onChange={(v) => onTemplateChange({ ...template, titleFontWeight: v })}
+                    options={fontWeightOptions}
+                    className="w-full"
+                    size="small"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-medium block mb-1">Subtitle</label>
+                <div className="flex gap-2">
+                  <Input
+                    value={template.subtitle}
+                    onChange={(e) => onTemplateChange({ ...template, subtitle: e.target.value })}
+                    placeholder="Enter subtitle"
+                    className="flex-1"
+                  />
+                  <Popover
+                    content={<EmojiPicker onSelect={(emoji) => insertEmojiToMain("subtitle", emoji)} />}
+                    trigger="click"
+                    placement="bottomRight"
+                  >
+                    <Button icon={<Smile size={16} />} />
+                  </Popover>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Subtitle Size</label>
+                  <Slider
+                    min={10}
+                    max={28}
+                    value={template.subtitleFontSize || 14}
+                    onChange={(v) => onTemplateChange({ ...template, subtitleFontSize: v })}
+                    tooltip={{ formatter: (v) => `${v}px` }}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Subtitle Weight</label>
+                  <Select
+                    value={template.subtitleFontWeight || "normal"}
+                    onChange={(v) => onTemplateChange({ ...template, subtitleFontWeight: v })}
+                    options={fontWeightOptions}
+                    className="w-full"
+                    size="small"
+                  />
+                </div>
               </div>
             </div>
           </Card>
 
-          {/* Custom Fields List */}
-          <Card size="small" title="Custom Elements">
+          {/* Custom Elements */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium">Custom Elements</span>
+              <Popover
+                content={
+                  <div className="flex flex-col gap-1 w-36">
+                    {fieldTypes.map((ft) => (
+                      <Button
+                        key={ft.value}
+                        type="text"
+                        icon={ft.icon}
+                        onClick={() => addField(ft.value as CustomField["type"])}
+                        className="justify-start"
+                      >
+                        Add {ft.label}
+                      </Button>
+                    ))}
+                  </div>
+                }
+                trigger="click"
+                placement="bottomRight"
+              >
+                <Button size="small" icon={<Plus size={14} />}>
+                  Add Element
+                </Button>
+              </Popover>
+            </div>
+
             {customFields.length === 0 ? (
               <Empty
-                description="No custom elements"
+                description="No custom elements yet"
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
+                className="py-6"
               />
             ) : (
-              <div className="space-y-2">
-                {customFields.map((field, index) => (
-                  <div
-                    key={field.id}
-                    className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                      selectedFieldId === field.id
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                    onClick={() => setSelectedFieldId(field.id)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <GripVertical
-                          size={14}
-                          className="text-muted-foreground"
-                        />
-                        <span className="text-xs font-medium uppercase text-muted-foreground">
-                          {field.type}
-                        </span>
-                        <span className="text-sm truncate max-w-[120px]">
-                          {field.value || "(empty)"}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          size="small"
-                          type="text"
-                          icon={<ChevronUp size={12} />}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            moveField(field.id, "up");
-                          }}
-                          disabled={index === 0}
-                        />
-                        <Button
-                          size="small"
-                          type="text"
-                          icon={<ChevronDown size={12} />}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            moveField(field.id, "down");
-                          }}
-                          disabled={index === customFields.length - 1}
-                        />
-                        <Popconfirm
-                          title="Delete this element?"
-                          onConfirm={(e) => {
-                            e?.stopPropagation();
-                            removeField(field.id);
-                          }}
-                          okText="Delete"
-                          cancelText="Cancel"
-                        >
-                          <Button
-                            size="small"
-                            type="text"
-                            danger
-                            icon={<Trash2 size={12} />}
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        </Popconfirm>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              customFields.map((field, index) => renderFieldEditor(field, index))
             )}
-          </Card>
+          </div>
         </div>
       ),
     },
     {
       key: "style",
-      label: "Element Style",
-      children: selectedField ? (
-        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
-          <Card size="small" title={`Editing: ${selectedField.type}`}>
-            {selectedField.type !== "divider" && (
-              <div className="space-y-3">
+      label: (
+        <span className="flex items-center gap-2">
+          <Palette size={14} />
+          Style
+        </span>
+      ),
+      children: (
+        <div className="space-y-4 h-[520px] overflow-y-auto pr-2">
+          {/* Typography */}
+          <Card size="small" title="Typography" className="border-border">
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium block mb-1">Font Family</label>
+                <Select
+                  value={template.fontFamily || "Inter"}
+                  onChange={(v) => onTemplateChange({ ...template, fontFamily: v })}
+                  options={fontFamilyOptions}
+                  className="w-full"
+                  showSearch
+                  optionFilterProp="label"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium block mb-1">Text Alignment</label>
+                <Select
+                  value={template.textAlign || "center"}
+                  onChange={(v) => onTemplateChange({ ...template, textAlign: v })}
+                  options={[
+                    { value: "left", label: "Left" },
+                    { value: "center", label: "Center" },
+                    { value: "right", label: "Right" },
+                  ]}
+                  className="w-full"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium block mb-1">
-                    Content
-                  </label>
-                  <Input
-                    value={selectedField.value}
-                    onChange={(e) =>
-                      updateField(selectedField.id, { value: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium block mb-1">
-                    Font Size: {selectedField.style?.fontSize || 14}px
-                  </label>
-                  <Slider
-                    min={8}
-                    max={48}
-                    value={selectedField.style?.fontSize || 14}
-                    onChange={(v) =>
-                      updateFieldStyle(selectedField.id, { fontSize: v })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium block mb-1">
-                    Font Weight
-                  </label>
-                  <Select
-                    value={selectedField.style?.fontWeight || "normal"}
-                    onChange={(v) =>
-                      updateFieldStyle(selectedField.id, { fontWeight: v })
-                    }
-                    options={fontWeightOptions}
-                    className="w-full"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium block mb-1">
-                    Color
-                  </label>
-                  <ColorPicker
-                    value={selectedField.style?.color || template.textColor}
-                    onChange={(c) =>
-                      updateFieldStyle(selectedField.id, {
-                        color: c.toHexString(),
-                      })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium block mb-1">
-                    Letter Spacing: {selectedField.style?.letterSpacing || 0}px
+                  <label className="text-xs text-muted-foreground mb-1 block">
+                    Title Letter Spacing: {template.titleLetterSpacing || 0}px
                   </label>
                   <Slider
                     min={0}
                     max={10}
-                    value={selectedField.style?.letterSpacing || 0}
-                    onChange={(v) =>
-                      updateFieldStyle(selectedField.id, { letterSpacing: v })
-                    }
+                    value={template.titleLetterSpacing || 0}
+                    onChange={(v) => onTemplateChange({ ...template, titleLetterSpacing: v })}
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-medium block mb-1">
-                    Opacity:{" "}
-                    {Math.round((selectedField.style?.opacity || 1) * 100)}%
-                  </label>
-                  <Slider
-                    min={0.1}
-                    max={1}
-                    step={0.1}
-                    value={selectedField.style?.opacity || 1}
-                    onChange={(v) =>
-                      updateFieldStyle(selectedField.id, { opacity: v })
-                    }
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium">Italic</label>
-                  <Switch
-                    checked={selectedField.style?.italic || false}
-                    onChange={(v) =>
-                      updateFieldStyle(selectedField.id, { italic: v })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium block mb-1">
-                    Background Color (optional)
-                  </label>
-                  <ColorPicker
-                    value={
-                      selectedField.style?.backgroundColor || "transparent"
-                    }
-                    onChange={(c) =>
-                      updateFieldStyle(selectedField.id, {
-                        backgroundColor: c.toHexString(),
-                      })
-                    }
-                    allowClear
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium block mb-1">
-                    Border Radius: {selectedField.style?.borderRadius || 0}px
+                  <label className="text-xs text-muted-foreground mb-1 block">
+                    Subtitle Letter Spacing: {template.subtitleLetterSpacing || 0}px
                   </label>
                   <Slider
                     min={0}
-                    max={24}
-                    value={selectedField.style?.borderRadius || 0}
-                    onChange={(v) =>
-                      updateFieldStyle(selectedField.id, { borderRadius: v })
-                    }
+                    max={10}
+                    value={template.subtitleLetterSpacing || 0}
+                    onChange={(v) => onTemplateChange({ ...template, subtitleLetterSpacing: v })}
                   />
                 </div>
               </div>
-            )}
+            </div>
+          </Card>
+
+          {/* Colors */}
+          <Card size="small" title="Colors" className="border-border">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium block mb-2">Background</label>
+                <ColorPicker
+                  value={template.backgroundColor}
+                  onChange={(c) => onTemplateChange({ ...template, backgroundColor: c.toHexString() })}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium block mb-2">Text Color</label>
+                <ColorPicker
+                  value={template.textColor}
+                  onChange={(c) => onTemplateChange({ ...template, textColor: c.toHexString() })}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium block mb-2">Accent Color</label>
+                <ColorPicker
+                  value={template.accentColor || template.textColor}
+                  onChange={(c) => onTemplateChange({ ...template, accentColor: c.toHexString() })}
+                />
+              </div>
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-border">
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-xs font-medium">Gradient Background</label>
+                <Switch
+                  checked={template.showGradient || false}
+                  onChange={(v) => onTemplateChange({ ...template, showGradient: v })}
+                />
+              </div>
+              {template.showGradient && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-2 block">Gradient End</label>
+                    <ColorPicker
+                      value={template.gradientColor || "#000000"}
+                      onChange={(c) => onTemplateChange({ ...template, gradientColor: c.toHexString() })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-2 block">Direction</label>
+                    <Select
+                      value={template.gradientDirection || "to-bottom"}
+                      onChange={(v) => onTemplateChange({ ...template, gradientDirection: v })}
+                      options={[
+                        { value: "to-bottom", label: "Top to Bottom" },
+                        { value: "to-right", label: "Left to Right" },
+                        { value: "to-bottom-right", label: "Diagonal ↘" },
+                        { value: "to-top-right", label: "Diagonal ↗" },
+                      ]}
+                      className="w-full"
+                      size="small"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </Card>
+
+          {/* Card Style */}
+          <Card size="small" title="Card Style" className="border-border">
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-medium block mb-1">
+                  Border Radius: {template.borderRadius || 16}px
+                </label>
+                <Slider
+                  min={0}
+                  max={32}
+                  value={template.borderRadius || 16}
+                  onChange={(v) => onTemplateChange({ ...template, borderRadius: v })}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium block mb-1">
+                  Padding: {template.padding || 24}px
+                </label>
+                <Slider
+                  min={12}
+                  max={48}
+                  value={template.padding || 24}
+                  onChange={(v) => onTemplateChange({ ...template, padding: v })}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium block mb-1">Shadow</label>
+                <Select
+                  value={template.shadowIntensity || "none"}
+                  onChange={(v) => onTemplateChange({ ...template, shadowIntensity: v })}
+                  options={[
+                    { value: "none", label: "None" },
+                    { value: "light", label: "Light" },
+                    { value: "medium", label: "Medium" },
+                    { value: "strong", label: "Strong" },
+                  ]}
+                  className="w-full"
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-medium">Show Border</label>
+                <Switch
+                  checked={template.showBorder || false}
+                  onChange={(v) => onTemplateChange({ ...template, showBorder: v })}
+                />
+              </div>
+              {template.showBorder && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-2 block">Border Color</label>
+                    <ColorPicker
+                      value={template.borderColor || "#e5e7eb"}
+                      onChange={(c) => onTemplateChange({ ...template, borderColor: c.toHexString() })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Width: {template.borderWidth || 1}px
+                    </label>
+                    <Slider
+                      min={1}
+                      max={5}
+                      value={template.borderWidth || 1}
+                      onChange={(v) => onTemplateChange({ ...template, borderWidth: v })}
+                    />
+                  </div>
+                </div>
+              )}
+              <div>
+                <label className="text-xs font-medium block mb-1">Decorative Style</label>
+                <Select
+                  value={template.decorativeStyle || "none"}
+                  onChange={(v) => onTemplateChange({ ...template, decorativeStyle: v })}
+                  options={[
+                    { value: "none", label: "None" },
+                    { value: "circles", label: "Circles" },
+                    { value: "dots", label: "Dots" },
+                    { value: "lines", label: "Lines" },
+                    { value: "geometric", label: "Geometric" },
+                    { value: "grid", label: "Grid" },
+                  ]}
+                  className="w-full"
+                />
+              </div>
+            </div>
           </Card>
         </div>
-      ) : (
-        <Empty
-          description="Select an element to edit its style"
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-        />
+      ),
+    },
+    {
+      key: "layout",
+      label: (
+        <span className="flex items-center gap-2">
+          <Layout size={14} />
+          Layout
+        </span>
+      ),
+      children: (
+        <div className="space-y-4 h-[520px] overflow-y-auto pr-2">
+          <Card size="small" title="QR Code Position" className="border-border">
+            <Select
+              value={template.qrPosition || "bottom"}
+              onChange={(v) => onTemplateChange({ ...template, qrPosition: v })}
+              options={[
+                { value: "top", label: "Top" },
+                { value: "center", label: "Center" },
+                { value: "bottom", label: "Bottom" },
+                { value: "right", label: "Right (Horizontal)" },
+                { value: "left", label: "Left (Horizontal)" },
+              ]}
+              className="w-full"
+            />
+            <div className="mt-4">
+              <label className="text-xs font-medium block mb-1">QR Label</label>
+              <Input
+                value={template.qrLabel || ""}
+                onChange={(e) => onTemplateChange({ ...template, qrLabel: e.target.value })}
+                placeholder="e.g., Scan for details"
+              />
+            </div>
+          </Card>
+        </div>
       ),
     },
     {
       key: "cta",
-      label: "CTA Button",
+      label: (
+        <span className="flex items-center gap-2">
+          <MousePointerClick size={14} />
+          CTA Button
+        </span>
+      ),
       children: (
-        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
-          <div className="flex items-center justify-between">
+        <div className="space-y-4 h-[520px] overflow-y-auto pr-2">
+          <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
             <label className="text-sm font-medium">Show CTA Button</label>
             <Switch
               checked={!!template.ctaButton}
@@ -456,58 +819,64 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
           </div>
 
           {template.ctaButton && (
-            <Card size="small" title="Button Settings">
-              <div className="space-y-3">
+            <Card size="small" title="Button Settings" className="border-border">
+              <div className="space-y-4">
                 <div>
-                  <label className="text-xs font-medium block mb-1">
-                    Button Text
-                  </label>
-                  <Input
-                    value={template.ctaButton.text}
-                    onChange={(e) =>
-                      onTemplateChange({
-                        ...template,
-                        ctaButton: {
-                          ...template.ctaButton!,
-                          text: e.target.value,
-                        },
-                      })
-                    }
-                  />
+                  <label className="text-xs font-medium block mb-1">Button Text</label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={template.ctaButton.text}
+                      onChange={(e) =>
+                        onTemplateChange({
+                          ...template,
+                          ctaButton: { ...template.ctaButton!, text: e.target.value },
+                        })
+                      }
+                      className="flex-1"
+                    />
+                    <Popover
+                      content={
+                        <EmojiPicker
+                          onSelect={(emoji) =>
+                            onTemplateChange({
+                              ...template,
+                              ctaButton: { ...template.ctaButton!, text: template.ctaButton!.text + emoji },
+                            })
+                          }
+                        />
+                      }
+                      trigger="click"
+                      placement="bottomRight"
+                    >
+                      <Button icon={<Smile size={16} />} />
+                    </Popover>
+                  </div>
                 </div>
-                <div>
-                  <label className="text-xs font-medium block mb-1">
-                    Background Color
-                  </label>
-                  <ColorPicker
-                    value={template.ctaButton.backgroundColor}
-                    onChange={(c) =>
-                      onTemplateChange({
-                        ...template,
-                        ctaButton: {
-                          ...template.ctaButton!,
-                          backgroundColor: c.toHexString(),
-                        },
-                      })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium block mb-1">
-                    Text Color
-                  </label>
-                  <ColorPicker
-                    value={template.ctaButton.textColor}
-                    onChange={(c) =>
-                      onTemplateChange({
-                        ...template,
-                        ctaButton: {
-                          ...template.ctaButton!,
-                          textColor: c.toHexString(),
-                        },
-                      })
-                    }
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-medium block mb-2">Background</label>
+                    <ColorPicker
+                      value={template.ctaButton.backgroundColor}
+                      onChange={(c) =>
+                        onTemplateChange({
+                          ...template,
+                          ctaButton: { ...template.ctaButton!, backgroundColor: c.toHexString() },
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium block mb-2">Text Color</label>
+                    <ColorPicker
+                      value={template.ctaButton.textColor}
+                      onChange={(c) =>
+                        onTemplateChange({
+                          ...template,
+                          ctaButton: { ...template.ctaButton!, textColor: c.toHexString() },
+                        })
+                      }
+                    />
+                  </div>
                 </div>
                 <div>
                   <label className="text-xs font-medium block mb-1">
@@ -531,43 +900,6 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
         </div>
       ),
     },
-    {
-      key: "qr",
-      label: "QR Settings",
-      children: (
-        <div className="space-y-4">
-          <div>
-            <label className="text-xs font-medium block mb-1">
-              QR Label (below QR code)
-            </label>
-            <Input
-              value={template.qrLabel || ""}
-              onChange={(e) =>
-                onTemplateChange({ ...template, qrLabel: e.target.value })
-              }
-              placeholder="e.g., Scan for details"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-medium block mb-2">
-              QR Position
-            </label>
-            <Select
-              value={template.qrPosition || "bottom"}
-              onChange={(v) => onTemplateChange({ ...template, qrPosition: v })}
-              options={[
-                { value: "top", label: "Top" },
-                { value: "center", label: "Center" },
-                { value: "bottom", label: "Bottom" },
-                { value: "right", label: "Right (Horizontal)" },
-                { value: "left", label: "Left (Horizontal)" },
-              ]}
-              className="w-full"
-            />
-          </div>
-        </div>
-      ),
-    },
   ];
 
   return (
@@ -575,12 +907,13 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
       title="Template Editor"
       open={open}
       onCancel={onClose}
-      width={950}
+      width={1000}
       footer={[
         <Button key="close" type="primary" onClick={onClose}>
           Done
         </Button>,
       ]}
+      styles={{ body: { padding: "16px 24px" } }}
     >
       <div className="flex gap-6">
         {/* Editor Panel */}
@@ -589,13 +922,14 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
         </div>
 
         {/* Live Preview Panel */}
-        <div className="w-[340px] flex-shrink-0">
+        <div className="w-[360px] flex-shrink-0">
           <div className="sticky top-0">
-            <div className="text-sm font-medium text-muted-foreground mb-3">
+            <div className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+              <QrCode size={14} />
               Live Preview
             </div>
-            <div className="flex justify-center items-start p-4 bg-muted/30 rounded-lg min-h-[450px]">
-              <div className="transform scale-[0.85] origin-top">
+            <div className="flex justify-center items-start p-4 bg-muted/30 rounded-lg min-h-[550px]">
+              <div className="transform scale-[0.82] origin-top">
                 <QRCodePreview
                   content={content}
                   template={template}
