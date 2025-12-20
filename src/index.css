@@ -317,6 +317,7 @@
 /* ============================== */
 /* Ant Design - Modal (CRITICAL)  */
 /* ============================== */
+.ant-modal .ant-modal-content,
 .ant-modal-content {
   background: hsl(var(--card)) !important;
   color: hsl(var(--foreground)) !important;
@@ -344,6 +345,7 @@
 }
 
 .ant-modal-body {
+  background: hsl(var(--card)) !important;
   color: hsl(var(--foreground)) !important;
 }
 
