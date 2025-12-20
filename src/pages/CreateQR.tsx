@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Card, Typography, message, Row, Col } from 'antd';
-import { ArrowLeft, Check, Save, Settings2 } from 'lucide-react';
+import { Button, Card, Typography, message, Drawer } from 'antd';
+import { ArrowLeft, Check, Settings2, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { qrCodeAPI } from '@/lib/api';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import TemplateSelector from '../components/qr/TemplateSelector';
-import TemplateCustomizer from '../components/qr/TemplateCustomizer';
 import TemplateEditorModal from '../components/qr/TemplateEditorModal';
 import QRTypeSelector from '../components/qr/QRTypeSelector';
 import ContentEditor from '../components/qr/ContentEditor';
@@ -16,7 +15,6 @@ import { useQRCodes } from '../hooks/useQRCodes';
 import {
   QRTemplate,
   QRStyling,
-  QRCodeData,
   QRType,
   defaultTemplates,
   defaultStyling,
@@ -25,11 +23,11 @@ import {
 const { Text } = Typography;
 
 const steps = [
-  { title: 'Card Template', description: 'Choose card design (Optional)' },
-  { title: 'QR Type', description: 'Choose QR code type' },
-  { title: 'Content', description: 'Enter your content' },
-  { title: 'QR Design', description: 'Customize QR appearance' },
-  { title: 'Final Touch', description: 'Fine-tune everything' },
+  { title: 'Template', description: 'Choose design' },
+  { title: 'Type', description: 'QR type' },
+  { title: 'Content', description: 'Enter data' },
+  { title: 'Design', description: 'Customize' },
+  { title: 'Finish', description: 'Fine-tune' },
 ];
 
 const CreateQR: React.FC = () => {
@@ -48,20 +46,18 @@ const CreateQR: React.FC = () => {
   const [name, setName] = useState('');
   const [initialized, setInitialized] = useState(false);
   const [showTemplateEditor, setShowTemplateEditor] = useState(false);
+  const [showPreviewDrawer, setShowPreviewDrawer] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Initialization complete
   useEffect(() => {
     setInitialized(true);
   }, []);
 
-  // If an edit id is present in the route, load the existing QR code
   useEffect(() => {
     const loadForEdit = async () => {
       if (!id) return;
       setEditingId(id);
 
-      // Try from cached list first
       const existing = getQRCode(id);
       if (existing) {
         setTemplate(existing.template);
@@ -73,7 +69,6 @@ const CreateQR: React.FC = () => {
         return;
       }
 
-      // Fallback to fetching from API
       try {
         const res = await qrCodeAPI.getOne(id);
         const q = res.qrCode;
@@ -94,10 +89,7 @@ const CreateQR: React.FC = () => {
     loadForEdit();
   }, [id, getQRCode]);
 
-  // No draft persistence — drafts feature removed
-  useEffect(() => {
-    // no-op, keep initialized dependency if needed later
-  }, [initialized]);
+  useEffect(() => {}, [initialized]);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -123,18 +115,16 @@ const CreateQR: React.FC = () => {
         await updateQRCode(editingId, { name: name.trim(), type, content, template, styling });
         message.success('QR Code updated');
       } else {
-        const created = await saveQRCode({ name: name.trim(), type, content, template, styling });
-        message.success('QR Code saved with all configurations!');
+        await saveQRCode({ name: name.trim(), type, content, template, styling });
+        message.success('QR Code saved!');
       }
       navigate('/dashboard');
     } catch (err) {
-      // error messages are handled in the hook
+      // error handled in hook
     } finally {
       setSaving(false);
     }
   };
-
-  // Draft functionality removed — no clear draft handler needed
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -155,12 +145,7 @@ const CreateQR: React.FC = () => {
       case 3:
         return <QRDesignTemplates styling={styling} onStyleChange={setStyling} />;
       case 4:
-        return (
-          <div className="space-y-6">
-            <QRStyleEditor styling={styling} onStyleChange={setStyling} />
-            
-          </div>
-        );
+        return <QRStyleEditor styling={styling} onStyleChange={setStyling} />;
       default:
         return null;
     }
@@ -169,9 +154,30 @@ const CreateQR: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="animate-fade-in">
-         
-        {/* Custom Steps */}
-        <Card className="mb-6">
+        {/* Mobile Step Indicator */}
+        <div className="lg:hidden mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <Text className="text-sm font-medium">
+              Step {currentStep + 1} of {steps.length}
+            </Text>
+            <Text type="secondary" className="text-sm">
+              {steps[currentStep].title}
+            </Text>
+          </div>
+          <div className="flex gap-1">
+            {steps.map((_, index) => (
+              <div
+                key={index}
+                className={`flex-1 h-1 rounded-full transition-colors ${
+                  index <= currentStep ? 'bg-primary' : 'bg-muted'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop Steps */}
+        <Card className="mb-4 md:mb-6 hidden lg:block">
           <div className="flex items-center justify-between">
             {steps.map((step, index) => (
               <React.Fragment key={index}>
@@ -179,11 +185,11 @@ const CreateQR: React.FC = () => {
                   <div className="flex items-center gap-2 mb-1">
                     {index < currentStep ? (
                       <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                        <Check size={12} className="text-white" />
+                        <Check size={12} className="text-primary-foreground" />
                       </div>
                     ) : index === currentStep ? (
                       <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                        <span className="text-white text-xs font-medium">{index + 1}</span>
+                        <span className="text-primary-foreground text-xs font-medium">{index + 1}</span>
                       </div>
                     ) : (
                       <div className="w-6 h-6 rounded-full border-2 border-muted-foreground/30 flex items-center justify-center">
@@ -194,7 +200,7 @@ const CreateQR: React.FC = () => {
                       {step.title}
                     </span>
                   </div>
-                  <Text type="secondary" className="text-xs hidden sm:block">
+                  <Text type="secondary" className="text-xs hidden xl:block">
                     {step.description}
                   </Text>
                 </div>
@@ -206,92 +212,174 @@ const CreateQR: React.FC = () => {
           </div>
         </Card>
 
-        {/* Content Area with Preview */}
-        <div className="min-h-[500px] mb-6">
-          <Row gutter={[24, 24]}>
-            <Col xs={24} lg={14}>
-              <Card className="min-h-[500px]">
-                {renderStepContent()}
-              </Card>
-            </Col>
-            <Col xs={24} lg={10}>
-              <div className="lg:sticky lg:top-6">
-                <Card 
-                  title="Live Preview" 
-                  extra={
-                    <Button
-                      type="primary"
-                      icon={<Settings2 size={14} />}
-                      onClick={() => setShowTemplateEditor(true)}
-                    >
-                      Edit Template
-                    </Button>
-                  }
+        {/* Content Area */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            <Card className="min-h-[400px] md:min-h-[500px]">
+              {renderStepContent()}
+            </Card>
+            
+            {/* Mobile Navigation */}
+            <div className="flex items-center justify-between mt-4 lg:hidden">
+              <Button
+                size="large"
+                onClick={handlePrev}
+                disabled={currentStep === 0}
+                icon={<ChevronLeft size={18} />}
+                className="flex-1 mr-2"
+              >
+                Back
+              </Button>
+
+              {currentStep === steps.length - 1 ? (
+                <Button
+                  type="primary"
+                  size="large"
+                  onClick={handleSave}
+                  loading={saving}
+                  disabled={saving}
+                  className="flex-1 ml-2"
                 >
-                  <div className="flex flex-col items-center">
-                    <QRCodePreview
-                      ref={previewRef}
-                      content={content}
-                      template={template}
-                      styling={styling}
-                      editable={true}
-                      onTemplateChange={setTemplate}
-                      qrId={editingId || undefined}
-                    />
-                    <Text type="secondary" className="text-xs mt-4">
-                      Click text to edit inline • Use "Edit Template" for more options
-                    </Text>
-                  </div>
-                </Card>
+                  Save QR Code
+                </Button>
+              ) : (
+                <Button
+                  type="primary"
+                  size="large"
+                  onClick={handleNext}
+                  className="flex-1 ml-2"
+                >
+                  Next
+                  <ChevronRight size={18} className="ml-1" />
+                </Button>
+              )}
+            </div>
+          </div>
 
-                {/* Navigation buttons directly below the Live Preview card */}
-                <div className="mt-4 flex justify-between w-full">
+          {/* Desktop Preview */}
+          <div className="hidden lg:block lg:col-span-2">
+            <div className="sticky top-6">
+              <Card 
+                title="Live Preview" 
+                extra={
                   <Button
-                    size="middle"
-                    onClick={handlePrev}
-                    disabled={currentStep === 0}
+                    type="primary"
+                    size="small"
+                    icon={<Settings2 size={14} />}
+                    onClick={() => setShowTemplateEditor(true)}
                   >
-                    Previous
+                    Edit
                   </Button>
-
-                  {currentStep === steps.length - 1 ? (
-                    <Button
-                      type="primary"
-                      size="middle"
-                      onClick={handleSave}
-                      loading={saving}
-                      disabled={saving}
-                    >
-                      {saving ? 'Saving...' : 'Save QR Code'}
-                    </Button>
-                  ) : (
-                    <Button
-                      type="primary"
-                      size="middle"
-                      onClick={handleNext}
-                    >
-                      Next
-                    </Button>
-                  )}
+                }
+              >
+                <div className="flex flex-col items-center">
+                  <QRCodePreview
+                    ref={previewRef}
+                    content={content}
+                    template={template}
+                    styling={styling}
+                    editable={true}
+                    onTemplateChange={setTemplate}
+                    qrId={editingId || undefined}
+                  />
+                  <Text type="secondary" className="text-xs mt-4 text-center">
+                    Click text to edit • Use "Edit" for more options
+                  </Text>
                 </div>
+              </Card>
+
+              {/* Desktop Navigation */}
+              <div className="mt-4 flex justify-between">
+                <Button
+                  size="middle"
+                  onClick={handlePrev}
+                  disabled={currentStep === 0}
+                >
+                  Previous
+                </Button>
+
+                {currentStep === steps.length - 1 ? (
+                  <Button
+                    type="primary"
+                    size="middle"
+                    onClick={handleSave}
+                    loading={saving}
+                    disabled={saving}
+                  >
+                    {saving ? 'Saving...' : 'Save QR Code'}
+                  </Button>
+                ) : (
+                  <Button
+                    type="primary"
+                    size="middle"
+                    onClick={handleNext}
+                  >
+                    Next
+                  </Button>
+                )}
               </div>
-            </Col>
-          </Row>
+            </div>
+          </div>
         </div>
 
+        {/* Mobile Preview FAB */}
+        <button
+          onClick={() => setShowPreviewDrawer(true)}
+          className="lg:hidden fixed bottom-20 right-4 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center z-40"
+        >
+          <Eye size={24} />
+        </button>
 
+        {/* Mobile Preview Drawer */}
+        <Drawer
+          title="Preview"
+          placement="bottom"
+          onClose={() => setShowPreviewDrawer(false)}
+          open={showPreviewDrawer}
+          height="80vh"
+          className="lg:hidden"
+          extra={
+            <Button
+              type="primary"
+              size="small"
+              icon={<Settings2 size={14} />}
+              onClick={() => {
+                setShowPreviewDrawer(false);
+                setShowTemplateEditor(true);
+              }}
+            >
+              Edit Template
+            </Button>
+          }
+        >
+          <div className="flex flex-col items-center py-4">
+            <QRCodePreview
+              ref={previewRef}
+              content={content}
+              template={template}
+              styling={styling}
+              editable={true}
+              onTemplateChange={setTemplate}
+              qrId={editingId || undefined}
+            />
+            <Text type="secondary" className="text-xs mt-4 text-center">
+              Tap text to edit inline
+            </Text>
+          </div>
+        </Drawer>
+
+        {/* Template Editor Modal */}
+        <TemplateEditorModal
+          open={showTemplateEditor}
+          onClose={() => setShowTemplateEditor(false)}
+          template={template}
+          onTemplateChange={setTemplate}
+          content={content}
+          styling={styling}
+          qrId={editingId || undefined}
+        />
       </div>
-
-      {/* Template Editor Modal */}
-      <TemplateEditorModal
-        open={showTemplateEditor}
-        onClose={() => setShowTemplateEditor(false)}
-        template={template}
-        onTemplateChange={setTemplate}
-        content={content}
-        styling={styling}
-        qrId={editingId || undefined}
-      />
     </DashboardLayout>
   );
 };
