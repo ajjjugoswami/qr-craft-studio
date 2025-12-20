@@ -39,7 +39,7 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-background">
+    <div className="h-screen flex flex-col lg:flex-row bg-background overflow-hidden">
       {/* Left Side - Form */}
       <div className="w-full lg:w-1/2 flex flex-col">
         {/* Logo Header */}
@@ -51,7 +51,7 @@ const SignIn: React.FC = () => {
         </div>
 
         <div className="flex-1 flex flex-col justify-center px-4 sm:px-8 lg:px-12 xl:px-16 py-8 lg:py-0">
-          <div className="max-w-md mx-auto w-full">
+          <div className="max-w-[32rem] mx-auto w-full">
             {/* Header */}
             <div className="mb-6">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3">
@@ -163,7 +163,7 @@ const SignIn: React.FC = () => {
       </div>
 
       {/* Right Side - Image */}
-      <div className="hidden lg:block lg:w-1/2 p-3 min-h-screen">
+      <div className="hidden lg:block lg:w-1/2 p-3 h-full">
         <div className="h-full w-full rounded-3xl overflow-hidden">
           <img
             src={authImage}
