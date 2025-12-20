@@ -73,12 +73,15 @@ const LogoTab: React.FC<LogoTabProps> = ({ styling, onStyleChange }) => {
       {styling.image && (
         <>
           <div className="mb-6">
-            <Text strong className="block mb-3">Logo Size: {(styling.imageOptions?.imageSize || 0.4) * 100}%</Text>
+            <Text strong className="block mb-3">Logo Size: {Math.round((styling.imageOptions?.imageSize || 0.25) * 100)}%</Text>
+            <Text type="secondary" className="block text-xs mb-2">
+              Keep logo size at 25% or less for best scannability
+            </Text>
             <Slider
               min={0.1}
-              max={1}
-              step={0.1}
-              value={styling.imageOptions?.imageSize || 0.4}
+              max={0.25}
+              step={0.01}
+              value={Math.min(styling.imageOptions?.imageSize || 0.25, 0.25)}
               onChange={(value) =>
                 onStyleChange({
                   ...styling,
