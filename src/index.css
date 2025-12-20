@@ -61,7 +61,7 @@
     --card: 222 47% 10%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222 47% 10%;
+    --popover: 222 47% 12%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 262 83% 65%;
@@ -86,8 +86,8 @@
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 217 33% 20%;
-    --input: 217 33% 20%;
+    --border: 217 33% 25%;
+    --input: 217 33% 25%;
     --input-background: 217 33% 14%;
     --ring: 262 83% 65%;
 
@@ -113,7 +113,9 @@
   }
 }
 
-/* Ant Design Overrides - Light & Dark Mode */
+/* ============================== */
+/* Ant Design - Layout & Menu     */
+/* ============================== */
 .ant-layout {
   background: hsl(var(--background)) !important;
 }
@@ -144,6 +146,9 @@
   color: hsl(var(--sidebar-primary)) !important;
 }
 
+/* ============================== */
+/* Ant Design - Buttons           */
+/* ============================== */
 .ant-btn-primary {
   background: hsl(var(--primary)) !important;
   border-color: hsl(var(--primary)) !important;
@@ -157,7 +162,7 @@
 }
 
 .ant-btn-default {
-  background: hsl(var(--background)) !important;
+  background: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
   color: hsl(var(--foreground)) !important;
 }
@@ -165,8 +170,20 @@
 .ant-btn-default:hover {
   border-color: hsl(var(--primary)) !important;
   color: hsl(var(--primary)) !important;
+  background: hsl(var(--card)) !important;
 }
 
+.ant-btn-text {
+  color: hsl(var(--foreground)) !important;
+}
+
+.ant-btn-text:hover {
+  background: hsl(var(--muted)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Steps             */
+/* ============================== */
 .ant-steps-item-process .ant-steps-item-icon {
   background: hsl(var(--primary)) !important;
   border-color: hsl(var(--primary)) !important;
@@ -184,6 +201,9 @@
   background-color: hsl(var(--primary)) !important;
 }
 
+/* ============================== */
+/* Ant Design - Cards             */
+/* ============================== */
 .ant-card {
   background: hsl(var(--card)) !important;
   border-radius: 12px !important;
@@ -209,13 +229,21 @@
   color: hsl(var(--foreground)) !important;
 }
 
+/* ============================== */
+/* Ant Design - Tags              */
+/* ============================== */
 .ant-tag {
   border-radius: 6px !important;
 }
 
+/* ============================== */
+/* Ant Design - Inputs & Selects  */
+/* ============================== */
 .ant-input,
 .ant-input-affix-wrapper,
-.ant-select-selector {
+.ant-select-selector,
+.ant-input-number,
+.ant-picker {
   background: hsl(var(--input-background)) !important;
   border-color: hsl(var(--border)) !important;
   border-radius: 8px !important;
@@ -223,48 +251,103 @@
 }
 
 .ant-input::placeholder,
-.ant-input-affix-wrapper input::placeholder {
+.ant-input-affix-wrapper input::placeholder,
+.ant-picker input::placeholder {
   color: hsl(var(--muted-foreground)) !important;
 }
 
 .ant-input:focus,
 .ant-input-affix-wrapper:focus,
-.ant-input-affix-wrapper-focused {
+.ant-input-affix-wrapper-focused,
+.ant-select-focused .ant-select-selector,
+.ant-picker-focused {
   border-color: hsl(var(--primary)) !important;
   box-shadow: 0 0 0 2px hsl(var(--primary) / 0.1) !important;
 }
 
+.ant-input-disabled,
+.ant-input[disabled] {
+  background: hsl(var(--muted)) !important;
+  color: hsl(var(--muted-foreground)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Select Dropdown   */
+/* ============================== */
 .ant-select-dropdown {
   background: hsl(var(--popover)) !important;
   border: 1px solid hsl(var(--border)) !important;
+  box-shadow: 0 10px 40px hsl(var(--foreground) / 0.15) !important;
 }
 
 .ant-select-item {
   color: hsl(var(--foreground)) !important;
 }
 
-.ant-select-item-option-selected {
-  background: hsl(var(--primary) / 0.1) !important;
+.ant-select-item:hover {
+  background: hsl(var(--muted)) !important;
 }
 
-.ant-modal-content {
-  background: hsl(var(--card)) !important;
+.ant-select-item-option-selected {
+  background: hsl(var(--primary) / 0.1) !important;
+  color: hsl(var(--primary)) !important;
+}
+
+.ant-select-item-option-active {
+  background: hsl(var(--muted)) !important;
+}
+
+.ant-select-selection-item {
   color: hsl(var(--foreground)) !important;
 }
 
+/* ============================== */
+/* Ant Design - Modal (CRITICAL)  */
+/* ============================== */
+.ant-modal-content {
+  background: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 60px hsl(var(--foreground) / 0.25) !important;
+}
+
 .ant-modal-header {
-  background: transparent !important;
+  background: hsl(var(--card)) !important;
   border-bottom: 1px solid hsl(var(--border)) !important;
+  border-radius: 16px 16px 0 0 !important;
 }
 
 .ant-modal-title {
   color: hsl(var(--foreground)) !important;
 }
 
-.ant-modal-close-x {
+.ant-modal-close {
   color: hsl(var(--muted-foreground)) !important;
 }
 
+.ant-modal-close:hover {
+  color: hsl(var(--foreground)) !important;
+  background: hsl(var(--muted)) !important;
+}
+
+.ant-modal-body {
+  color: hsl(var(--foreground)) !important;
+}
+
+.ant-modal-footer {
+  background: hsl(var(--card)) !important;
+  border-top: 1px solid hsl(var(--border)) !important;
+  border-radius: 0 0 16px 16px !important;
+}
+
+.ant-modal-mask {
+  background: hsl(var(--foreground) / 0.5) !important;
+}
+
+/* ============================== */
+/* Ant Design - Table             */
+/* ============================== */
 .ant-table {
   background: transparent !important;
   color: hsl(var(--foreground)) !important;
@@ -278,19 +361,31 @@
 
 .ant-table-tbody > tr > td {
   border-bottom: 1px solid hsl(var(--border)) !important;
+  color: hsl(var(--foreground)) !important;
 }
 
 .ant-table-tbody > tr:hover > td {
   background: hsl(var(--muted) / 0.5) !important;
 }
 
+.ant-table-tbody > tr.ant-table-row:hover > td {
+  background: hsl(var(--muted) / 0.5) !important;
+}
+
+/* ============================== */
+/* Ant Design - Pagination        */
+/* ============================== */
 .ant-pagination-item {
-  background: hsl(var(--background)) !important;
+  background: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
 }
 
 .ant-pagination-item a {
   color: hsl(var(--foreground)) !important;
+}
+
+.ant-pagination-item:hover {
+  border-color: hsl(var(--primary)) !important;
 }
 
 .ant-pagination-item-active {
@@ -302,6 +397,14 @@
   color: hsl(var(--primary-foreground)) !important;
 }
 
+.ant-pagination-prev button,
+.ant-pagination-next button {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Statistic         */
+/* ============================== */
 .ant-statistic-title {
   font-size: 13px !important;
   color: hsl(var(--muted-foreground)) !important;
@@ -316,8 +419,15 @@
   color: inherit !important;
 }
 
+/* ============================== */
+/* Ant Design - Tabs              */
+/* ============================== */
 .ant-tabs-tab {
   color: hsl(var(--muted-foreground)) !important;
+}
+
+.ant-tabs-tab:hover {
+  color: hsl(var(--foreground)) !important;
 }
 
 .ant-tabs-tab-active .ant-tabs-tab-btn {
@@ -328,16 +438,30 @@
   background: hsl(var(--primary)) !important;
 }
 
+.ant-tabs-nav::before {
+  border-bottom-color: hsl(var(--border)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Form              */
+/* ============================== */
 .ant-form-item-label > label {
   color: hsl(var(--foreground)) !important;
 }
 
+.ant-form-item-explain-error {
+  color: hsl(var(--destructive)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Drawer            */
+/* ============================== */
 .ant-drawer-content {
-  background: hsl(var(--background)) !important;
+  background: hsl(var(--card)) !important;
 }
 
 .ant-drawer-header {
-  background: hsl(var(--background)) !important;
+  background: hsl(var(--card)) !important;
   border-bottom: 1px solid hsl(var(--border)) !important;
 }
 
@@ -349,6 +473,17 @@
   color: hsl(var(--muted-foreground)) !important;
 }
 
+.ant-drawer-close:hover {
+  color: hsl(var(--foreground)) !important;
+}
+
+.ant-drawer-body {
+  background: hsl(var(--card)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Segmented         */
+/* ============================== */
 .ant-segmented {
   background: hsl(var(--muted)) !important;
 }
@@ -358,18 +493,27 @@
 }
 
 .ant-segmented-item-selected {
-  background: hsl(var(--background)) !important;
+  background: hsl(var(--card)) !important;
   color: hsl(var(--foreground)) !important;
 }
 
+/* ============================== */
+/* Ant Design - Spin              */
+/* ============================== */
 .ant-spin-dot-item {
   background: hsl(var(--primary)) !important;
 }
 
+/* ============================== */
+/* Ant Design - Empty             */
+/* ============================== */
 .ant-empty-description {
   color: hsl(var(--muted-foreground)) !important;
 }
 
+/* ============================== */
+/* Ant Design - Typography        */
+/* ============================== */
 .ant-typography {
   color: hsl(var(--foreground)) !important;
 }
@@ -378,6 +522,17 @@
   color: hsl(var(--muted-foreground)) !important;
 }
 
+h1.ant-typography,
+h2.ant-typography,
+h3.ant-typography,
+h4.ant-typography,
+h5.ant-typography {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Slider            */
+/* ============================== */
 .ant-slider-track {
   background: hsl(var(--primary)) !important;
 }
@@ -390,11 +545,31 @@
   background: hsl(var(--muted)) !important;
 }
 
+/* ============================== */
+/* Ant Design - Popover           */
+/* ============================== */
 .ant-popover-inner {
   background: hsl(var(--popover)) !important;
+  box-shadow: 0 10px 40px hsl(var(--foreground) / 0.15) !important;
 }
 
 .ant-popover-arrow::before {
+  background: hsl(var(--popover)) !important;
+}
+
+.ant-popover-title {
+  color: hsl(var(--foreground)) !important;
+  border-bottom-color: hsl(var(--border)) !important;
+}
+
+.ant-popover-inner-content {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Popconfirm        */
+/* ============================== */
+.ant-popconfirm .ant-popover-inner {
   background: hsl(var(--popover)) !important;
 }
 
@@ -402,13 +577,121 @@
   color: hsl(var(--foreground)) !important;
 }
 
+.ant-popconfirm-description {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Message           */
+/* ============================== */
 .ant-message-notice-content {
   background: hsl(var(--card)) !important;
   color: hsl(var(--foreground)) !important;
-  box-shadow: 0 4px 12px hsl(var(--foreground) / 0.15) !important;
+  box-shadow: 0 6px 24px hsl(var(--foreground) / 0.15) !important;
+  border-radius: 8px !important;
 }
 
-/* Custom Scrollbar */
+/* ============================== */
+/* Ant Design - Tooltip           */
+/* ============================== */
+.ant-tooltip-inner {
+  background: hsl(var(--popover)) !important;
+  color: hsl(var(--foreground)) !important;
+  box-shadow: 0 4px 16px hsl(var(--foreground) / 0.15) !important;
+}
+
+.ant-tooltip-arrow::before {
+  background: hsl(var(--popover)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Collapse          */
+/* ============================== */
+.ant-collapse {
+  background: transparent !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.ant-collapse-item {
+  border-color: hsl(var(--border)) !important;
+}
+
+.ant-collapse-header {
+  color: hsl(var(--foreground)) !important;
+}
+
+.ant-collapse-content {
+  background: transparent !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.ant-collapse-ghost > .ant-collapse-item {
+  border-color: hsl(var(--border)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Color Picker      */
+/* ============================== */
+.ant-color-picker-trigger {
+  background: hsl(var(--card)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.ant-color-picker-panel {
+  background: hsl(var(--popover)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Switch            */
+/* ============================== */
+.ant-switch {
+  background: hsl(var(--muted-foreground)) !important;
+}
+
+.ant-switch-checked {
+  background: hsl(var(--primary)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Divider           */
+/* ============================== */
+.ant-divider {
+  border-color: hsl(var(--border)) !important;
+}
+
+.ant-divider-inner-text {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Avatar            */
+/* ============================== */
+.ant-avatar {
+  background: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+/* ============================== */
+/* Ant Design - Dropdown          */
+/* ============================== */
+.ant-dropdown-menu {
+  background: hsl(var(--popover)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: 0 10px 40px hsl(var(--foreground) / 0.15) !important;
+}
+
+.ant-dropdown-menu-item {
+  color: hsl(var(--foreground)) !important;
+}
+
+.ant-dropdown-menu-item:hover {
+  background: hsl(var(--muted)) !important;
+}
+
+/* ============================== */
+/* Custom Scrollbar               */
+/* ============================== */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -427,7 +710,9 @@
   background: hsl(var(--muted-foreground) / 0.5);
 }
 
-/* Animations */
+/* ============================== */
+/* Animations                     */
+/* ============================== */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -437,7 +722,9 @@
   animation: fadeIn 0.3s ease-out;
 }
 
-/* QR Card Template Styles */
+/* ============================== */
+/* QR Card Template Styles        */
+/* ============================== */
 .qr-template-card {
   transition: all 0.2s ease;
   cursor: pointer;
@@ -453,7 +740,9 @@
   box-shadow: 0 0 0 4px hsl(var(--primary) / 0.1);
 }
 
-/* QR Creation Tabs */
+/* ============================== */
+/* QR Creation Tabs               */
+/* ============================== */
 .qr-creation-tabs .ant-tabs-tab {
   padding: 12px 16px !important;
   margin: 0 !important;
@@ -472,7 +761,9 @@
   border-bottom: 1px solid hsl(var(--border)) !important;
 }
 
-/* Profile Tabs */
+/* ============================== */
+/* Profile Tabs                   */
+/* ============================== */
 .profile-tabs .ant-tabs-tab {
   padding: 12px 20px !important;
   margin: 0 4px 0 0 !important;
@@ -495,7 +786,77 @@
   border-top: none !important;
 }
 
-/* Mobile drawer overlay */
-.mobile-drawer-overlay {
-  @apply fixed inset-0 bg-black/50 z-40 lg:hidden;
+/* ============================== */
+/* Mobile App-like Styles         */
+/* ============================== */
+@media (max-width: 640px) {
+  .ant-card {
+    border-radius: 12px !important;
+  }
+  
+  .ant-btn {
+    border-radius: 8px !important;
+  }
+  
+  .ant-modal-content {
+    border-radius: 16px 16px 0 0 !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+  
+  .ant-modal-wrap {
+    align-items: flex-end !important;
+    display: flex !important;
+  }
+  
+  .ant-modal {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  
+  .ant-drawer-content-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* ============================== */
+/* Mobile-first Utilities         */
+/* ============================== */
+.mobile-card {
+  @apply rounded-xl border border-border bg-card p-4;
+}
+
+.mobile-header {
+  @apply sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border;
+}
+
+.mobile-bottom-nav {
+  @apply fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50;
+}
+
+.mobile-safe-area {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ============================== */
+/* Touch-friendly Styles          */
+/* ============================== */
+@media (max-width: 1024px) {
+  .ant-btn {
+    min-height: 44px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  
+  .ant-input,
+  .ant-select-selector {
+    min-height: 44px !important;
+  }
+  
+  .ant-tabs-tab {
+    padding: 12px 16px !important;
+  }
 }

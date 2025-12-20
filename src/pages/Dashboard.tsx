@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button, Empty, Spin, Card, Row, Col, Statistic, Input } from 'antd';
+import { Typography, Button, Empty, Card, Row, Col, Statistic, Input } from 'antd';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Plus, QrCode, Eye, TrendingUp, Search, LayoutGrid, List } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -33,103 +33,102 @@ const Dashboard: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="animate-fade-in space-y-6">
+      <div className="animate-fade-in space-y-4 md:space-y-6">
         {/* Welcome Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <Title level={2} className="!mb-1">Welcome back! 👋</Title>
-            <Text type="secondary">Manage and create your QR codes</Text>
+            <Title level={3} className="!mb-0 !text-xl md:!text-2xl">Welcome back! 👋</Title>
+            <Text type="secondary" className="text-sm">Manage your QR codes</Text>
           </div>
           <Button
             type="primary"
             size="large"
             icon={<Plus size={18} />}
             onClick={() => navigate('/create')}
-            className="h-10 px-4 text-base font-medium"
+            className="w-full sm:w-auto h-11 sm:h-10"
           >
-            Create New QR Code
+            Create New
           </Button>
         </div>
 
         {/* Stats Cards */}
-        <Row gutter={[16, 16]}>
-          <Col xs={24} sm={8}>
-            <Card className="hover:shadow-md transition-shadow">
-              {loading ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-8 w-24" />
+        <div className="grid grid-cols-3 gap-3 md:gap-4">
+          <Card className="!p-0" styles={{ body: { padding: '12px' } }}>
+            {loading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-6 w-12" />
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <QrCode size={14} className="text-primary" />
+                  <span className="text-[11px] md:text-xs text-muted-foreground">Total</span>
                 </div>
-              ) : (
-                <Statistic
-                  title={<span className="text-muted-foreground">Total QR Codes</span>}
-                  value={qrCodes.length}
-                  prefix={<QrCode size={20} className="text-primary mr-2" />}
-                  valueStyle={{ color: '#6366f1', fontWeight: 600 }}
-                />
-              )}
-            </Card>
-          </Col>
-          <Col xs={24} sm={8}>
-            <Card className="hover:shadow-md transition-shadow">
-              {loading ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-8 w-24" />
+                <span className="text-lg md:text-2xl font-bold text-primary">{qrCodes.length}</span>
+              </div>
+            )}
+          </Card>
+          
+          <Card className="!p-0" styles={{ body: { padding: '12px' } }}>
+            {loading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-6 w-12" />
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Eye size={14} className="text-success" />
+                  <span className="text-[11px] md:text-xs text-muted-foreground">Scans</span>
                 </div>
-              ) : (
-                <Statistic
-                  title={<span className="text-muted-foreground">Total Scans</span>}
-                  value={totalScans}
-                  prefix={<Eye size={20} className="text-green-500 mr-2" />}
-                  valueStyle={{ color: '#22c55e', fontWeight: 600 }}
-                />
-              )}
-            </Card>
-          </Col>
-          <Col xs={24} sm={8}>
-            <Card className="hover:shadow-md transition-shadow">
-              {loading ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-8 w-24" />
+                <span className="text-lg md:text-2xl font-bold text-success">{totalScans}</span>
+              </div>
+            )}
+          </Card>
+          
+          <Card className="!p-0" styles={{ body: { padding: '12px' } }}>
+            {loading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-6 w-12" />
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <TrendingUp size={14} className="text-warning" />
+                  <span className="text-[11px] md:text-xs text-muted-foreground">Active</span>
                 </div>
-              ) : (
-                <Statistic
-                  title={<span className="text-muted-foreground">Active QR Codes</span>}
-                  value={activeQRs}
-                  prefix={<TrendingUp size={20} className="text-orange-500 mr-2" />}
-                  valueStyle={{ color: '#f59e0b', fontWeight: 600 }}
-                />
-              )}
-            </Card>
-          </Col>
-        </Row>
+                <span className="text-lg md:text-2xl font-bold text-warning">{activeQRs}</span>
+              </div>
+            )}
+          </Card>
+        </div>
 
         {/* QR Codes List Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <Title level={4} className="!mb-0">Your QR Codes</Title>
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <Title level={4} className="!mb-0 !text-base md:!text-lg">Your QR Codes</Title>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Input
-              placeholder="Search QR codes..."
+              placeholder="Search..."
               prefix={<Search size={16} className="text-muted-foreground" />}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-64"
+              className="flex-1 sm:w-48 md:w-64"
               allowClear
             />
-            <div className="flex items-center border border-border rounded-lg overflow-hidden">
+            <div className="flex items-center border border-border rounded-lg overflow-hidden bg-card">
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 transition-colors ${viewMode === 'list' ? 'bg-primary text-white' : 'hover:bg-muted'}`}
+                className={`p-2.5 transition-colors ${viewMode === 'list' ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-muted'}`}
               >
-                <List size={18} />
+                <List size={16} />
               </button>
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 transition-colors ${viewMode === 'grid' ? 'bg-primary text-white' : 'hover:bg-muted'}`}
+                className={`p-2.5 transition-colors ${viewMode === 'grid' ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-muted'}`}
               >
-                <LayoutGrid size={18} />
+                <LayoutGrid size={16} />
               </button>
             </div>
           </div>
@@ -137,89 +136,53 @@ const Dashboard: React.FC = () => {
 
         {/* Content */}
         {loading ? (
-          <>
-            {/* Stats skeletons (top) */}
-            <Row gutter={[16, 16]} className="mt-4">
-              <Col xs={24} sm={8}>
-                <Card className="hover:shadow-md transition-shadow">
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-8 w-24" />
-                  </div>
-                </Card>
-              </Col>
-              <Col xs={24} sm={8}>
-                <Card className="hover:shadow-md transition-shadow">
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-8 w-24" />
-                  </div>
-                </Card>
-              </Col>
-              <Col xs={24} sm={8}>
-                <Card className="hover:shadow-md transition-shadow">
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-8 w-24" />
-                  </div>
-                </Card>
-              </Col>
-            </Row>
-
-            {/* QR Cards skeleton */}
-            {viewMode === 'list' ? (
-              <div className="space-y-3 mt-6">
-                {Array.from({length: 4}).map((_, i) => (
-                  <Card key={i} className="mb-4">
-                    <div className="flex items-center gap-4">
-                      <Skeleton className="w-16 h-16 rounded-lg" />
-                      <div className="flex-1">
-                        <Skeleton className="h-4 w-40 mb-2" />
-                        <Skeleton className="h-3 w-64 mb-1" />
-                        <Skeleton className="h-3 w-32" />
-                      </div>
-                      <div>
-                        <Skeleton className="h-8 w-8 rounded-md" />
-                      </div>
+          viewMode === 'list' ? (
+            <div className="space-y-3">
+              {Array.from({length: 4}).map((_, i) => (
+                <Card key={i}>
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="w-14 h-14 rounded-lg flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <Skeleton className="h-4 w-32 mb-2" />
+                      <Skeleton className="h-3 w-48" />
                     </div>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <Row gutter={[16, 16]} className="mt-6">
-                {Array.from({length: 8}).map((_, i) => (
-                  <Col key={i} xs={24} sm={12} lg={8} xl={6}>
-                    <Card>
-                      <div className="flex flex-col items-center">
-                        <Skeleton className="w-full h-48 rounded-lg mb-4" />
-                        <Skeleton className="h-4 w-32" />
-                        <Skeleton className="h-3 w-20 mt-2" />
-                      </div>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
-            )}
-          </>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+              {Array.from({length: 8}).map((_, i) => (
+                <Card key={i}>
+                  <div className="flex flex-col items-center">
+                    <Skeleton className="w-full aspect-square rounded-lg mb-3" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )
         ) : qrCodes.length === 0 ? (
-          <Card className="py-16">
+          <Card className="py-12 md:py-16">
             <Empty
               image={
-                <div className="w-24 h-24 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                  <QrCode size={48} className="text-primary" />
+                <div className="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                  <QrCode size={40} className="text-primary md:hidden" />
+                  <QrCode size={48} className="text-primary hidden md:block" />
                 </div>
               }
               description={
                 <div className="text-center">
-                  <Title level={4} className="!mb-2">No QR Codes Yet</Title>
-                  <Text type="secondary" className="block mb-6">
-                    Create your first QR code to get started with tracking and analytics
+                  <Title level={4} className="!mb-2 !text-base md:!text-lg">No QR Codes Yet</Title>
+                  <Text type="secondary" className="block mb-4 md:mb-6 text-sm">
+                    Create your first QR code to get started
                   </Text>
                   <Button
                     type="primary"
                     size="large"
                     icon={<Plus size={18} />}
                     onClick={() => navigate('/create')}
+                    className="w-full sm:w-auto"
                   >
                     Create Your First QR Code
                   </Button>
@@ -228,11 +191,11 @@ const Dashboard: React.FC = () => {
             />
           </Card>
         ) : filteredQRCodes.length === 0 ? (
-          <Card className="py-12">
+          <Card className="py-8 md:py-12">
             <Empty
               description={
                 <div className="text-center">
-                  <Text type="secondary">No QR codes found matching "{searchTerm}"</Text>
+                  <Text type="secondary">No QR codes found for "{searchTerm}"</Text>
                 </div>
               }
             />
@@ -250,18 +213,17 @@ const Dashboard: React.FC = () => {
             ))}
           </div>
         ) : (
-          <Row gutter={[16, 16]}>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
             {filteredQRCodes.map((qrCode) => (
-              <Col key={qrCode.id} xs={24} sm={12} lg={8} xl={6}>
-                <QRCodeCard
-                  qrCode={qrCode}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  viewMode="grid"
-                />
-              </Col>
+              <QRCodeCard
+                key={qrCode.id}
+                qrCode={qrCode}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                viewMode="grid"
+              />
             ))}
-          </Row>
+          </div>
         )}
       </div>
     </DashboardLayout>
