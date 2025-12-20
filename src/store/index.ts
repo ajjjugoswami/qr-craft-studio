@@ -3,17 +3,22 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import qrCodesReducer from './slices/qrCodesSlice';
 import authReducer from './slices/authSlice';
 import uiReducer from './slices/uiSlice';
+import analyticsReducer from './slices/analyticsSlice';
+import contactsReducer from './slices/contactsSlice';
+import qrAnalyticsReducer from './slices/qrAnalyticsSlice';
 
 export const store = configureStore({
   reducer: {
     qrCodes: qrCodesReducer,
     auth: authReducer,
     ui: uiReducer,
+    analytics: analyticsReducer,
+    contacts: contactsReducer,
+    qrAnalytics: qrAnalyticsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Ignore these action types for serializable check
         ignoredActions: ['auth/setUser'],
       },
     }),

@@ -6,27 +6,21 @@ import {
   Form,
   Input,
   Button,
-  message,
   Space,
-  Divider,
   Row,
   Col,
 } from "antd";
 import {
   Send,
-  Phone,
-  MapPin,
   Clock,
-  CheckCircle,
-  MessageSquare,
   HeadphonesIcon,
   Mail,
-  Globe,
   User,
   AtSign,
   Hash,
 } from "lucide-react";
 import DashboardLayout from "../components/layout/DashboardLayout";
+import { useContacts } from "@/hooks/useContacts";
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -34,17 +28,15 @@ const { TextArea } = Input;
 const Contact: React.FC = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const { submitContact } = useContacts();
 
-  const handleSubmit = async (values: Record<string, string>) => {
+  const handleSubmit = async (values: { name: string; email: string; subject: string; message: string }) => {
     setLoading(true);
     try {
-      const res = await (
-        await import("@/lib/api")
-      ).contactAPI.create(values as any);
-      message.success(res?.message || "Message sent successfully!");
+      await submitContact(values);
       form.resetFields();
-    } catch (err: any) {
-      message.error(err?.response?.data?.message || "Failed to send message");
+    } catch {
+      // Error handled in hook
     } finally {
       setLoading(false);
     }
@@ -59,7 +51,6 @@ const Contact: React.FC = () => {
       color: "#6366f1",
       action: "mailto:support@qrcraftstudio.com",
     },
-
     {
       icon: <HeadphonesIcon size={24} />,
       title: "Phone Support",
@@ -75,15 +66,11 @@ const Contact: React.FC = () => {
       <div className="max-w-6xl mx-auto p-6 animate-fade-in">
         {/* Header Section */}
         <div className="text-center mb-12">
-          <Title
-            level={1}
-            className="mb-4 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent"
-          >
+          <Title level={1} className="mb-4 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
             Contact Us
           </Title>
           <Paragraph className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Have questions, feedback, or need help? We're here to assist you
-            every step of the way.
+            Have questions, feedback, or need help? We're here to assist you every step of the way.
           </Paragraph>
         </div>
 
@@ -92,12 +79,9 @@ const Contact: React.FC = () => {
           <Col xs={24} lg={12}>
             <div className="space-y-6">
               <div>
-                <Title level={3} className="mb-6">
-                  Get in Touch
-                </Title>
+                <Title level={3} className="mb-6">Get in Touch</Title>
                 <Paragraph className="text-gray-600 mb-8">
-                  Choose the contact method that works best for you. Our team is
-                  ready to help!
+                  Choose the contact method that works best for you. Our team is ready to help!
                 </Paragraph>
               </div>
 
@@ -108,32 +92,19 @@ const Contact: React.FC = () => {
                     className="cursor-pointer hover:shadow-lg transition-all duration-300 border-l-4"
                     style={{ borderLeftColor: method.color }}
                     onClick={() =>
-                      method.action.startsWith("http") ||
-                      method.action.startsWith("/")
+                      method.action.startsWith("http") || method.action.startsWith("/")
                         ? (window.location.href = method.action)
                         : window.open(method.action, "_blank")
                     }
                   >
                     <div className="flex items-start gap-4">
-                      <div
-                        className="p-3 rounded-lg flex-shrink-0"
-                        style={{
-                          backgroundColor: `${method.color}20`,
-                          color: method.color,
-                        }}
-                      >
+                      <div className="p-3 rounded-lg flex-shrink-0" style={{ backgroundColor: `${method.color}20`, color: method.color }}>
                         {method.icon}
                       </div>
                       <div className="flex-1">
-                        <Title level={4} className="mb-1">
-                          {method.title}
-                        </Title>
-                        <Paragraph className="text-gray-600 mb-2 text-sm">
-                          {method.description}
-                        </Paragraph>
-                        <Text strong style={{ color: method.color }}>
-                          {method.contact}
-                        </Text>
+                        <Title level={4} className="mb-1">{method.title}</Title>
+                        <Paragraph className="text-gray-600 mb-2 text-sm">{method.description}</Paragraph>
+                        <Text strong style={{ color: method.color }}>{method.contact}</Text>
                       </div>
                     </div>
                   </Card>
@@ -144,9 +115,7 @@ const Contact: React.FC = () => {
               <Card className="bg-gradient-to-r from-primary/5 to-purple-500/5 border-primary/20">
                 <div className="flex items-center gap-3 mb-3">
                   <Clock size={20} className="text-primary" />
-                  <Title level={5} className="mb-0">
-                    Business Hours
-                  </Title>
+                  <Title level={5} className="mb-0">Business Hours</Title>
                 </div>
                 <div className="space-y-1 text-sm text-gray-600">
                   <div>Monday - Friday: 9:00 AM - 6:00 PM EST</div>
@@ -161,81 +130,32 @@ const Contact: React.FC = () => {
           <Col xs={24} lg={12}>
             <Card className="shadow-lg">
               <div className="mb-6">
-                <Title level={3} className="mb-2">
-                  Send us a Message
-                </Title>
+                <Title level={3} className="mb-2">Send us a Message</Title>
                 <Paragraph className="text-gray-600">
-                  Fill out the form below and we'll get back to you as soon as
-                  possible.
+                  Fill out the form below and we'll get back to you as soon as possible.
                 </Paragraph>
               </div>
 
-              <Form
-                form={form}
-                layout="vertical"
-                onFinish={handleSubmit}
-                size="large"
-              >
+              <Form form={form} layout="vertical" onFinish={handleSubmit} size="large">
                 <Row gutter={16}>
                   <Col span={12}>
-                    <Form.Item
-                      name="name"
-                      label="Full Name"
-                      rules={[
-                        { required: true, message: "Please enter your name" },
-                      ]}
-                    >
-                      <Input
-                        prefix={<User size={16} className="text-gray-400" />}
-                        placeholder="Your full name"
-                      />
+                    <Form.Item name="name" label="Full Name" rules={[{ required: true, message: "Please enter your name" }]}>
+                      <Input prefix={<User size={16} className="text-gray-400" />} placeholder="Your full name" />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
-                    <Form.Item
-                      name="email"
-                      label="Email Address"
-                      rules={[
-                        { required: true, message: "Please enter your email" },
-                        {
-                          type: "email",
-                          message: "Please enter a valid email",
-                        },
-                      ]}
-                    >
-                      <Input
-                        prefix={<AtSign size={16} className="text-gray-400" />}
-                        placeholder="your@email.com"
-                      />
+                    <Form.Item name="email" label="Email Address" rules={[{ required: true, message: "Please enter your email" }, { type: "email", message: "Please enter a valid email" }]}>
+                      <Input prefix={<AtSign size={16} className="text-gray-400" />} placeholder="your@email.com" />
                     </Form.Item>
                   </Col>
                 </Row>
 
-                <Form.Item
-                  name="subject"
-                  label="Subject"
-                  rules={[
-                    { required: true, message: "Please enter a subject" },
-                  ]}
-                >
-                  <Input
-                    prefix={<Hash size={16} className="text-gray-400" />}
-                    placeholder="What's this about?"
-                  />
+                <Form.Item name="subject" label="Subject" rules={[{ required: true, message: "Please enter a subject" }]}>
+                  <Input prefix={<Hash size={16} className="text-gray-400" />} placeholder="What's this about?" />
                 </Form.Item>
 
-                <Form.Item
-                  name="message"
-                  label="Message"
-                  rules={[
-                    { required: true, message: "Please enter your message" },
-                  ]}
-                >
-                  <TextArea
-                    rows={6}
-                    placeholder="Tell us how we can help you..."
-                    className="resize-none"
-                  />
+                <Form.Item name="message" label="Message" rules={[{ required: true, message: "Please enter your message" }]}>
+                  <TextArea rows={6} placeholder="Tell us how we can help you..." className="resize-none" />
                 </Form.Item>
 
                 <Form.Item className="mb-0">
