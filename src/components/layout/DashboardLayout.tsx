@@ -37,7 +37,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     {
       key: "/dashboard",
       icon: <Home size={18} />,
-      label: "Dashboard",
+      label: "My QR codes",
     },
     {
       key: "/analytics",
@@ -76,7 +76,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   };
 
   const bottomNavItems = [
-    { key: "/dashboard", icon: <Home size={20} />, label: "Home" },
+    { key: "/dashboard", icon: <Home size={20} />, label: "My QR" },
     { key: "/analytics", icon: <BarChart3 size={20} />, label: "Analytics" },
     { key: "/create", icon: <Plus size={20} />, label: "Create", isCreate: true },
     { key: "/faqs", icon: <HelpCircle size={20} />, label: "Help" },
@@ -89,7 +89,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       <div className="p-4 flex items-center gap-3 border-b border-border">
         <img
           src="/logo.png"
-          alt="QR Studio"
+          alt="QR Studio logo"
           className="w-10 h-10 lg:w-12 lg:h-12 object-contain"
         />
         <div className="flex flex-col">
@@ -97,7 +97,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             QR Studio
           </Text>
           <Text type="secondary" className="text-xs">
-            Pro Dashboard
+            My QR codes
           </Text>
         </div>
       </div>
@@ -120,7 +120,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           onClick={() => handleMenuClick("/settings")}
         >
           <Avatar
-            style={{ backgroundColor: "hsl(var(--primary))" }}
+            className="avatar-primary"
             size={36}
           >
             {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
@@ -178,10 +178,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             onClick={toggleDarkMode}
           />
           <Avatar
-            style={{ backgroundColor: "hsl(var(--primary))" }}
+            className="avatar-primary cursor-pointer"
             size={32}
             onClick={() => navigate("/settings")}
-            className="cursor-pointer"
           >
             {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
           </Avatar>
@@ -196,11 +195,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         onClose={() => setMobileMenuOpen(false)}
         open={mobileMenuOpen}
         width={280}
-        className="lg:hidden"
-        styles={{
-          body: { padding: 0 },
-          header: { display: 'none' },
-        }}
+        className="lg:hidden dashboard-mobile-drawer"
       >
         <div className="absolute top-3 right-3 z-10">
           <Button
