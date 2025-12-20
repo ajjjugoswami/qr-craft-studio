@@ -23,7 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const mockUser: User = {
             _id: 'mock-user-id',
             name: 'Test User',
-            email: 'user',
+            email: 'user@gmail.com',
             isAdmin: false,
             theme: 'light'
           };
@@ -88,11 +88,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
 
     // Bypass login for test user
-    if (email === 'user' && password === '1234') {
+    if (email === 'user@gmail.com' && password === '1234') {
       const mockUser: User = {
         _id: 'mock-user-id',
         name: 'Test User',
-        email: 'user',
+        email: 'user@gmail.com',
         isAdmin: false,
         theme: 'light'
       };
