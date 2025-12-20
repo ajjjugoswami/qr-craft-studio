@@ -165,6 +165,7 @@
   background: hsl(var(--primary)) !important;
   border-color: hsl(var(--primary)) !important;
   color: hsl(var(--primary-foreground)) !important;
+  box-shadow: none !important;
 }
 
 .ant-btn-primary:hover {
@@ -253,7 +254,7 @@
 /* ============================== */
 .ant-input,
 .ant-input-affix-wrapper,
-.ant-select-selector,
+/* .ant-select-selector, */
 .ant-input-number,
 .ant-picker {
   background: hsl(var(--input-background)) !important;
@@ -262,6 +263,16 @@
   color: hsl(var(--foreground)) !important;
 }
 
+.ant-select {
+background: hsl(var(--input-background)) !important;
+  border-color: hsl(var(--border)) !important;
+  border-radius: 8px !important;
+  color: hsl(var(--foreground)) !important;
+}
+.anticon-down {
+  color: hsl(var(--muted-foreground)) !important;
+}
+ 
 .ant-input::placeholder,
 .ant-input-affix-wrapper input::placeholder,
 .ant-picker input::placeholder {
