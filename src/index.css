@@ -134,7 +134,19 @@
 .ant-menu-item {
   border-radius: 8px !important;
   margin: 4px 12px !important;
+  width: calc(100% - 24px) !important;
   color: hsl(var(--foreground)) !important;
+  overflow: hidden !important;
+}
+
+.ant-menu-item::after {
+  border-right: none !important;
+}
+
+.ant-menu-title-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ant-menu-item:hover {
@@ -345,6 +357,11 @@
   background: hsl(var(--foreground) / 0.5) !important;
 }
 
+/* Template editor modal body padding (no inline styles) */
+.template-editor-modal .ant-modal-body {
+  padding: 16px 24px !important;
+}
+
 /* ============================== */
 /* Ant Design - Table             */
 /* ============================== */
@@ -375,7 +392,9 @@
 /* ============================== */
 /* Ant Design - Pagination        */
 /* ============================== */
-.ant-pagination-item {
+.ant-pagination-item,
+.ant-pagination-prev .ant-pagination-item-link,
+.ant-pagination-next .ant-pagination-item-link {
   background: hsl(var(--card)) !important;
   border-color: hsl(var(--border)) !important;
 }
@@ -384,7 +403,9 @@
   color: hsl(var(--foreground)) !important;
 }
 
-.ant-pagination-item:hover {
+.ant-pagination-item:hover,
+.ant-pagination-prev:hover .ant-pagination-item-link,
+.ant-pagination-next:hover .ant-pagination-item-link {
   border-color: hsl(var(--primary)) !important;
 }
 
@@ -399,6 +420,18 @@
 
 .ant-pagination-prev button,
 .ant-pagination-next button {
+  color: hsl(var(--foreground)) !important;
+}
+
+.ant-pagination-disabled .ant-pagination-item-link,
+.ant-pagination-disabled button {
+  color: hsl(var(--muted-foreground)) !important;
+  border-color: hsl(var(--border)) !important;
+  background: hsl(var(--muted) / 0.35) !important;
+}
+
+.ant-pagination-jump-prev .ant-pagination-item-container,
+.ant-pagination-jump-next .ant-pagination-item-container {
   color: hsl(var(--foreground)) !important;
 }
 
