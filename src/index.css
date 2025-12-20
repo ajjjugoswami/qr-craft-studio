@@ -310,7 +310,23 @@
   background: hsl(var(--muted)) !important;
 }
 
-.ant-select-selection-item {
+/* Select input (closed state) */
+.ant-select .ant-select-selector,
+.ant-select-single .ant-select-selector,
+.ant-select-multiple .ant-select-selector {
+  background: hsl(var(--input-background)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.ant-select-selection-item,
+.ant-select-selection-placeholder,
+.ant-select-single .ant-select-selection-item,
+.ant-select-single .ant-select-selection-placeholder {
+  color: hsl(var(--foreground)) !important;
+}
+
+.ant-select-selection-search-input {
   color: hsl(var(--foreground)) !important;
 }
 
