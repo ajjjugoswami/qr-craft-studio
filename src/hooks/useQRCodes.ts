@@ -1,152 +1,103 @@
-import { useState, useEffect, useCallback } from 'react';
-import { message } from 'antd';
-import { QRCodeData, QRTemplate, QRStyling, QRType, defaultTemplates, defaultStyling } from '../types/qrcode';
-import { qrCodeAPI } from '@/lib/api';
-import { useAuth } from '@/hooks/useAuth';
+import { useEffect, useCallback } from 'react';
+import { useAppDispatch, useAppSelector } from '@/store';
+import {
+  fetchQRCodes,
+  fetchQRCode,
+  createQRCode,
+  updateQRCode,
+  deleteQRCode,
+  selectQRCodes,
+  selectQRCodesLoading,
+  selectQRCodeById,
+  selectShouldFetchQRCodes,
+  clearQRCodes,
+} from '@/store/slices/qrCodesSlice';
+import { selectIsAuthenticated } from '@/store/slices/authSlice';
+import { QRCodeData } from '@/types/qrcode';
 
-const STORAGE_KEY = 'qr-codes-data';
-
+/**
+ * Custom hook for QR codes that uses Redux store
+ * Provides caching and prevents redundant API calls
+ */
 export const useQRCodes = () => {
-  const [qrCodes, setQRCodes] = useState<QRCodeData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { signout } = useAuth();
+  const dispatch = useAppDispatch();
+  const qrCodes = useAppSelector(selectQRCodes);
+  const loading = useAppSelector(selectQRCodesLoading);
+  const shouldFetch = useAppSelector(selectShouldFetchQRCodes);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
+  // Fetch QR codes on mount if needed
   useEffect(() => {
-    let mounted = true;
-
-    const load = async () => {
-      setLoading(true);
-      try {
-        const res = await qrCodeAPI.getAll();
-        // backend returns { success, count, qrCodes }
-        const list = (res.qrCodes || []).map((q: any) => ({
-          id: q._id,
-          name: q.name,
-          type: q.type,
-          content: q.content,
-          template: q.template && Object.keys(q.template).length ? q.template : defaultTemplates[0],
-          styling: q.styling && Object.keys(q.styling).length ? q.styling : defaultStyling,
-          createdAt: q.createdAt,
-          scans: q.scanCount || 0,
-          status: q.status || 'active',
-        } as QRCodeData));
-
-        if (mounted) {
-          setQRCodes(list);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-        }
-      } catch (err: any) {
-        if (err?.response?.status === 401) {
-          // session expired or unauthorized
-          signout();
-        } else {
-          console.error(err);
-          message.error('Failed to load QR codes');
-          // fallback to cached
-          const stored = localStorage.getItem(STORAGE_KEY);
-          if (stored) {
-            try {
-              setQRCodes(JSON.parse(stored));
-            } catch (e) {}
-          }
-        }
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-
-    load();
-    return () => { mounted = false; };
-  }, [signout]);
-
-  // Create new QR code (saves to backend and updates state)
-  const saveQRCode = async (qrInput: Partial<QRCodeData>) => {
-    try {
-      const payload = {
-        type: qrInput.type,
-        content: qrInput.content,
-        name: qrInput.name,
-        template: qrInput.template,
-        styling: qrInput.styling,
-        previewImage: (qrInput as any).previewImage,
-      };
-
-      const res = await qrCodeAPI.create(payload as any);
-      const created = res.qrCode;
-
-      const qr: QRCodeData = {
-        id: created._id,
-        name: created.name,
-        type: created.type,
-        content: created.content,
-        template: created.template || defaultTemplates[0],
-        styling: created.styling || defaultStyling,
-        createdAt: created.createdAt,
-        scans: created.scanCount || 0,
-        status: created.status || 'active',
-      };
-
-      const updated = [qr, ...qrCodes];
-      setQRCodes(updated);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-
-      return qr;
-    } catch (err: any) {
-      console.error(err);
-      message.error(err?.response?.data?.message || 'Failed to save QR code');
-      throw err;
+    if (isAuthenticated && shouldFetch) {
+      dispatch(fetchQRCodes());
     }
-  };
+  }, [dispatch, isAuthenticated, shouldFetch]);
 
-  const updateQRCode = async (id: string, data: Partial<QRCodeData>) => {
-    try {
-      const res = await qrCodeAPI.update(id, data);
-      const updatedQR = res.qrCode;
-      const updated = qrCodes.map((q) => q.id === id ? {
-        id: updatedQR._id,
-        name: updatedQR.name,
-        type: updatedQR.type,
-        content: updatedQR.content,
-        template: updatedQR.template || defaultTemplates[0],
-        styling: updatedQR.styling || defaultStyling,
-        createdAt: updatedQR.createdAt,
-        scans: updatedQR.scanCount || 0,
-        status: updatedQR.status || 'active',
-      } : q);
-      setQRCodes(updated);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      message.success('QR Code updated');
-    } catch (err: any) {
-      console.error(err);
-      message.error(err?.response?.data?.message || 'Failed to update QR code');
-      throw err;
+  // Clear data on logout
+  useEffect(() => {
+    if (!isAuthenticated) {
+      dispatch(clearQRCodes());
     }
-  };
+  }, [dispatch, isAuthenticated]);
 
-  const deleteQRCode = async (id: string) => {
-    try {
-      await qrCodeAPI.delete(id);
-      const updated = qrCodes.filter((qr) => qr.id !== id);
-      setQRCodes(updated);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      message.success('QR Code deleted');
-    } catch (err: any) {
-      console.error(err);
-      message.error(err?.response?.data?.message || 'Failed to delete QR code');
-      throw err;
-    }
-  };
+  // Save new QR code
+  const saveQRCode = useCallback(
+    async (qrInput: Partial<QRCodeData> & { previewImage?: string }) => {
+      const result = await dispatch(createQRCode(qrInput)).unwrap();
+      return result;
+    },
+    [dispatch]
+  );
 
-  const getQRCode = (id: string) => {
-    return qrCodes.find((qr) => qr.id === id);
-  };
+  // Update existing QR code
+  const handleUpdateQRCode = useCallback(
+    async (id: string, data: Partial<QRCodeData>) => {
+      await dispatch(updateQRCode({ id, data })).unwrap();
+    },
+    [dispatch]
+  );
+
+  // Delete QR code
+  const handleDeleteQRCode = useCallback(
+    async (id: string) => {
+      await dispatch(deleteQRCode(id)).unwrap();
+    },
+    [dispatch]
+  );
+
+  // Get QR code by ID (from cache first)
+  const getQRCode = useCallback(
+    (id: string): QRCodeData | undefined => {
+      return qrCodes.find((q) => q.id === id);
+    },
+    [qrCodes]
+  );
+
+  // Fetch single QR code if not in cache
+  const fetchSingleQRCode = useCallback(
+    async (id: string) => {
+      const cached = qrCodes.find((q) => q.id === id);
+      if (cached) return cached;
+      
+      const result = await dispatch(fetchQRCode(id)).unwrap();
+      return result;
+    },
+    [dispatch, qrCodes]
+  );
+
+  // Force refresh
+  const refresh = useCallback(() => {
+    dispatch(fetchQRCodes());
+  }, [dispatch]);
 
   return {
     qrCodes,
     loading,
     saveQRCode,
-    updateQRCode,
-    deleteQRCode,
+    updateQRCode: handleUpdateQRCode,
+    deleteQRCode: handleDeleteQRCode,
     getQRCode,
+    fetchSingleQRCode,
+    refresh,
   };
 };
