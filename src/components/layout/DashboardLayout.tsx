@@ -3,7 +3,6 @@ import { Layout, Menu, Avatar, Typography, Drawer, Button } from "antd";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import {
-  QrCode,
   BarChart3,
   HelpCircle,
   Mail,
@@ -15,7 +14,7 @@ import {
   Sun,
   X,
   Plus,
-  Home,
+  QrCode,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -36,7 +35,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const menuItems = [
     {
       key: "/dashboard",
-      icon: <Home size={18} />,
+      icon: <QrCode size={18} />,
       label: "My QR codes",
     },
     {
@@ -76,7 +75,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   };
 
   const bottomNavItems = [
-    { key: "/dashboard", icon: <Home size={20} />, label: "My QR" },
+    { key: "/dashboard", icon: <QrCode size={20} />, label: "My QR" },
     { key: "/analytics", icon: <BarChart3 size={20} />, label: "Analytics" },
     { key: "/create", icon: <Plus size={20} />, label: "Create", isCreate: true },
     { key: "/faqs", icon: <HelpCircle size={20} />, label: "Help" },
