@@ -314,6 +314,15 @@
   color: hsl(var(--foreground)) !important;
 }
 
+.ant-select-arrow,
+.ant-select-clear {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.ant-select:not(.ant-select-disabled):hover .ant-select-selector {
+  border-color: hsl(var(--primary)) !important;
+}
+
 /* ============================== */
 /* Ant Design - Modal (CRITICAL)  */
 /* ============================== */
@@ -357,6 +366,19 @@
 
 .ant-modal-mask {
   background: hsl(var(--foreground) / 0.5) !important;
+}
+
+/* Some AntD builds wrap content in extra containers; keep them transparent */
+.ant-modal-root,
+.ant-modal-wrap,
+.ant-modal,
+.ant-modal-container {
+  color: hsl(var(--foreground)) !important;
+  background: transparent !important;
+}
+
+.ant-modal {
+  padding-bottom: env(safe-area-inset-bottom) !important;
 }
 
 /* Template editor modal body padding (no inline styles) */
