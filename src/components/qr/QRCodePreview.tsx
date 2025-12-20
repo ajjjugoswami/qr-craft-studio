@@ -65,7 +65,7 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   }), [styling]);
 
   const isHorizontal = template.qrPosition === 'left' || template.qrPosition === 'right';
-  const cardWidth = compact ? 'w-16' : isHorizontal ? 'w-[380px]' : 'w-80';
+  const cardWidth = compact ? 'w-16' : isHorizontal ? 'w-full max-w-[420px]' : 'w-full max-w-[360px]';
   const cardHeight = compact ? 'h-20' : isHorizontal ? 'min-h-[200px]' : 'min-h-[420px]';
   const qrSize = compact ? 48 : styling.size > 140 ? 140 : styling.size;
   

@@ -310,7 +310,15 @@
   background: hsl(var(--muted)) !important;
 }
 
-.ant-select-selection-item {
+/* Select input (closed state) */
+.ant-select .ant-select-selector {
+  background: hsl(var(--input-background)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.ant-select-selection-item,
+.ant-select-selection-placeholder {
   color: hsl(var(--foreground)) !important;
 }
 
@@ -368,13 +376,17 @@
   background: hsl(var(--foreground) / 0.5) !important;
 }
 
-/* Some AntD builds wrap content in extra containers; keep them transparent */
+/* Some AntD builds wrap content in extra containers */
 .ant-modal-root,
 .ant-modal-wrap,
-.ant-modal,
-.ant-modal-container {
+.ant-modal {
   color: hsl(var(--foreground)) !important;
   background: transparent !important;
+}
+
+/* Keep container from affecting modal theme */
+.ant-modal-container {
+  color: hsl(var(--foreground)) !important;
 }
 
 .ant-modal {
@@ -850,29 +862,35 @@ h5.ant-typography {
   .ant-card {
     border-radius: 12px !important;
   }
-  
+
   .ant-btn {
     border-radius: 8px !important;
   }
-  
+
   .ant-modal-content {
     border-radius: 16px 16px 0 0 !important;
     max-height: 90vh !important;
     overflow-y: auto !important;
   }
-  
+
   .ant-modal-wrap {
     align-items: flex-end !important;
     display: flex !important;
   }
-  
+
   .ant-modal {
     margin: 0 !important;
     padding: 0 !important;
     max-width: 100% !important;
     width: 100% !important;
   }
-  
+
+  /* Make small preview modals fit mobile */
+  .qr-preview-modal .ant-modal {
+    width: 100% !important;
+    max-width: 520px !important;
+  }
+
   .ant-drawer-content-wrapper {
     width: 100% !important;
     max-width: 100% !important;
