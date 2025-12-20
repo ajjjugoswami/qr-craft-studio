@@ -156,14 +156,12 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
         shape: safeStyling.shape,
       };
 
-      if (qrRef.current) {
-        qrRef.current.innerHTML = '';
-        qrCode.current = new QRCodeStyling(options);
-        qrCode.current.append(qrRef.current);
-      }
+      qrRef.current.innerHTML = '';
+      qrCode.current = new QRCodeStyling(options);
+      qrCode.current.append(qrRef.current);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [content, safeStyling, qrId, qrSize]);
+  }, [content, safeStyling, qrId, qrSize, template.id]);
 
   const gradientDirection = gradientDirectionMap[template.gradientDirection || 'to-bottom-right'];
   const backgroundStyle = template.showGradient && template.gradientColor
