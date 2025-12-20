@@ -2,8 +2,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ConfigProvider } from "antd";
+import { store } from "./store";
 import Index from "./pages/Index";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
@@ -17,7 +19,6 @@ import Contact from "./pages/Contact";
 import Submissions from "./pages/Submissions";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
-import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
@@ -33,12 +34,12 @@ const antTheme = {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ConfigProvider theme={antTheme}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <AuthProvider>
+  <Provider store={store}>
+    <QueryClientProvider client={queryClient}>
+      <ConfigProvider theme={antTheme}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
           <ThemeProvider>
             <BrowserRouter>
               <Routes>
@@ -81,10 +82,10 @@ const App = () => (
               </Routes>
             </BrowserRouter>
           </ThemeProvider>
-        </AuthProvider>
-      </TooltipProvider>
-    </ConfigProvider>
-  </QueryClientProvider>
+        </TooltipProvider>
+      </ConfigProvider>
+    </QueryClientProvider>
+  </Provider>
 );
 
 export default App;
