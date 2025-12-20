@@ -193,10 +193,11 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
           open={downloadModalOpen}
           onCancel={() => setDownloadModalOpen(false)}
           footer={null}
-          width={400}
+          width={480}
           centered
+          className="qr-preview-modal"
         >
-          <div className="flex flex-col items-center py-4">
+          <div className="flex flex-col items-center py-4 px-2">
             <QRCodePreview
               ref={previewRef}
               content={qrCode.content}
@@ -331,10 +332,11 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
         open={downloadModalOpen}
         onCancel={() => setDownloadModalOpen(false)}
         footer={null}
-        width={400}
+        width={480}
         centered
+        className="qr-preview-modal"
       >
-        <div className="flex flex-col items-center py-4">
+        <div className="flex flex-col items-center py-4 px-2">
           <QRCodePreview
             ref={previewRef}
             content={qrCode.content}
