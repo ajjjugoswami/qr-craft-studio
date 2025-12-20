@@ -1,4 +1,5 @@
 export type ThemeName = 'purple' | 'blue' | 'green' | 'orange' | 'rose' | 'slate' | 'teal' | 'indigo' | 'emerald' | 'cyan' | 'violet' | 'fuchsia' | 'gradient_sunset' | 'gradient_ocean' | 'gradient_forest' | 'gradient_royal';
+export type ColorMode = 'light' | 'dark' | 'system';
 
 export interface ThemeColors {
   primary: string;
@@ -246,6 +247,10 @@ export const themes: Record<ThemeName, Theme> = {
 
 export type ThemeContextType = {
   currentTheme: ThemeName;
+  colorMode: ColorMode;
+  isDark: boolean;
   setTheme: (theme: ThemeName) => void;
+  setColorMode: (mode: ColorMode) => void;
+  toggleDarkMode: () => void;
   theme: Theme;
 };

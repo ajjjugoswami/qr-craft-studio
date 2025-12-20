@@ -1,6 +1,7 @@
-import React from "react";
-import { Layout, Menu, Avatar, Typography } from "antd";
+import React, { useState } from "react";
+import { Layout, Menu, Avatar, Typography, Drawer, Button } from "antd";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import {
   QrCode,
   BarChart3,
@@ -9,10 +10,14 @@ import {
   MessageSquare,
   LogOut,
   Settings,
+  Menu as MenuIcon,
+  Moon,
+  Sun,
+  X,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-const { Sider, Content } = Layout;
+const { Content } = Layout;
 const { Text } = Typography;
 
 interface DashboardLayoutProps {
@@ -23,6 +28,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, signout } = useAuth();
+  const { isDark, toggleDarkMode } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const menuItems = [
     {
@@ -35,7 +42,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       icon: <BarChart3 size={18} />,
       label: "Analytics",
     },
-
     {
       key: "/faqs",
       icon: <HelpCircle size={18} />,
@@ -62,92 +68,150 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     });
   }
 
-  return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Sider
-        width={230}
-        style={{
-          position: "fixed",
-          left: 0,
-          top: 0,
-          bottom: 0,
-          zIndex: 100,
-        }}
-        className="shadow-sm"
-      >
-        <div className="flex flex-col h-full pr-3">
-          {/* Logo & Brand */}
-          <div className="p-2 flex items-center gap-3 border-b border-border">
-            <img
-              src="/logo.png"
-              alt="QR Studio"
-              className="w-16 h-16 object-contain"
-            />
-            <div className="flex flex-col">
-              <Text strong className="text-lg leading-tight">
-                QR Studio
-              </Text>
-              <Text type="secondary" className="text-xs">
-                Pro Dashboard
-              </Text>
-            </div>
-          </div>
+  const handleMenuClick = (key: string) => {
+    navigate(key);
+    setMobileMenuOpen(false);
+  };
 
-          {/* Menu */}
-          <Menu
-            mode="inline"
-            selectedKeys={[
-              location.pathname === "/" ? "/dashboard" : location.pathname,
-            ]}
-            items={menuItems}
-            onClick={({ key }) => navigate(key)}
-            className="flex-1 border-none mt-2"
-          />
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full">
+      {/* Logo & Brand */}
+      <div className="p-3 flex items-center gap-3 border-b border-border">
+        <img
+          src="/logo.png"
+          alt="QR Studio"
+          className="w-12 h-12 lg:w-14 lg:h-14 object-contain"
+        />
+        <div className="flex flex-col">
+          <Text strong className="text-base lg:text-lg leading-tight">
+            QR Studio
+          </Text>
+          <Text type="secondary" className="text-xs">
+            Pro Dashboard
+          </Text>
+        </div>
+      </div>
 
-          {/* User Section */}
-          <div className="p-3 border-t border-border">
-            <div
-              className={`flex items-center gap-3 p-2 rounded-xl hover:bg-muted transition-colors cursor-pointer`}
-              onClick={() => navigate("/settings")}
-            >
-              <Avatar
-                style={{ backgroundColor: "hsl(var(--primary))" }}
-                size={36}
-              >
-                {/** Show first char of name if available */}
-                {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
-              </Avatar>
-              <div className="flex flex-col flex-1 min-w-0">
-                <Text strong className="text-sm truncate">
-                  {user?.name ?? "User"}
-                </Text>
-                <Text type="secondary" className="text-xs truncate">
-                  {user?.email ?? ""}
-                </Text>
-              </div>
-            </div>
-          </div>
+      {/* Menu */}
+      <Menu
+        mode="inline"
+        selectedKeys={[
+          location.pathname === "/" ? "/dashboard" : location.pathname,
+        ]}
+        items={menuItems}
+        onClick={({ key }) => handleMenuClick(key)}
+        className="flex-1 border-none mt-2"
+      />
 
-          {/* Logout */}
-          <div className="p-3 border-t border-border">
-            <div
-              role="button"
-              onClick={() => signout()}
-              className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border border-destructive/30 text-destructive hover:bg-destructive/5 transition-colors`}
-            >
-              <LogOut size={18} />
-              <span className="font-medium">Logout</span>
-            </div>
+      {/* User Section */}
+      <div className="p-3 border-t border-border">
+        <div
+          className="flex items-center gap-3 p-2 rounded-xl hover:bg-muted transition-colors cursor-pointer"
+          onClick={() => handleMenuClick("/settings")}
+        >
+          <Avatar
+            style={{ backgroundColor: "hsl(var(--primary))" }}
+            size={36}
+          >
+            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+          </Avatar>
+          <div className="flex flex-col flex-1 min-w-0">
+            <Text strong className="text-sm truncate">
+              {user?.name ?? "User"}
+            </Text>
+            <Text type="secondary" className="text-xs truncate">
+              {user?.email ?? ""}
+            </Text>
           </div>
         </div>
-      </Sider>
+      </div>
 
-      <Layout
-        style={{
-          marginLeft: 230,
+      {/* Theme Toggle & Logout */}
+      <div className="p-3 border-t border-border space-y-2">
+        <button
+          onClick={toggleDarkMode}
+          className="flex items-center gap-3 w-full p-3 rounded-xl cursor-pointer border border-border text-foreground hover:bg-muted transition-colors"
+        >
+          {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          <span className="font-medium">{isDark ? "Light Mode" : "Dark Mode"}</span>
+        </button>
+
+        <button
+          onClick={() => signout()}
+          className="flex items-center gap-3 w-full p-3 rounded-xl cursor-pointer border border-destructive/30 text-destructive hover:bg-destructive/5 transition-colors"
+        >
+          <LogOut size={18} />
+          <span className="font-medium">Logout</span>
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <Layout className="min-h-screen bg-background">
+      {/* Mobile Header */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 h-14 bg-card border-b border-border flex items-center justify-between px-4">
+        <div className="flex items-center gap-3">
+          <Button
+            type="text"
+            icon={<MenuIcon size={20} />}
+            onClick={() => setMobileMenuOpen(true)}
+            className="flex items-center justify-center"
+          />
+          <img src="/logo.png" alt="QR Studio" className="w-8 h-8 object-contain" />
+          <Text strong className="text-base">QR Studio</Text>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            type="text"
+            icon={isDark ? <Sun size={18} /> : <Moon size={18} />}
+            onClick={toggleDarkMode}
+          />
+          <Avatar
+            style={{ backgroundColor: "hsl(var(--primary))" }}
+            size={32}
+            onClick={() => navigate("/settings")}
+            className="cursor-pointer"
+          >
+            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+          </Avatar>
+        </div>
+      </header>
+
+      {/* Mobile Drawer */}
+      <Drawer
+        title={null}
+        placement="left"
+        closable={false}
+        onClose={() => setMobileMenuOpen(false)}
+        open={mobileMenuOpen}
+        width={280}
+        className="lg:hidden"
+        styles={{
+          body: { padding: 0 },
+          header: { display: 'none' },
         }}
       >
-        <Content className="p-6 min-h-screen bg-background">{children}</Content>
+        <div className="absolute top-3 right-3 z-10">
+          <Button
+            type="text"
+            icon={<X size={20} />}
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        </div>
+        <SidebarContent />
+      </Drawer>
+
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:block fixed left-0 top-0 bottom-0 w-56 xl:w-60 bg-sidebar border-r border-sidebar-border z-40">
+        <SidebarContent />
+      </aside>
+
+      {/* Main Content */}
+      <Layout className="lg:ml-56 xl:ml-60 bg-background">
+        <Content className="p-4 md:p-6 min-h-screen pt-16 lg:pt-6">
+          {children}
+        </Content>
       </Layout>
     </Layout>
   );
