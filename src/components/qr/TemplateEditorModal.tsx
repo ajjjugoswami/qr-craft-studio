@@ -907,12 +907,12 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
       open={open}
       onCancel={onClose}
       width={1000}
+      className="template-editor-modal"
       footer={[
         <Button key="close" type="primary" onClick={onClose}>
           Done
         </Button>,
       ]}
-      styles={{ body: { padding: "16px 24px" } }}
     >
       <div className="flex gap-6">
         {/* Editor Panel */}
