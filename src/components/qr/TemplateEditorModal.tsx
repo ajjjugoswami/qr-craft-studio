@@ -242,8 +242,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
     <Card
       key={field.id}
       size="small"
-      className="mb-3 border-border"
-      styles={{ body: { padding: "12px" } }}
+      className="mb-3 border-border card-compact"
     >
       <div className="space-y-3">
         {/* Header with type, move, delete */}

@@ -53,7 +53,7 @@ const Dashboard: React.FC = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-3 gap-3 md:gap-4">
-          <Card className="!p-0" styles={{ body: { padding: '12px' } }}>
+          <Card className="card-compact">
             {loading ? (
               <div className="space-y-2">
                 <Skeleton className="h-3 w-16" />
@@ -69,8 +69,8 @@ const Dashboard: React.FC = () => {
               </div>
             )}
           </Card>
-          
-          <Card className="!p-0" styles={{ body: { padding: '12px' } }}>
+
+          <Card className="card-compact">
             {loading ? (
               <div className="space-y-2">
                 <Skeleton className="h-3 w-16" />
@@ -86,8 +86,8 @@ const Dashboard: React.FC = () => {
               </div>
             )}
           </Card>
-          
-          <Card className="!p-0" styles={{ body: { padding: '12px' } }}>
+
+          <Card className="card-compact">
             {loading ? (
               <div className="space-y-2">
                 <Skeleton className="h-3 w-16" />

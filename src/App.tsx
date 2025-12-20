@@ -27,7 +27,10 @@ const queryClient = new QueryClient();
 
 const antTheme = {
   token: {
-    colorPrimary: '#6366f1',
+    colorPrimary: "hsl(var(--primary))",
+    colorTextBase: "hsl(var(--foreground))",
+    colorBgBase: "hsl(var(--background))",
+    colorBorder: "hsl(var(--border))",
     borderRadius: 8,
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   },

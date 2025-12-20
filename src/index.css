@@ -825,20 +825,67 @@ h5.ant-typography {
 /* ============================== */
 /* Mobile-first Utilities         */
 /* ============================== */
-.mobile-card {
-  @apply rounded-xl border border-border bg-card p-4;
+.card-compact .ant-card-body {
+  padding: 12px !important;
 }
 
-.mobile-header {
-  @apply sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border;
+.avatar-primary {
+  background: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
 }
 
-.mobile-bottom-nav {
-  @apply fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50;
+.dashboard-mobile-drawer .ant-drawer-body {
+  padding: 0 !important;
 }
 
-.mobile-safe-area {
+.safe-area-inset-bottom {
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-inset-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.chart-tooltip {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 10px;
+  box-shadow: 0 10px 40px hsl(var(--foreground) / 0.15);
+  padding: 10px 12px;
+  color: hsl(var(--foreground));
+}
+
+@media (max-width: 640px) {
+  .ant-card {
+    border-radius: 12px !important;
+  }
+
+  .ant-btn {
+    border-radius: 8px !important;
+  }
+
+  .ant-modal-content {
+    border-radius: 16px 16px 0 0 !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+
+  .ant-modal-wrap {
+    align-items: flex-end !important;
+    display: flex !important;
+  }
+
+  .ant-modal {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .ant-drawer-content-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
 }
 
 /* ============================== */
@@ -850,12 +897,12 @@ h5.ant-typography {
     padding-left: 16px !important;
     padding-right: 16px !important;
   }
-  
+
   .ant-input,
   .ant-select-selector {
     min-height: 44px !important;
   }
-  
+
   .ant-tabs-tab {
     padding: 12px 16px !important;
   }
