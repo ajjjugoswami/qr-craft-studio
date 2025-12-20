@@ -18,33 +18,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       const storedToken = localStorage.getItem(TOKEN_KEY);
       if (storedToken) {
-        // Skip validation for mock token
-        if (storedToken === 'mock-jwt-token') {
-          const mockUser: User = {
-            _id: 'mock-user-id',
-            name: 'Test User',
-            email: 'user@gmail.com',
-            isAdmin: false,
-            theme: 'light'
-          };
-          setUser(mockUser);
+        try {
+          // Validate token by fetching current user
+          const res = await authAPI.getCurrentUser();
+          if (!mounted) return;
+          // API returns user data directly, not wrapped in user property
+          const userData = res._id ? res : res.user;
+          setUser(userData ?? null);
           setToken(storedToken);
-        } else {
-          try {
-            // Validate token by fetching current user
-            const res = await authAPI.getCurrentUser();
-            if (!mounted) return;
-            // API returns user data directly, not wrapped in user property
-            const userData = res._id ? res : res.user;
-            setUser(userData ?? null);
-            setToken(storedToken);
-          } catch (err) {
-            // token invalid or request failed
-            localStorage.removeItem(STORAGE_KEY);
-            localStorage.removeItem(TOKEN_KEY);
-            setUser(null);
-            setToken(null);
-          }
+        } catch (err) {
+          // token invalid or request failed
+          localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(TOKEN_KEY);
+          setUser(null);
+          setToken(null);
         }
       } else {
         // Fallback to old storage format for backward compatibility
@@ -86,22 +73,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signin = async (email: string, password: string) => {
     setLoading(true);
-
-    // Bypass login for test user
-    if (email === 'user@gmail.com' && password === '1234') {
-      const mockUser: User = {
-        _id: 'mock-user-id',
-        name: 'Test User',
-        email: 'user@gmail.com',
-        isAdmin: false,
-        theme: 'light'
-      };
-      const mockToken = 'mock-jwt-token';
-      persist(mockUser, mockToken);
-      message.success('Signed in successfully');
-      setLoading(false);
-      return;
-    }
 
     try {
       const data = await authAPI.signin({ email, password });
