@@ -490,8 +490,8 @@ const SignIn: React.FC = () => {
             {/* Stats */}
             <div className="flex items-center gap-6 mt-6 px-4">
               {[
-                { value: "10M+", label: "QR Codes" },
-                { value: "50K+", label: "Users" },
+                { value: "5K+", label: "QR Codes" },
+                { value: "2K+", label: "Users" },
                 { value: "4.9★", label: "Rating" },
               ].map(({ value, label }) => (
                 <div key={label} className="text-center">
