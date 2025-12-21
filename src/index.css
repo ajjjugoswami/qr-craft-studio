@@ -247,6 +247,8 @@
 /* ============================== */
 .ant-tag {
   border-radius: 6px !important;
+  --ant-tag-default-bg: hsl(var(--muted)) !important;
+  --ant-tag-default-color: hsl(var(--foreground)) !important;
 }
 
 /* ============================== */
@@ -360,6 +362,11 @@ background: hsl(var(--input-background)) !important;
   border-radius: 16px !important;
   box-shadow: 0 20px 60px hsl(var(--foreground) / 0.25) !important;
 }
+
+.ant-popover-container{
+    background: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+  }
 
 .ant-modal-header {
   background: hsl(var(--card)) !important;
