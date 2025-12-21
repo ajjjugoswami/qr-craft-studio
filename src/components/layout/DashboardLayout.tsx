@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Layout, Menu, Avatar, Typography, Drawer, Button } from "antd";
 import { useAuth } from "@/hooks/useAuth";
-import { useTheme } from "@/hooks/useTheme";
 import {
   BarChart3,
   HelpCircle,
@@ -10,8 +9,6 @@ import {
   LogOut,
   Settings,
   Menu as MenuIcon,
-  Moon,
-  Sun,
   X,
   Plus,
   QrCode,
@@ -29,7 +26,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, signout } = useAuth();
-  const { isDark, toggleDarkMode } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const menuItems = [
@@ -135,16 +131,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         </div>
       </div>
 
-      {/* Theme Toggle & Logout */}
-      <div className="p-3 border-t border-border space-y-2">
-        <button
-          onClick={toggleDarkMode}
-          className="flex items-center gap-3 w-full p-3 rounded-xl cursor-pointer border border-border bg-card text-foreground hover:bg-muted transition-colors"
-        >
-          {isDark ? <Sun size={18} /> : <Moon size={18} />}
-          <span className="font-medium">{isDark ? "Light Mode" : "Dark Mode"}</span>
-        </button>
-
+      {/* Logout */}
+      <div className="p-3 border-t border-border">
         <button
           onClick={() => signout()}
           className="flex items-center gap-3 w-full p-3 rounded-xl cursor-pointer border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors"
@@ -170,20 +158,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           <img src="/logo.png" alt="QR Studio" className="w-8 h-8 object-contain" />
           <Text strong className="text-base">QR Studio</Text>
         </div>
-        <div className="flex items-center gap-1">
-          <Button
-            type="text"
-            icon={isDark ? <Sun size={18} /> : <Moon size={18} />}
-            onClick={toggleDarkMode}
-          />
-          <Avatar
-            className="avatar-primary cursor-pointer"
-            size={32}
-            onClick={() => navigate("/settings")}
-          >
-            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
-          </Avatar>
-        </div>
+        <Avatar
+          className="avatar-primary cursor-pointer"
+          size={32}
+          onClick={() => navigate("/settings")}
+        >
+          {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+        </Avatar>
       </header>
 
       {/* Mobile Drawer */}
