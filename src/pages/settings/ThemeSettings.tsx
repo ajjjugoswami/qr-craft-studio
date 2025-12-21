@@ -1,13 +1,13 @@
 import React from 'react';
-import { Card, Typography, message, Segmented } from 'antd';
-import { Palette, Sun, Moon, Monitor } from 'lucide-react';
+import { Card, Typography, message } from 'antd';
+import { Palette } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
-import { themes, ThemeName, ColorMode } from '../../context/themeTypes';
+import { themes, ThemeName } from '../../context/themeTypes';
 
 const { Title, Text } = Typography;
 
 const ThemeSettings: React.FC = () => {
-  const { currentTheme, colorMode, setTheme, setColorMode } = useTheme();
+  const { currentTheme, setTheme } = useTheme();
 
   const handleThemeChange = (themeName: string) => {
     const theme = themeName as ThemeName;
@@ -15,62 +15,8 @@ const ThemeSettings: React.FC = () => {
     message.success(`Theme changed to ${themes[theme].label}`);
   };
 
-  const handleColorModeChange = (mode: string | number) => {
-    setColorMode(mode as ColorMode);
-    message.success(`Color mode changed to ${mode}`);
-  };
-
   return (
     <div className="space-y-6">
-      {/* Color Mode Selection */}
-      <Card className="shadow-sm">
-        <div className="flex items-center mb-4">
-          <Sun className="mr-3 text-primary" size={24} />
-          <Title level={4} className="!mb-0">Appearance</Title>
-        </div>
-
-        <Text type="secondary" className="mb-6 block">
-          Choose how the app looks. Select a mode or let it match your system settings.
-        </Text>
-
-        <div className="flex flex-wrap gap-4">
-          <Segmented
-            value={colorMode}
-            onChange={handleColorModeChange}
-            size="large"
-            options={[
-              {
-                label: (
-                  <div className="flex items-center gap-2 px-2 py-1">
-                    <Sun size={18} />
-                    <span className="hidden sm:inline">Light</span>
-                  </div>
-                ),
-                value: 'light',
-              },
-              {
-                label: (
-                  <div className="flex items-center gap-2 px-2 py-1">
-                    <Moon size={18} />
-                    <span className="hidden sm:inline">Dark</span>
-                  </div>
-                ),
-                value: 'dark',
-              },
-              {
-                label: (
-                  <div className="flex items-center gap-2 px-2 py-1">
-                    <Monitor size={18} />
-                    <span className="hidden sm:inline">System</span>
-                  </div>
-                ),
-                value: 'system',
-              },
-            ]}
-          />
-        </div>
-      </Card>
-
       {/* Theme Selection Card */}
       <Card className="shadow-sm">
         <div className="flex items-center mb-4">
