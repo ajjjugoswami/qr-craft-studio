@@ -11,6 +11,7 @@ import ContentEditor from '../components/qr/ContentEditor';
 import QRDesignTemplates from '../components/qr/QRDesignTemplates';
 import QRStyleEditor from '../components/qr/QRStyleEditor';
 import QRCodePreview from '../components/qr/QRCodePreview';
+import AdvancedSettings from '../components/qr/AdvancedSettings';
 import { useQRCodes } from '../hooks/useQRCodes';
 import {
   QRTemplate,
@@ -44,6 +45,11 @@ const CreateQR: React.FC = () => {
   const [content, setContent] = useState('https://example.com');
   const [styling, setStyling] = useState<QRStyling>(defaultStyling);
   const [name, setName] = useState('');
+  const [password, setPassword] = useState<string | null>(null);
+  const [expirationDate, setExpirationDate] = useState<string | null>(null);
+  const [scanLimit, setScanLimit] = useState<number | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
   const [initialized, setInitialized] = useState(false);
   const [showTemplateEditor, setShowTemplateEditor] = useState(false);
   const [showPreviewDrawer, setShowPreviewDrawer] = useState(false);
@@ -65,6 +71,10 @@ const CreateQR: React.FC = () => {
         setType(existing.type);
         setContent(existing.content);
         setName(existing.name);
+        setPassword((existing as any).password || null);
+        setExpirationDate((existing as any).expirationDate || null);
+        setScanLimit((existing as any).scanLimit || null);
+        setPreviewImage((existing as any).previewImage || null);
         message.info('Loaded QR code for editing');
         return;
       }
@@ -78,6 +88,10 @@ const CreateQR: React.FC = () => {
           setType(q.type || 'url');
           setContent(q.content || 'https://example.com');
           setName(q.name || '');
+          setPassword(q.password || null);
+          setExpirationDate(q.expirationDate || null);
+          setScanLimit(q.scanLimit || null);
+          setPreviewImage(q.previewImage || null);
           message.info('Loaded QR code for editing');
         }
       } catch (err) {
@@ -111,11 +125,23 @@ const CreateQR: React.FC = () => {
 
     setSaving(true);
     try {
+      const payload: any = {
+        name: name.trim(),
+        type,
+        content,
+        template,
+        styling,
+        previewImage,
+        password: password || null,
+        expirationDate: expirationDate || null,
+        scanLimit: scanLimit || null,
+      };
+
       if (editingId) {
-        await updateQRCode(editingId, { name: name.trim(), type, content, template, styling });
+        await updateQRCode(editingId, payload);
         message.success('QR Code updated');
       } else {
-        await saveQRCode({ name: name.trim(), type, content, template, styling });
+        await saveQRCode(payload);
         message.success('QR Code saved!');
       }
       navigate('/dashboard');
@@ -145,7 +171,21 @@ const CreateQR: React.FC = () => {
       case 3:
         return <QRDesignTemplates styling={styling} onStyleChange={setStyling} />;
       case 4:
-        return <QRStyleEditor styling={styling} onStyleChange={setStyling} />;
+        return (
+          <div className="space-y-4">
+            <QRStyleEditor styling={styling} onStyleChange={setStyling} />
+            <AdvancedSettings
+              password={password}
+              onPasswordChange={setPassword}
+              expirationDate={expirationDate}
+              onExpirationChange={setExpirationDate}
+              scanLimit={scanLimit}
+              onScanLimitChange={setScanLimit}
+              previewImage={previewImage}
+              onPreviewImageChange={setPreviewImage}
+            />
+          </div>
+        );
       default:
         return null;
     }

@@ -14,6 +14,7 @@ import CreateQR from "./pages/CreateQR";
 import Analytics from "./pages/Analytics";
 import QRAnalytics from "./pages/QRAnalytics";
 import Redirector from "./pages/Redirector";
+import QRUnavailable from "./pages/QRUnavailable";
 import FAQs from "./pages/FAQs";
 import Contact from "./pages/Contact";
 import Submissions from "./pages/Submissions";
@@ -80,6 +81,9 @@ const App = () => (
                 {/* Public redirect route for scanned QR codes (no auth required) */}
                 <Route path="/r/:id" element={<Redirector />} />
                 <Route path="/r" element={<Redirector />} />
+
+                {/* QR unavailable when expired or scan limit reached */}
+                <Route path="/qr/unavailable/:id" element={<QRUnavailable />} />
 
                 <Route path="*" element={<NotFound />}/>
               </Routes>

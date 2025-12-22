@@ -154,8 +154,22 @@ const Redirector: React.FC = () => {
 
         // If id present, fetch QR and track
         if (id) {
-          // Fire-and-forget track
-          qrCodeAPI.incrementScan(id).catch(() => {});
+          // Track scan; if server responds that QR is expired/limit reached, redirect to unavailable page
+          try {
+            await qrCodeAPI.incrementScan(id);
+          } catch (err: any) {
+            const status = err?.response?.status;
+            const msg = err?.response?.data?.message || '';
+            if (status === 403 && msg.toLowerCase().includes('expired')) {
+              window.location.href = `/qr/unavailable/${id}?reason=expired`;
+              return;
+            }
+            if (status === 403 && msg.toLowerCase().includes('limit')) {
+              window.location.href = `/qr/unavailable/${id}?reason=limit`;
+              return;
+            }
+            // Otherwise ignore the error and continue
+          }
 
           // Get QR content
           const res = await qrCodeAPI.getOne(id);

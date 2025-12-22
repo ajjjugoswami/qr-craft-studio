@@ -60,6 +60,11 @@ export interface QRCodeData {
   scans: number;
   scanHistory?: ScanData[];
   status: 'active' | 'inactive';
+  // optional advanced fields
+  previewImage?: string | null;
+  password?: string | null;
+  expirationDate?: string | null;
+  scanLimit?: number | null;
 }
 
 export interface QRTemplate {

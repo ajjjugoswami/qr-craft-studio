@@ -86,6 +86,9 @@ export const createQRCode = createAsyncThunk(
         template: qrInput.template,
         styling: qrInput.styling,
         previewImage: qrInput.previewImage,
+        password: (qrInput as any).password || null,
+        expirationDate: (qrInput as any).expirationDate || null,
+        scanLimit: (qrInput as any).scanLimit || null,
       };
 
       const res = await qrCodeAPI.create(payload as any);
