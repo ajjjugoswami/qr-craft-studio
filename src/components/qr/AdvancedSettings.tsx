@@ -1,8 +1,6 @@
 import React from 'react';
-import { Card, Input, DatePicker, Checkbox, InputNumber, Upload, Button, Typography } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Card, Input, DatePicker, InputNumber, Typography } from 'antd';
 import moment from 'moment';
-import type { QRTemplate } from '../../types/qrcode';
 
 const { Text } = Typography;
 
@@ -13,8 +11,6 @@ interface AdvancedSettingsProps {
   onExpirationChange: (v: string | null) => void;
   scanLimit?: number | null;
   onScanLimitChange: (v: number | null) => void;
-  previewImage?: string | null;
-  onPreviewImageChange: (v: string | null) => void;
 }
 
 const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
@@ -24,19 +20,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
   onExpirationChange,
   scanLimit,
   onScanLimitChange,
-  previewImage,
-  onPreviewImageChange,
 }) => {
-  const handleUpload = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result as string;
-      onPreviewImageChange(dataUrl);
-    };
-    reader.readAsDataURL(file);
-    return false;
-  };
-
   return (
     <div className="space-y-4">
       <Card size="small" title="Configure advanced settings">
@@ -77,25 +61,6 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
               <span className="text-sm text-muted-foreground">Leave empty for unlimited</span>
             </div>
           </div>
-
-          <div>
-            <Text strong>Preview Image</Text>
-            <div className="mt-2 space-y-2">
-              <Upload beforeUpload={handleUpload} showUploadList={false} accept="image/*">
-                <Button icon={<UploadOutlined />}>Upload preview image</Button>
-              </Upload>
-              <Input
-                placeholder="Or enter image URL"
-                value={previewImage || ''}
-                onChange={(e) => onPreviewImageChange(e.target.value || null)}
-              />
-              {previewImage && (
-                <div className="mt-2">
-                  <img src={previewImage} alt="preview" style={{ maxWidth: '100%', borderRadius: 8 }} />
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       </Card>
     </div>
@@ -103,3 +68,4 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
 };
 
 export default AdvancedSettings;
+

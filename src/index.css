@@ -339,6 +339,63 @@ background: hsl(var(--input-background)) !important;
 }
 
 /* ============================== */
+/* Ant Design - DatePicker Popup  */
+/* ============================== */
+.ant-picker-dropdown .ant-picker-panel-container {
+  background: hsl(var(--popover)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: 0 10px 40px hsl(var(--foreground) / 0.15) !important;
+}
+
+.ant-picker-panel {
+  background: hsl(var(--popover)) !important;
+}
+
+.ant-picker-header,
+.ant-picker-footer {
+  background: hsl(var(--popover)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.ant-picker-header button,
+.ant-picker-header-view,
+.ant-picker-time-panel-column > li,
+.ant-picker-content th,
+.ant-picker-content td {
+  color: hsl(var(--foreground)) !important;
+}
+
+.ant-picker-cell-inner {
+  border-radius: 8px !important;
+}
+
+.ant-picker-cell:hover .ant-picker-cell-inner {
+  background: hsl(var(--muted)) !important;
+}
+
+.ant-picker-cell-selected .ant-picker-cell-inner,
+.ant-picker-cell-range-start .ant-picker-cell-inner,
+.ant-picker-cell-range-end .ant-picker-cell-inner {
+  background: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.ant-picker-cell-in-view.ant-picker-cell-in-range::before {
+  background: hsl(var(--primary) / 0.12) !important;
+}
+
+.ant-picker-time-panel,
+.ant-picker-time-panel-column {
+  background: hsl(var(--popover)) !important;
+}
+
+.ant-picker-time-panel-column > li.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
+  background: hsl(var(--primary) / 0.12) !important;
+  color: hsl(var(--primary)) !important;
+}
+
+
+/* ============================== */
 /* Ant Design - Modal (CRITICAL)  */
 /* ============================== */
 .ant-modal .ant-modal-content,
