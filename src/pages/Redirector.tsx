@@ -345,17 +345,7 @@ const Redirector: React.FC = () => {
               </Button>
             </div>
 
-            {content && (
-              <div className="pt-2">
-                <button
-                  onClick={() => window.location.href = content}
-                  className="w-full py-3 px-6 bg-white/5 hover:bg-white/10 text-white font-medium rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group"
-                >
-                  <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                  Open Link Without Redirect
-                </button>
-              </div>
-            )}
+            
           </div>
         ) : loading ? (
           <div className="text-center space-y-8">
