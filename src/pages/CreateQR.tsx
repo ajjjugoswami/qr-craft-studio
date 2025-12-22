@@ -29,6 +29,7 @@ const steps = [
   { title: 'Content', description: 'Enter data' },
   { title: 'Design', description: 'Customize' },
   { title: 'Finish', description: 'Fine-tune' },
+  { title: 'Advanced', description: 'Protection & limits' },
 ];
 
 const CreateQR: React.FC = () => {
@@ -48,7 +49,6 @@ const CreateQR: React.FC = () => {
   const [password, setPassword] = useState<string | null>(null);
   const [expirationDate, setExpirationDate] = useState<string | null>(null);
   const [scanLimit, setScanLimit] = useState<number | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const [initialized, setInitialized] = useState(false);
   const [showTemplateEditor, setShowTemplateEditor] = useState(false);
@@ -74,7 +74,6 @@ const CreateQR: React.FC = () => {
         setPassword((existing as any).password || null);
         setExpirationDate((existing as any).expirationDate || null);
         setScanLimit((existing as any).scanLimit || null);
-        setPreviewImage((existing as any).previewImage || null);
         message.info('Loaded QR code for editing');
         return;
       }
@@ -91,7 +90,6 @@ const CreateQR: React.FC = () => {
           setPassword(q.password || null);
           setExpirationDate(q.expirationDate || null);
           setScanLimit(q.scanLimit || null);
-          setPreviewImage(q.previewImage || null);
           message.info('Loaded QR code for editing');
         }
       } catch (err) {
@@ -131,7 +129,6 @@ const CreateQR: React.FC = () => {
         content,
         template,
         styling,
-        previewImage,
         password: password || null,
         expirationDate: expirationDate || null,
         scanLimit: scanLimit || null,
@@ -171,20 +168,17 @@ const CreateQR: React.FC = () => {
       case 3:
         return <QRDesignTemplates styling={styling} onStyleChange={setStyling} />;
       case 4:
+        return <QRStyleEditor styling={styling} onStyleChange={setStyling} />;
+      case 5:
         return (
-          <div className="space-y-4">
-            <QRStyleEditor styling={styling} onStyleChange={setStyling} />
-            <AdvancedSettings
-              password={password}
-              onPasswordChange={setPassword}
-              expirationDate={expirationDate}
-              onExpirationChange={setExpirationDate}
-              scanLimit={scanLimit}
-              onScanLimitChange={setScanLimit}
-              previewImage={previewImage}
-              onPreviewImageChange={setPreviewImage}
-            />
-          </div>
+          <AdvancedSettings
+            password={password}
+            onPasswordChange={setPassword}
+            expirationDate={expirationDate}
+            onExpirationChange={setExpirationDate}
+            scanLimit={scanLimit}
+            onScanLimitChange={setScanLimit}
+          />
         );
       default:
         return null;
