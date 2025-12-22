@@ -44,7 +44,7 @@ import QRCodePreview from "./QRCodePreview";
 interface TemplateEditorModalProps {
   open: boolean;
   onClose: () => void;
-  template: QRTemplate;
+  template: QRTemplate | null;
   onTemplateChange: (template: QRTemplate) => void;
   content?: string;
   styling?: QRStyling;
@@ -144,6 +144,12 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
   qrId,
 }) => {
   const [expandedFields, setExpandedFields] = useState<string[]>([]);
+  
+  // Return null if no template (plain QR mode)
+  if (!template) {
+    return null;
+  }
+  
   const customFields = template.customFields || [];
 
   const generateId = () =>
