@@ -8,12 +8,11 @@ import { QRTemplate, QRStyling, CustomField } from '../../types/qrcode';
 
 interface QRCodePreviewProps {
   content: string;
-  template: QRTemplate;
+  template: QRTemplate | null;
   styling: QRStyling;
   compact?: boolean;
   editable?: boolean;
   onTemplateChange?: (template: QRTemplate) => void;
-  // Optional QR id — if provided, QR encodes a frontend redirect URL (/r/:id)
   qrId?: string;
 }
 
@@ -63,6 +62,24 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
       type: 'square',
     },
   }), [styling]);
+
+  // If template is null, render QR only
+  if (!template) {
+    const qrOnlySize = compact ? 48 : styling.size > 200 ? 200 : styling.size;
+    return (
+      <div ref={ref} className="flex items-center justify-center p-4">
+        <div
+          className="rounded-lg"
+          style={{ 
+            backgroundColor: styling.bgColor,
+            padding: compact ? 8 : 16,
+          }}
+        >
+          <div ref={qrRef} />
+        </div>
+      </div>
+    );
+  }
 
   const isHorizontal = template.qrPosition === 'left' || template.qrPosition === 'right';
   const cardWidth = compact ? 'w-16' : isHorizontal ? 'w-full max-w-[420px]' : 'w-full max-w-[360px]';

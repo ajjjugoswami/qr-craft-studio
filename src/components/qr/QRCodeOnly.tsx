@@ -5,7 +5,7 @@ import { QRTemplate, QRStyling } from '../../types/qrcode';
 
 interface QRCodeOnlyProps {
   content: string;
-  template: QRTemplate;
+  template: QRTemplate | null;
   styling: QRStyling;
   size?: number;
   qrId?: string;
