@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Typography, Input, Segmented, Pagination } from 'antd';
-import { SearchOutlined, CheckCircleFilled } from '@ant-design/icons';
+import { Typography, Segmented, Pagination } from 'antd';
+import { CheckCircleFilled } from '@ant-design/icons';
 import { QRTemplate, defaultTemplates } from '../../types/qrcode';
+import { Ban } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
 interface TemplateSelectorProps {
-  selectedTemplate: QRTemplate;
-  onSelect: (template: QRTemplate) => void;
+  selectedTemplate: QRTemplate | null;
+  onSelect: (template: QRTemplate | null) => void;
 }
 
 const categories = [
@@ -24,7 +25,6 @@ const getCategoryForTemplate = (template: QRTemplate): string => {
   const name = template.name.toLowerCase();
   const id = template.id.toLowerCase();
   
-  // Themed templates
   if (id.includes('tech-cyber') || id.includes('podcast-episode') || id.includes('product-launch-tech') || 
       id.includes('download-app') || id.includes('artisan-guild') || id.includes('velvet-lounge') ||
       id.includes('cosmic') || id.includes('dragon') || id.includes('silk-sage') || 
@@ -43,15 +43,13 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   selectedTemplate,
   onSelect,
 }) => {
-  const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 12;
 
   const filteredTemplates = defaultTemplates.filter((template) => {
-    const matchesSearch = template.name.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = category === 'all' || getCategoryForTemplate(template) === category;
-    return matchesSearch && matchesCategory;
+    return matchesCategory;
   });
 
   const totalTemplates = filteredTemplates.length;
@@ -65,30 +63,18 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
 
   const handleCategoryChange = (value: string) => {
     setCategory(value);
-    setCurrentPage(1); // Reset to first page when category changes
+    setCurrentPage(1);
   };
+
+  const isNoTemplate = selectedTemplate === null;
 
   return (
     <div className="animate-fade-in">
       <div className="mb-6">
-        <Title level={4} >Choose Your Card Template</Title>
- 
+        <Title level={4}>Choose Your Card Template</Title>
       </div>
 
       <div className="mb-6 space-y-4">
-        <Input
-          placeholder="Search templates..."
-          prefix={<SearchOutlined className="text-muted-foreground" />}
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setCurrentPage(1); // Reset to first page when search changes
-          }}
-          size="large"
-          className="max-w-md"
-          style={{display:"none"}}
-        />
-        
         <div className="-mx-4 px-4 overflow-x-auto">
           <div className="w-max">
             <Segmented
@@ -102,13 +88,39 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {/* No Template Option */}
+        <div
+          className={`
+            rounded-xl cursor-pointer transition-all overflow-hidden
+            hover:ring-2 hover:ring-primary hover:shadow-lg hover:scale-[1.02]
+            ${isNoTemplate ? 'ring-2 ring-primary shadow-lg scale-[1.02]' : 'ring-1 ring-border'}
+          `}
+          onClick={() => onSelect(null)}
+        >
+          <div className="h-36 flex flex-col items-center justify-center relative p-4 bg-muted">
+            {isNoTemplate && (
+              <CheckCircleFilled
+                className="absolute top-2 right-2 text-lg text-primary"
+              />
+            )}
+            <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center mb-2">
+              <Ban className="w-6 h-6 text-muted-foreground" />
+            </div>
+            <h4 className="font-semibold text-sm text-foreground">No Template</h4>
+            <p className="text-xs text-muted-foreground text-center mt-1">QR code only</p>
+          </div>
+          <div className="p-3 bg-card text-center border-t border-border">
+            <Text strong className="text-sm">Plain QR</Text>
+          </div>
+        </div>
+
         {currentTemplates.map((template) => (
           <div
             key={template.id}
             className={`
               rounded-xl cursor-pointer transition-all overflow-hidden
               hover:ring-2 hover:ring-primary hover:shadow-lg hover:scale-[1.02]
-              ${selectedTemplate.id === template.id ? 'ring-2 ring-primary shadow-lg scale-[1.02]' : 'ring-1 ring-border'}
+              ${selectedTemplate?.id === template.id ? 'ring-2 ring-primary shadow-lg scale-[1.02]' : 'ring-1 ring-border'}
             `}
             onClick={() => onSelect(template)}
           >
@@ -122,7 +134,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
                 borderRadius: `${(template.borderRadius || 16) * 0.5}px ${(template.borderRadius || 16) * 0.5}px 0 0`,
               }}
             >
-              {selectedTemplate.id === template.id && (
+              {selectedTemplate?.id === template.id && (
                 <CheckCircleFilled
                   className="absolute top-2 right-2 text-lg"
                   style={{ 
@@ -173,7 +185,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
 
       {filteredTemplates.length === 0 && (
         <div className="text-center py-12">
-          <Text type="secondary">No templates found matching your search</Text>
+          <Text type="secondary">No templates found</Text>
         </div>
       )}
     </div>
