@@ -38,6 +38,10 @@ export const fetchQRCodes = createAsyncThunk(
         createdAt: q.createdAt,
         scans: q.scanCount || 0,
         status: q.status || 'active',
+        previewImage: q.previewImage ?? null,
+        password: q.password ?? null,
+        expirationDate: q.expirationDate ?? q.expirationdate ?? null,
+        scanLimit: q.scanLimit ?? q.scanlimit ?? null,
       }));
       return list;
     } catch (err: any) {
@@ -66,6 +70,10 @@ export const fetchQRCode = createAsyncThunk(
         createdAt: q.createdAt,
         scans: q.scanCount || 0,
         status: q.status || 'active',
+        previewImage: q.previewImage ?? null,
+        password: q.password ?? null,
+        expirationDate: q.expirationDate ?? q.expirationdate ?? null,
+        scanLimit: q.scanLimit ?? q.scanlimit ?? null,
       };
       return qrCode;
     } catch (err: any) {
@@ -104,6 +112,10 @@ export const createQRCode = createAsyncThunk(
         createdAt: created.createdAt,
         scans: created.scanCount || 0,
         status: created.status || 'active',
+        previewImage: created.previewImage ?? null,
+        password: created.password ?? null,
+        expirationDate: created.expirationDate ?? created.expirationdate ?? null,
+        scanLimit: created.scanLimit ?? created.scanlimit ?? null,
       };
 
       return qr;
@@ -131,6 +143,10 @@ export const updateQRCode = createAsyncThunk(
         createdAt: updatedQR.createdAt,
         scans: updatedQR.scanCount || 0,
         status: updatedQR.status || 'active',
+        previewImage: updatedQR.previewImage ?? null,
+        password: updatedQR.password ?? null,
+        expirationDate: updatedQR.expirationDate ?? updatedQR.expirationdate ?? null,
+        scanLimit: updatedQR.scanLimit ?? updatedQR.scanlimit ?? null,
       };
       
       return qr;

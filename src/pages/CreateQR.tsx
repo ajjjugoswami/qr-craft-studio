@@ -66,30 +66,30 @@ const CreateQR: React.FC = () => {
 
       const existing = getQRCode(id);
       if (existing) {
-        setTemplate(existing.template || null);
-        setStyling(existing.styling);
-        setType(existing.type);
-        setContent(existing.content);
-        setName(existing.name);
-        setPassword((existing as any).password || null);
-        setExpirationDate((existing as any).expirationDate || null);
-        setScanLimit((existing as any).scanLimit || null);
+        setTemplate(existing.template ?? defaultTemplates[0]);
+        setStyling(existing.styling ?? defaultStyling);
+        setType(existing.type ?? 'url');
+        setContent(existing.content ?? 'https://example.com');
+        setName(existing.name ?? '');
+        setPassword((existing as any).password ?? null);
+        setExpirationDate((existing as any).expirationDate ?? (existing as any).expirationdate ?? null);
+        setScanLimit((existing as any).scanLimit ?? (existing as any).scanlimit ?? null);
         message.info('Loaded QR code for editing');
         return;
       }
 
       try {
         const res = await qrCodeAPI.getOne(id);
-        const q = res.qrCode;
+        const q: any = res.qrCode;
         if (q) {
-          setTemplate(q.template || null);
-          setStyling(q.styling || defaultStyling);
-          setType(q.type || 'url');
-          setContent(q.content || 'https://example.com');
-          setName(q.name || '');
-          setPassword(q.password || null);
-          setExpirationDate(q.expirationDate || null);
-          setScanLimit(q.scanLimit || null);
+          setTemplate(q.template ?? defaultTemplates[0]);
+          setStyling(q.styling ?? defaultStyling);
+          setType(q.type ?? 'url');
+          setContent(q.content ?? 'https://example.com');
+          setName(q.name ?? '');
+          setPassword(q.password ?? null);
+          setExpirationDate(q.expirationDate ?? q.expirationdate ?? null);
+          setScanLimit(q.scanLimit ?? q.scanlimit ?? null);
           message.info('Loaded QR code for editing');
         }
       } catch (err) {
