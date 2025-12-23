@@ -4,7 +4,10 @@ import { getAppOrigin } from '../../lib/config';
 import { Input, ColorPicker, Slider, Popover } from 'antd';
 import { Pencil, Type } from 'lucide-react';
 import type { Color } from 'antd/es/color-picker';
-import { QRTemplate, QRStyling, CustomField } from '../../types/qrcode';
+import { QRTemplate, QRStyling, CustomField, QRType } from '../../types/qrcode';
+
+// Types that should encode content directly (native phone handling)
+const DIRECT_CONTENT_TYPES: QRType[] = ['vcard', 'wifi', 'phone', 'sms', 'email', 'location', 'text'];
 
 interface QRCodePreviewProps {
   content: string;
@@ -14,6 +17,7 @@ interface QRCodePreviewProps {
   editable?: boolean;
   onTemplateChange?: (template: QRTemplate) => void;
   qrId?: string;
+  qrType?: QRType;
 }
 
 const fontWeightMap = {
@@ -38,6 +42,7 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   editable = false,
   onTemplateChange,
   qrId,
+  qrType = 'url',
 }, ref) => {
   const [hovered, setHovered] = useState(false);
   const [showTitleEditor, setShowTitleEditor] = useState(false);
@@ -118,6 +123,13 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
 
   const getQRData = () => {
     try {
+      // For direct content types (vcard, wifi, phone, etc.), encode content directly
+      // These are handled natively by phone apps and don't need redirector
+      if (DIRECT_CONTENT_TYPES.includes(qrType)) {
+        return content || 'https://example.com';
+      }
+      
+      // For redirect types (url, instagram, youtube, etc.), go through redirector for tracking
       if (typeof window !== 'undefined') {
         if (typeof (content) === 'string' && qrId) {
           // For saved QR codes, point to our frontend redirect route
@@ -184,7 +196,7 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
       qrCode.current.append(qrRef.current);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [content, safeStyling, qrId, qrSize, template.id]);
+  }, [content, safeStyling, qrId, qrSize, template.id, qrType]);
 
   const gradientDirection = gradientDirectionMap[template.gradientDirection || 'to-bottom-right'];
   const backgroundStyle = template.showGradient && template.gradientColor

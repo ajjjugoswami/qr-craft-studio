@@ -120,6 +120,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
                 styling={qrCode.styling}
                 qrId={qrCode.id}
                 size={150}
+                qrType={qrCode.type}
               />
             </div>
           </div>
@@ -204,6 +205,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
               template={qrCode.template}
               styling={qrCode.styling}
               qrId={qrCode.id}
+              qrType={qrCode.type}
             />
             <div className="flex gap-3 mt-6">
               <button
@@ -238,9 +240,9 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
           <div
             className="w-20 h-20 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
             style={{ 
-              background: qrCode.template.showGradient && qrCode.template.gradientColor
+              background: qrCode.template?.showGradient && qrCode.template?.gradientColor
                 ? `linear-gradient(135deg, ${qrCode.template.backgroundColor} 0%, ${qrCode.template.gradientColor} 100%)`
-                : qrCode.template.backgroundColor 
+                : qrCode.template?.backgroundColor || qrCode.styling.bgColor
             }}
             onClick={() => setDownloadModalOpen(true)}
           >
@@ -251,6 +253,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
                 styling={qrCode.styling}
                 qrId={qrCode.id}
                 size={58}
+                qrType={qrCode.type}
               />
             </div>
           </div>
@@ -343,6 +346,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
             template={qrCode.template}
             styling={qrCode.styling}
             qrId={qrCode.id}
+            qrType={qrCode.type}
           />
           <div className="flex gap-3 mt-6">
             <button

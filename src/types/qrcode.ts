@@ -54,7 +54,7 @@ export interface QRCodeData {
   name: string;
   type: QRType;
   content: string;
-  template: QRTemplate;
+  template: QRTemplate | null;
   styling: QRStyling;
   createdAt: string;
   scans: number;
