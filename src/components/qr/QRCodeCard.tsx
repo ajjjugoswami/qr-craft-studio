@@ -9,6 +9,8 @@ import {
   FileImage,
   FileType,
   Eye,
+  Lock,
+  Target,
 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { QRCodeData } from '../../types/qrcode';
@@ -154,6 +156,18 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
             <div className="flex items-center gap-2">
               <Text className="text-xs text-muted-foreground">{qrCode.scans}</Text>
               <Text className="text-xs text-muted-foreground">scans</Text>
+            </div>
+            <div className="flex items-center gap-1">
+              {qrCode.password && (
+                <Tooltip title="Password Protected">
+                  <Lock size={14} className="text-amber-500" />
+                </Tooltip>
+              )}
+              {qrCode.scanLimit && (
+                <Tooltip title={`Scan Limit: ${qrCode.scanLimit}`}>
+                  <Target size={14} className="text-blue-500" />
+                </Tooltip>
+              )}
             </div>
             <Tag color={typeColors[qrCode.type]} className="m-0 uppercase text-xs">
               {qrCode.type}
@@ -301,6 +315,16 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
               <Text strong className="text-base truncate">
                 {qrCode.name}
               </Text>
+              {qrCode.password && (
+                <Tooltip title="Password Protected">
+                  <Lock size={14} className="text-amber-500" />
+                </Tooltip>
+              )}
+              {qrCode.scanLimit && (
+                <Tooltip title={`Scan Limit: ${qrCode.scanLimit}`}>
+                  <Target size={14} className="text-blue-500" />
+                </Tooltip>
+              )}
             </div>
             <Text type="secondary" className="text-sm truncate block">
               {qrCode.content.substring(0, 50)}
