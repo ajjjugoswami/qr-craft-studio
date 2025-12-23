@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Tag, Typography, Tooltip, Popconfirm, message, Modal, Dropdown } from 'antd';
+import { Card, Tag, Typography, Tooltip, Popconfirm, message, Modal, Dropdown, Spin } from 'antd';
 import {
   Edit,
   Download,
@@ -46,20 +46,28 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
   const [downloading, setDownloading] = React.useState(false);
 
   const handleDownload = async (format: 'png' | 'jpg') => {
-    if (!previewRef.current) return;
-    
+    if (!previewRef.current || downloading) return;
+
     setDownloading(true);
     try {
-      const canvas = await html2canvas(previewRef.current, {
-        backgroundColor: null,
-        scale: 3,
-        useCORS: true,
-        logging: false,
-      });
+      // Let React paint the loading state before the heavy canvas work
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+
+      const canvas = await Promise.race([
+        html2canvas(previewRef.current, {
+          backgroundColor: null,
+          scale: 3,
+          useCORS: true,
+          logging: false,
+        }),
+        new Promise<HTMLCanvasElement>((_, reject) =>
+          setTimeout(() => reject(new Error('DOWNLOAD_TIMEOUT')), 15000),
+        ),
+      ]);
 
       const link = document.createElement('a');
       const fileName = `${qrCode.name}-${Date.now()}`;
-      
+
       if (format === 'png') {
         link.download = `${fileName}.png`;
         link.href = canvas.toDataURL('image/png');
@@ -67,12 +75,16 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
         link.download = `${fileName}.jpg`;
         link.href = canvas.toDataURL('image/jpeg', 0.95);
       }
-      
+
       link.click();
       message.success(`Downloaded as ${format.toUpperCase()}!`);
       setDownloadModalOpen(false);
     } catch (error) {
-      message.error('Failed to download. Please try again.');
+      if (error instanceof Error && error.message === 'DOWNLOAD_TIMEOUT') {
+        message.error('Download is taking too long. Please try again.');
+      } else {
+        message.error('Failed to download. Please try again.');
+      }
     } finally {
       setDownloading(false);
     }
@@ -198,31 +210,44 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
           centered
           className="qr-preview-modal"
         >
-          <div className="flex flex-col items-center py-4 px-2">
-            <QRCodePreview
-              ref={previewRef}
-              content={qrCode.content}
-              template={qrCode.template}
-              styling={qrCode.styling}
-              qrId={qrCode.id}
-              qrType={qrCode.type}
-            />
+           <div className="flex flex-col items-center py-4 px-2">
+            <Spin spinning={downloading} tip="Preparing download..." className="w-full">
+              <div className="flex justify-center">
+                <QRCodePreview
+                  ref={previewRef}
+                  content={qrCode.content}
+                  template={qrCode.template}
+                  styling={qrCode.styling}
+                  qrId={qrCode.id}
+                  qrType={qrCode.type}
+                />
+              </div>
+            </Spin>
+
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => handleDownload('png')}
                 disabled={downloading}
                 className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                <FileImage size={18} />
-                Download PNG
+                {downloading ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+                ) : (
+                  <FileImage size={18} />
+                )}
+                {downloading ? 'Preparing…' : 'Download PNG'}
               </button>
               <button
                 onClick={() => handleDownload('jpg')}
                 disabled={downloading}
                 className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
               >
-                <FileType size={18} />
-                Download JPG
+                {downloading ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-foreground/70 border-t-transparent" />
+                ) : (
+                  <FileType size={18} />
+                )}
+                {downloading ? 'Preparing…' : 'Download JPG'}
               </button>
             </div>
           </div>
@@ -340,30 +365,43 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
         className="qr-preview-modal"
       >
         <div className="flex flex-col items-center py-4 px-2">
-          <QRCodePreview
-            ref={previewRef}
-            content={qrCode.content}
-            template={qrCode.template}
-            styling={qrCode.styling}
-            qrId={qrCode.id}
-            qrType={qrCode.type}
-          />
+          <Spin spinning={downloading} tip="Preparing download..." className="w-full">
+            <div className="flex justify-center">
+              <QRCodePreview
+                ref={previewRef}
+                content={qrCode.content}
+                template={qrCode.template}
+                styling={qrCode.styling}
+                qrId={qrCode.id}
+                qrType={qrCode.type}
+              />
+            </div>
+          </Spin>
+
           <div className="flex gap-3 mt-6">
             <button
               onClick={() => handleDownload('png')}
               disabled={downloading}
               className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              <FileImage size={18} />
-              Download PNG
+              {downloading ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+              ) : (
+                <FileImage size={18} />
+              )}
+              {downloading ? 'Preparing…' : 'Download PNG'}
             </button>
             <button
               onClick={() => handleDownload('jpg')}
               disabled={downloading}
               className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
             >
-              <FileType size={18} />
-              Download JPG
+              {downloading ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-foreground/70 border-t-transparent" />
+              ) : (
+                <FileType size={18} />
+              )}
+              {downloading ? 'Preparing…' : 'Download JPG'}
             </button>
           </div>
         </div>
