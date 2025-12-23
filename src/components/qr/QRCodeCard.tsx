@@ -132,9 +132,29 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
     return (
       <>
         <Card 
-          className="hover:shadow-lg transition-all duration-200 cursor-pointer group h-full"
+          className="hover:shadow-lg transition-all duration-200 cursor-pointer group h-full relative"
           styles={{ body: { padding: '16px', height: '100%' } }}
         >
+          {/* Top Right Corner Icons */}
+          {(qrCode.password || qrCode.scanLimit) && (
+            <div className="absolute top-2 right-2 flex items-center gap-1 z-10">
+              {qrCode.password && (
+                <Tooltip title="Password Protected">
+                  <div className="p-1.5 bg-amber-100 rounded-full">
+                    <Lock size={12} className="text-amber-600" />
+                  </div>
+                </Tooltip>
+              )}
+              {qrCode.scanLimit && (
+                <Tooltip title={`Scan Limit: ${qrCode.scanLimit}`}>
+                  <div className="p-1.5 bg-blue-100 rounded-full">
+                    <Target size={12} className="text-blue-600" />
+                  </div>
+                </Tooltip>
+              )}
+            </div>
+          )}
+
           {/* QR Preview */}
           <div 
             className="w-full min-h-[150px] rounded-lg flex items-center justify-center mb-3 relative overflow-hidden"
@@ -151,21 +171,11 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
             </div>
           </div>
 
-          {/* Title Row with Icons */}
-          <div className="flex items-center gap-2 mb-2">
-            <Text strong className="text-sm truncate flex-1">
+          {/* Title Row */}
+          <div className="mb-2">
+            <Text strong className="text-sm truncate block">
               {qrCode.name}
             </Text>
-            {qrCode.password && (
-              <Tooltip title="Password Protected">
-                <Lock size={14} className="text-amber-500 flex-shrink-0" />
-              </Tooltip>
-            )}
-            {qrCode.scanLimit && (
-              <Tooltip title={`Scan Limit: ${qrCode.scanLimit}`}>
-                <Target size={14} className="text-blue-500 flex-shrink-0" />
-              </Tooltip>
-            )}
           </div>
 
           {/* Info Row */}
