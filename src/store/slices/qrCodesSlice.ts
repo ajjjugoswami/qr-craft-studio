@@ -9,6 +9,11 @@ interface QRCodesState {
   loading: boolean;
   error: string | null;
   lastFetched: number | null;
+  // Pagination metadata
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
@@ -18,16 +23,20 @@ const initialState: QRCodesState = {
   loading: false,
   error: null,
   lastFetched: null,
+  page: 1,
+  limit: 10,
+  total: 0,
+  totalPages: 1,
 };
 
 // ============ Async Thunks ============
 
-// Fetch all QR codes
+// Fetch QR codes with optional pagination and search
 export const fetchQRCodes = createAsyncThunk(
   'qrCodes/fetchAll',
-  async (_, { getState, rejectWithValue }) => {
+  async (params: { page?: number; limit?: number; search?: string } = {}, { getState, rejectWithValue }) => {
     try {
-      const res = await qrCodeAPI.getAll();
+      const res = await qrCodeAPI.getAll(params);
       const list: QRCodeData[] = (res.qrCodes || []).map((q: any) => ({
         id: q._id,
         name: q.name,
@@ -43,7 +52,14 @@ export const fetchQRCodes = createAsyncThunk(
         expirationDate: q.expirationDate ?? q.expirationdate ?? null,
         scanLimit: q.scanLimit ?? q.scanlimit ?? null,
       }));
-      return list;
+
+      return {
+        items: list,
+        page: res.page || params.page || 1,
+        limit: res.limit || params.limit || 10,
+        total: res.total || 0,
+        totalPages: res.totalPages || Math.max(1, Math.ceil((res.total || 0) / (res.limit || params.limit || 10))),
+      };
     } catch (err: any) {
       if (err?.response?.status === 401) {
         return rejectWithValue('unauthorized');
@@ -190,9 +206,13 @@ const qrCodesSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchQRCodes.fulfilled, (state, action) => {
+      .addCase(fetchQRCodes.fulfilled, (state, action: PayloadAction<any>) => {
         state.loading = false;
-        state.items = action.payload;
+        state.items = action.payload.items || [];
+        state.page = action.payload.page || state.page;
+        state.limit = action.payload.limit || state.limit;
+        state.total = action.payload.total || 0;
+        state.totalPages = action.payload.totalPages || 1;
         state.lastFetched = Date.now();
       })
       .addCase(fetchQRCodes.rejected, (state, action) => {
@@ -250,6 +270,10 @@ export const { clearQRCodes, invalidateCache } = qrCodesSlice.actions;
 // ============ Selectors ============
 export const selectQRCodes = (state: { qrCodes: QRCodesState }) => state.qrCodes.items;
 export const selectQRCodesLoading = (state: { qrCodes: QRCodesState }) => state.qrCodes.loading;
+export const selectQRCodesPage = (state: { qrCodes: QRCodesState }) => state.qrCodes.page;
+export const selectQRCodesLimit = (state: { qrCodes: QRCodesState }) => state.qrCodes.limit;
+export const selectQRCodesTotal = (state: { qrCodes: QRCodesState }) => state.qrCodes.total;
+export const selectQRCodesTotalPages = (state: { qrCodes: QRCodesState }) => state.qrCodes.totalPages;
 export const selectQRCodeById = (id: string) => (state: { qrCodes: QRCodesState }) =>
   state.qrCodes.items.find((q) => q.id === id);
 export const selectShouldFetchQRCodes = (state: { qrCodes: QRCodesState }) => {

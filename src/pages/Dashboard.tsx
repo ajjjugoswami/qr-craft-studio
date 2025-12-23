@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button, Empty, Card, Row, Col, Statistic, Input } from 'antd';
+import { Typography, Button, Empty, Card, Row, Col, Statistic, Input, Pagination } from 'antd';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Plus, QrCode, Eye, TrendingUp, Search, LayoutGrid, List } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -11,9 +11,18 @@ const { Title, Text } = Typography;
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { qrCodes, loading, deleteQRCode } = useQRCodes();
+  const { qrCodes, loading, deleteQRCode, page, limit, total, totalPages, setPage, setSearch } = useQRCodes();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [viewMode, setViewMode] = React.useState<'list' | 'grid'>('grid');
+
+  // debounce search input
+  const searchTimeoutRef = React.useRef<number | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) window.clearTimeout(searchTimeoutRef.current);
+    };
+  }, []);
 
   const handleEdit = (id: string) => {
     navigate(`/edit/${id}`);
@@ -26,10 +35,8 @@ const Dashboard: React.FC = () => {
   const totalScans = qrCodes.reduce((acc, qr) => acc + qr.scans, 0);
   const activeQRs = qrCodes.filter(qr => qr.status === 'active').length;
 
-  const filteredQRCodes = qrCodes.filter(qr => 
-    qr.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    qr.content.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Server-side filtered list (search applied on server)
+  const filteredQRCodes = qrCodes;
 
   return (
     <DashboardLayout>
@@ -65,7 +72,7 @@ const Dashboard: React.FC = () => {
                   <QrCode size={14} className="text-primary" />
                   <span className="text-[11px] md:text-xs text-muted-foreground">Total</span>
                 </div>
-                <span className="text-lg md:text-2xl font-bold text-primary">{qrCodes.length}</span>
+                <span className="text-lg md:text-2xl font-bold text-primary">{Number(total)}</span>
               </div>
             )}
           </Card>
@@ -113,7 +120,14 @@ const Dashboard: React.FC = () => {
               placeholder="Search..."
               prefix={<Search size={16} className="text-muted-foreground" />}
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                const v = e.target.value;
+                setSearchTerm(v);
+                if (searchTimeoutRef.current) window.clearTimeout(searchTimeoutRef.current);
+                searchTimeoutRef.current = window.setTimeout(() => {
+                  setSearch(v.trim());
+                }, 400);
+              }}
               className="flex-1 sm:w-48 md:w-64"
               allowClear
             />
@@ -223,6 +237,12 @@ const Dashboard: React.FC = () => {
                 viewMode="grid"
               />
             ))}
+          </div>
+        )}
+
+        {Number(total) > Number(limit) && (
+          <div className="pt-4 flex justify-end">
+            <Pagination current={Number(page)} pageSize={Number(limit)} total={Number(total)} onChange={(p) => setPage(p)} />
           </div>
         )}
       </div>

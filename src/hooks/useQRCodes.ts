@@ -8,6 +8,10 @@ import {
   deleteQRCode,
   selectQRCodes,
   selectQRCodesLoading,
+  selectQRCodesPage,
+  selectQRCodesLimit,
+  selectQRCodesTotal,
+  selectQRCodesTotalPages,
   selectQRCodeById,
   selectShouldFetchQRCodes,
   clearQRCodes,
@@ -23,15 +27,19 @@ export const useQRCodes = () => {
   const dispatch = useAppDispatch();
   const qrCodes = useAppSelector(selectQRCodes);
   const loading = useAppSelector(selectQRCodesLoading);
+  const page = useAppSelector(selectQRCodesPage);
+  const limit = useAppSelector(selectQRCodesLimit);
+  const total = useAppSelector(selectQRCodesTotal);
+  const totalPages = useAppSelector(selectQRCodesTotalPages);
   const shouldFetch = useAppSelector(selectShouldFetchQRCodes);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
-  // Fetch QR codes on mount if needed
+  // Fetch QR codes on mount if needed (load first page)
   useEffect(() => {
     if (isAuthenticated && shouldFetch) {
-      dispatch(fetchQRCodes());
+      dispatch(fetchQRCodes({ page: 1, limit }));
     }
-  }, [dispatch, isAuthenticated, shouldFetch]);
+  }, [dispatch, isAuthenticated, shouldFetch, limit]);
 
   // Clear data on logout
   useEffect(() => {
@@ -85,19 +93,39 @@ export const useQRCodes = () => {
     [dispatch, qrCodes]
   );
 
-  // Force refresh
-  const refresh = useCallback(() => {
-    dispatch(fetchQRCodes());
+  // Force refresh (keeps current pagination)
+  const refresh = useCallback((opts: { page?: number; limit?: number; search?: string } = {}) => {
+    dispatch(fetchQRCodes(opts));
   }, [dispatch]);
+
+  // Fetch with params
+  const fetch = useCallback((opts: { page?: number; limit?: number; search?: string } = {}) => {
+    dispatch(fetchQRCodes(opts));
+  }, [dispatch]);
+
+  const setPage = useCallback((p: number) => {
+    dispatch(fetchQRCodes({ page: p, limit }));
+  }, [dispatch, limit]);
+
+  const setSearch = useCallback((search: string) => {
+    dispatch(fetchQRCodes({ page: 1, limit, search }));
+  }, [dispatch, limit]);
 
   return {
     qrCodes,
     loading,
+    page,
+    limit,
+    total,
+    totalPages,
     saveQRCode,
     updateQRCode: handleUpdateQRCode,
     deleteQRCode: handleDeleteQRCode,
     getQRCode,
     fetchSingleQRCode,
     refresh,
+    fetch,
+    setPage,
+    setSearch,
   };
 };

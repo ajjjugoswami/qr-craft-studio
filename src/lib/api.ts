@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 
 export const API_URL = 'https://be-link-generator.vercel.app/api';
@@ -81,9 +80,9 @@ export const authAPI = {
 
 // QR Code API
 export const qrCodeAPI = {
-  // Get all QR codes for current user
-  getAll: async () => {
-    const response = await api.get('/qrcodes');
+  // Get all QR codes for current user with optional pagination and search
+  getAll: async (params?: { page?: number; limit?: number; search?: string }) => {
+    const response = await api.get('/qrcodes', { params });
     return response.data;
   },
 
