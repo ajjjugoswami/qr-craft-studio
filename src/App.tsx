@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, theme } from "antd";
 import { store } from "./store";
 import Index from "./pages/Index";
 import SignIn from "./pages/SignIn";
@@ -27,11 +27,14 @@ import AdminRoute from "./components/AdminRoute";
 const queryClient = new QueryClient();
 
 const antTheme = {
+  algorithm: theme.defaultAlgorithm, // Force light mode
   token: {
-    colorPrimary: "hsl(var(--primary))",
-    colorTextBase: "hsl(var(--foreground))",
-    colorBgBase: "hsl(var(--background))",
-    colorBorder: "hsl(var(--border))",
+    colorPrimary: "hsl(262, 83%, 58%)",
+    colorTextBase: "hsl(222, 47%, 11%)",
+    colorBgBase: "hsl(0, 0%, 100%)",
+    colorBgContainer: "hsl(0, 0%, 100%)",
+    colorBgElevated: "hsl(0, 0%, 100%)",
+    colorBorder: "hsl(214, 32%, 91%)",
     borderRadius: 8,
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   },
