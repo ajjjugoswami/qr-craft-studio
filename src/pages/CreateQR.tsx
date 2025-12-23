@@ -318,6 +318,7 @@ const CreateQR: React.FC = () => {
                     editable={!!template}
                     onTemplateChange={template ? setTemplate : undefined}
                     qrId={editingId || undefined}
+                    qrType={type}
                   />
                   {template && (
                     <Text type="secondary" className="text-xs mt-4 text-center">
@@ -402,6 +403,7 @@ const CreateQR: React.FC = () => {
               editable={!!template}
               onTemplateChange={template ? setTemplate : undefined}
               qrId={editingId || undefined}
+              qrType={type}
             />
             {template && (
               <Text type="secondary" className="text-xs mt-4 text-center">
@@ -420,6 +422,7 @@ const CreateQR: React.FC = () => {
           content={content}
           styling={styling}
           qrId={editingId || undefined}
+          qrType={type}
         />
       </div>
     </DashboardLayout>

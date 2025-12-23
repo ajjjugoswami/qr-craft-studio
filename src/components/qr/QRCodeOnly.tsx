@@ -1,7 +1,13 @@
 import React, { useEffect, useRef, forwardRef, useMemo } from 'react';
 import QRCodeStyling from 'qr-code-styling';
 import { getAppOrigin } from '../../lib/config';
-import { QRTemplate, QRStyling } from '../../types/qrcode';
+import { QRTemplate, QRStyling, QRType } from '../../types/qrcode';
+
+// Types that should encode content directly (native phone handling)
+const DIRECT_CONTENT_TYPES: QRType[] = ['vcard', 'wifi', 'phone', 'sms', 'email', 'location', 'text'];
+
+// Types that should go through redirector for tracking
+const REDIRECT_CONTENT_TYPES: QRType[] = ['url', 'instagram', 'facebook', 'youtube', 'whatsapp'];
 
 interface QRCodeOnlyProps {
   content: string;
@@ -9,6 +15,7 @@ interface QRCodeOnlyProps {
   styling: QRStyling;
   size?: number;
   qrId?: string;
+  qrType?: QRType; // Add type to determine encoding strategy
 }
 
 const QRCodeOnly = forwardRef<HTMLDivElement, QRCodeOnlyProps>(({
@@ -17,6 +24,7 @@ const QRCodeOnly = forwardRef<HTMLDivElement, QRCodeOnlyProps>(({
   styling,
   size = 200,
   qrId,
+  qrType = 'url',
 }, ref) => {
   const qrRef = useRef<HTMLDivElement>(null);
   const qrCode = useRef<QRCodeStyling | null>(null);
@@ -41,11 +49,18 @@ const QRCodeOnly = forwardRef<HTMLDivElement, QRCodeOnlyProps>(({
   useEffect(() => {
     const getQRData = () => {
       try {
+        // For direct content types (vcard, wifi, phone, etc.), encode content directly
+        // These are handled natively by phone apps and don't need redirector
+        if (DIRECT_CONTENT_TYPES.includes(qrType)) {
+          return content || 'https://example.com';
+        }
+        
+        // For redirect types (url, instagram, youtube, etc.), go through redirector for tracking
         if (typeof window !== 'undefined') {
-          if (typeof (content) === 'string' && qrId) {
+          if (typeof content === 'string' && qrId) {
             return `${getAppOrigin()}/r/${qrId}`;
           }
-          if (typeof (content) === 'string') {
+          if (typeof content === 'string') {
             return `${getAppOrigin()}/r?u=${encodeURIComponent(content)}`;
           }
         }
@@ -105,7 +120,7 @@ const QRCodeOnly = forwardRef<HTMLDivElement, QRCodeOnlyProps>(({
         qrCode.current.append(qrRef.current);
       }
     }
-  }, [content, safeStyling, qrId, size]);
+  }, [content, safeStyling, qrId, size, qrType]);
 
   return (
     <div ref={ref} className="flex items-center justify-center">

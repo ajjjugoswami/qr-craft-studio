@@ -38,6 +38,7 @@ import {
   QRStyling,
   CustomField,
   defaultStyling,
+  QRType,
 } from "../../types/qrcode";
 import QRCodePreview from "./QRCodePreview";
 
@@ -49,6 +50,7 @@ interface TemplateEditorModalProps {
   content?: string;
   styling?: QRStyling;
   qrId?: string;
+  qrType?: QRType;
 }
 
 const fieldTypes = [
@@ -142,6 +144,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
   content = "https://example.com",
   styling = defaultStyling,
   qrId,
+  qrType = 'url',
 }) => {
   const [expandedFields, setExpandedFields] = useState<string[]>([]);
   
@@ -941,6 +944,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
                   styling={styling}
                   editable={false}
                   qrId={qrId}
+                  qrType={qrType}
                 />
               </div>
             </div>

@@ -88,7 +88,31 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
- 
+        {/* No Template Option */}
+        <div
+          className={`
+            rounded-xl cursor-pointer transition-all overflow-hidden
+            hover:ring-2 hover:ring-primary hover:shadow-lg hover:scale-[1.02]
+            ${isNoTemplate ? 'ring-2 ring-primary shadow-lg scale-[1.02]' : 'ring-1 ring-border'}
+          `}
+          onClick={() => onSelect(null)}
+        >
+          <div className="h-36 flex flex-col items-center justify-center relative p-4 bg-muted">
+            {isNoTemplate && (
+              <CheckCircleFilled
+                className="absolute top-2 right-2 text-lg text-primary"
+              />
+            )}
+            <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center mb-2">
+              <Ban className="w-6 h-6 text-muted-foreground" />
+            </div>
+            <h4 className="font-semibold text-sm text-foreground">No Template</h4>
+            <p className="text-xs text-muted-foreground text-center mt-1">QR code only</p>
+          </div>
+          <div className="p-3 bg-card text-center border-t border-border">
+            <Text strong className="text-sm">Plain QR</Text>
+          </div>
+        </div>
 
         {currentTemplates.map((template) => (
           <div
