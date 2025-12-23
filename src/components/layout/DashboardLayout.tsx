@@ -12,6 +12,7 @@ import {
   X,
   Plus,
   QrCode,
+  Users,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -56,12 +57,17 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     },
   ];
 
-  // Show submissions only for admin users
+  // Show admin-only items
   if (user?.isAdmin) {
     menuItems.push({
       key: "/submissions",
       icon: <MessageSquare size={18} />,
       label: "Submissions",
+    });
+    menuItems.push({
+      key: "/admin/users",
+      icon: <Users size={18} />,
+      label: "Admin Data",
     });
   }
 

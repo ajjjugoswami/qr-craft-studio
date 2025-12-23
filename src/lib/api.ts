@@ -199,6 +199,15 @@ export const scansAPI = {
   },
 };
 
+// Admin API
+export const adminAPI = {
+  // Get all users and their QR codes (admin only)
+  getUsersData: async () => {
+    const response = await api.get('/admin/users');
+    return response.data;
+  },
+};
+
 // Contact API
 export const contactAPI = {
   create: async (data: { name: string; email: string; subject: string; message: string }) => {

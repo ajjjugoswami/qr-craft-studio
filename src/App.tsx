@@ -18,6 +18,7 @@ import QRUnavailable from "./pages/QRUnavailable";
 import FAQs from "./pages/FAQs";
 import Contact from "./pages/Contact";
 import Submissions from "./pages/Submissions";
+import AdminDataPage from "./pages/AdminData";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./context/ThemeContext";
@@ -80,6 +81,7 @@ const App = () => (
                 <Route path="/faqs" element={<FAQs />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/submissions" element={<AdminRoute><Submissions /></AdminRoute>} />
+                <Route path="/admin/users" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
 
                 {/* Public redirect route for scanned QR codes (no auth required) */}
                 <Route path="/r/:id" element={<Redirector />} />
