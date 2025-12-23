@@ -11,12 +11,21 @@ const passwordSchema = z
   .min(1, 'Password is required')
   .max(128, 'Password is too long');
 
-const getSmartRedirectUrl = (url: string): { appUrl: string | null; webUrl: string; platform: string } => {
+type SmartRedirect = {
+  appUrl: string | null;
+  webUrl: string;
+  platform: string;
+  androidIntent?: string;
+};
+
+const getSmartRedirectUrl = (url: string): SmartRedirect => {
   try {
     const urlObj = new URL(url);
     const hostname = urlObj.hostname.toLowerCase();
     const pathname = urlObj.pathname;
+    const search = urlObj.search || '';
 
+    // YouTube (video)
     if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
       let videoId = '';
       if (hostname.includes('youtu.be')) {
@@ -24,40 +33,64 @@ const getSmartRedirectUrl = (url: string): { appUrl: string | null; webUrl: stri
       } else {
         videoId = urlObj.searchParams.get('v') || '';
       }
+
       if (videoId) {
-        return { appUrl: `vnd.youtube://watch?v=${videoId}`, webUrl: url, platform: 'YouTube' };
+        const appUrl = `youtube://watch?v=${videoId}`;
+        const androidIntent = `intent://www.youtube.com/watch?v=${videoId}#Intent;package=com.google.android.youtube;scheme=https;end`;
+        return { appUrl, webUrl: url, platform: 'YouTube', androidIntent };
       }
-      return { appUrl: `vnd.youtube://${pathname}`, webUrl: url, platform: 'YouTube' };
+
+      const appUrl = `youtube://${pathname}`;
+      const androidIntent = `intent://www.youtube.com${pathname}${search}#Intent;package=com.google.android.youtube;scheme=https;end`;
+      return { appUrl, webUrl: url, platform: 'YouTube', androidIntent };
     }
 
+    // Instagram
     if (hostname.includes('instagram.com')) {
-      const username = pathname.split('/')[1];
+      const parts = pathname.split('/').filter(Boolean);
+      const username = parts[0];
       if (username && username !== 'p' && username !== 'reel') {
-        return { appUrl: `instagram://user?username=${username}`, webUrl: url, platform: 'Instagram' };
+        const appUrl = `instagram://user?username=${username}`;
+        const androidIntent = `intent://instagram.com/_u/${username}/#Intent;package=com.instagram.android;scheme=https;end`;
+        return { appUrl, webUrl: url, platform: 'Instagram', androidIntent };
       }
-      return { appUrl: `instagram://media?id=${pathname}`, webUrl: url, platform: 'Instagram' };
+
+      // Post / Reel
+      const appUrl = `instagram://media?id=${encodeURIComponent(pathname)}`;
+      const androidIntent = `intent://instagram.com${pathname}#Intent;package=com.instagram.android;scheme=https;end`;
+      return { appUrl, webUrl: url, platform: 'Instagram', androidIntent };
     }
 
+    // TikTok - leave as-is but include simple android intent
     if (hostname.includes('tiktok.com')) {
-      return { appUrl: `snssdk1233://`, webUrl: url, platform: 'TikTok' };
+      const androidIntent = `intent://www.tiktok.com${pathname}${search}#Intent;package=com.zhiliaoapp.musically;scheme=https;end`;
+      return { appUrl: `snssdk1233://`, webUrl: url, platform: 'TikTok', androidIntent };
     }
 
+    // X / Twitter
     if (hostname.includes('twitter.com') || hostname.includes('x.com')) {
       const username = pathname.split('/')[1];
       if (username) {
-        return { appUrl: `twitter://user?screen_name=${username}`, webUrl: url, platform: 'X' };
+        const appUrl = `twitter://user?screen_name=${username}`;
+        const androidIntent = `intent://twitter.com/${username}#Intent;package=com.twitter.android;scheme=https;end`;
+        return { appUrl, webUrl: url, platform: 'X', androidIntent };
       }
       return { appUrl: 'twitter://', webUrl: url, platform: 'X' };
     }
 
+    // Facebook
     if (hostname.includes('facebook.com') || hostname.includes('fb.com')) {
-      return { appUrl: `fb://facewebmodal/f?href=${encodeURIComponent(url)}`, webUrl: url, platform: 'Facebook' };
+      const appUrl = `fb://facewebmodal/f?href=${encodeURIComponent(url)}`;
+      const androidIntent = `intent://www.facebook.com${pathname}${search}#Intent;package=com.facebook.katana;scheme=https;end`;
+      return { appUrl, webUrl: url, platform: 'Facebook', androidIntent };
     }
 
+    // LinkedIn
     if (hostname.includes('linkedin.com')) {
       return { appUrl: `linkedin://${pathname}`, webUrl: url, platform: 'LinkedIn' };
     }
 
+    // Spotify
     if (hostname.includes('spotify.com')) {
       const parts = pathname.split('/').filter(Boolean);
       if (parts.length >= 2) {
@@ -66,11 +99,13 @@ const getSmartRedirectUrl = (url: string): { appUrl: string | null; webUrl: stri
       return { appUrl: 'spotify://', webUrl: url, platform: 'Spotify' };
     }
 
+    // WhatsApp
     if (hostname.includes('wa.me') || hostname.includes('whatsapp.com')) {
       const phone = pathname.slice(1) || urlObj.searchParams.get('phone') || '';
       return { appUrl: `whatsapp://send?phone=${phone}`, webUrl: url, platform: 'WhatsApp' };
     }
 
+    // Telegram
     if (hostname.includes('t.me') || hostname.includes('telegram.me')) {
       return { appUrl: `tg://resolve?domain=${pathname.slice(1)}`, webUrl: url, platform: 'Telegram' };
     }
@@ -136,16 +171,30 @@ const Redirector: React.FC = () => {
         setProgress(100);
         await new Promise((resolve) => setTimeout(resolve, 400));
 
-        if (smartRedirect.appUrl && isMobile) {
-          const iframe = document.createElement('iframe');
-          iframe.style.display = 'none';
-          iframe.src = smartRedirect.appUrl;
-          document.body.appendChild(iframe);
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-          setTimeout(() => {
-            if (mounted) window.location.href = smartRedirect.webUrl;
-          }, 1500);
+        // Prefer Android Intent URLs on Android (more reliable), otherwise try app scheme then fallback to web
+        if (isMobile) {
+          if (isAndroid && smartRedirect.androidIntent) {
+            // Try Android intent which will open app if installed, otherwise fall back to web
+            window.location.href = smartRedirect.androidIntent;
+
+            setTimeout(() => {
+              if (mounted) window.location.href = smartRedirect.webUrl;
+            }, 1500);
+          } else if (smartRedirect.appUrl) {
+            // For iOS and other mobile browsers, directly set location to the app scheme
+            window.location.href = smartRedirect.appUrl;
+
+            setTimeout(() => {
+              if (mounted) window.location.href = smartRedirect.webUrl;
+            }, 1500);
+          } else {
+            window.location.href = smartRedirect.webUrl;
+          }
         } else {
+          // Desktop: always open web URL
           window.location.href = smartRedirect.webUrl;
         }
       } catch (err: unknown) {
