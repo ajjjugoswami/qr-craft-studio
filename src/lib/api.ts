@@ -202,8 +202,8 @@ export const scansAPI = {
 // Admin API
 export const adminAPI = {
   // Get all users and their QR codes (admin only)
-  getUsersData: async () => {
-    const response = await api.get('/admin/users');
+  getUsersData: async (params?: { page?: number; limit?: number; search?: string }) => {
+    const response = await api.get('/admin/users', { params });
     return response.data;
   },
 };
