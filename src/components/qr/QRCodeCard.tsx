@@ -52,11 +52,12 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
     try {
       // Let React paint the loading state before the heavy canvas work
       await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+      await new Promise<void>((resolve) => setTimeout(resolve, 50));
 
       const canvas = await Promise.race([
         html2canvas(previewRef.current, {
           backgroundColor: null,
-          scale: 3,
+          scale: 2,
           useCORS: true,
           logging: false,
         }),
@@ -65,18 +66,29 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
         ),
       ]);
 
-      const link = document.createElement('a');
       const fileName = `${qrCode.name}-${Date.now()}`;
+      const mime = format === 'png' ? 'image/png' : 'image/jpeg';
+      const quality = format === 'jpg' ? 0.95 : undefined;
 
-      if (format === 'png') {
-        link.download = `${fileName}.png`;
-        link.href = canvas.toDataURL('image/png');
-      } else {
-        link.download = `${fileName}.jpg`;
-        link.href = canvas.toDataURL('image/jpeg', 0.95);
-      }
+      // IMPORTANT: toDataURL is synchronous and can freeze the UI for large canvases.
+      // Using toBlob keeps the UI responsive.
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(
+          (b) => (b ? resolve(b) : reject(new Error('BLOB_FAILED'))),
+          mime,
+          quality as any,
+        );
+      });
 
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = `${fileName}.${format}`;
+      link.href = url;
       link.click();
+
+      // Cleanup
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
       message.success(`Downloaded as ${format.toUpperCase()}!`);
       setDownloadModalOpen(false);
     } catch (error) {
