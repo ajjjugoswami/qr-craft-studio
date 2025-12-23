@@ -151,23 +151,28 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
             </div>
           </div>
 
+          {/* Title Row with Icons */}
+          <div className="flex items-center gap-2 mb-2">
+            <Text strong className="text-sm truncate flex-1">
+              {qrCode.name}
+            </Text>
+            {qrCode.password && (
+              <Tooltip title="Password Protected">
+                <Lock size={14} className="text-amber-500 flex-shrink-0" />
+              </Tooltip>
+            )}
+            {qrCode.scanLimit && (
+              <Tooltip title={`Scan Limit: ${qrCode.scanLimit}`}>
+                <Target size={14} className="text-blue-500 flex-shrink-0" />
+              </Tooltip>
+            )}
+          </div>
+
           {/* Info Row */}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Text className="text-xs text-muted-foreground">{qrCode.scans}</Text>
               <Text className="text-xs text-muted-foreground">scans</Text>
-            </div>
-            <div className="flex items-center gap-1">
-              {qrCode.password && (
-                <Tooltip title="Password Protected">
-                  <Lock size={14} className="text-amber-500" />
-                </Tooltip>
-              )}
-              {qrCode.scanLimit && (
-                <Tooltip title={`Scan Limit: ${qrCode.scanLimit}`}>
-                  <Target size={14} className="text-blue-500" />
-                </Tooltip>
-              )}
             </div>
             <Tag color={typeColors[qrCode.type]} className="m-0 uppercase text-xs">
               {qrCode.type}
