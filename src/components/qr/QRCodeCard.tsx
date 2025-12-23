@@ -47,6 +47,11 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
   const [downloadModalOpen, setDownloadModalOpen] = React.useState(false);
   const [downloading, setDownloading] = React.useState(false);
 
+  // Support both camelCase and legacy snake/lowercase fields from APIs
+  const scanLimitValue = (qrCode.scanLimit ?? (qrCode as any).scanlimit) as number | null | undefined;
+  const hasScanLimit = typeof scanLimitValue === 'number' && scanLimitValue > 0;
+  const isProtected = typeof qrCode.password === 'string' && qrCode.password.trim().length > 0;
+
   const handleDownload = async (format: 'png' | 'jpg') => {
     if (!previewRef.current || downloading) return;
 
@@ -133,20 +138,21 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
       <>
         <Card 
           className="hover:shadow-lg transition-all duration-200 cursor-pointer group h-full relative"
-          styles={{ body: { padding: '16px', height: '100%' } }}
+          styles={{ body: { padding: '16px', height: '100%', position: 'relative' } }}
         >
           {/* Top Right Corner Icons */}
-          {(qrCode.password || qrCode.scanLimit) && (
+          {(isProtected || hasScanLimit) && (
             <div className="absolute top-2 right-2 flex items-center gap-1 z-10">
-              {qrCode.password && (
+              {isProtected && (
                 <Tooltip title="Password Protected">
                   <div className="p-1.5 bg-amber-100 rounded-full">
                     <Lock size={12} className="text-amber-600" />
                   </div>
                 </Tooltip>
               )}
-              {qrCode.scanLimit && (
-                <Tooltip title={`Scan Limit: ${qrCode.scanLimit}`}>
+              {hasScanLimit && (
+                <Tooltip title={`Scan Limit: ${scanLimitValue}`}
+                >
                   <div className="p-1.5 bg-blue-100 rounded-full">
                     <Target size={12} className="text-blue-600" />
                   </div>
