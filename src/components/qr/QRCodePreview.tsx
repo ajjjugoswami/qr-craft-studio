@@ -34,6 +34,116 @@ const gradientDirectionMap = {
   'to-top-right': '45deg',
 };
 
+// Separate component for QR-only rendering (no template)
+const QROnlyPreview = forwardRef<HTMLDivElement, { content: string; styling: QRStyling; compact?: boolean; qrId?: string; qrType?: QRType }>(
+  ({ content, styling, compact = false, qrId, qrType = 'url' }, ref) => {
+    const qrRef = useRef<HTMLDivElement>(null);
+    const qrCode = useRef<QRCodeStyling | null>(null);
+    const qrOnlySize = compact ? 48 : styling.size > 200 ? 200 : styling.size;
+
+    const safeStyling = useMemo(() => ({
+      ...styling,
+      imageOptions: styling.imageOptions || {
+        hideBackgroundDots: true,
+        imageSize: 0.4,
+        margin: 0,
+      },
+      cornersSquareOptions: styling.cornersSquareOptions || {
+        color: styling.fgColor,
+        type: 'square',
+      },
+      cornersDotOptions: styling.cornersDotOptions || {
+        color: styling.fgColor,
+        type: 'square',
+      },
+    }), [styling]);
+
+    const getQRData = () => {
+      try {
+        if (DIRECT_CONTENT_TYPES.includes(qrType)) {
+          return content || 'https://example.com';
+        }
+        if (typeof window !== 'undefined') {
+          if (typeof content === 'string' && qrId) {
+            return `${getAppOrigin()}/r/${qrId}`;
+          }
+          if (typeof content === 'string') {
+            return `${getAppOrigin()}/r?u=${encodeURIComponent(content)}`;
+          }
+        }
+        return content || 'https://example.com';
+      } catch (e) {
+        return content || 'https://example.com';
+      }
+    };
+
+    useEffect(() => {
+      if (qrRef.current) {
+        const hasLogo = !!safeStyling.image;
+        const errorLevel = hasLogo ? 'H' : safeStyling.level;
+        const logoSize = hasLogo ? Math.min(safeStyling.imageOptions?.imageSize || 0.4, 0.25) : (safeStyling.imageOptions?.imageSize || 0.4);
+        
+        const options = {
+          width: qrOnlySize,
+          height: qrOnlySize,
+          data: getQRData(),
+          type: 'svg' as const,
+          margin: safeStyling.includeMargin ? 4 : 0,
+          qrOptions: {
+            errorCorrectionLevel: errorLevel,
+          },
+          dotsOptions: {
+            color: safeStyling.fgColor,
+            type: safeStyling.dotsType,
+            ...(safeStyling.dotsGradient && { gradient: safeStyling.dotsGradient }),
+          },
+          backgroundOptions: {
+            color: safeStyling.bgColor,
+            ...(safeStyling.backgroundGradient && { gradient: safeStyling.backgroundGradient }),
+          },
+          cornersSquareOptions: safeStyling.cornersSquareOptions ? {
+            color: safeStyling.cornersSquareOptions.color ?? safeStyling.fgColor,
+            type: safeStyling.cornersSquareOptions.type ?? 'square',
+            ...(safeStyling.cornersSquareOptions.gradient && { gradient: safeStyling.cornersSquareOptions.gradient }),
+          } : undefined,
+          cornersDotOptions: safeStyling.cornersDotOptions ? {
+            color: safeStyling.cornersDotOptions.color ?? safeStyling.fgColor,
+            type: safeStyling.cornersDotOptions.type ?? 'square',
+            ...(safeStyling.cornersDotOptions.gradient && { gradient: safeStyling.cornersDotOptions.gradient }),
+          } : undefined,
+          imageOptions: safeStyling.imageOptions ? {
+            hideBackgroundDots: true,
+            imageSize: logoSize,
+            margin: safeStyling.imageOptions.margin ?? 2,
+          } : undefined,
+          image: safeStyling.image,
+          shape: safeStyling.shape,
+        };
+
+        qrRef.current.innerHTML = '';
+        qrCode.current = new QRCodeStyling(options);
+        qrCode.current.append(qrRef.current);
+      }
+    }, [content, safeStyling, qrId, qrOnlySize, qrType]);
+
+    return (
+      <div ref={ref} className="flex items-center justify-center p-4">
+        <div
+          className="rounded-lg"
+          style={{ 
+            backgroundColor: styling.bgColor,
+            padding: compact ? 8 : 16,
+          }}
+        >
+          <div ref={qrRef} />
+        </div>
+      </div>
+    );
+  }
+);
+
+QROnlyPreview.displayName = 'QROnlyPreview';
+
 const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   content,
   template,
@@ -68,22 +178,9 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
     },
   }), [styling]);
 
-  // If template is null, render QR only
+  // If template is null, render QR only using separate component
   if (!template) {
-    const qrOnlySize = compact ? 48 : styling.size > 200 ? 200 : styling.size;
-    return (
-      <div ref={ref} className="flex items-center justify-center p-4">
-        <div
-          className="rounded-lg"
-          style={{ 
-            backgroundColor: styling.bgColor,
-            padding: compact ? 8 : 16,
-          }}
-        >
-          <div ref={qrRef} />
-        </div>
-      </div>
-    );
+    return <QROnlyPreview ref={ref} content={content} styling={styling} compact={compact} qrId={qrId} qrType={qrType} />;
   }
 
   const isHorizontal = template.qrPosition === 'left' || template.qrPosition === 'right';
