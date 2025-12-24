@@ -14,10 +14,11 @@ interface TemplateSelectorProps {
 const categories = [
   { value: 'all', label: 'All' },
   { value: 'professional', label: 'Professional' },
+  { value: 'social', label: 'Social' },
+  { value: 'restaurant', label: 'Restaurant' },
   { value: 'vibrant', label: 'Vibrant' },
   { value: 'minimal', label: 'Minimal' },
   { value: 'luxury', label: 'Luxury' },
-  { value: 'social', label: 'Social' },
   { value: 'themed', label: 'Themed' },
 ];
 
@@ -25,6 +26,23 @@ const getCategoryForTemplate = (template: QRTemplate): string => {
   const name = template.name.toLowerCase();
   const id = template.id.toLowerCase();
   
+  // Social media templates
+  if (id.includes('instagram') || id.includes('facebook') || id.includes('youtube') || 
+      id.includes('tiktok') || id.includes('linkedin') || id.includes('whatsapp') ||
+      id.includes('twitter') || id.includes('pinterest') || id.includes('social-follow')) return 'social';
+  
+  // Restaurant templates
+  if (id.includes('restaurant') || id.includes('bistro') || id.includes('cafe') || 
+      id.includes('sushi') || id.includes('pizzeria') || id.includes('foodtruck') ||
+      id.includes('bar') || name.includes('menu') || name.includes('café')) return 'restaurant';
+  
+  // Professional templates
+  if (id.includes('professional') || id.includes('corporate') || id.includes('lawfirm') ||
+      id.includes('medical') || id.includes('realestate') || id.includes('consulting') ||
+      id.includes('techstartup') || id.includes('fitness') || id.includes('beauty') ||
+      id.includes('photography') || id.includes('business-card')) return 'professional';
+  
+  // Themed templates
   if (id.includes('tech-cyber') || id.includes('podcast-episode') || id.includes('product-launch-tech') || 
       id.includes('download-app') || id.includes('artisan-guild') || id.includes('velvet-lounge') ||
       id.includes('cosmic') || id.includes('dragon') || id.includes('silk-sage') || 
@@ -33,8 +51,6 @@ const getCategoryForTemplate = (template: QRTemplate): string => {
   if (name.includes('luxury') || name.includes('premium') || name.includes('gold') || name.includes('wine')) return 'luxury';
   if (name.includes('neon') || name.includes('sunset') || name.includes('aurora') || name.includes('party') || name.includes('ocean wave')) return 'vibrant';
   if (name.includes('minimal') || name.includes('elegant') || name.includes('white') || name.includes('slate')) return 'minimal';
-  if (name.includes('instagram') || name.includes('youtube') || name.includes('social')) return 'social';
-  if (name.includes('corporate') || name.includes('professional') || name.includes('business') || name.includes('tech') || name.includes('café') || name.includes('cafe')) return 'professional';
   
   return 'professional';
 };
