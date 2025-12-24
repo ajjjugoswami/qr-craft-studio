@@ -2,11 +2,9 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   QrCode, 
   Sparkles, 
-  Download, 
   ArrowRight, 
   Link as LinkIcon, 
   Phone, 
@@ -31,38 +29,24 @@ import {
   MessageCircle,
   CreditCard,
   Crown,
-  Check
+  Check,
+  Star,
+  Play,
+  ChevronRight,
+  Menu,
+  X
 } from 'lucide-react';
 import FreeQRGenerator from './components/FreeQRGenerator';
 
 const LandingPage = () => {
-  const [activeTab, setActiveTab] = useState('generator');
+  const [showGenerator, setShowGenerator] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const features = [
-    {
-      icon: <Palette className="h-6 w-6" />,
-      title: 'Custom Styling',
-      description: 'Choose colors, patterns, and shapes for your QR codes',
-      premium: false
-    },
-    {
-      icon: <Download className="h-6 w-6" />,
-      title: 'Download Options',
-      description: 'Export in PNG, SVG, or PDF formats',
-      premium: false
-    },
-    {
-      icon: <BarChart3 className="h-6 w-6" />,
-      title: 'Analytics & Tracking',
-      description: 'Track scans, locations, and device types',
-      premium: true
-    },
-    {
-      icon: <Lock className="h-6 w-6" />,
-      title: 'Dynamic QR Codes',
-      description: 'Edit destination URL anytime without reprinting',
-      premium: true
-    }
+  const stats = [
+    { value: '50K+', label: 'QR Codes Created' },
+    { value: '10K+', label: 'Happy Users' },
+    { value: '99.9%', label: 'Uptime' },
+    { value: '24/7', label: 'Support' }
   ];
 
   const qrTypes = [
@@ -82,52 +66,67 @@ const LandingPage = () => {
 
   const premiumFeatures = [
     {
-      icon: <Image className="h-8 w-8" />,
+      icon: <Image className="h-7 w-7" />,
       title: 'Logo Upload',
-      description: 'Add your brand logo to the center of QR codes',
-      badge: 'Pro'
+      description: 'Brand your QR codes with custom logos',
+      gradient: 'from-violet-500 to-purple-600'
     },
     {
-      icon: <Sparkles className="h-8 w-8" />,
+      icon: <Sparkles className="h-7 w-7" />,
       title: '50+ Templates',
-      description: 'Professional designs for every industry and use case',
-      badge: 'Pro'
+      description: 'Professional designs for every use case',
+      gradient: 'from-amber-500 to-orange-600'
     },
     {
-      icon: <BarChart3 className="h-8 w-8" />,
-      title: 'Scan Analytics',
-      description: 'Track scans by location, device, browser, and time',
-      badge: 'Pro'
+      icon: <BarChart3 className="h-7 w-7" />,
+      title: 'Advanced Analytics',
+      description: 'Track scans, locations & devices',
+      gradient: 'from-emerald-500 to-teal-600'
     },
     {
-      icon: <Zap className="h-8 w-8" />,
+      icon: <Zap className="h-7 w-7" />,
       title: 'Dynamic QR Codes',
-      description: 'Change destination anytime without reprinting',
-      badge: 'Pro'
+      description: 'Update destination anytime',
+      gradient: 'from-blue-500 to-cyan-600'
     },
     {
-      icon: <Shield className="h-8 w-8" />,
+      icon: <Shield className="h-7 w-7" />,
       title: 'Password Protection',
-      description: 'Secure your QR codes with password access',
-      badge: 'Pro'
+      description: 'Secure access to your content',
+      gradient: 'from-rose-500 to-pink-600'
     },
     {
-      icon: <Clock className="h-8 w-8" />,
-      title: 'Expiration Dates',
-      description: 'Set auto-expire dates and scan limits',
-      badge: 'Pro'
+      icon: <Clock className="h-7 w-7" />,
+      title: 'Expiration Control',
+      description: 'Set dates and scan limits',
+      gradient: 'from-indigo-500 to-violet-600'
+    }
+  ];
+
+  const testimonials = [
+    {
+      name: 'Sarah Johnson',
+      role: 'Marketing Director',
+      company: 'TechCorp',
+      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
+      content: 'QR Studio transformed how we engage customers. The analytics are invaluable.',
+      rating: 5
     },
     {
-      icon: <Globe className="h-8 w-8" />,
-      title: 'Bulk Generation',
-      description: 'Create multiple QR codes at once with CSV import',
-      badge: 'Business'
+      name: 'Michael Chen',
+      role: 'Restaurant Owner',
+      company: 'Fusion Kitchen',
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+      content: 'Our contactless menu QR codes look professional and customers love them.',
+      rating: 5
     },
     {
-      icon: <Users className="h-8 w-8" />,
-      title: 'Team Collaboration',
-      description: 'Share and manage QR codes with your team',
-      badge: 'Business'
+      name: 'Emily Rodriguez',
+      role: 'Event Planner',
+      company: 'Elite Events',
+      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
+      content: 'The templates are stunning. Makes creating event QR codes so easy!',
+      rating: 5
     }
   ];
 
@@ -135,20 +134,25 @@ const LandingPage = () => {
     {
       name: 'Free',
       price: '$0',
+      period: 'forever',
+      description: 'Perfect for getting started',
       features: [
         { text: '4 QR code types', included: true },
         { text: 'Basic styling options', included: true },
-        { text: 'PNG download only', included: true },
+        { text: 'PNG download', included: true },
         { text: 'Limited templates', included: true },
-        { text: 'No analytics', included: false },
-        { text: 'No logo upload', included: false },
-        { text: 'Static QR only', included: false }
-      ]
+        { text: 'Analytics dashboard', included: false },
+        { text: 'Logo upload', included: false },
+        { text: 'Dynamic QR codes', included: false }
+      ],
+      cta: 'Get Started Free'
     },
     {
       name: 'Pro',
-      price: '$9.99',
+      price: '$12',
+      period: '/month',
       popular: true,
+      description: 'Best for professionals',
       features: [
         { text: 'All 12 QR code types', included: true },
         { text: 'Advanced styling', included: true },
@@ -157,240 +161,436 @@ const LandingPage = () => {
         { text: 'Full analytics dashboard', included: true },
         { text: 'Logo upload', included: true },
         { text: 'Dynamic QR codes', included: true }
-      ]
+      ],
+      cta: 'Start Pro Trial'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
+      {/* Floating gradient orbs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-violet-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-20 w-60 h-60 bg-cyan-500/10 rounded-full blur-3xl" />
+      </div>
+
       {/* Header */}
-      <header className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <QrCode className="h-5 w-5 text-primary-foreground" />
+      <header className="relative z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl sticky top-0">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="h-20 flex items-center justify-between">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="relative">
+                <img 
+                  src="/logo.png" 
+                  alt="QR Studio" 
+                  className="h-10 w-10 object-contain transition-transform group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+              <span className="font-bold text-2xl tracking-tight font-montserrat">
+                QR<span className="text-primary">Studio</span>
+              </span>
+            </Link>
+
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex items-center gap-8">
+              <button 
+                onClick={() => setShowGenerator(true)}
+                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+              >
+                Generator
+              </button>
+              <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+                Features
+              </a>
+              <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+                Pricing
+              </a>
+            </nav>
+
+            {/* CTA Buttons */}
+            <div className="hidden md:flex items-center gap-4">
+              <Link to="/sign-in">
+                <Button variant="ghost" size="sm" className="font-medium">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button size="sm" className="font-medium shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow">
+                  Get Started Free
+                </Button>
+              </Link>
             </div>
-            <span className="font-bold text-xl">QR Studio</span>
+
+            {/* Mobile Menu Button */}
+            <button 
+              className="md:hidden p-2 hover:bg-muted rounded-lg transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
-          <div className="flex items-center gap-3">
-            <Link to="/sign-in">
-              <Button variant="ghost" size="sm">Sign In</Button>
-            </Link>
-            <Link to="/signup">
-              <Button size="sm" className="gap-2">
-                Get Started <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden py-4 border-t border-border/40 animate-fade-in">
+              <nav className="flex flex-col gap-2">
+                <button 
+                  onClick={() => { setShowGenerator(true); setMobileMenuOpen(false); }}
+                  className="px-4 py-3 text-left hover:bg-muted rounded-lg transition-colors font-medium"
+                >
+                  Generator
+                </button>
+                <a href="#features" className="px-4 py-3 hover:bg-muted rounded-lg transition-colors font-medium">
+                  Features
+                </a>
+                <a href="#pricing" className="px-4 py-3 hover:bg-muted rounded-lg transition-colors font-medium">
+                  Pricing
+                </a>
+                <div className="flex gap-2 px-4 pt-2">
+                  <Link to="/sign-in" className="flex-1">
+                    <Button variant="outline" className="w-full">Sign In</Button>
+                  </Link>
+                  <Link to="/signup" className="flex-1">
+                    <Button className="w-full">Get Started</Button>
+                  </Link>
+                </div>
+              </nav>
+            </div>
+          )}
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-12 md:py-20">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6 animate-fade-in">
-            <Sparkles className="h-4 w-4" />
-            Free QR Code Generator
-          </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-            Create Beautiful
-            <span className="text-primary block">QR Codes Instantly</span>
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Generate custom QR codes for your business, events, or personal use. 
-            No signup required for basic features.
-          </p>
-        </div>
-
-        {/* Main Content Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-5xl mx-auto">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
-            <TabsTrigger value="generator" className="gap-2">
-              <QrCode className="h-4 w-4" />
-              Create QR Code
-            </TabsTrigger>
-            <TabsTrigger value="features" className="gap-2">
+      <section className="relative pt-16 pb-24 lg:pt-24 lg:pb-32">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="max-w-5xl mx-auto text-center">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 via-violet-500/10 to-primary/10 border border-primary/20 text-primary px-5 py-2.5 rounded-full text-sm font-semibold mb-8 animate-fade-in">
               <Sparkles className="h-4 w-4" />
-              Features
-            </TabsTrigger>
-          </TabsList>
+              <span>Trusted by 10,000+ businesses worldwide</span>
+            </div>
 
-          <TabsContent value="generator" className="mt-0">
-            <FreeQRGenerator />
-          </TabsContent>
+            {/* Main Headline */}
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 font-montserrat leading-[1.1]">
+              Create Stunning
+              <span className="block bg-gradient-to-r from-primary via-violet-500 to-primary bg-clip-text text-transparent">
+                QR Codes in Seconds
+              </span>
+            </h1>
 
-          <TabsContent value="features" className="mt-0">
-            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              {features.map((feature, index) => (
-                <Card key={index} className="p-6 relative overflow-hidden hover-scale">
-                  {feature.premium && (
-                    <div className="absolute top-3 right-3 bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
-                      <Lock className="h-3 w-3" />
-                      Pro
-                    </div>
-                  )}
-                  <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-4">
-                    {feature.icon}
+            {/* Subheadline */}
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed">
+              Design beautiful, trackable QR codes with custom colors, logos, and templates. 
+              Perfect for marketing, events, and business.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+              <Button 
+                size="lg" 
+                className="text-lg px-8 py-6 shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all font-semibold gap-2 group"
+                onClick={() => setShowGenerator(true)}
+              >
+                Create Free QR Code
+                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              <Link to="/signup">
+                <Button size="lg" variant="outline" className="text-lg px-8 py-6 font-semibold gap-2 group w-full sm:w-auto">
+                  <Play className="h-5 w-5" />
+                  See How It Works
+                </Button>
+              </Link>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto">
+              {stats.map((stat, index) => (
+                <div key={index} className="text-center">
+                  <div className="text-3xl md:text-4xl font-bold text-foreground mb-1 font-montserrat">
+                    {stat.value}
                   </div>
-                  <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
-                  <p className="text-muted-foreground">{feature.description}</p>
-                </Card>
+                  <div className="text-sm text-muted-foreground font-medium">
+                    {stat.label}
+                  </div>
+                </div>
               ))}
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </div>
+
+        {/* Decorative Elements */}
+        <div className="absolute left-8 top-1/2 -translate-y-1/2 hidden xl:block">
+          <div className="flex flex-col gap-3">
+            {[...Array(5)].map((_, i) => (
+              <div 
+                key={i} 
+                className="w-2 h-2 rounded-full bg-primary/30"
+                style={{ opacity: 1 - i * 0.15 }}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden xl:block">
+          <div className="flex flex-col gap-3">
+            {[...Array(5)].map((_, i) => (
+              <div 
+                key={i} 
+                className="w-2 h-2 rounded-full bg-violet-500/30"
+                style={{ opacity: 1 - i * 0.15 }}
+              />
+            ))}
+          </div>
+        </div>
       </section>
 
+      {/* Generator Section (Collapsible) */}
+      {showGenerator && (
+        <section className="py-16 bg-muted/30 border-y border-border/40">
+          <div className="container mx-auto px-4 lg:px-8">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold font-montserrat">
+                Free QR Generator
+              </h2>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setShowGenerator(false)}
+              >
+                <X className="h-4 w-4 mr-2" />
+                Close
+              </Button>
+            </div>
+            <FreeQRGenerator />
+          </div>
+        </section>
+      )}
+
       {/* QR Types Section */}
-      <section className="bg-muted/30 py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-4">
-            Supported QR Code Types
-          </h2>
-          <p className="text-muted-foreground text-center mb-10 max-w-xl mx-auto">
-            Create QR codes for various purposes. Free users get access to basic types.
-          </p>
-          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 max-w-5xl mx-auto">
+      <section className="py-20 lg:py-28">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 bg-muted px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <QrCode className="h-4 w-4 text-primary" />
+              <span>12 QR Code Types</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-montserrat">
+              One Tool, Endless Possibilities
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Create QR codes for websites, contact cards, WiFi networks, social media, and more.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-4 max-w-5xl mx-auto">
             {qrTypes.map((type, index) => (
               <Card 
                 key={index} 
-                className={`p-4 text-center relative transition-all duration-200 ${
-                  !type.free 
-                    ? 'opacity-60 bg-muted/50' 
-                    : 'hover:shadow-md hover:border-primary/30'
+                className={`p-5 text-center relative transition-all duration-300 group cursor-pointer ${
+                  type.free 
+                    ? 'hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 hover:border-primary/30' 
+                    : 'bg-muted/30'
                 }`}
               >
                 {!type.free && (
-                  <div className="absolute -top-1 -right-1 bg-primary text-primary-foreground h-5 w-5 rounded-full flex items-center justify-center">
-                    <Lock className="h-3 w-3" />
+                  <div className="absolute -top-2 -right-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white h-6 w-6 rounded-full flex items-center justify-center shadow-lg">
+                    <Crown className="h-3 w-3" />
                   </div>
                 )}
-                <div className={`h-10 w-10 rounded-lg flex items-center justify-center mx-auto mb-2 ${
+                <div className={`h-12 w-12 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all ${
                   type.free 
-                    ? 'bg-primary/10 text-primary' 
+                    ? 'bg-gradient-to-br from-primary/10 to-violet-500/10 text-primary group-hover:scale-110' 
                     : 'bg-muted text-muted-foreground'
                 }`}>
                   {type.icon}
                 </div>
-                <span className="text-sm font-medium">{type.label}</span>
+                <span className="text-sm font-semibold">{type.label}</span>
+                {type.free && (
+                  <span className="block text-xs text-primary mt-1 font-medium">Free</span>
+                )}
               </Card>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Premium Features Grid */}
-      <section className="py-16 container mx-auto px-4">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-amber-500/10 text-amber-600 px-4 py-2 rounded-full text-sm font-medium mb-4">
-            <Crown className="h-4 w-4" />
-            Premium Features
-          </div>
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Unlock the Full Potential
-          </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            Sign up to access advanced features that help you create professional QR codes.
-          </p>
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {premiumFeatures.map((feature, index) => (
-            <Card 
-              key={index} 
-              className="p-6 relative overflow-hidden group hover:shadow-lg transition-all duration-300 border-2 border-transparent hover:border-primary/20"
-            >
-              {/* Locked overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
-              {/* Badge */}
-              <div className={`absolute top-3 right-3 text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1 ${
-                feature.badge === 'Business' 
-                  ? 'bg-purple-500/10 text-purple-600' 
-                  : 'bg-primary/10 text-primary'
-              }`}>
-                <Lock className="h-3 w-3" />
-                {feature.badge}
-              </div>
-
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary mb-4">
-                {feature.icon}
-              </div>
-              <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
-              <p className="text-sm text-muted-foreground">{feature.description}</p>
-
-              {/* Unlock button on hover */}
-              <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <Link to="/signup">
-                  <Button size="sm" className="w-full gap-1">
-                    <Lock className="h-3 w-3" />
-                    Unlock Feature
-                  </Button>
-                </Link>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* Pricing Comparison */}
-      <section className="bg-muted/30 py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              Simple, Transparent Pricing
+      {/* Features Section */}
+      <section id="features" className="py-20 lg:py-28 bg-gradient-to-b from-muted/30 via-muted/50 to-muted/30">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/10 to-orange-500/10 text-amber-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+              <Crown className="h-4 w-4" />
+              <span>Pro Features</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-montserrat">
+              Powerful Features for
+              <span className="block text-primary">Professional Results</span>
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              Start free and upgrade when you need more power.
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Unlock advanced tools to create, track, and optimize your QR code campaigns.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {premiumFeatures.map((feature, index) => (
+              <Card 
+                key={index} 
+                className="p-8 relative overflow-hidden group hover:shadow-2xl transition-all duration-500 border-2 border-transparent hover:border-primary/20"
+              >
+                {/* Gradient background on hover */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+                
+                {/* Lock badge */}
+                <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 text-amber-600 text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <Lock className="h-3 w-3" />
+                  Pro
+                </div>
+
+                {/* Icon */}
+                <div className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                  {feature.icon}
+                </div>
+
+                <h3 className="font-bold text-xl mb-3 font-montserrat">{feature.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+
+                {/* Hover CTA */}
+                <div className="mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Link to="/signup">
+                    <Button variant="outline" size="sm" className="gap-2 w-full">
+                      Unlock Feature <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 lg:py-28">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+              <Star className="h-4 w-4 fill-current" />
+              <span>Customer Reviews</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-montserrat">
+              Loved by Thousands
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              See what our customers have to say about QR Studio.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="p-8 relative group hover:shadow-xl transition-all duration-300">
+                {/* Rating */}
+                <div className="flex gap-1 mb-6">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+
+                {/* Content */}
+                <p className="text-foreground mb-8 leading-relaxed text-lg">
+                  "{testimonial.content}"
+                </p>
+
+                {/* Author */}
+                <div className="flex items-center gap-4">
+                  <img 
+                    src={testimonial.image} 
+                    alt={testimonial.name}
+                    className="h-12 w-12 rounded-full object-cover ring-2 ring-primary/10"
+                  />
+                  <div>
+                    <div className="font-semibold">{testimonial.name}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {testimonial.role}, {testimonial.company}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 lg:py-28 bg-gradient-to-b from-muted/30 to-background">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold mb-4">
+              <Zap className="h-4 w-4" />
+              <span>Simple Pricing</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-montserrat">
+              Start Free, Upgrade Anytime
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              No hidden fees. Cancel anytime. Start creating beautiful QR codes today.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {comparisonPlans.map((plan, index) => (
               <Card 
                 key={index} 
-                className={`p-6 relative ${
+                className={`p-8 relative transition-all duration-300 ${
                   plan.popular 
-                    ? 'border-2 border-primary shadow-lg' 
-                    : ''
+                    ? 'border-2 border-primary shadow-2xl shadow-primary/20 scale-[1.02]' 
+                    : 'hover:shadow-lg'
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-medium px-3 py-1 rounded-full">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary to-violet-500 text-white text-sm font-semibold px-6 py-2 rounded-full shadow-lg">
                     Most Popular
                   </div>
                 )}
-                <div className="text-center mb-6">
-                  <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
-                  <div className="text-3xl font-bold">
-                    {plan.price}
-                    {plan.price !== '$0' && <span className="text-sm font-normal text-muted-foreground">/month</span>}
+
+                <div className="text-center mb-8 pt-4">
+                  <h3 className="text-2xl font-bold mb-2 font-montserrat">{plan.name}</h3>
+                  <p className="text-muted-foreground mb-4">{plan.description}</p>
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-5xl font-bold font-montserrat">{plan.price}</span>
+                    <span className="text-muted-foreground">{plan.period}</span>
                   </div>
                 </div>
-                <ul className="space-y-3 mb-6">
+
+                <ul className="space-y-4 mb-8">
                   {plan.features.map((feature, fIndex) => (
                     <li key={fIndex} className="flex items-center gap-3">
                       {feature.included ? (
-                        <div className="h-5 w-5 rounded-full bg-green-500/10 flex items-center justify-center">
-                          <Check className="h-3 w-3 text-green-600" />
+                        <div className="h-6 w-6 rounded-full bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                          <Check className="h-4 w-4 text-emerald-600" />
                         </div>
                       ) : (
-                        <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center">
-                          <Lock className="h-3 w-3 text-muted-foreground" />
+                        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                          <X className="h-4 w-4 text-muted-foreground" />
                         </div>
                       )}
-                      <span className={feature.included ? '' : 'text-muted-foreground'}>
+                      <span className={`${feature.included ? 'text-foreground' : 'text-muted-foreground'}`}>
                         {feature.text}
                       </span>
                     </li>
                   ))}
                 </ul>
-                <Link to={plan.popular ? '/signup' : '#'}>
+
+                <Link to="/signup" className="block">
                   <Button 
-                    className="w-full" 
+                    className={`w-full py-6 text-lg font-semibold ${
+                      plan.popular 
+                        ? 'shadow-lg shadow-primary/25' 
+                        : ''
+                    }`}
                     variant={plan.popular ? 'default' : 'outline'}
                   >
-                    {plan.popular ? 'Get Started' : 'Current Plan'}
+                    {plan.cta}
                   </Button>
                 </Link>
               </Card>
@@ -399,42 +599,89 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="container mx-auto px-4 py-16">
-        <Card className="max-w-4xl mx-auto p-8 md:p-12 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground text-center overflow-hidden relative">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRoLTJ2LTRoMnY0em0wLThoLTJ2LTRoMnY0em0tOCA4aC0ydi00aDJ2NHptMC04aC0ydi00aDJ2NHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30" />
-          <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <Smartphone className="h-4 w-4" />
-              Join 10,000+ users
+      {/* Final CTA Section */}
+      <section className="py-20 lg:py-28">
+        <div className="container mx-auto px-4 lg:px-8">
+          <Card className="max-w-5xl mx-auto overflow-hidden relative">
+            {/* Background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary via-violet-500 to-primary" />
+            
+            {/* Pattern overlay */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute inset-0" style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+              }} />
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">
-              Ready to Create Professional QR Codes?
-            </h2>
-            <p className="text-primary-foreground/80 mb-8 max-w-xl mx-auto">
-              Sign up for free to access dynamic QR codes, analytics, unlimited templates, 
-              and advanced customization options.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/signup">
-                <Button size="lg" variant="secondary" className="gap-2 w-full sm:w-auto">
-                  Create Free Account <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link to="/sign-in">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10">
-                  Sign In
-                </Button>
-              </Link>
+
+            <div className="relative z-10 p-12 md:p-16 text-center text-white">
+              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-2.5 rounded-full text-sm font-semibold mb-8">
+                <Smartphone className="h-4 w-4" />
+                <span>Join 10,000+ happy users</span>
+              </div>
+
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-montserrat">
+                Ready to Create Amazing QR Codes?
+              </h2>
+
+              <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
+                Start for free today. No credit card required. Upgrade anytime.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link to="/signup">
+                  <Button size="lg" variant="secondary" className="text-lg px-10 py-6 font-semibold gap-2 group shadow-xl w-full sm:w-auto">
+                    Get Started Free
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+                <Link to="/sign-in">
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="text-lg px-10 py-6 font-semibold border-white/30 text-white hover:bg-white/10 w-full sm:w-auto"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-8">
-        <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
-          <p>© 2024 QR Studio. Create beautiful QR codes for free.</p>
+      <footer className="border-t border-border py-12 bg-muted/20">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            {/* Logo */}
+            <div className="flex items-center gap-3">
+              <img src="/logo.png" alt="QR Studio" className="h-8 w-8 object-contain" />
+              <span className="font-bold text-xl font-montserrat">
+                QR<span className="text-primary">Studio</span>
+              </span>
+            </div>
+
+            {/* Links */}
+            <nav className="flex items-center gap-8 text-sm">
+              <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
+                Features
+              </a>
+              <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+                Pricing
+              </a>
+              <Link to="/faqs" className="text-muted-foreground hover:text-foreground transition-colors">
+                FAQs
+              </Link>
+              <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
+                Contact
+              </Link>
+            </nav>
+
+            {/* Copyright */}
+            <p className="text-sm text-muted-foreground">
+              © 2024 QR Studio. All rights reserved.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
