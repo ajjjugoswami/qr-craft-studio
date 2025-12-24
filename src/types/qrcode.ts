@@ -564,6 +564,883 @@ export const designTemplates: DesignTemplate[] = [
       }
     } 
   },
+  // ===== INSTAGRAM GRADIENT =====
+  { 
+    id: 'instagram-gradient', 
+    name: 'Instagram Vibe', 
+    category: 'vibrant', 
+    icon: 'heart', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#e1306c', 
+      bgColor: '#ffffff', 
+      dotsType: 'extra-rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 45,
+        colorStops: [
+          { offset: 0, color: '#833ab4' },
+          { offset: 0.5, color: '#e1306c' },
+          { offset: 1, color: '#fcaf45' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#833ab4', 
+        type: 'extra-rounded',
+        gradient: {
+          type: 'linear',
+          rotation: 135,
+          colorStops: [
+            { offset: 0, color: '#833ab4' },
+            { offset: 1, color: '#fd1d1d' }
+          ]
+        }
+      },
+      cornersDotOptions: { 
+        color: '#fcaf45', 
+        type: 'dot',
+        gradient: {
+          type: 'radial',
+          colorStops: [
+            { offset: 0, color: '#fcaf45' },
+            { offset: 1, color: '#e1306c' }
+          ]
+        }
+      }
+    } 
+  },
+  // ===== OCEAN BREEZE =====
+  { 
+    id: 'ocean-breeze', 
+    name: 'Ocean Breeze', 
+    category: 'creative', 
+    icon: 'waves', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#0891b2', 
+      bgColor: '#ecfeff', 
+      dotsType: 'rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 180,
+        colorStops: [
+          { offset: 0, color: '#06b6d4' },
+          { offset: 0.5, color: '#0891b2' },
+          { offset: 1, color: '#0e7490' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#0e7490', 
+        type: 'rounded',
+        gradient: {
+          type: 'linear',
+          rotation: 45,
+          colorStops: [
+            { offset: 0, color: '#06b6d4' },
+            { offset: 1, color: '#0369a1' }
+          ]
+        }
+      }
+    } 
+  },
+  // ===== AURORA BOREALIS =====
+  { 
+    id: 'aurora-borealis', 
+    name: 'Aurora Borealis', 
+    category: 'vibrant', 
+    icon: 'sparkles', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#22c55e', 
+      bgColor: '#0f172a', 
+      dotsType: 'dots', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 135,
+        colorStops: [
+          { offset: 0, color: '#22c55e' },
+          { offset: 0.3, color: '#06b6d4' },
+          { offset: 0.6, color: '#8b5cf6' },
+          { offset: 1, color: '#ec4899' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#22c55e', 
+        type: 'extra-rounded',
+        gradient: {
+          type: 'linear',
+          rotation: 90,
+          colorStops: [
+            { offset: 0, color: '#22c55e' },
+            { offset: 1, color: '#06b6d4' }
+          ]
+        }
+      }
+    } 
+  },
+  // ===== ROSE GOLD =====
+  { 
+    id: 'rose-gold', 
+    name: 'Rose Gold', 
+    category: 'creative', 
+    icon: 'heart', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#be185d', 
+      bgColor: '#fdf2f8', 
+      dotsType: 'classy-rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 45,
+        colorStops: [
+          { offset: 0, color: '#be185d' },
+          { offset: 0.5, color: '#db2777' },
+          { offset: 1, color: '#f472b6' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#be185d', 
+        type: 'classy-rounded',
+        gradient: {
+          type: 'radial',
+          colorStops: [
+            { offset: 0, color: '#db2777' },
+            { offset: 1, color: '#9d174d' }
+          ]
+        }
+      }
+    } 
+  },
+  // ===== MIDNIGHT PURPLE =====
+  { 
+    id: 'midnight-purple', 
+    name: 'Midnight Purple', 
+    category: 'vibrant', 
+    icon: 'star', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#a855f7', 
+      bgColor: '#1e1b4b', 
+      dotsType: 'rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 135,
+        colorStops: [
+          { offset: 0, color: '#c084fc' },
+          { offset: 0.5, color: '#a855f7' },
+          { offset: 1, color: '#7c3aed' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#a855f7', 
+        type: 'extra-rounded',
+        gradient: {
+          type: 'linear',
+          rotation: 45,
+          colorStops: [
+            { offset: 0, color: '#c084fc' },
+            { offset: 1, color: '#6d28d9' }
+          ]
+        }
+      },
+      cornersDotOptions: { 
+        color: '#c084fc', 
+        type: 'dot'
+      }
+    } 
+  },
+  // ===== EMERALD SHINE =====
+  { 
+    id: 'emerald-shine', 
+    name: 'Emerald Shine', 
+    category: 'creative', 
+    icon: 'diamond', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#059669', 
+      bgColor: '#ffffff', 
+      dotsType: 'classy', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 90,
+        colorStops: [
+          { offset: 0, color: '#10b981' },
+          { offset: 0.5, color: '#059669' },
+          { offset: 1, color: '#047857' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#059669', 
+        type: 'classy',
+        gradient: {
+          type: 'radial',
+          colorStops: [
+            { offset: 0, color: '#10b981' },
+            { offset: 1, color: '#065f46' }
+          ]
+        }
+      }
+    } 
+  },
+  // ===== FIRE STORM =====
+  { 
+    id: 'fire-storm', 
+    name: 'Fire Storm', 
+    category: 'vibrant', 
+    icon: 'fire', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#dc2626', 
+      bgColor: '#0a0a0a', 
+      dotsType: 'extra-rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 180,
+        colorStops: [
+          { offset: 0, color: '#fbbf24' },
+          { offset: 0.4, color: '#f97316' },
+          { offset: 0.7, color: '#ef4444' },
+          { offset: 1, color: '#dc2626' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#f97316', 
+        type: 'rounded',
+        gradient: {
+          type: 'linear',
+          rotation: 45,
+          colorStops: [
+            { offset: 0, color: '#fbbf24' },
+            { offset: 1, color: '#dc2626' }
+          ]
+        }
+      }
+    } 
+  },
+  // ===== MATRIX GREEN =====
+  { 
+    id: 'matrix-green', 
+    name: 'Matrix Code', 
+    category: 'creative', 
+    icon: 'cpu', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#22c55e', 
+      bgColor: '#000000', 
+      dotsType: 'square', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 180,
+        colorStops: [
+          { offset: 0, color: '#4ade80' },
+          { offset: 0.5, color: '#22c55e' },
+          { offset: 1, color: '#16a34a' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#22c55e', 
+        type: 'square',
+        gradient: {
+          type: 'linear',
+          rotation: 0,
+          colorStops: [
+            { offset: 0, color: '#4ade80' },
+            { offset: 1, color: '#15803d' }
+          ]
+        }
+      }
+    } 
+  },
+  // ===== CYBER BLUE =====
+  { 
+    id: 'cyber-blue', 
+    name: 'Cyber Blue', 
+    category: 'business', 
+    icon: 'bolt', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#3b82f6', 
+      bgColor: '#020617', 
+      dotsType: 'rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 135,
+        colorStops: [
+          { offset: 0, color: '#60a5fa' },
+          { offset: 0.5, color: '#3b82f6' },
+          { offset: 1, color: '#1d4ed8' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#3b82f6', 
+        type: 'extra-rounded',
+        gradient: {
+          type: 'linear',
+          rotation: 45,
+          colorStops: [
+            { offset: 0, color: '#60a5fa' },
+            { offset: 1, color: '#2563eb' }
+          ]
+        }
+      },
+      cornersDotOptions: { 
+        color: '#60a5fa', 
+        type: 'dot'
+      }
+    } 
+  },
+  // ===== PLATINUM ELITE =====
+  { 
+    id: 'platinum-elite', 
+    name: 'Platinum Elite', 
+    category: 'business', 
+    icon: 'crown', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#64748b', 
+      bgColor: '#f8fafc', 
+      dotsType: 'classy-rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 135,
+        colorStops: [
+          { offset: 0, color: '#94a3b8' },
+          { offset: 0.5, color: '#64748b' },
+          { offset: 1, color: '#475569' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#64748b', 
+        type: 'classy-rounded',
+        gradient: {
+          type: 'radial',
+          colorStops: [
+            { offset: 0, color: '#94a3b8' },
+            { offset: 1, color: '#334155' }
+          ]
+        }
+      }
+    } 
+  },
+  // ===== CORAL REEF =====
+  { 
+    id: 'coral-reef', 
+    name: 'Coral Reef', 
+    category: 'vibrant', 
+    icon: 'waves', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#f43f5e', 
+      bgColor: '#fff1f2', 
+      dotsType: 'extra-rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 45,
+        colorStops: [
+          { offset: 0, color: '#fb7185' },
+          { offset: 0.5, color: '#f43f5e' },
+          { offset: 1, color: '#e11d48' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#f43f5e', 
+        type: 'rounded',
+        gradient: {
+          type: 'linear',
+          rotation: 135,
+          colorStops: [
+            { offset: 0, color: '#fda4af' },
+            { offset: 1, color: '#be123c' }
+          ]
+        }
+      }
+    } 
+  },
+  // ===== LAVENDER DREAM =====
+  { 
+    id: 'lavender-dream', 
+    name: 'Lavender Dream', 
+    category: 'minimal', 
+    icon: 'star', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#a78bfa', 
+      bgColor: '#faf5ff', 
+      dotsType: 'dots', 
+      dotsGradient: {
+        type: 'radial',
+        colorStops: [
+          { offset: 0, color: '#c4b5fd' },
+          { offset: 1, color: '#8b5cf6' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#a78bfa', 
+        type: 'rounded'
+      }
+    } 
+  },
+  // ===== TIFFANY BLUE =====
+  { 
+    id: 'tiffany-blue', 
+    name: 'Tiffany Blue', 
+    category: 'creative', 
+    icon: 'diamond', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#0abab5', 
+      bgColor: '#ffffff', 
+      dotsType: 'classy', 
+      cornersSquareOptions: { 
+        color: '#0abab5', 
+        type: 'classy-rounded'
+      },
+      cornersDotOptions: { 
+        color: '#0abab5', 
+        type: 'dot'
+      }
+    } 
+  },
+  // ===== BRONZE METAL =====
+  { 
+    id: 'bronze-metal', 
+    name: 'Bronze Metal', 
+    category: 'business', 
+    icon: 'crown', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#b45309', 
+      bgColor: '#1c1917', 
+      dotsType: 'classy-rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 135,
+        colorStops: [
+          { offset: 0, color: '#d97706' },
+          { offset: 0.5, color: '#b45309' },
+          { offset: 1, color: '#92400e' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#b45309', 
+        type: 'extra-rounded',
+        gradient: {
+          type: 'radial',
+          colorStops: [
+            { offset: 0, color: '#d97706' },
+            { offset: 1, color: '#78350f' }
+          ]
+        }
+      }
+    } 
+  },
+  // ===== ELECTRIC LIME =====
+  { 
+    id: 'electric-lime', 
+    name: 'Electric Lime', 
+    category: 'vibrant', 
+    icon: 'bolt', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#84cc16', 
+      bgColor: '#0a0a0a', 
+      dotsType: 'rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 45,
+        colorStops: [
+          { offset: 0, color: '#bef264' },
+          { offset: 0.5, color: '#84cc16' },
+          { offset: 1, color: '#65a30d' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#84cc16', 
+        type: 'extra-rounded',
+        gradient: {
+          type: 'linear',
+          rotation: 90,
+          colorStops: [
+            { offset: 0, color: '#bef264' },
+            { offset: 1, color: '#4d7c0f' }
+          ]
+        }
+      }
+    } 
+  },
+  // ===== YOUTUBE RED =====
+  { 
+    id: 'youtube-red-qr', 
+    name: 'YouTube Style', 
+    category: 'vibrant', 
+    icon: 'fire', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#dc2626', 
+      bgColor: '#ffffff', 
+      dotsType: 'rounded', 
+      cornersSquareOptions: { 
+        color: '#dc2626', 
+        type: 'rounded'
+      },
+      cornersDotOptions: { 
+        color: '#dc2626', 
+        type: 'dot'
+      }
+    } 
+  },
+  // ===== FACEBOOK BLUE =====
+  { 
+    id: 'facebook-blue-qr', 
+    name: 'Facebook Style', 
+    category: 'business', 
+    icon: 'building', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#1877f2', 
+      bgColor: '#ffffff', 
+      dotsType: 'rounded', 
+      cornersSquareOptions: { 
+        color: '#1877f2', 
+        type: 'rounded'
+      },
+      cornersDotOptions: { 
+        color: '#1877f2', 
+        type: 'square'
+      }
+    } 
+  },
+  // ===== LINKEDIN BLUE =====
+  { 
+    id: 'linkedin-blue-qr', 
+    name: 'LinkedIn Style', 
+    category: 'business', 
+    icon: 'briefcase', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#0077b5', 
+      bgColor: '#ffffff', 
+      dotsType: 'classy', 
+      cornersSquareOptions: { 
+        color: '#0077b5', 
+        type: 'square'
+      },
+      cornersDotOptions: { 
+        color: '#0077b5', 
+        type: 'square'
+      }
+    } 
+  },
+  // ===== WHATSAPP GREEN =====
+  { 
+    id: 'whatsapp-green-qr', 
+    name: 'WhatsApp Style', 
+    category: 'vibrant', 
+    icon: 'circle', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#25d366', 
+      bgColor: '#ffffff', 
+      dotsType: 'extra-rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 180,
+        colorStops: [
+          { offset: 0, color: '#25d366' },
+          { offset: 1, color: '#128c7e' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#25d366', 
+        type: 'extra-rounded'
+      },
+      cornersDotOptions: { 
+        color: '#128c7e', 
+        type: 'dot'
+      }
+    } 
+  },
+  // ===== TIKTOK STYLE =====
+  { 
+    id: 'tiktok-style-qr', 
+    name: 'TikTok Style', 
+    category: 'vibrant', 
+    icon: 'sparkles', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#000000', 
+      bgColor: '#ffffff', 
+      dotsType: 'rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 45,
+        colorStops: [
+          { offset: 0, color: '#69c9d0' },
+          { offset: 0.5, color: '#000000' },
+          { offset: 1, color: '#ee1d52' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#000000', 
+        type: 'rounded',
+        gradient: {
+          type: 'linear',
+          rotation: 135,
+          colorStops: [
+            { offset: 0, color: '#69c9d0' },
+            { offset: 1, color: '#ee1d52' }
+          ]
+        }
+      }
+    } 
+  },
+  // ===== SPOTIFY GREEN =====
+  { 
+    id: 'spotify-green-qr', 
+    name: 'Spotify Style', 
+    category: 'creative', 
+    icon: 'circle', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#1db954', 
+      bgColor: '#191414', 
+      dotsType: 'dots',
+      shape: 'circle',
+      cornersSquareOptions: { 
+        color: '#1db954', 
+        type: 'dot'
+      },
+      cornersDotOptions: { 
+        color: '#1db954', 
+        type: 'dot'
+      }
+    } 
+  },
+  // ===== TWITTER/X BLACK =====
+  { 
+    id: 'twitter-x-qr', 
+    name: 'X / Twitter', 
+    category: 'minimal', 
+    icon: 'minus', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#000000', 
+      bgColor: '#ffffff', 
+      dotsType: 'square', 
+      cornersSquareOptions: { 
+        color: '#000000', 
+        type: 'square'
+      },
+      cornersDotOptions: { 
+        color: '#1d9bf0', 
+        type: 'square'
+      }
+    } 
+  },
+  // ===== PINTEREST RED =====
+  { 
+    id: 'pinterest-red-qr', 
+    name: 'Pinterest Style', 
+    category: 'vibrant', 
+    icon: 'heart', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#e60023', 
+      bgColor: '#ffffff', 
+      dotsType: 'classy-rounded',
+      shape: 'circle',
+      cornersSquareOptions: { 
+        color: '#e60023', 
+        type: 'classy-rounded'
+      },
+      cornersDotOptions: { 
+        color: '#e60023', 
+        type: 'dot'
+      }
+    } 
+  },
+  // ===== DEEP SPACE =====
+  { 
+    id: 'deep-space', 
+    name: 'Deep Space', 
+    category: 'creative', 
+    icon: 'star', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#6366f1', 
+      bgColor: '#030712', 
+      dotsType: 'dots', 
+      dotsGradient: {
+        type: 'radial',
+        colorStops: [
+          { offset: 0, color: '#818cf8' },
+          { offset: 0.5, color: '#6366f1' },
+          { offset: 1, color: '#4f46e5' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#6366f1', 
+        type: 'extra-rounded',
+        gradient: {
+          type: 'linear',
+          rotation: 45,
+          colorStops: [
+            { offset: 0, color: '#a5b4fc' },
+            { offset: 1, color: '#4338ca' }
+          ]
+        }
+      }
+    } 
+  },
+  // ===== CHERRY BLOSSOM =====
+  { 
+    id: 'cherry-blossom', 
+    name: 'Cherry Blossom', 
+    category: 'creative', 
+    icon: 'heart', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#f472b6', 
+      bgColor: '#fdf4ff', 
+      dotsType: 'extra-rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 135,
+        colorStops: [
+          { offset: 0, color: '#f9a8d4' },
+          { offset: 0.5, color: '#f472b6' },
+          { offset: 1, color: '#ec4899' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#f472b6', 
+        type: 'classy-rounded'
+      }
+    } 
+  },
+  // ===== CARBON FIBER =====
+  { 
+    id: 'carbon-fiber', 
+    name: 'Carbon Fiber', 
+    category: 'business', 
+    icon: 'square', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#27272a', 
+      bgColor: '#fafafa', 
+      dotsType: 'square', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 45,
+        colorStops: [
+          { offset: 0, color: '#3f3f46' },
+          { offset: 0.5, color: '#27272a' },
+          { offset: 1, color: '#18181b' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#27272a', 
+        type: 'square',
+        gradient: {
+          type: 'radial',
+          colorStops: [
+            { offset: 0, color: '#52525b' },
+            { offset: 1, color: '#09090b' }
+          ]
+        }
+      }
+    } 
+  },
+  // ===== BUBBLEGUM POP =====
+  { 
+    id: 'bubblegum-pop', 
+    name: 'Bubblegum Pop', 
+    category: 'vibrant', 
+    icon: 'candy', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#f472b6', 
+      bgColor: '#fdf4ff', 
+      dotsType: 'dots',
+      shape: 'circle',
+      dotsGradient: {
+        type: 'linear',
+        rotation: 90,
+        colorStops: [
+          { offset: 0, color: '#c084fc' },
+          { offset: 0.5, color: '#f472b6' },
+          { offset: 1, color: '#fb7185' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#f472b6', 
+        type: 'dot'
+      },
+      cornersDotOptions: { 
+        color: '#c084fc', 
+        type: 'dot'
+      }
+    } 
+  },
+  // ===== FOREST NIGHT =====
+  { 
+    id: 'forest-night', 
+    name: 'Forest Night', 
+    category: 'creative', 
+    icon: 'tree', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#22c55e', 
+      bgColor: '#14532d', 
+      dotsType: 'classy', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 180,
+        colorStops: [
+          { offset: 0, color: '#4ade80' },
+          { offset: 0.5, color: '#22c55e' },
+          { offset: 1, color: '#15803d' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#22c55e', 
+        type: 'classy'
+      }
+    } 
+  },
+  // ===== ROYAL NAVY =====
+  { 
+    id: 'royal-navy', 
+    name: 'Royal Navy', 
+    category: 'business', 
+    icon: 'building', 
+    styling: { 
+      ...defaultStyling, 
+      fgColor: '#1e3a8a', 
+      bgColor: '#f8fafc', 
+      dotsType: 'classy-rounded', 
+      dotsGradient: {
+        type: 'linear',
+        rotation: 135,
+        colorStops: [
+          { offset: 0, color: '#3b82f6' },
+          { offset: 0.5, color: '#1e40af' },
+          { offset: 1, color: '#1e3a8a' }
+        ]
+      },
+      cornersSquareOptions: { 
+        color: '#1e3a8a', 
+        type: 'classy-rounded',
+        gradient: {
+          type: 'radial',
+          colorStops: [
+            { offset: 0, color: '#3b82f6' },
+            { offset: 1, color: '#172554' }
+          ]
+        }
+      }
+    } 
+  },
 ];
 
 export const defaultTemplates: QRTemplate[] = [

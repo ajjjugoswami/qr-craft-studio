@@ -36,10 +36,10 @@ const getIcon = (iconName: string) => {
     waves: <BgColorsOutlined />,
     sun: <ThunderboltOutlined />,
     tree: <StarOutlined />,
-    circle: <BorderOutlined />,
+    circle: <BorderOutlined style={{ borderRadius: '50%' }} />,
     bolt: <ThunderboltOutlined />,
     briefcase: <AppstoreOutlined />,
-    candy: <StarOutlined />,
+    candy: <HeartOutlined />,
     star: <StarOutlined />,
     palette: <BgColorsOutlined />,
     leaf: <StarOutlined />,
@@ -48,6 +48,7 @@ const getIcon = (iconName: string) => {
     fire: <FireOutlined />,
     cpu: <ExperimentOutlined />,
     crown: <CrownOutlined />,
+    heart: <HeartOutlined />,
   };
   return icons[iconName] || <BorderOutlined />;
 };
