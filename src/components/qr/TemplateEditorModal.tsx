@@ -768,25 +768,157 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
       ),
       children: (
         <div className="space-y-4 h-[520px] overflow-y-auto pr-2">
-          <Card size="small" title="QR Code Position" className="border-border">
-            <Select
-              value={template.qrPosition || "bottom"}
-              onChange={(v) => onTemplateChange({ ...template, qrPosition: v })}
-              options={[
-                { value: "top", label: "Top" },
-                { value: "center", label: "Center" },
-                { value: "bottom", label: "Bottom" },
-                { value: "right", label: "Right (Horizontal)" },
-                { value: "left", label: "Left (Horizontal)" },
-              ]}
-              className="w-full"
+          {/* QR Label */}
+          <Card size="small" title="QR Label" className="border-border">
+            <Input
+              value={template.qrLabel || ""}
+              onChange={(e) => onTemplateChange({ ...template, qrLabel: e.target.value })}
+              placeholder="e.g., Scan for details"
             />
-            <div className="mt-4">
-              <label className="text-xs font-medium block mb-1">QR Label</label>
-              <Input
-                value={template.qrLabel || ""}
-                onChange={(e) => onTemplateChange({ ...template, qrLabel: e.target.value })}
-                placeholder="e.g., Scan for details"
+          </Card>
+
+          {/* Gradient Presets */}
+          <Card size="small" title="Card Style Presets" className="border-border">
+            <div className="grid grid-cols-4 gap-3">
+              {/* No gradient / Solid */}
+              <div
+                onClick={() => onTemplateChange({ ...template, showGradient: false })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all flex items-center justify-center ${
+                  !template.showGradient 
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ backgroundColor: template.backgroundColor }}
+              >
+                <span className="text-[10px] font-medium text-center px-1" style={{ color: template.textColor }}>
+                  Solid
+                </span>
+              </div>
+
+              {/* Preset 1: Sunset */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#ff6b35',
+                  gradientColor: '#f7931e',
+                  gradientDirection: 'to-bottom-right',
+                  textColor: '#ffffff'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#ff6b35'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(135deg, #ff6b35, #f7931e)' }}
+              />
+
+              {/* Preset 2: Ocean */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#667eea',
+                  gradientColor: '#764ba2',
+                  gradientDirection: 'to-bottom-right',
+                  textColor: '#ffffff'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#667eea'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)' }}
+              />
+
+              {/* Preset 3: Forest */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#11998e',
+                  gradientColor: '#38ef7d',
+                  gradientDirection: 'to-bottom-right',
+                  textColor: '#ffffff'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#11998e'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(135deg, #11998e, #38ef7d)' }}
+              />
+
+              {/* Preset 4: Rose */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#ee9ca7',
+                  gradientColor: '#ffdde1',
+                  gradientDirection: 'to-bottom',
+                  textColor: '#1a1a1a'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#ee9ca7'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(180deg, #ee9ca7, #ffdde1)' }}
+              />
+
+              {/* Preset 5: Dark Elegant */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#232526',
+                  gradientColor: '#414345',
+                  gradientDirection: 'to-bottom-right',
+                  textColor: '#ffffff'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#232526'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(135deg, #232526, #414345)' }}
+              />
+
+              {/* Preset 6: Royal Blue */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#1e3c72',
+                  gradientColor: '#2a5298',
+                  gradientDirection: 'to-bottom',
+                  textColor: '#ffffff'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#1e3c72'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(180deg, #1e3c72, #2a5298)' }}
+              />
+
+              {/* Preset 7: Gold */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#f5af19',
+                  gradientColor: '#f12711',
+                  gradientDirection: 'to-right',
+                  textColor: '#ffffff'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#f5af19'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(90deg, #f5af19, #f12711)' }}
               />
             </div>
           </Card>
