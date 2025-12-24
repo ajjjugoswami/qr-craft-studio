@@ -175,7 +175,7 @@ const LandingPage = () => {
       </div>
 
       {/* Header */}
-      <header className="relative z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl sticky top-0">
+      <header className="relative z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl  top-0">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="h-20 flex items-center justify-between">
             {/* Logo */}
@@ -261,12 +261,11 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative pt-16 pb-24 lg:pt-24 lg:pb-32">
+      <section className="relative pt-16 pb-24 lg:pt-24 lg:pb-20">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-5xl mx-auto text-center">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 via-violet-500/10 to-primary/10 border border-primary/20 text-primary px-5 py-2.5 rounded-full text-sm font-semibold mb-8 animate-fade-in">
-              <Sparkles className="h-4 w-4" />
               <span>Trusted by 10,000+ businesses worldwide</span>
             </div>
 
@@ -345,11 +344,10 @@ const LandingPage = () => {
       </section>
 
       {/* Generator Section - Always Visible */}
-      <section id="generator" className="py-20 lg:py-28 bg-gradient-to-b from-muted/50 to-background border-y border-border/40">
+      <section id="generator" className="py-14 lg:py-14 bg-gradient-to-b from-muted/50 to-background border-y border-border/40">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
-              <Zap className="h-4 w-4" />
               <span>Free Forever</span>
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-montserrat">
@@ -364,7 +362,7 @@ const LandingPage = () => {
       </section>
 
       {/* QR Types Section */}
-      <section className="py-20 lg:py-28">
+      <section className="py-14 lg:py-14">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-muted px-4 py-2 rounded-full text-sm font-medium mb-4">
@@ -412,7 +410,7 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 lg:py-28 bg-gradient-to-b from-muted/30 via-muted/50 to-muted/30">
+      <section id="features" className="py-14 lg:py-14 bg-gradient-to-b from-muted/30 via-muted/50 to-muted/30">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/10 to-orange-500/10 text-amber-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
@@ -465,59 +463,8 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-20 lg:py-28">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
-              <Star className="h-4 w-4 fill-current" />
-              <span>Customer Reviews</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-montserrat">
-              Loved by Thousands
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              See what our customers have to say about QR Studio.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="p-8 relative group hover:shadow-xl transition-all duration-300">
-                {/* Rating */}
-                <div className="flex gap-1 mb-6">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-
-                {/* Content */}
-                <p className="text-foreground mb-8 leading-relaxed text-lg">
-                  "{testimonial.content}"
-                </p>
-
-                {/* Author */}
-                <div className="flex items-center gap-4">
-                  <img 
-                    src={testimonial.image} 
-                    alt={testimonial.name}
-                    className="h-12 w-12 rounded-full object-cover ring-2 ring-primary/10"
-                  />
-                  <div>
-                    <div className="font-semibold">{testimonial.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {testimonial.role}, {testimonial.company}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="py-20 lg:py-28 bg-gradient-to-b from-muted/30 to-background">
+ 
+       <section id="pricing" className="py-14 lg:py-14 bg-gradient-to-b from-muted/30 to-background">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold mb-4">
@@ -593,56 +540,7 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
-
-      {/* Final CTA Section */}
-      <section className="py-20 lg:py-28">
-        <div className="container mx-auto px-4 lg:px-8">
-          <Card className="max-w-5xl mx-auto overflow-hidden relative">
-            {/* Background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary via-violet-500 to-primary" />
-            
-            {/* Pattern overlay */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute inset-0" style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-              }} />
-            </div>
-
-            <div className="relative z-10 p-12 md:p-16 text-center text-white">
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-5 py-2.5 rounded-full text-sm font-semibold mb-8">
-                <Smartphone className="h-4 w-4" />
-                <span>Join 10,000+ happy users</span>
-              </div>
-
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-montserrat">
-                Ready to Create Amazing QR Codes?
-              </h2>
-
-              <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
-                Start for free today. No credit card required. Upgrade anytime.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link to="/signup">
-                  <Button size="lg" variant="secondary" className="text-lg px-10 py-6 font-semibold gap-2 group shadow-xl w-full sm:w-auto">
-                    Get Started Free
-                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </Link>
-                <Link to="/sign-in">
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="text-lg px-10 py-6 font-semibold border-white/30 text-white hover:bg-white/10 w-full sm:w-auto"
-                  >
-                    Sign In
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </Card>
-        </div>
-      </section>
+ 
 
       {/* Footer */}
       <footer className="border-t border-border py-12 bg-muted/20">
