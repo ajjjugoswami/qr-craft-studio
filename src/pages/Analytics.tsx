@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo, useState } from 'react';
-import { Typography, Card, Row, Col, Statistic, Table, Tag, Segmented } from 'antd';
+import React, { useMemo, useState, useCallback } from 'react';
+import { Typography, Card, Row, Col, Statistic, Table, Tag, Segmented, Button, message } from 'antd';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Eye, QrCode, TrendingUp, Users } from 'lucide-react';
+import { Eye, QrCode, TrendingUp, Users, Download } from 'lucide-react';
 import { AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { useQRCodes } from '../hooks/useQRCodes';
@@ -162,20 +162,50 @@ const Analytics: React.FC = () => {
     );
   }
 
+  const downloadCSV = useCallback(() => {
+    const headers = ['Date', 'Scans', 'Device', 'Location'];
+    const rows = scansOverTime.map((item) => [item.date, item.scans, '', '']);
+    
+    // Add device data
+    deviceData.forEach((d, i) => {
+      if (rows[i]) rows[i][2] = `${d.name}: ${d.value}`;
+    });
+    
+    // Add location data
+    locationData.forEach((l, i) => {
+      if (rows[i]) rows[i][3] = `${l.country}: ${l.scans}`;
+    });
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `analytics-overview-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    message.success('CSV downloaded successfully');
+  }, [scansOverTime, deviceData, locationData]);
+
   return (
     <DashboardLayout>
       <div className="animate-fade-in space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <Title level={2} className="!mb-1">Analytics Overview</Title>
             <Text type="secondary">Track performance across all your QR codes</Text>
           </div>
-          <Segmented
-            options={[{ label: 'Real', value: 'real' }, { label: 'Demo', value: 'demo' }]}
-            value={mode}
-            onChange={(val: string | number) => setMode(val as 'real' | 'demo')}
-            size="middle"
-          />
+          <div className="flex items-center gap-3">
+            <Button icon={<Download size={16} />} onClick={downloadCSV}>
+              Export CSV
+            </Button>
+            <Segmented
+              options={[{ label: 'Real', value: 'real' }, { label: 'Demo', value: 'demo' }]}
+              value={mode}
+              onChange={(val: string | number) => setMode(val as 'real' | 'demo')}
+              size="middle"
+            />
+          </div>
         </div>
 
         {/* Stats Overview */}

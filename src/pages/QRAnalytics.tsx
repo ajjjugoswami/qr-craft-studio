@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Typography, Card, Table, Tag, Button, Statistic, Row, Col, Spin, Segmented } from 'antd';
-import { ArrowLeft, MapPin, Smartphone, Monitor, Tablet, Eye, TrendingUp } from 'lucide-react';
+import { Typography, Card, Table, Tag, Button, Statistic, Row, Col, Spin, Segmented, message } from 'antd';
+import { ArrowLeft, MapPin, Eye, TrendingUp, Download } from 'lucide-react';
 import { AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { useQRCodes } from '../hooks/useQRCodes';
@@ -110,17 +110,47 @@ const QRAnalytics: React.FC = () => {
 
   const totalScans = analytics?.totalScans ?? scanData.length;
 
+  const downloadCSV = useCallback(() => {
+    const headers = ['Date', 'Time', 'Browser', 'OS', 'Device Type', 'Device Vendor', 'Device Model', 'IP Address', 'City', 'Region', 'Country'];
+    const rows = scanData.map((scan) => [
+      scan.date,
+      scan.time,
+      scan.browser,
+      scan.os,
+      scan.deviceType,
+      scan.deviceVendor,
+      scan.deviceModel,
+      scan.ipAddress,
+      scan.location.city,
+      scan.location.region,
+      scan.location.country,
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.map(v => `"${v}"`).join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `qr-analytics-${qrCode?.name || id}-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    message.success('CSV downloaded successfully');
+  }, [scanData, qrCode, id]);
+
   return (
     <DashboardLayout>
       <div className="animate-fade-in space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-4 mb-6 flex-wrap">
           <Button icon={<ArrowLeft size={18} />} onClick={() => navigate('/dashboard')} />
-          <div>
+          <div className="flex-1 min-w-0">
             <Title level={2} className="!mb-0">{qrCode?.name || 'QR Code'}</Title>
             <Text type="secondary">QR Code Analytics & Scan Details</Text>
           </div>
-          <div className="ml-auto">
+          <div className="flex items-center gap-3">
+            <Button icon={<Download size={16} />} onClick={downloadCSV}>
+              Export CSV
+            </Button>
             <Segmented
               options={[{ label: 'Real', value: 'real' }, { label: 'Demo', value: 'demo' }]}
               value={mode}
