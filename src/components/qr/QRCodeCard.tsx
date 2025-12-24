@@ -45,7 +45,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
   const navigate = useNavigate();
   const previewRef = useRef<HTMLDivElement>(null);
   const [downloadModalOpen, setDownloadModalOpen] = React.useState(false);
-  const [downloading, setDownloading] = React.useState(false);
+  const [downloadingFormat, setDownloadingFormat] = React.useState<'png' | 'jpeg' | null>(null);
 
   // Support both camelCase and legacy snake/lowercase fields from APIs
   const scanLimitValue = (qrCode.scanLimit ?? (qrCode as any).scanlimit) as number | null | undefined;
@@ -53,9 +53,9 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
   const isProtected = typeof qrCode.password === 'string' && qrCode.password.trim().length > 0;
 
   const handleDownload = async (format: 'png' | 'jpeg') => {
-    if (!previewRef.current || downloading) return;
+    if (!previewRef.current || downloadingFormat) return;
 
-    setDownloading(true);
+    setDownloadingFormat(format);
     try {
       // Wait for any pending renders
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -90,7 +90,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
       console.error('Download error:', error);
       message.error('Failed to download. Please try again.');
     } finally {
-      setDownloading(false);
+      setDownloadingFormat(null);
     }
   };
 
@@ -243,7 +243,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
           className="qr-preview-modal"
         >
            <div className="flex flex-col items-center py-4 px-2">
-            <Spin spinning={downloading} tip="Preparing download..." className="w-full">
+            <Spin spinning={downloadingFormat !== null} tip="Preparing download..." className="w-full">
               <div className="flex justify-center">
                 <QRCodePreview
                   ref={previewRef}
@@ -259,27 +259,27 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => handleDownload('png')}
-                disabled={downloading}
+                disabled={downloadingFormat !== null}
                 className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                {downloading ? (
+                {downloadingFormat === 'png' ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
                 ) : (
                   <FileImage size={18} />
                 )}
-                {downloading ? 'Preparing…' : 'Download PNG'}
+                {downloadingFormat === 'png' ? 'Preparing…' : 'Download PNG'}
               </button>
               <button
                 onClick={() => handleDownload('jpeg')}
-                disabled={downloading}
+                disabled={downloadingFormat !== null}
                 className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
               >
-                {downloading ? (
+                {downloadingFormat === 'jpeg' ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-foreground/70 border-t-transparent" />
                 ) : (
                   <FileType size={18} />
                 )}
-                {downloading ? 'Preparing…' : 'Download JPG'}
+                {downloadingFormat === 'jpeg' ? 'Preparing…' : 'Download JPG'}
               </button>
             </div>
           </div>
@@ -407,7 +407,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
         className="qr-preview-modal"
       >
         <div className="flex flex-col items-center py-4 px-2">
-          <Spin spinning={downloading} tip="Preparing download..." className="w-full">
+          <Spin spinning={downloadingFormat !== null} tip="Preparing download..." className="w-full">
             <div className="flex justify-center">
               <QRCodePreview
                 ref={previewRef}
@@ -423,27 +423,27 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
           <div className="flex gap-3 mt-6">
             <button
               onClick={() => handleDownload('png')}
-              disabled={downloading}
+              disabled={downloadingFormat !== null}
               className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {downloading ? (
+              {downloadingFormat === 'png' ? (
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
               ) : (
                 <FileImage size={18} />
               )}
-              {downloading ? 'Preparing…' : 'Download PNG'}
+              {downloadingFormat === 'png' ? 'Preparing…' : 'Download PNG'}
             </button>
             <button
               onClick={() => handleDownload('jpeg')}
-              disabled={downloading}
+              disabled={downloadingFormat !== null}
               className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
             >
-              {downloading ? (
+              {downloadingFormat === 'jpeg' ? (
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-foreground/70 border-t-transparent" />
               ) : (
                 <FileType size={18} />
               )}
-              {downloading ? 'Preparing…' : 'Download JPG'}
+              {downloadingFormat === 'jpeg' ? 'Preparing…' : 'Download JPG'}
             </button>
           </div>
         </div>
