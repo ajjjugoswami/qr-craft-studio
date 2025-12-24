@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button, Card, Typography, message, Drawer } from 'antd';
-import { ArrowLeft, Check, Settings2, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Check, Settings2, Eye, ChevronLeft, ChevronRight, Undo2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { qrCodeAPI } from '@/lib/api';
 import DashboardLayout from '../components/layout/DashboardLayout';
@@ -13,6 +13,7 @@ import QRStyleEditor from '../components/qr/QRStyleEditor';
 import QRCodePreview from '../components/qr/QRCodePreview';
 import AdvancedSettings from '../components/qr/AdvancedSettings';
 import { useQRCodes } from '../hooks/useQRCodes';
+import { useStyleHistory } from '../hooks/useStyleHistory';
 import {
   QRTemplate,
   QRStyling,
@@ -36,6 +37,7 @@ const CreateQR: React.FC = () => {
   const navigate = useNavigate();
   const { saveQRCode, updateQRCode, getQRCode } = useQRCodes();
   const previewRef = useRef<HTMLDivElement>(null);
+  const { pushStyle, undo, canUndo } = useStyleHistory();
 
   const { id } = useParams<{ id?: string }>();
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -54,6 +56,20 @@ const CreateQR: React.FC = () => {
   const [showTemplateEditor, setShowTemplateEditor] = useState(false);
   const [showPreviewDrawer, setShowPreviewDrawer] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // Wrap setStyling to track history
+  const handleStyleChange = (newStyling: QRStyling) => {
+    pushStyle(styling); // Save current before change
+    setStyling(newStyling);
+  };
+
+  const handleUndo = () => {
+    const previousStyle = undo();
+    if (previousStyle) {
+      setStyling(previousStyle);
+      message.info('Styling reverted');
+    }
+  };
 
   useEffect(() => {
     setInitialized(true);
@@ -166,9 +182,9 @@ const CreateQR: React.FC = () => {
           />
         );
       case 3:
-        return <QRDesignTemplates styling={styling} onStyleChange={setStyling} />;
+        return <QRDesignTemplates styling={styling} onStyleChange={handleStyleChange} />;
       case 4:
-        return <QRStyleEditor styling={styling} onStyleChange={setStyling} />;
+        return <QRStyleEditor styling={styling} onStyleChange={handleStyleChange} />;
       case 5:
         return (
           <AdvancedSettings
@@ -255,15 +271,25 @@ const CreateQR: React.FC = () => {
             </Card>
             
             {/* Mobile Navigation */}
-            <div className="flex items-center justify-between mt-4 lg:hidden">
+            <div className="flex items-center justify-between gap-2 mt-4 lg:hidden">
               <Button
                 size="large"
                 onClick={handlePrev}
                 disabled={currentStep === 0}
                 icon={<ChevronLeft size={18} />}
-                className="flex-1 mr-2"
+                className="flex-1"
               >
                 Back
+              </Button>
+
+              <Button
+                size="large"
+                onClick={handleUndo}
+                disabled={!canUndo}
+                icon={<Undo2 size={18} />}
+                className="flex-shrink-0"
+              >
+                Undo
               </Button>
 
               {currentStep === steps.length - 1 ? (
@@ -273,7 +299,7 @@ const CreateQR: React.FC = () => {
                   onClick={handleSave}
                   loading={saving}
                   disabled={saving}
-                  className="flex-1 ml-2"
+                  className="flex-1"
                 >
                   Save QR Code
                 </Button>
@@ -282,7 +308,7 @@ const CreateQR: React.FC = () => {
                   type="primary"
                   size="large"
                   onClick={handleNext}
-                  className="flex-1 ml-2"
+                  className="flex-1"
                 >
                   Next
                   <ChevronRight size={18} className="ml-1" />
@@ -329,13 +355,22 @@ const CreateQR: React.FC = () => {
               </Card>
 
               {/* Desktop Navigation */}
-              <div className="mt-4 flex justify-between">
+              <div className="mt-4 flex justify-between items-center gap-2">
                 <Button
                   size="middle"
                   onClick={handlePrev}
                   disabled={currentStep === 0}
                 >
                   Previous
+                </Button>
+
+                <Button
+                  size="middle"
+                  onClick={handleUndo}
+                  disabled={!canUndo}
+                  icon={<Undo2 size={16} />}
+                >
+                  Undo
                 </Button>
 
                 {currentStep === steps.length - 1 ? (
