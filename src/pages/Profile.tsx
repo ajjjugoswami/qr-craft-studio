@@ -1,9 +1,10 @@
 import React from 'react';
 import { Typography, Tabs } from 'antd';
-import { User, Palette } from 'lucide-react';
+import { User, Palette, Shield } from 'lucide-react';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import ProfileInfo from './settings/ProfileInfo';
 import ThemeSettings from './settings/ThemeSettings';
+import SecuritySettings from './settings/SecuritySettings';
 
 const { Title, Text } = Typography;
 
@@ -28,6 +29,16 @@ const Profile: React.FC = () => {
         </span>
       ),
       children: <ThemeSettings />,
+    },
+    {
+      key: 'security',
+      label: (
+        <span className="flex items-center gap-2">
+          <Shield size={16} />
+          Security
+        </span>
+      ),
+      children: <SecuritySettings />,
     },
   ];
 
