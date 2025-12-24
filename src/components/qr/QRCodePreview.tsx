@@ -45,7 +45,7 @@ const QROnlyPreview = forwardRef<HTMLDivElement, { content: string; styling: QRS
       ...styling,
       imageOptions: styling.imageOptions || {
         hideBackgroundDots: true,
-        imageSize: 0.4,
+        imageSize: 0.2,
         margin: 0,
       },
       cornersSquareOptions: styling.cornersSquareOptions || {
@@ -81,7 +81,7 @@ const QROnlyPreview = forwardRef<HTMLDivElement, { content: string; styling: QRS
       if (qrRef.current) {
         const hasLogo = !!safeStyling.image;
         const errorLevel = hasLogo ? 'H' : safeStyling.level;
-        const logoSize = hasLogo ? Math.min(safeStyling.imageOptions?.imageSize || 0.4, 0.25) : (safeStyling.imageOptions?.imageSize || 0.4);
+        const logoSize = safeStyling.imageOptions?.imageSize || 0.2;
         
         const options = {
           width: qrOnlySize,
@@ -114,7 +114,7 @@ const QROnlyPreview = forwardRef<HTMLDivElement, { content: string; styling: QRS
           imageOptions: safeStyling.imageOptions ? {
             hideBackgroundDots: true,
             imageSize: logoSize,
-            margin: safeStyling.imageOptions.margin ?? 2,
+            margin: 0,
           } : undefined,
           image: safeStyling.image,
           shape: safeStyling.shape,
@@ -165,7 +165,7 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
     ...styling,
     imageOptions: styling.imageOptions || {
       hideBackgroundDots: true,
-      imageSize: 0.4,
+      imageSize: 0.2,
       margin: 0,
     },
     cornersSquareOptions: styling.cornersSquareOptions || {
@@ -248,8 +248,7 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
       // When an image/logo is present, force high error correction for scannability
       const hasLogo = !!safeStyling.image;
       const errorLevel = hasLogo ? 'H' : safeStyling.level;
-      // Limit logo size to 25% max for scannability
-      const logoSize = hasLogo ? Math.min(safeStyling.imageOptions?.imageSize || 0.4, 0.25) : (safeStyling.imageOptions?.imageSize || 0.4);
+      const logoSize = safeStyling.imageOptions?.imageSize || 0.2;
       
       const options = {
         width: qrSize,
@@ -280,9 +279,9 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
           ...(safeStyling.cornersDotOptions.gradient && { gradient: safeStyling.cornersDotOptions.gradient }),
         } : undefined,
         imageOptions: safeStyling.imageOptions ? {
-          hideBackgroundDots: true, // Always hide background dots for better logo visibility
+          hideBackgroundDots: true,
           imageSize: logoSize,
-          margin: safeStyling.imageOptions.margin ?? 2, // Add small margin for better scannability
+          margin: 0,
         } : undefined,
         image: safeStyling.image,
         shape: safeStyling.shape,
