@@ -175,7 +175,7 @@ const LandingPage = () => {
       </div>
 
       {/* Header */}
-      <header className="relative z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl  top-0">
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="h-20 flex items-center justify-between">
             {/* Logo */}
@@ -261,7 +261,7 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative pt-16 pb-24 lg:pt-24 lg:pb-20">
+      <section className="relative pt-28 pb-24 lg:pt-28 lg:pb-20">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-5xl mx-auto text-center">
             {/* Badge */}
