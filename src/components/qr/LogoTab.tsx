@@ -36,8 +36,9 @@ const LogoTab: React.FC<LogoTabProps> = ({ styling, onStyleChange }) => {
           ...styling,
           image: result,
           imageOptions: {
-            ...styling.imageOptions!,
             hideBackgroundDots: true,
+            imageSize: 0.2,
+            margin: 0,
           },
         });
       };
@@ -52,14 +53,14 @@ const LogoTab: React.FC<LogoTabProps> = ({ styling, onStyleChange }) => {
         image: undefined,
       });
     } else if (preset.type === 'icon' || preset.type === 'text') {
-      // Generate SVG for the preset
       const svg = generatePresetSvg(preset);
       onStyleChange({
         ...styling,
         image: svg,
         imageOptions: {
-          ...styling.imageOptions!,
           hideBackgroundDots: true,
+          imageSize: 0.2,
+          margin: 0,
         },
       });
     }
@@ -118,7 +119,7 @@ const LogoTab: React.FC<LogoTabProps> = ({ styling, onStyleChange }) => {
     if (preset.type === 'none') {
       return !styling.image;
     }
-    return false; // Upload or URL images won't match presets
+    return false;
   };
 
   return (
@@ -189,7 +190,7 @@ const LogoTab: React.FC<LogoTabProps> = ({ styling, onStyleChange }) => {
           />
           <div className="flex-1">
             <p className="text-sm font-medium">Logo selected</p>
-            <p className="text-xs text-muted-foreground">Adjust size and margin below</p>
+            <p className="text-xs text-muted-foreground">Adjust size below</p>
           </div>
           <Button
             variant="ghost"
@@ -201,49 +202,33 @@ const LogoTab: React.FC<LogoTabProps> = ({ styling, onStyleChange }) => {
         </div>
       )}
 
-      {/* Sliders Row */}
-      <div className="grid grid-cols-2 gap-6">
-        <div>
-          <Label className="text-sm text-muted-foreground mb-3 block">
-            Logo size
-          </Label>
-          <Slider
-            min={10}
-            max={25}
-            step={1}
-            value={[Math.round((styling.imageOptions?.imageSize || 0.25) * 100)]}
-            onValueChange={([value]) =>
-              onStyleChange({
-                ...styling,
-                imageOptions: { ...styling.imageOptions!, imageSize: value / 100 },
-              })
-            }
-            className="w-full"
-          />
-        </div>
-        <div>
-          <Label className="text-sm text-muted-foreground mb-3 block">
-            Logo margin
-          </Label>
-          <Slider
-            min={0}
-            max={20}
-            step={1}
-            value={[styling.imageOptions?.margin || 0]}
-            onValueChange={([value]) =>
-              onStyleChange({
-                ...styling,
-                imageOptions: { ...styling.imageOptions!, margin: value },
-              })
-            }
-            className="w-full"
-          />
-        </div>
+      {/* Logo Size Slider */}
+      <div>
+        <Label className="text-sm text-muted-foreground mb-3 block">
+          Logo size: {Math.round((styling.imageOptions?.imageSize || 0.2) * 100)}%
+        </Label>
+        <Slider
+          min={10}
+          max={25}
+          step={1}
+          value={[Math.round((styling.imageOptions?.imageSize || 0.2) * 100)]}
+          onValueChange={([value]) =>
+            onStyleChange({
+              ...styling,
+              imageOptions: { 
+                hideBackgroundDots: true,
+                imageSize: value / 100,
+                margin: 0,
+              },
+            })
+          }
+          className="w-full"
+        />
       </div>
 
       {/* Info text */}
       <p className="text-xs text-muted-foreground">
-        Keep logo size at 25% or less for best scannability
+        Keep logo size at 25% or less for best scannability. Error correction is automatically set to highest level when logo is added.
       </p>
     </div>
   );
