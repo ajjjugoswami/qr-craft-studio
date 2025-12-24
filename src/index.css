@@ -783,6 +783,33 @@ h5.ant-typography {
   background-color: hsl(var(--popover)) !important;
 }
 
+/* Color picker gradient/saturation panel - ensure colors show correctly */
+.ant-color-picker-saturation,
+.ant-color-picker-slider,
+.ant-color-picker-gradient,
+.ant-color-picker-palette {
+  background: transparent !important;
+}
+
+/* Color picker slider (hue bar) */
+.ant-color-picker-slider-container,
+.ant-color-picker-slider-group {
+  background: transparent !important;
+}
+
+/* Ensure the color gradient overlays work properly */
+.ant-color-picker-saturation::before,
+.ant-color-picker-saturation::after {
+  pointer-events: none;
+}
+
+/* Color picker handle/thumb */
+.ant-color-picker-handler,
+.ant-color-picker-slider-handle {
+  border-color: hsl(var(--foreground)) !important;
+  box-shadow: 0 0 2px hsl(var(--foreground) / 0.3) !important;
+}
+
 .ant-color-picker-input,
 .ant-color-picker-input input,
 .ant-color-picker-input .ant-input,
@@ -796,6 +823,26 @@ h5.ant-typography {
 .ant-color-picker-alpha-input,
 .ant-color-picker-input-container {
   background: hsl(var(--popover)) !important;
+}
+
+/* Color picker presets */
+.ant-color-picker-presets,
+.ant-color-picker-presets-color {
+  background: transparent !important;
+}
+
+.ant-color-picker-presets-label {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Color picker select dropdown */
+.ant-color-picker .ant-select-selector {
+  background: hsl(var(--input-background)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.ant-color-picker .ant-select-selection-item {
+  color: hsl(var(--foreground)) !important;
 }
 
 .ant-color-picker-input-container .ant-select-selector {
