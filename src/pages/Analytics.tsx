@@ -126,6 +126,31 @@ const Analytics: React.FC = () => {
     ) },
   ];
 
+  const downloadCSV = useCallback(() => {
+    const headers = ['Date', 'Scans', 'Device', 'Location'];
+    const rows = scansOverTime.map((item) => [item.date, item.scans, '', '']);
+    
+    // Add device data
+    deviceData.forEach((d, i) => {
+      if (rows[i]) rows[i][2] = `${d.name}: ${d.value}`;
+    });
+    
+    // Add location data
+    locationData.forEach((l, i) => {
+      if (rows[i]) rows[i][3] = `${l.country}: ${l.scans}`;
+    });
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `analytics-overview-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    message.success('CSV downloaded successfully');
+  }, [scansOverTime, deviceData, locationData]);
+
   if (loading && mode === 'real') {
     return (
       <DashboardLayout>
@@ -161,31 +186,6 @@ const Analytics: React.FC = () => {
       </DashboardLayout>
     );
   }
-
-  const downloadCSV = useCallback(() => {
-    const headers = ['Date', 'Scans', 'Device', 'Location'];
-    const rows = scansOverTime.map((item) => [item.date, item.scans, '', '']);
-    
-    // Add device data
-    deviceData.forEach((d, i) => {
-      if (rows[i]) rows[i][2] = `${d.name}: ${d.value}`;
-    });
-    
-    // Add location data
-    locationData.forEach((l, i) => {
-      if (rows[i]) rows[i][3] = `${l.country}: ${l.scans}`;
-    });
-
-    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `analytics-overview-${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
-    message.success('CSV downloaded successfully');
-  }, [scansOverTime, deviceData, locationData]);
 
   return (
     <DashboardLayout>

@@ -98,16 +98,6 @@ const QRAnalytics: React.FC = () => {
     ) },
   ];
 
-  if (loading && mode === 'real') {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center h-64">
-          <Spin size="large" />
-        </div>
-      </DashboardLayout>
-    );
-  }
-
   const totalScans = analytics?.totalScans ?? scanData.length;
 
   const downloadCSV = useCallback(() => {
@@ -136,6 +126,16 @@ const QRAnalytics: React.FC = () => {
     URL.revokeObjectURL(url);
     message.success('CSV downloaded successfully');
   }, [scanData, qrCode, id]);
+
+  if (loading && mode === 'real') {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <Spin size="large" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
