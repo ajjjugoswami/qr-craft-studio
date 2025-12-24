@@ -76,13 +76,30 @@ export const signIn = createAsyncThunk(
   async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
     try {
       const data = await authAPI.signin({ email, password });
-      const { token, _id, name, isAdmin, email: userEmail, theme } = data;
-      const user: User = { _id, name, email: userEmail, isAdmin, theme };
-      
-      // Persist to storage
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user }));
+      const { token } = data;
+
+      if (!token) {
+        return rejectWithValue('No token returned from signin');
+      }
+
+      // Persist token immediately so subsequent calls include it
       localStorage.setItem(TOKEN_KEY, token);
-      
+
+      // Fetch canonical current user from /auth/me
+      let profile: any = null;
+      try {
+        const me = await authAPI.getCurrentUser();
+        profile = me._id ? me : me.user ? me.user : me;
+      } catch (err) {
+        // Fallback to data returned by signin
+        profile = { _id: data._id, name: data.name, email: data.email, isAdmin: data.isAdmin, theme: data.theme };
+      }
+
+      const user: User = { _id: profile._id, name: profile.name, email: profile.email, isAdmin: profile.isAdmin, theme: profile.theme };
+
+      // Persist user and token
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user }));
+
       return { user, token };
     } catch (error: any) {
       // Prefer server-provided message when available
@@ -98,16 +115,34 @@ export const signUp = createAsyncThunk(
   async ({ name, email, password }: { name: string; email: string; password: string }, { rejectWithValue }) => {
     try {
       const data = await authAPI.signup({ name, email, password });
-      const { token, _id, name: returnedName, isAdmin, email: userEmail, theme } = data;
-      const user: User = { _id, name: returnedName, email: userEmail, isAdmin, theme };
-      
-      // Persist to storage
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user }));
+      const { token } = data;
+
+      if (!token) {
+        return rejectWithValue('No token returned from signup');
+      }
+
+      // Persist token immediately
       localStorage.setItem(TOKEN_KEY, token);
-      
+
+      // Fetch canonical current user from /auth/me
+      let profile: any = null;
+      try {
+        const me = await authAPI.getCurrentUser();
+        profile = me._id ? me : me.user ? me.user : me;
+      } catch (err) {
+        // Fallback to data returned by signup
+        profile = { _id: data._id, name: data.name || name, email: data.email, isAdmin: data.isAdmin, theme: data.theme };
+      }
+
+      const user: User = { _id: profile._id, name: profile.name, email: profile.email, isAdmin: profile.isAdmin, theme: profile.theme };
+
+      // Persist user and token
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user }));
+
       return { user, token };
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Sign up failed');
+      const serverMessage = error?.response?.data?.message || error?.message;
+      return rejectWithValue(serverMessage || 'Sign up failed');
     }
   }
 );

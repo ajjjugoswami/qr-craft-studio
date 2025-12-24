@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Table, Tag, Typography, Spin, Alert, Button, Input, Space, Tooltip } from "antd";
+import { Table, Tag, Typography, Spin, Alert, Button, Input, Space, Tooltip, Popconfirm, message } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { RefreshCw } from 'lucide-react';
 import { adminAPI } from "@/lib/api";
@@ -12,6 +12,7 @@ interface User {
   name?: string;
   email?: string;
   createdAt?: string | null;
+  blocked?: boolean;
 }
 
 interface QRCode {
@@ -140,6 +141,67 @@ const AdminData: React.FC = () => {
       dataIndex: "qrcodes",
       key: "qrcodes",
       render: (qrs: QRCode[] | undefined) => <Tag>{qrs?.length ?? 0}</Tag>,
+    },
+    {
+      title: "Status",
+      key: "status",
+      render: (_: any, record: AdminUserRow) => (
+        record.user?.blocked ? <Tag color="red">Blocked</Tag> : <Tag>Active</Tag>
+      ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_: any, record: AdminUserRow) => {
+        const blocked = record.user?.blocked ?? false;
+        return (
+          <Space>
+            <Button
+              type={blocked ? 'default' : 'primary'}
+              danger={blocked}
+              onClick={async () => {
+                // Optimistic UI update
+                const original = data;
+                try {
+                  setData((prev) =>
+                    prev.map((r) =>
+                      r.user._id === record.user._id ? { ...r, user: { ...r.user, blocked: !blocked } } : r
+                    )
+                  );
+
+                  await adminAPI.updateUser(record.user._id, { blocked: !blocked });
+                  message.success(`User ${blocked ? 'unblocked' : 'blocked'}`);
+                } catch (err: any) {
+                  // rollback
+                  setData(original);
+                  message.error(err?.response?.data?.message || 'Action failed');
+                }
+              }}
+            >
+              {blocked ? 'Unblock' : 'Block'}
+            </Button>
+
+            <Popconfirm
+              title="Delete user"
+              description="Are you sure you want to delete this user? This will delete their QR codes." 
+              onConfirm={async () => {
+                try {
+                  await adminAPI.deleteUser(record.user._id);
+                  setData((prev) => prev.filter((r) => r.user._id !== record.user._id));
+                  setTotal((t) => Math.max(0, t - 1));
+                  message.success('User deleted');
+                } catch (err: any) {
+                  message.error(err?.response?.data?.message || 'Delete failed');
+                }
+              }}
+              okText="Delete"
+              cancelText="Cancel"
+            >
+              <Button danger>Delete</Button>
+            </Popconfirm>
+          </Space>
+        );
+      },
     },
   ];
 

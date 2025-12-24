@@ -221,6 +221,17 @@ export const adminAPI = {
     const response = await api.get('/admin/users', { params });
     return response.data;
   },
+
+  // Admin user management
+  deleteUser: async (id: string) => {
+    const response = await api.delete(`/admin/users/${id}`);
+    return response.data;
+  },
+
+  updateUser: async (id: string, data: { blocked?: boolean }) => {
+    const response = await api.put(`/admin/users/${id}`, data);
+    return response.data;
+  },
 };
 
 // Contact API
