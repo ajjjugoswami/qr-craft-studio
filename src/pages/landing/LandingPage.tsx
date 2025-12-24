@@ -39,7 +39,6 @@ import {
 import FreeQRGenerator from './components/FreeQRGenerator';
 
 const LandingPage = () => {
-  const [showGenerator, setShowGenerator] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const stats = [
@@ -196,12 +195,9 @@ const LandingPage = () => {
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-8">
-              <button 
-                onClick={() => setShowGenerator(true)}
-                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
-              >
+              <a href="#generator" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
                 Generator
-              </button>
+              </a>
               <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
                 Features
               </a>
@@ -237,12 +233,13 @@ const LandingPage = () => {
           {mobileMenuOpen && (
             <div className="md:hidden py-4 border-t border-border/40 animate-fade-in">
               <nav className="flex flex-col gap-2">
-                <button 
-                  onClick={() => { setShowGenerator(true); setMobileMenuOpen(false); }}
-                  className="px-4 py-3 text-left hover:bg-muted rounded-lg transition-colors font-medium"
+                <a 
+                  href="#generator"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-4 py-3 hover:bg-muted rounded-lg transition-colors font-medium"
                 >
                   Generator
-                </button>
+                </a>
                 <a href="#features" className="px-4 py-3 hover:bg-muted rounded-lg transition-colors font-medium">
                   Features
                 </a>
@@ -289,14 +286,15 @@ const LandingPage = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-              <Button 
-                size="lg" 
-                className="text-lg px-8 py-6 shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all font-semibold gap-2 group"
-                onClick={() => setShowGenerator(true)}
-              >
-                Create Free QR Code
-                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              <a href="#generator">
+                <Button 
+                  size="lg" 
+                  className="text-lg px-8 py-6 shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all font-semibold gap-2 group w-full sm:w-auto"
+                >
+                  Create Free QR Code
+                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </a>
               <Link to="/signup">
                 <Button size="lg" variant="outline" className="text-lg px-8 py-6 font-semibold gap-2 group w-full sm:w-auto">
                   <Play className="h-5 w-5" />
@@ -346,27 +344,24 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Generator Section (Collapsible) */}
-      {showGenerator && (
-        <section className="py-16 bg-muted/30 border-y border-border/40">
-          <div className="container mx-auto px-4 lg:px-8">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold font-montserrat">
-                Free QR Generator
-              </h2>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => setShowGenerator(false)}
-              >
-                <X className="h-4 w-4 mr-2" />
-                Close
-              </Button>
+      {/* Generator Section - Always Visible */}
+      <section id="generator" className="py-20 lg:py-28 bg-gradient-to-b from-muted/50 to-background border-y border-border/40">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+              <Zap className="h-4 w-4" />
+              <span>Free Forever</span>
             </div>
-            <FreeQRGenerator />
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-montserrat">
+              Create Your QR Code Now
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              No signup required. Generate beautiful QR codes instantly with our free tool.
+            </p>
           </div>
-        </section>
-      )}
+          <FreeQRGenerator />
+        </div>
+      </section>
 
       {/* QR Types Section */}
       <section className="py-20 lg:py-28">
