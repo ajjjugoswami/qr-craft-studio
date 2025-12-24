@@ -11,8 +11,9 @@ import {
   Eye,
   Lock,
   Target,
+  FileCode,
 } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import { downloadQRCode } from '../../lib/qrDownload';
 import { QRCodeData } from '../../types/qrcode';
 import QRCodePreview from './QRCodePreview';
 import QRCodeOnly from './QRCodeOnly';
@@ -52,58 +53,26 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
   const hasScanLimit = typeof scanLimitValue === 'number' && scanLimitValue > 0;
   const isProtected = typeof qrCode.password === 'string' && qrCode.password.trim().length > 0;
 
-  const handleDownload = async (format: 'webp' | 'jpg') => {
-    if (!previewRef.current || downloading) return;
+  const handleDownload = async (format: 'png' | 'jpeg' | 'webp' | 'svg') => {
+    if (downloading) return;
 
     setDownloading(true);
     try {
-      // Let React paint the loading state before the heavy canvas work
-      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-      await new Promise<void>((resolve) => setTimeout(resolve, 50));
-
-      const canvas = await Promise.race([
-        html2canvas(previewRef.current, {
-          backgroundColor: null,
-          scale: 2,
-          useCORS: true,
-          logging: false,
-        }),
-        new Promise<HTMLCanvasElement>((_, reject) =>
-          setTimeout(() => reject(new Error('DOWNLOAD_TIMEOUT')), 15000),
-        ),
-      ]);
-
-      const fileName = `${qrCode.name}-${Date.now()}`;
-      const mime = format === 'webp' ? 'image/webp' : 'image/jpeg';
-      const quality = 0.95;
-
-      // IMPORTANT: toDataURL is synchronous and can freeze the UI for large canvases.
-      // Using toBlob keeps the UI responsive.
-      const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob(
-          (b) => (b ? resolve(b) : reject(new Error('BLOB_FAILED'))),
-          mime,
-          quality,
-        );
+      await downloadQRCode({
+        content: qrCode.content,
+        styling: qrCode.styling,
+        template: qrCode.template,
+        qrId: qrCode.id,
+        qrType: qrCode.type,
+        fileName: `${qrCode.name}-${Date.now()}`,
+        format,
+        size: 1024,
       });
-
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.download = `${fileName}.${format}`;
-      link.href = url;
-      link.click();
-
-      // Cleanup
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
 
       message.success(`Downloaded as ${format.toUpperCase()}!`);
       setDownloadModalOpen(false);
     } catch (error) {
-      if (error instanceof Error && error.message === 'DOWNLOAD_TIMEOUT') {
-        message.error('Download is taking too long. Please try again.');
-      } else {
-        message.error('Failed to download. Please try again.');
-      }
+      message.error('Failed to download. Please try again.');
     } finally {
       setDownloading(false);
     }
@@ -285,7 +254,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
                 {downloading ? 'Preparing…' : 'Download WebP'}
               </button>
               <button
-                onClick={() => handleDownload('jpg')}
+                onClick={() => handleDownload('jpeg')}
                 disabled={downloading}
                 className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
               >
@@ -449,7 +418,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
               {downloading ? 'Preparing…' : 'Download WebP'}
             </button>
             <button
-              onClick={() => handleDownload('jpg')}
+              onClick={() => handleDownload('jpeg')}
               disabled={downloading}
               className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
             >
