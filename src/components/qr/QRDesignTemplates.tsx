@@ -16,45 +16,40 @@ const categoryConfig: Record<string, { label: string; color: string }> = {
   vibrant: { label: 'vibrant', color: 'magenta' },
 };
 
-// Mini QR pattern preview component
-const QRPatternPreview: React.FC<{ styling: Partial<QRStyling> }> = ({ styling }) => {
+// Mini QR pattern preview component (SVG so colors/gradients match reliably)
+const QRPatternPreview: React.FC<{ styling: Partial<QRStyling>; id?: string }> = ({ styling, id }) => {
   const fgColor = styling.fgColor || '#000000';
   const bgColor = styling.bgColor || '#ffffff';
   const dotsType = styling.dotsType || 'square';
   const cornerColor = styling.cornersSquareOptions?.color || fgColor;
-  
-  // Get gradient colors if available
-  const hasGradient = styling.dotsGradient?.colorStops;
-  const gradientId = `grad-${Math.random().toString(36).substr(2, 9)}`;
-  
-  // Determine dot style based on dotsType
-  const getDotRadius = () => {
-    switch (dotsType) {
-      case 'dots': return '50%';
-      case 'rounded': return '25%';
-      case 'extra-rounded': return '40%';
-      case 'classy': return '15%';
-      case 'classy-rounded': return '30%';
-      default: return '0%';
+  const cornerType = styling.cornersSquareOptions?.type || 'square';
+
+  const gradientStops = styling.dotsGradient?.colorStops;
+  const hasGradient = Boolean(gradientStops && gradientStops.length);
+  const gradientId = `qrprev-grad-${id || 'template'}`;
+
+  const getRadius = (type: QRStyling['dotsType'] | QRStyling['cornersSquareOptions']['type']) => {
+    switch (type) {
+      case 'dots':
+      case 'dot':
+        return 0.5;
+      case 'rounded':
+        return 0.22;
+      case 'extra-rounded':
+        return 0.38;
+      case 'classy':
+        return 0.16;
+      case 'classy-rounded':
+        return 0.3;
+      default:
+        return 0.06;
     }
   };
 
-  const getCornerRadius = () => {
-    const cornerType = styling.cornersSquareOptions?.type || 'square';
-    switch (cornerType) {
-      case 'dot': return '50%';
-      case 'rounded': return '25%';
-      case 'extra-rounded': return '40%';
-      case 'classy': return '15%';
-      case 'classy-rounded': return '30%';
-      default: return '2px';
-    }
-  };
+  const dotR = getRadius(dotsType);
+  const cornerR = getRadius(cornerType);
 
-  const dotRadius = getDotRadius();
-  const cornerRadius = getCornerRadius();
-
-  // Create a simplified QR pattern
+  // Simplified 9x9 pattern (just for preview)
   const pattern = [
     [1, 1, 1, 0, 1, 0, 1, 1, 1],
     [1, 0, 1, 1, 0, 1, 1, 0, 1],
@@ -67,47 +62,78 @@ const QRPatternPreview: React.FC<{ styling: Partial<QRStyling> }> = ({ styling }
     [1, 1, 1, 0, 1, 0, 1, 1, 1],
   ];
 
+  const isCorner = (row: number, col: number) =>
+    (row < 3 && col < 3) || (row < 3 && col > 5) || (row > 5 && col < 3);
+
+  const fillFor = (corner: boolean) => {
+    if (corner) return cornerColor;
+    if (hasGradient) return `url(#${gradientId})`;
+    return fgColor;
+  };
+
   return (
-    <div 
-      className="w-12 h-12 grid gap-[1px] p-[2px] rounded"
-      style={{ 
+    <div
+      className="w-12 h-12 rounded"
+      style={{
         backgroundColor: bgColor,
-        gridTemplateColumns: 'repeat(9, 1fr)',
-        border: bgColor === '#ffffff' || bgColor === '#fff' ? '1px solid #e5e7eb' : 'none'
+        border: bgColor.toLowerCase() === '#ffffff' || bgColor.toLowerCase() === '#fff' ? '1px solid #e5e7eb' : 'none',
       }}
     >
-      {hasGradient && (
-        <svg width="0" height="0" style={{ position: 'absolute' }}>
+      <svg
+        viewBox="0 0 9 9"
+        width="48"
+        height="48"
+        className="block"
+        aria-hidden="true"
+      >
+        {hasGradient && (
           <defs>
             <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-              {styling.dotsGradient?.colorStops?.map((stop, i) => (
+              {gradientStops!.map((stop, i) => (
                 <stop key={i} offset={`${stop.offset * 100}%`} stopColor={stop.color} />
               ))}
             </linearGradient>
           </defs>
-        </svg>
-      )}
-      {pattern.flat().map((cell, i) => {
-        const row = Math.floor(i / 9);
-        const col = i % 9;
-        const isCorner = (row < 3 && col < 3) || (row < 3 && col > 5) || (row > 5 && col < 3);
-        
-        return (
-          <div
-            key={i}
-            style={{
-              backgroundColor: cell 
-                ? (isCorner ? cornerColor : fgColor)
-                : 'transparent',
-              borderRadius: isCorner ? cornerRadius : dotRadius,
-              aspectRatio: '1',
-              background: cell && hasGradient && !isCorner 
-                ? `url(#${gradientId})` 
-                : undefined,
-            }}
-          />
-        );
-      })}
+        )}
+
+        {/* background */}
+        <rect x={0} y={0} width={9} height={9} fill={bgColor} />
+
+        {/* modules */}
+        {pattern.map((rowArr, r) =>
+          rowArr.map((cell, c) => {
+            if (!cell) return null;
+            const corner = isCorner(r, c);
+
+            // “dots” type is best represented as circles
+            if (!corner && dotsType === 'dots') {
+              return (
+                <circle
+                  key={`${r}-${c}`}
+                  cx={c + 0.5}
+                  cy={r + 0.5}
+                  r={0.42}
+                  fill={fillFor(false)}
+                />
+              );
+            }
+
+            const rr = corner ? cornerR : dotR;
+            return (
+              <rect
+                key={`${r}-${c}`}
+                x={c + 0.08}
+                y={r + 0.08}
+                width={0.84}
+                height={0.84}
+                rx={rr}
+                ry={rr}
+                fill={fillFor(corner)}
+              />
+            );
+          })
+        )}
+      </svg>
     </div>
   );
 };
@@ -195,7 +221,7 @@ const QRDesignTemplates: React.FC<QRDesignTemplatesProps> = ({
                 }
               `}
             >
-              <QRPatternPreview styling={template.styling} />
+              <QRPatternPreview styling={template.styling} id={template.id} />
               <Text className="text-center text-sm font-medium">{template.name}</Text>
               <Tag color={categoryConfig[template.category]?.color}>
                 {categoryConfig[template.category]?.label}
