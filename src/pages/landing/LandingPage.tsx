@@ -184,7 +184,7 @@ const LandingPage = () => {
                 <img 
                   src="/logo.png" 
                   alt="QR Studio" 
-                  className="h-10 w-10 object-contain transition-transform group-hover:scale-110"
+                  className="h-20 w-18 object-contain transition-transform group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
