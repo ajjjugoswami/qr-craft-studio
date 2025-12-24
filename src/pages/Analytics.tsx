@@ -127,20 +127,68 @@ const Analytics: React.FC = () => {
   ];
 
   const downloadCSV = useCallback(() => {
-    const headers = ['Date', 'Scans', 'Device', 'Location'];
-    const rows = scansOverTime.map((item) => [item.date, item.scans, '', '']);
+    // Comprehensive CSV with all analytics data
+    const lines: string[] = [];
     
-    // Add device data
-    deviceData.forEach((d, i) => {
-      if (rows[i]) rows[i][2] = `${d.name}: ${d.value}`;
+    // Section 1: Scans Over Time (Last 30 Days)
+    lines.push('=== SCANS OVER TIME (Last 30 Days) ===');
+    lines.push('Date,Scans');
+    scansOverTime.forEach((item) => {
+      lines.push(`"${item.date}",${item.scans}`);
     });
+    lines.push('');
     
-    // Add location data
-    locationData.forEach((l, i) => {
-      if (rows[i]) rows[i][3] = `${l.country}: ${l.scans}`;
+    // Section 2: Weekly Performance
+    lines.push('=== WEEKLY PERFORMANCE ===');
+    lines.push('Day,Scans');
+    weeklyData.forEach((item) => {
+      lines.push(`"${item.day}",${item.scans}`);
     });
+    lines.push('');
+    
+    // Section 3: Device Distribution
+    lines.push('=== DEVICE DISTRIBUTION ===');
+    lines.push('Device Type,Count');
+    deviceData.forEach((d) => {
+      lines.push(`"${d.name}",${d.value}`);
+    });
+    lines.push('');
+    
+    // Section 4: Top Locations
+    lines.push('=== TOP LOCATIONS ===');
+    lines.push('Country,Scans');
+    locationData.forEach((l) => {
+      lines.push(`"${l.country}",${l.scans}`);
+    });
+    lines.push('');
+    
+    // Section 5: Top Performing QR Codes
+    lines.push('=== TOP PERFORMING QR CODES ===');
+    lines.push('QR Code Name,Scans');
+    topQRCodes.forEach((qr) => {
+      lines.push(`"${qr.name}",${qr.scans}`);
+    });
+    lines.push('');
+    
+    // Section 6: QR Code Type Distribution
+    lines.push('=== QR CODE TYPE DISTRIBUTION ===');
+    lines.push('Type,Count');
+    qrTypeDistribution.forEach((t) => {
+      lines.push(`"${t.name}",${t.value}`);
+    });
+    lines.push('');
+    
+    // Section 7: Summary Statistics
+    lines.push('=== SUMMARY STATISTICS ===');
+    lines.push('Metric,Value');
+    lines.push(`"Total Scans",${displayedTotalScans}`);
+    lines.push(`"Active QR Codes",${activeQRs || qrCodes.length}`);
+    lines.push(`"Average Scans per QR",${avgScansPerQR}`);
+    lines.push(`"Unique Visitors (est.)",${Math.round((displayedTotalScans || 0) * 0.7)}`);
+    lines.push(`"Data Mode","${mode}"`);
+    lines.push(`"Export Date","${new Date().toISOString()}"`);
 
-    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const csvContent = lines.join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -148,8 +196,8 @@ const Analytics: React.FC = () => {
     link.download = `analytics-overview-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     URL.revokeObjectURL(url);
-    message.success('CSV downloaded successfully');
-  }, [scansOverTime, deviceData, locationData]);
+    message.success('Full analytics CSV downloaded successfully');
+  }, [scansOverTime, weeklyData, deviceData, locationData, topQRCodes, qrTypeDistribution, displayedTotalScans, activeQRs, qrCodes.length, avgScansPerQR, mode]);
 
   if (loading && mode === 'real') {
     return (
