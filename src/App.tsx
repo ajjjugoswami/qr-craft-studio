@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ConfigProvider, theme } from "antd";
 import { store } from "./store";
-import Index from "./pages/Index";
+import { LandingPage } from "./pages/landing";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Dashboard from "./pages/Dashboard";
@@ -51,7 +51,7 @@ const App = () => (
           <ThemeProvider>
             <BrowserRouter>
               <Routes>
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<LandingPage />} />
                 <Route path="/sign-in" element={<SignIn />} />
                 <Route path="/signup" element={<SignUp />} />
                 <Route
