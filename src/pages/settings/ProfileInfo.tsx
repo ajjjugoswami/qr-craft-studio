@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { Card, Typography, Avatar, Button, Form, Input, message, Space } from 'antd';
 import { User, Check } from 'lucide-react';
@@ -128,24 +127,7 @@ const ProfileInfo: React.FC = () => {
         </Form>
       </Card>
 
-      {/* Account Actions Card */}
-      <Card className="shadow-sm">
-        <Title level={4} className="mb-4 flex items-center gap-2">
-          <User size={18} />
-          Account Actions
-        </Title>
-        <Space direction="vertical" className="w-full">
-          <Button type="default" className="w-full justify-start">
-            Change Password
-          </Button>
-          <Button type="default" className="w-full justify-start">
-            Download Account Data
-          </Button>
-          <Button type="default" danger className="w-full justify-start">
-            Delete Account
-          </Button>
-        </Space>
-      </Card>
+      
     </div>
   );
 };
