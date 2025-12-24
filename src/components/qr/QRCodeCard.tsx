@@ -11,9 +11,8 @@ import {
   Eye,
   Lock,
   Target,
-  FileCode,
 } from 'lucide-react';
-import { downloadQRCode } from '../../lib/qrDownload';
+import { toPng, toJpeg } from 'html-to-image';
 import { QRCodeData } from '../../types/qrcode';
 import QRCodePreview from './QRCodePreview';
 import QRCodeOnly from './QRCodeOnly';
@@ -53,25 +52,42 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
   const hasScanLimit = typeof scanLimitValue === 'number' && scanLimitValue > 0;
   const isProtected = typeof qrCode.password === 'string' && qrCode.password.trim().length > 0;
 
-  const handleDownload = async (format: 'png' | 'jpeg' | 'webp' | 'svg') => {
-    if (downloading) return;
+  const handleDownload = async (format: 'png' | 'jpeg') => {
+    if (!previewRef.current || downloading) return;
 
     setDownloading(true);
     try {
-      await downloadQRCode({
-        content: qrCode.content,
-        styling: qrCode.styling,
-        template: qrCode.template,
-        qrId: qrCode.id,
-        qrType: qrCode.type,
-        fileName: `${qrCode.name}-${Date.now()}`,
-        format,
-        size: 1024,
-      });
+      // Wait for any pending renders
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const node = previewRef.current;
+      const fileName = `${qrCode.name}-${Date.now()}`;
+      
+      let dataUrl: string;
+      if (format === 'png') {
+        dataUrl = await toPng(node, {
+          quality: 1,
+          pixelRatio: 2,
+          cacheBust: true,
+        });
+      } else {
+        dataUrl = await toJpeg(node, {
+          quality: 0.95,
+          pixelRatio: 2,
+          cacheBust: true,
+          backgroundColor: '#ffffff',
+        });
+      }
+
+      const link = document.createElement('a');
+      link.download = `${fileName}.${format === 'jpeg' ? 'jpg' : format}`;
+      link.href = dataUrl;
+      link.click();
 
       message.success(`Downloaded as ${format.toUpperCase()}!`);
       setDownloadModalOpen(false);
     } catch (error) {
+      console.error('Download error:', error);
       message.error('Failed to download. Please try again.');
     } finally {
       setDownloading(false);
@@ -242,7 +258,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
 
             <div className="flex gap-3 mt-6">
               <button
-                onClick={() => handleDownload('webp')}
+                onClick={() => handleDownload('png')}
                 disabled={downloading}
                 className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
               >
@@ -251,7 +267,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
                 ) : (
                   <FileImage size={18} />
                 )}
-                {downloading ? 'Preparing…' : 'Download WebP'}
+                {downloading ? 'Preparing…' : 'Download PNG'}
               </button>
               <button
                 onClick={() => handleDownload('jpeg')}
@@ -406,7 +422,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
 
           <div className="flex gap-3 mt-6">
             <button
-              onClick={() => handleDownload('webp')}
+              onClick={() => handleDownload('png')}
               disabled={downloading}
               className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
             >
@@ -415,7 +431,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
               ) : (
                 <FileImage size={18} />
               )}
-              {downloading ? 'Preparing…' : 'Download WebP'}
+              {downloading ? 'Preparing…' : 'Download PNG'}
             </button>
             <button
               onClick={() => handleDownload('jpeg')}
