@@ -25,7 +25,14 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (res) => res,
   (error) => {
-    if (error?.response?.status === 401) {
+    const status = error?.response?.status;
+    const url = error?.config?.url || '';
+
+    // Only auto-logout/redirect for 401s on protected routes (when token exists)
+    const hasToken = !!localStorage.getItem('qc-token');
+    const isAuthEndpoint = url.includes('/auth/signin') || url.includes('/auth/signup');
+
+    if (status === 401 && hasToken && !isAuthEndpoint) {
       // clear stored auth and redirect to signin
       try {
         localStorage.removeItem('qc_auth');
@@ -76,6 +83,14 @@ export const authAPI = {
     const response = await api.put('/auth/profile', data);
     return response.data;
   },
+
+  // Change password
+  changePassword: async (data: { currentPassword: string; newPassword: string }) => {
+    const response = await api.put('/auth/password', data);
+    return response.data;
+  },
+
+
 };
 
 // QR Code API

@@ -85,7 +85,9 @@ export const signIn = createAsyncThunk(
       
       return { user, token };
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Sign in failed');
+      // Prefer server-provided message when available
+      const serverMessage = error?.response?.data?.message || error?.response?.data || error?.message;
+      return rejectWithValue(serverMessage || 'Sign in failed');
     }
   }
 );
