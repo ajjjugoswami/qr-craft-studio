@@ -52,7 +52,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
   const hasScanLimit = typeof scanLimitValue === 'number' && scanLimitValue > 0;
   const isProtected = typeof qrCode.password === 'string' && qrCode.password.trim().length > 0;
 
-  const handleDownload = async (format: 'png' | 'jpg') => {
+  const handleDownload = async (format: 'webp' | 'jpg') => {
     if (!previewRef.current || downloading) return;
 
     setDownloading(true);
@@ -74,8 +74,8 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
       ]);
 
       const fileName = `${qrCode.name}-${Date.now()}`;
-      const mime = format === 'png' ? 'image/png' : 'image/jpeg';
-      const quality = format === 'jpg' ? 0.95 : undefined;
+      const mime = format === 'webp' ? 'image/webp' : 'image/jpeg';
+      const quality = 0.95;
 
       // IMPORTANT: toDataURL is synchronous and can freeze the UI for large canvases.
       // Using toBlob keeps the UI responsive.
@@ -83,7 +83,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
         canvas.toBlob(
           (b) => (b ? resolve(b) : reject(new Error('BLOB_FAILED'))),
           mime,
-          quality as any,
+          quality,
         );
       });
 
@@ -111,8 +111,8 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
 
   const downloadMenuItems = [
     {
-      key: 'png',
-      label: 'PNG (High Quality)',
+      key: 'webp',
+      label: 'WebP (High Quality)',
       icon: <FileImage size={16} />,
       onClick: () => setDownloadModalOpen(true),
     },
@@ -273,7 +273,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
 
             <div className="flex gap-3 mt-6">
               <button
-                onClick={() => handleDownload('png')}
+                onClick={() => handleDownload('webp')}
                 disabled={downloading}
                 className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
               >
@@ -282,7 +282,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
                 ) : (
                   <FileImage size={18} />
                 )}
-                {downloading ? 'Preparing…' : 'Download PNG'}
+                {downloading ? 'Preparing…' : 'Download WebP'}
               </button>
               <button
                 onClick={() => handleDownload('jpg')}
@@ -437,7 +437,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
 
           <div className="flex gap-3 mt-6">
             <button
-              onClick={() => handleDownload('png')}
+              onClick={() => handleDownload('webp')}
               disabled={downloading}
               className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
             >
@@ -446,7 +446,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
               ) : (
                 <FileImage size={18} />
               )}
-              {downloading ? 'Preparing…' : 'Download PNG'}
+              {downloading ? 'Preparing…' : 'Download WebP'}
             </button>
             <button
               onClick={() => handleDownload('jpg')}
