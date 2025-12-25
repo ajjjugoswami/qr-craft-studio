@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, Typography, Avatar, Button, Form, Input, message, Space, Upload, Select, UploadProps } from 'antd';
-import { User, Check, Upload as UploadIcon, X } from 'lucide-react';
+import { Card, Typography, Avatar, Button, Form, Input, message, Space, Upload, Select, UploadProps, Modal } from 'antd';
+import { User, Check, Upload as UploadIcon, X, Eye } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { authAPI } from '@/lib/api';
 
@@ -39,6 +39,7 @@ const ProfileInfo: React.FC = () => {
   const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
+  const [previewVisible, setPreviewVisible] = useState(false);
   const [form] = Form.useForm();
 
   const uploadProps: UploadProps = {
@@ -82,6 +83,38 @@ const ProfileInfo: React.FC = () => {
       .slice(0, 2);
   };
 
+  const handleAvatarClick = () => {
+    if (user?.profilePicture) {
+      setPreviewVisible(true);
+    }
+  };
+
+  const handleRemoveProfilePicture = async () => {
+    try {
+      setLoading(true);
+      
+      const formData = new FormData();
+      formData.append('name', user?.name || '');
+      formData.append('mobile', user?.mobile || '');
+      formData.append('country', user?.country || '');
+      formData.append('city', user?.city || '');
+      formData.append('language', user?.language || 'en');
+      formData.append('timezone', user?.timezone || 'UTC');
+      formData.append('profilePicture', ''); // Remove profile picture
+
+      const response = await authAPI.updateProfile(formData);
+
+      if (response.success) {
+        updateUser(response.user);
+        message.success('Profile picture removed successfully');
+      }
+    } catch (error: any) {
+      message.error(error.response?.data?.message || 'Failed to remove profile picture');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSaveProfile = async () => {
     try {
       setLoading(true);
@@ -94,6 +127,7 @@ const ProfileInfo: React.FC = () => {
       if (values.city) formData.append('city', values.city);
       if (values.language) formData.append('language', values.language);
       if (values.timezone) formData.append('timezone', values.timezone);
+      
       if (profilePictureFile) {
         formData.append('profilePicture', profilePictureFile);
       }
@@ -132,7 +166,7 @@ const ProfileInfo: React.FC = () => {
         </div>
 
         <div className="flex items-center space-x-6 mb-6">
-          <div className="relative">
+          <div className="relative group">
             <Avatar
               size={80}
               src={user?.profilePicture}
@@ -141,14 +175,40 @@ const ProfileInfo: React.FC = () => {
             >
               {user?.name && !user.profilePicture ? getInitials(user.name) : ''}
             </Avatar>
-            <Upload {...uploadProps} className="absolute -bottom-2 -right-2">
-              <Button
-                size="small"
-                shape="circle"
-                icon={<UploadIcon size={14} />}
-                className="bg-primary text-primary-foreground border-primary hover:bg-primary/90"
-              />
-            </Upload>
+            {user?.profilePicture && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-full">
+                <Button
+                  size="small"
+                  shape="circle"
+                  icon={<Eye size={16} />}
+                  onClick={handleAvatarClick}
+                  className="opacity-0 group-hover:opacity-100 bg-white text-gray-700 border-white hover:bg-gray-100 transition-opacity duration-200"
+                  title="View full size"
+                />
+              </div>
+            )}
+            <div className="absolute -bottom-2 -right-2 flex gap-1">
+              {user?.profilePicture && (
+                <Button
+                  size="small"
+                  shape="circle"
+                  icon={<X size={14} />}
+                  onClick={handleRemoveProfilePicture}
+                  loading={loading}
+                  className="bg-red-500 text-white border-red-500 hover:bg-red-600"
+                  title="Remove profile picture"
+                />
+              )}
+              <Upload {...uploadProps}>
+                <Button
+                  size="small"
+                  shape="circle"
+                  icon={<UploadIcon size={14} />}
+                  className="bg-primary text-primary-foreground border-primary hover:bg-primary/90"
+                  title="Upload new picture"
+                />
+              </Upload>
+            </div>
           </div>
           <div className="flex-1">
             <div className="text-sm text-gray-500 mb-2">
@@ -235,7 +295,20 @@ const ProfileInfo: React.FC = () => {
         </Form>
       </Card>
 
-      
+      <Modal
+        open={previewVisible}
+        title="Profile Picture"
+        footer={null}
+        onCancel={() => setPreviewVisible(false)}
+        centered
+        width={600}
+      >
+        <img
+          alt="Profile Picture"
+          style={{ width: '100%', height: 'auto' }}
+          src={user?.profilePicture}
+        />
+      </Modal>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import { authAPI } from '@/lib/api';
+import { clearQRCodes } from './qrCodesSlice';
 
 // ============ Types ============
 export interface User {

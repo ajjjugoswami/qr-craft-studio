@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Table, Tag, Typography, Spin, Alert, Button, Input, Space, Tooltip, Popconfirm, message } from "antd";
+import { Table, Tag, Typography, Spin, Alert, Button, Input, Space, Tooltip, Popconfirm, message, Avatar, Modal } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, User } from 'lucide-react';
 import { adminAPI } from "@/lib/api";
 
 const { Title, Text } = Typography;
@@ -13,6 +13,7 @@ interface User {
   email?: string;
   createdAt?: string | null;
   blocked?: boolean;
+  profilePicture?: string;
 }
 
 interface QRCode {
@@ -46,6 +47,10 @@ const AdminData: React.FC = () => {
   const [limit, setLimit] = useState<number>(10);
   const [total, setTotal] = useState<number>(0);
   const [search, setSearch] = useState<string>("");
+
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string>("");
+  const [previewTitle, setPreviewTitle] = useState<string>("");
 
   const isMounted = useRef(true);
 
@@ -112,8 +117,33 @@ const AdminData: React.FC = () => {
     loadData({ page: 1, search: value });
   };
 
+  const handleAvatarClick = (profilePicture: string | undefined, userName: string | undefined) => {
+    if (profilePicture) {
+      setPreviewImage(profilePicture);
+      setPreviewTitle(userName || "Profile Picture");
+      setPreviewVisible(true);
+    }
+  };
+
   // Columns
   const columns: ColumnsType<AdminUserRow> = [
+    {
+      title: "Profile",
+      dataIndex: ["user", "profilePicture"],
+      key: "profilePicture",
+      width: 80,
+      render: (profilePicture: string | undefined, record: AdminUserRow) => (
+        <Avatar
+          size={40}
+          src={profilePicture}
+          icon={<User size={20} />}
+          style={{ cursor: profilePicture ? 'pointer' : 'default' }}
+          onClick={() => handleAvatarClick(profilePicture, record.user?.name)}
+        >
+          {record.user?.name ? record.user.name.charAt(0).toUpperCase() : '?'}
+        </Avatar>
+      ),
+    },
     {
       title: "Name",
       dataIndex: ["user", "name"],
@@ -306,6 +336,21 @@ const AdminData: React.FC = () => {
           expandable={{ expandedRowRender: renderExpandedRow }}
         />
       )}
+
+      <Modal
+        open={previewVisible}
+        title={previewTitle}
+        footer={null}
+        onCancel={() => setPreviewVisible(false)}
+        centered
+        width={600}
+      >
+        <img
+          alt={previewTitle}
+          style={{ width: '100%', height: 'auto' }}
+          src={previewImage}
+        />
+      </Modal>
     </div>
   );
 };

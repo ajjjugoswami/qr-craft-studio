@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store';
 import {
   fetchQRCodes,
@@ -16,7 +16,7 @@ import {
   selectShouldFetchQRCodes,
   clearQRCodes,
 } from '@/store/slices/qrCodesSlice';
-import { selectIsAuthenticated } from '@/store/slices/authSlice';
+import { selectIsAuthenticated, selectUser } from '@/store/slices/authSlice';
 import { QRCodeData } from '@/types/qrcode';
 
 /**
@@ -33,6 +33,9 @@ export const useQRCodes = () => {
   const totalPages = useAppSelector(selectQRCodesTotalPages);
   const shouldFetch = useAppSelector(selectShouldFetchQRCodes);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const user = useAppSelector(selectUser);
+  
+  const prevUserIdRef = useRef<string | undefined>();
 
   // Fetch QR codes on mount if needed (load first page)
   useEffect(() => {
@@ -40,6 +43,20 @@ export const useQRCodes = () => {
       dispatch(fetchQRCodes({ page: 1, limit }));
     }
   }, [dispatch, isAuthenticated, shouldFetch, limit]);
+
+  // Force refetch when user changes
+  useEffect(() => {
+    const currentUserId = user?._id;
+    const prevUserId = prevUserIdRef.current;
+    
+    if (currentUserId && prevUserId && currentUserId !== prevUserId) {
+      // User changed, clear cache and refetch
+      dispatch(clearQRCodes());
+      dispatch(fetchQRCodes({ page: 1, limit }));
+    }
+    
+    prevUserIdRef.current = currentUserId;
+  }, [dispatch, user?._id, limit]);
 
   // Clear data on logout
   useEffect(() => {
