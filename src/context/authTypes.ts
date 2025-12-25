@@ -7,6 +7,9 @@ export type User = {
   mobile?: string;
   country?: string;
   city?: string;
+  profilePicture?: string;
+  language?: string;
+  timezone?: string;
 };
 
 export type AuthContextType = {

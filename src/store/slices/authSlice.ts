@@ -12,6 +12,9 @@ export interface User {
   mobile?: string;
   country?: string;
   city?: string;
+  profilePicture?: string;
+  language?: string;
+  timezone?: string;
 }
 
 interface AuthState {

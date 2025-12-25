@@ -79,8 +79,11 @@ export const authAPI = {
   },
 
   // Update user profile
-  updateProfile: async (data: { name: string; mobile?: string; country?: string; city?: string }) => {
-    const response = await api.put('/auth/profile', data);
+  updateProfile: async (data: FormData | { name: string; mobile?: string; country?: string; city?: string; language?: string; timezone?: string }) => {
+    const isFormData = data instanceof FormData;
+    const response = await api.put('/auth/profile', data, {
+      headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
+    });
     return response.data;
   },
 
