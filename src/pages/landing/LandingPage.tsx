@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { 
   QrCode, 
-  Sparkles, 
   ArrowRight, 
   Link as LinkIcon, 
   Phone, 
@@ -71,7 +70,7 @@ const LandingPage = () => {
       gradient: 'from-violet-500 to-purple-600'
     },
     {
-      icon: <Sparkles className="h-7 w-7" />,
+      icon: <Palette className="h-7 w-7" />,
       title: '50+ Templates',
       description: 'Professional designs for every use case',
       gradient: 'from-amber-500 to-orange-600'
@@ -463,7 +462,8 @@ const LandingPage = () => {
         </div>
       </section>
 
- 
+      {/* Pricing Section - Temporarily Hidden */}
+      {/*
        <section id="pricing" className="py-14 lg:py-14 bg-gradient-to-b from-muted/30 to-background">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-16">
@@ -540,6 +540,7 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
+      */}
  
 
       {/* Footer */}
