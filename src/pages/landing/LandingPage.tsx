@@ -42,8 +42,8 @@ const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const stats = [
-    { value: '50K+', label: 'QR Codes Created' },
-    { value: '10K+', label: 'Happy Users' },
+    { value: '5K+', label: 'QR Codes Created' },
+    { value: '2K+', label: 'Happy Users' },
     { value: '99.9%', label: 'Uptime' },
     { value: '24/7', label: 'Support' }
   ];
