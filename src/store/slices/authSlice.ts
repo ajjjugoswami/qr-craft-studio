@@ -95,10 +95,34 @@ export const signIn = createAsyncThunk(
         profile = me._id ? me : me.user ? me.user : me;
       } catch (err) {
         // Fallback to data returned by signin
-        profile = { _id: data._id, name: data.name, email: data.email, isAdmin: data.isAdmin, theme: data.theme };
+        profile = { 
+          _id: data._id, 
+          name: data.name, 
+          email: data.email, 
+          isAdmin: data.isAdmin, 
+          theme: data.theme,
+          mobile: data.mobile,
+          country: data.country,
+          city: data.city,
+          profilePicture: data.profilePicture,
+          language: data.language,
+          timezone: data.timezone,
+        };
       }
 
-      const user: User = { _id: profile._id, name: profile.name, email: profile.email, isAdmin: profile.isAdmin, theme: profile.theme };
+      const user: User = { 
+        _id: profile._id, 
+        name: profile.name, 
+        email: profile.email, 
+        isAdmin: profile.isAdmin, 
+        theme: profile.theme,
+        mobile: profile.mobile,
+        country: profile.country,
+        city: profile.city,
+        profilePicture: profile.profilePicture,
+        language: profile.language,
+        timezone: profile.timezone,
+      };
 
       // Persist user and token
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ user }));
@@ -134,10 +158,34 @@ export const signUp = createAsyncThunk(
         profile = me._id ? me : me.user ? me.user : me;
       } catch (err) {
         // Fallback to data returned by signup
-        profile = { _id: data._id, name: data.name || name, email: data.email, isAdmin: data.isAdmin, theme: data.theme };
+        profile = { 
+          _id: data._id, 
+          name: data.name || name, 
+          email: data.email, 
+          isAdmin: data.isAdmin, 
+          theme: data.theme,
+          mobile: data.mobile,
+          country: data.country,
+          city: data.city,
+          profilePicture: data.profilePicture,
+          language: data.language,
+          timezone: data.timezone,
+        };
       }
 
-      const user: User = { _id: profile._id, name: profile.name, email: profile.email, isAdmin: profile.isAdmin, theme: profile.theme };
+      const user: User = { 
+        _id: profile._id, 
+        name: profile.name, 
+        email: profile.email, 
+        isAdmin: profile.isAdmin, 
+        theme: profile.theme,
+        mobile: profile.mobile,
+        country: profile.country,
+        city: profile.city,
+        profilePicture: profile.profilePicture,
+        language: profile.language,
+        timezone: profile.timezone,
+      };
 
       // Persist user and token
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ user }));
@@ -173,6 +221,7 @@ const authSlice = createSlice({
       state.token = null;
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem('qc_theme');
       message.info('Signed out');
     },
     updateUser: (state, action: PayloadAction<Partial<User>>) => {

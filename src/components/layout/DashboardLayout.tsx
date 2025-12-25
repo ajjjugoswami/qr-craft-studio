@@ -123,6 +123,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           <Avatar
             className="avatar-primary"
             size={36}
+            src={user?.profilePicture}
           >
             {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
           </Avatar>
@@ -167,6 +168,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         <Avatar
           className="avatar-primary cursor-pointer"
           size={32}
+          src={user?.profilePicture}
           onClick={() => navigate("/settings")}
         >
           {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
