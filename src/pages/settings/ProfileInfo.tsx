@@ -120,6 +120,25 @@ const ProfileInfo: React.FC = () => {
       setLoading(true);
       const values = await form.validateFields();
       
+      // Check if any data has actually changed
+      const hasNameChanged = values.name !== (user?.name || '');
+      const hasMobileChanged = values.mobile !== (user?.mobile || '');
+      const hasCountryChanged = values.country !== (user?.country || '');
+      const hasCityChanged = values.city !== (user?.city || '');
+      const hasLanguageChanged = values.language !== (user?.language || 'en');
+      const hasTimezoneChanged = values.timezone !== (user?.timezone || 'UTC');
+      const hasProfilePictureChanged = !!profilePictureFile;
+      
+      const hasAnyChanges = hasNameChanged || hasMobileChanged || hasCountryChanged || 
+                           hasCityChanged || hasLanguageChanged || hasTimezoneChanged || 
+                           hasProfilePictureChanged;
+      
+      if (!hasAnyChanges) {
+        message.info('No changes to save');
+        setLoading(false);
+        return;
+      }
+      
       const formData = new FormData();
       formData.append('name', values.name);
       if (values.mobile) formData.append('mobile', values.mobile);
