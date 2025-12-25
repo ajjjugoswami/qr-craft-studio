@@ -15,6 +15,7 @@ import {
 import { Link } from 'react-router-dom';
 import FreeQRPreview from './FreeQRPreview';
 import FreeStyleOptions from './FreeStyleOptions';
+import { toast } from '@/hooks/use-toast';
 import type { QRStyling } from '@/types/qrcode';
 import { defaultStyling } from '@/types/qrcode';
 
@@ -33,20 +34,22 @@ const FreeQRGenerator = () => {
   }, []);
 
   const getQRContent = () => {
+    const trimmed = content.trim();
     switch (qrType) {
       case 'phone':
-        return `tel:${content}`;
+        return `tel:${trimmed.replace(/\s+/g, '')}`;
       case 'email':
-        return `mailto:${content}`;
+        return `mailto:${trimmed}`;
       case 'sms':
-        return `sms:${content}`;
+        return `sms:${trimmed.replace(/\s+/g, '')}`;
       default:
-        return content;
+        return trimmed;
     }
   };
 
-  const getPlaceholder = () => {
-    switch (qrType) {
+  const getPlaceholder = (typeParam?: typeof qrType) => {
+    const t = typeParam ?? qrType;
+    switch (t) {
       case 'phone':
         return '+1 234 567 8900';
       case 'email':
@@ -74,7 +77,7 @@ const FreeQRGenerator = () => {
   return (
     <div className="grid lg:grid-cols-2 gap-8">
       {/* Left: Form */}
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6">
         <div className="space-y-6">
           {/* QR Type Selection */}
           <div>
@@ -93,7 +96,7 @@ const FreeQRGenerator = () => {
                   className="flex-col h-auto py-3 gap-1"
                   onClick={() => {
                     setQrType(item.type as typeof qrType);
-                    setContent('');
+                    setContent(getPlaceholder(item.type as typeof qrType));
                   }}
                 >
                   {item.icon}
@@ -120,6 +123,7 @@ const FreeQRGenerator = () => {
           {/* Style Options */}
           <FreeStyleOptions styling={styling} onStyleChange={handleStyleChange} />
 
+
           {/* Upgrade CTA */}
           <div className="bg-muted/50 rounded-lg p-4 border border-border">
             <div className="flex items-start gap-3">
@@ -143,9 +147,9 @@ const FreeQRGenerator = () => {
       </Card>
 
       {/* Right: Preview */}
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6">
         <div className="flex flex-col items-center">
-          <Label className="text-sm font-medium mb-4 self-start">Preview</Label>
+          <Label className="text-sm sm:text-base font-medium mb-4 self-start">Preview</Label>
           <div className="flex-1 flex items-center justify-center w-full">
             <FreeQRPreview 
               ref={qrRef}
@@ -154,11 +158,16 @@ const FreeQRGenerator = () => {
             />
           </div>
           <div className="w-full mt-6 space-y-3">
-            <Button 
-              className="w-full gap-2" 
+            <Button
+              className="w-full gap-2"
+              disabled={content.trim() === ''}
               onClick={() => {
-                const downloadEvent = new CustomEvent('download-qr', { 
-                  detail: { format: 'png' } 
+                if (!content.trim()) {
+                  toast({ title: 'Missing content', description: 'Please enter the QR content before downloading.' });
+                  return;
+                }
+                const downloadEvent = new CustomEvent('download-qr', {
+                  detail: { format: 'png' },
                 });
                 window.dispatchEvent(downloadEvent);
               }}

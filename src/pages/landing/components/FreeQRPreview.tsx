@@ -6,10 +6,11 @@ interface FreeQRPreviewProps {
   content: string;
   styling: QRStyling;
   size?: number;
+  className?: string;
 }
 
 const FreeQRPreview = forwardRef<HTMLDivElement, FreeQRPreviewProps>(
-  ({ content, styling, size = 240 }, ref) => {
+  ({ content, styling, size = 240, className = '' }, ref) => {
     const qrRef = useRef<HTMLDivElement>(null);
     const qrInstanceRef = useRef<QRCodeStyling | null>(null);
 
@@ -69,7 +70,7 @@ const FreeQRPreview = forwardRef<HTMLDivElement, FreeQRPreviewProps>(
     }, [content, styling, size]);
 
     return (
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-border">
+      <div className={`bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-border ${className}`}>
         <div ref={qrRef} className="flex items-center justify-center" />
       </div>
     );
