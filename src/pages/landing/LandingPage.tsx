@@ -177,18 +177,18 @@ const LandingPage = () => {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="h-20 flex items-center justify-between">
+          <div className="h-16 sm:h-20 flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 group">
               <div className="relative">
                 <img 
                   src="/logo.png" 
                   alt="QR Studio" 
-                  className="h-20 w-18 object-contain transition-transform group-hover:scale-110"
+                  className="h-12 sm:h-20 w-auto object-contain transition-transform group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-              <span className="font-bold text-2xl tracking-tight font-montserrat">
+              <span className="font-bold text-lg sm:text-2xl tracking-tight font-montserrat">
                 QR<span className="text-primary">Studio</span>
               </span>
             </Link>
@@ -270,7 +270,7 @@ const LandingPage = () => {
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 font-montserrat leading-[1.1]">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-8 font-montserrat leading-[1.1]">
               Create Stunning
               <span className="block bg-gradient-to-r from-primary via-violet-500 to-primary bg-clip-text text-transparent">
                 QR Codes in Seconds
@@ -278,7 +278,7 @@ const LandingPage = () => {
             </h1>
 
             {/* Subheadline */}
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed">
+            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed">
               Design beautiful, trackable QR codes with custom colors, logos, and templates. 
               Perfect for marketing, events, and business.
             </p>
@@ -288,14 +288,14 @@ const LandingPage = () => {
               <a href="#generator">
                 <Button 
                   size="lg" 
-                  className="text-lg px-8 py-6 shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all font-semibold gap-2 group w-full sm:w-auto"
+                  className="text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-6 shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all font-semibold gap-2 group w-full sm:w-auto"
                 >
                   Create Free QR Code
                   <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </a>
               <Link to="/signup">
-                <Button size="lg" variant="outline" className="text-lg px-8 py-6 font-semibold gap-2 group w-full sm:w-auto">
+                <Button size="lg" variant="outline" className="text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-6 font-semibold gap-2 group w-full sm:w-auto">
                   <Play className="h-5 w-5" />
                   See How It Works
                 </Button>
@@ -306,7 +306,7 @@ const LandingPage = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-foreground mb-1 font-montserrat">
+                  <div className="text-2xl md:text-3xl font-bold text-foreground mb-1 font-montserrat">
                     {stat.value}
                   </div>
                   <div className="text-sm text-muted-foreground font-medium">
@@ -350,10 +350,10 @@ const LandingPage = () => {
             <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
               <span>Free Forever</span>
             </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-montserrat">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 font-montserrat">
               Create Your QR Code Now
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               No signup required. Generate beautiful QR codes instantly with our free tool.
             </p>
           </div>
@@ -369,10 +369,10 @@ const LandingPage = () => {
               <QrCode className="h-4 w-4 text-primary" />
               <span>12 QR Code Types</span>
             </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-montserrat">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 font-montserrat">
               One Tool, Endless Possibilities
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Create QR codes for websites, contact cards, WiFi networks, social media, and more.
             </p>
           </div>
@@ -417,11 +417,11 @@ const LandingPage = () => {
               <Crown className="h-4 w-4" />
               <span>Pro Features</span>
             </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-montserrat">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 font-montserrat">
               Powerful Features for
               <span className="block text-primary">Professional Results</span>
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               Unlock advanced tools to create, track, and optimize your QR code campaigns.
             </p>
           </div>
@@ -446,7 +446,7 @@ const LandingPage = () => {
                   {feature.icon}
                 </div>
 
-                <h3 className="font-bold text-xl mb-3 font-montserrat">{feature.title}</h3>
+                <h3 className="font-bold text-lg mb-3 font-montserrat">{feature.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
 
                 {/* Hover CTA */}
@@ -471,10 +471,10 @@ const LandingPage = () => {
               <Zap className="h-4 w-4" />
               <span>Simple Pricing</span>
             </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-montserrat">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 font-montserrat">
               Start Free, Upgrade Anytime
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
               No hidden fees. Cancel anytime. Start creating beautiful QR codes today.
             </p>
           </div>
@@ -499,7 +499,7 @@ const LandingPage = () => {
                   <h3 className="text-2xl font-bold mb-2 font-montserrat">{plan.name}</h3>
                   <p className="text-muted-foreground mb-4">{plan.description}</p>
                   <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-5xl font-bold font-montserrat">{plan.price}</span>
+                    <span className="text-3xl md:text-5xl font-bold font-montserrat">{plan.price}</span>
                     <span className="text-muted-foreground">{plan.period}</span>
                   </div>
                 </div>
@@ -525,7 +525,7 @@ const LandingPage = () => {
 
                 <Link to="/signup" className="block">
                   <Button 
-                    className={`w-full py-6 text-lg font-semibold ${
+                    className={`w-full py-3 sm:py-6 text-base sm:text-lg font-semibold ${
                       plan.popular 
                         ? 'shadow-lg shadow-primary/25' 
                         : ''
@@ -549,7 +549,7 @@ const LandingPage = () => {
             {/* Logo */}
             <div className="flex items-center gap-3">
               <img src="/logo.png" alt="QR Studio" className="h-8 w-8 object-contain" />
-              <span className="font-bold text-xl font-montserrat">
+              <span className="font-bold text-lg font-montserrat">
                 QR<span className="text-primary">Studio</span>
               </span>
             </div>
