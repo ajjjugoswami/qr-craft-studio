@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Typography, Segmented, Pagination } from 'antd';
 import { CheckCircleFilled } from '@ant-design/icons';
 import { QRTemplate, defaultTemplates } from '../../types/qrcode';
-import { Ban } from 'lucide-react';
+import { QrCode } from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -88,6 +88,9 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
     <div className="animate-fade-in">
       <div className="mb-6">
         <Title level={4}>Choose Your Card Template</Title>
+        <Text type="secondary" className="text-sm">
+          Select a template or choose "QR Code Only" for just the code
+        </Text>
       </div>
 
       <div className="mb-6 space-y-4">
@@ -104,7 +107,38 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {/* No Template option temporarily removed (was causing break in flow) */}
+        {/* No Template / QR Only option - always show on first page */}
+        {currentPage === 1 && (
+          <div
+            className={`
+              rounded-xl cursor-pointer transition-all overflow-hidden
+              hover:ring-2 hover:ring-primary hover:shadow-lg hover:scale-[1.02]
+              ${isNoTemplate ? 'ring-2 ring-primary shadow-lg scale-[1.02]' : 'ring-1 ring-border'}
+            `}
+            onClick={() => onSelect(null)}
+          >
+            <div
+              className="h-36 flex flex-col items-center justify-center relative p-4 bg-gradient-to-br from-muted to-muted/50"
+            >
+              {isNoTemplate && (
+                <CheckCircleFilled
+                  className="absolute top-2 right-2 text-lg text-primary"
+                  style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }}
+                />
+              )}
+              <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow-sm mb-2">
+                <QrCode size={40} className="text-foreground" />
+              </div>
+              <Text className="text-xs text-muted-foreground text-center">
+                No card design
+              </Text>
+            </div>
+            <div className="p-3 bg-card text-center border-t border-border">
+              <Text strong className="text-sm">QR Code Only</Text>
+            </div>
+          </div>
+        )}
+
         {currentTemplates.map((template) => (
           <div
             key={template.id}
@@ -164,7 +198,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
         <div className="flex justify-center mt-8">
           <Pagination
             current={currentPage}
-            total={totalTemplates}
+            total={totalTemplates + 1} // +1 for the "No Template" option
             pageSize={pageSize}
             onChange={handlePageChange}
             showSizeChanger={false}
