@@ -3,11 +3,9 @@ import QRCodeStyling from 'qr-code-styling';
 import { getAppOrigin } from '../../lib/config';
 import { QRTemplate, QRStyling, QRType } from '../../types/qrcode';
 
-// Types that should encode content directly (native phone handling)
-const DIRECT_CONTENT_TYPES: QRType[] = ['vcard', 'wifi', 'phone', 'sms', 'email', 'location', 'text'];
-
-// Types that should go through redirector for tracking
-const REDIRECT_CONTENT_TYPES: QRType[] = ['url', 'instagram', 'facebook', 'youtube', 'whatsapp'];
+// All QR types now go through redirector for scan tracking
+// Direct content types (vcard, wifi, etc.) will be displayed on the redirector page
+// Redirect types (url, instagram, etc.) will redirect to the target URL
 
 interface QRCodeOnlyProps {
   content: string;
@@ -49,13 +47,9 @@ const QRCodeOnly = forwardRef<HTMLDivElement, QRCodeOnlyProps>(({
   useEffect(() => {
     const getQRData = () => {
       try {
-        // For direct content types (vcard, wifi, phone, etc.), encode content directly
-        // These are handled natively by phone apps and don't need redirector
-        if (DIRECT_CONTENT_TYPES.includes(qrType)) {
-          return content || 'https://example.com';
-        }
-        
-        // For redirect types (url, instagram, youtube, etc.), go through redirector for tracking
+        // ALL QR types now go through redirector for scan tracking
+        // The redirector will handle displaying content for direct types (vcard, wifi, etc.)
+        // and redirecting for URL-based types (url, instagram, youtube, etc.)
         if (typeof window !== 'undefined') {
           if (typeof content === 'string' && qrId) {
             return `${getAppOrigin()}/r/${qrId}`;
