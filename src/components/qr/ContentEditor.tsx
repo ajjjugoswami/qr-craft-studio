@@ -9,8 +9,11 @@ import { QRType } from '../../types/qrcode';
 import { uploadsAPI } from '@/lib/api';
 
 const isValidImageUrl = (url?: string) => {
-  if (!url || typeof url !== 'string') return false;
-  return /^https?:\/\//i.test(url) || /^data:/i.test(url) || /^blob:/i.test(url);
+  if (!url || typeof url !== 'string' || url.trim() === '') return false;
+  // Must be a valid URL with actual path/content, not just the protocol
+  const trimmed = url.trim();
+  if (trimmed.length < 10) return false; // Too short to be a valid image URL
+  return /^https?:\/\/.+/i.test(trimmed) || /^data:image\/.+/i.test(trimmed) || /^blob:/i.test(trimmed);
 };
 
 const { Title, Text } = Typography;
