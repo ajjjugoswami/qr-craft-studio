@@ -92,6 +92,24 @@ END:VCARD`;
       case 'whatsapp':
         generatedContent = `https://wa.me/${values.phone || ''}${values.message ? `?text=${encodeURIComponent(values.message)}` : ''}`;
         break;
+      case 'tiktok':
+        generatedContent = `https://tiktok.com/@${values.username || ''}`;
+        break;
+      case 'twitter':
+        generatedContent = `https://x.com/${values.username || ''}`;
+        break;
+      case 'linkedin':
+        generatedContent = values.profileUrl || '';
+        break;
+      case 'spotify':
+        generatedContent = values.spotifyUrl || '';
+        break;
+      case 'telegram':
+        generatedContent = `https://t.me/${values.username || ''}`;
+        break;
+      case 'paypal':
+        generatedContent = `https://paypal.me/${values.username || ''}`;
+        break;
       default:
         generatedContent = values.content || '';
     }
@@ -158,9 +176,22 @@ END:VCARD`;
 
       case 'instagram':
       case 'facebook':
+      case 'tiktok':
+      case 'twitter':
+      case 'telegram':
+      case 'paypal':
         return (
-          <Form.Item name="username" label="Username" rules={[{ required: true }]}>
-            <Input placeholder="yourusername" size="large" addonBefore="@" onChange={handleFormChange} />
+          <Form.Item 
+            name="username" 
+            label={type === 'paypal' ? 'PayPal.me Username' : type === 'telegram' ? 'Telegram Username' : 'Username'} 
+            rules={[{ required: true }]}
+          >
+            <Input 
+              placeholder="yourusername" 
+              size="large" 
+              addonBefore="@" 
+              onChange={handleFormChange} 
+            />
           </Form.Item>
         );
 
@@ -168,6 +199,20 @@ END:VCARD`;
         return (
           <Form.Item name="channel" label="YouTube Channel/Video URL" rules={[{ required: true }]}>
             <Input placeholder="https://youtube.com/..." size="large" prefix={<LinkOutlined />} onChange={handleFormChange} />
+          </Form.Item>
+        );
+
+      case 'linkedin':
+        return (
+          <Form.Item name="profileUrl" label="LinkedIn Profile URL" rules={[{ required: true }]}>
+            <Input placeholder="https://linkedin.com/in/yourprofile" size="large" prefix={<LinkOutlined />} onChange={handleFormChange} />
+          </Form.Item>
+        );
+
+      case 'spotify':
+        return (
+          <Form.Item name="spotifyUrl" label="Spotify URL (Artist, Playlist, or Track)" rules={[{ required: true }]}>
+            <Input placeholder="https://open.spotify.com/..." size="large" prefix={<LinkOutlined />} onChange={handleFormChange} />
           </Form.Item>
         );
 

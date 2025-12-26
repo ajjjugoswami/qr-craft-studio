@@ -1,21 +1,11 @@
 import React from 'react';
 import { Typography, Row, Col } from 'antd';
-import {
-  LinkOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  MessageOutlined,
-  FileTextOutlined,
-  WifiOutlined,
-  EnvironmentOutlined,
-  InstagramOutlined,
-  FacebookOutlined,
-  YoutubeOutlined,
-  WhatsAppOutlined,
-  IdcardOutlined,
-  PictureOutlined,
-} from '@ant-design/icons';
 import { QRType } from '../../types/qrcode';
+import { 
+  Link, Mail, Phone, MessageSquare, FileText, Wifi, MapPin, 
+  Instagram, Facebook, Youtube, MessageCircle, Image,
+  Music, Send, CreditCard, Twitter, Linkedin, Video
+} from 'lucide-react';
 
 const { Title, Text } = Typography;
 
@@ -25,19 +15,25 @@ interface QRTypeSelectorProps {
 }
 
 const qrTypes: { value: QRType; label: string; icon: React.ReactNode }[] = [
-  { value: 'url', label: 'Website URL', icon: <LinkOutlined /> },
-  { value: 'email', label: 'Email', icon: <MailOutlined /> },
-  { value: 'phone', label: 'Phone', icon: <PhoneOutlined /> },
-  { value: 'sms', label: 'SMS', icon: <MessageOutlined /> },
-  { value: 'text', label: 'Text', icon: <FileTextOutlined /> },
-  { value: 'wifi', label: 'WiFi', icon: <WifiOutlined /> },
-  { value: 'location', label: 'Location', icon: <EnvironmentOutlined /> },
-  { value: 'instagram', label: 'Instagram', icon: <InstagramOutlined /> },
-  { value: 'facebook', label: 'Facebook', icon: <FacebookOutlined /> },
-  { value: 'youtube', label: 'YouTube', icon: <YoutubeOutlined /> },
-  { value: 'whatsapp', label: 'WhatsApp', icon: <WhatsAppOutlined /> },
-  { value: 'vcard', label: 'Business Card', icon: <IdcardOutlined /> },
-  { value: 'image', label: 'Image', icon: <PictureOutlined /> },
+  { value: 'url', label: 'Website URL', icon: <Link className="w-6 h-6" /> },
+  { value: 'email', label: 'Email', icon: <Mail className="w-6 h-6" /> },
+  { value: 'phone', label: 'Phone', icon: <Phone className="w-6 h-6" /> },
+  { value: 'sms', label: 'SMS', icon: <MessageSquare className="w-6 h-6" /> },
+  { value: 'text', label: 'Text', icon: <FileText className="w-6 h-6" /> },
+  { value: 'wifi', label: 'WiFi', icon: <Wifi className="w-6 h-6" /> },
+  { value: 'location', label: 'Location', icon: <MapPin className="w-6 h-6" /> },
+  { value: 'instagram', label: 'Instagram', icon: <Instagram className="w-6 h-6" /> },
+  { value: 'facebook', label: 'Facebook', icon: <Facebook className="w-6 h-6" /> },
+  { value: 'youtube', label: 'YouTube', icon: <Youtube className="w-6 h-6" /> },
+  { value: 'whatsapp', label: 'WhatsApp', icon: <MessageCircle className="w-6 h-6" /> },
+  { value: 'tiktok', label: 'TikTok', icon: <Video className="w-6 h-6" /> },
+  { value: 'twitter', label: 'X / Twitter', icon: <Twitter className="w-6 h-6" /> },
+  { value: 'linkedin', label: 'LinkedIn', icon: <Linkedin className="w-6 h-6" /> },
+  { value: 'spotify', label: 'Spotify', icon: <Music className="w-6 h-6" /> },
+  { value: 'telegram', label: 'Telegram', icon: <Send className="w-6 h-6" /> },
+  { value: 'paypal', label: 'PayPal', icon: <CreditCard className="w-6 h-6" /> },
+  { value: 'vcard', label: 'Business Card', icon: <FileText className="w-6 h-6" /> },
+  { value: 'image', label: 'Image', icon: <Image className="w-6 h-6" /> },
 ];
 
 const QRTypeSelector: React.FC<QRTypeSelectorProps> = ({
@@ -65,7 +61,7 @@ const QRTypeSelector: React.FC<QRTypeSelectorProps> = ({
                 }
               `}
             >
-              <span className={`text-2xl ${selectedType === type.value ? 'text-primary' : 'text-muted-foreground'}`}>
+              <span className={`${selectedType === type.value ? 'text-primary' : 'text-muted-foreground'}`}>
                 {type.icon}
               </span>
               <Text className={`text-center text-sm font-medium ${selectedType === type.value ? 'text-primary' : ''}`}>
