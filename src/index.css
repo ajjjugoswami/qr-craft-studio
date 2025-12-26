@@ -242,19 +242,23 @@
 /* ============================== */
 .ant-input,
 .ant-input-affix-wrapper,
-/* .ant-select-selector, */
 .ant-input-number,
-.ant-picker {
+.ant-picker,
+.ant-select:not(.ant-select-customize-input) .ant-select-selector {
   background: hsl(var(--input-background)) !important;
   border-color: hsl(var(--border)) !important;
   border-radius: 8px !important;
   color: hsl(var(--foreground)) !important;
-  min-height: 40px !important;
+  min-height: 36px !important;
+  height: 36px !important;
 }
 
 .ant-input-lg,
-.ant-input-affix-wrapper-lg {
-  min-height: 44px !important;
+.ant-input-affix-wrapper-lg,
+.ant-select-lg .ant-select-selector,
+.ant-picker-large {
+  min-height: 40px !important;
+  height: 40px !important;
 }
 
 .ant-select {
