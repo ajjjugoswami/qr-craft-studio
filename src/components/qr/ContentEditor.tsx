@@ -49,12 +49,28 @@ ADR:;;${values.address || ''}
 END:VCARD`;
   };
 
+  const generateMeCardString = (values: Record<string, string>) => {
+    return `MECARD:N:${values.lastName || ''},${values.firstName || ''};TEL:${values.phone || ''};EMAIL:${values.email || ''};URL:${values.website || ''};ADR:${values.address || ''};;`;
+  };
+
   const generateWifiString = (values: Record<string, string>) => {
     return `WIFI:T:${values.encryption || 'WPA'};S:${values.ssid || ''};P:${values.password || ''};;`;
   };
 
   const generateEmailString = (values: Record<string, string>) => {
     return `mailto:${values.email || ''}?subject=${encodeURIComponent(values.subject || '')}&body=${encodeURIComponent(values.body || '')}`;
+  };
+
+  const generateEventString = (values: Record<string, string>) => {
+    const startDate = values.startDate ? values.startDate.replace(/-/g, '').replace(/:/g, '') + '00' : '';
+    const endDate = values.endDate ? values.endDate.replace(/-/g, '').replace(/:/g, '') + '00' : '';
+    return `BEGIN:VEVENT
+SUMMARY:${values.eventTitle || ''}
+LOCATION:${values.eventLocation || ''}
+DTSTART:${startDate}
+DTEND:${endDate}
+DESCRIPTION:${values.eventDescription || ''}
+END:VEVENT`;
   };
 
   const handleFormChange = () => {
@@ -65,11 +81,17 @@ END:VCARD`;
       case 'vcard':
         generatedContent = generateVCardString(values);
         break;
+      case 'mecard':
+        generatedContent = generateMeCardString(values);
+        break;
       case 'wifi':
         generatedContent = generateWifiString(values);
         break;
       case 'email':
         generatedContent = generateEmailString(values);
+        break;
+      case 'event':
+        generatedContent = generateEventString(values);
         break;
       case 'phone':
         generatedContent = `tel:${values.phone || ''}`;
@@ -109,6 +131,25 @@ END:VCARD`;
         break;
       case 'paypal':
         generatedContent = `https://paypal.me/${values.username || ''}`;
+        break;
+      case 'pdf':
+      case 'video':
+      case 'audio':
+        generatedContent = values.fileUrl || '';
+        break;
+      case 'review':
+        generatedContent = values.reviewUrl || '';
+        break;
+      case 'feedback':
+        generatedContent = values.feedbackUrl || '';
+        break;
+      case 'coupon':
+        generatedContent = JSON.stringify({
+          code: values.couponCode || '',
+          discount: values.discount || '',
+          description: values.couponDescription || '',
+          validUntil: values.validUntil || ''
+        });
         break;
       default:
         generatedContent = values.content || '';
@@ -273,6 +314,145 @@ END:VCARD`;
             <Col span={24}>
               <Form.Item name="address" label="Address">
                 <Input placeholder="123 Main St, City, Country" onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+          </Row>
+        );
+
+      case 'mecard':
+        return (
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="firstName" label="First Name">
+                <Input placeholder="John" onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="lastName" label="Last Name">
+                <Input placeholder="Doe" onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="email" label="Email">
+                <Input placeholder="john@example.com" onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="phone" label="Phone">
+                <Input placeholder="+1 234 567 890" onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item name="website" label="Website">
+                <Input placeholder="https://yourwebsite.com" onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item name="address" label="Address">
+                <Input placeholder="123 Main St, City, Country" onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+          </Row>
+        );
+
+      case 'event':
+        return (
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item name="eventTitle" label="Event Title" rules={[{ required: true }]}>
+                <Input placeholder="Team Meeting" onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="startDate" label="Start Date & Time" rules={[{ required: true }]}>
+                <Input type="datetime-local" onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="endDate" label="End Date & Time" rules={[{ required: true }]}>
+                <Input type="datetime-local" onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item name="eventLocation" label="Location">
+                <Input placeholder="Conference Room A" onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item name="eventDescription" label="Description">
+                <TextArea rows={3} placeholder="Event details..." onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+          </Row>
+        );
+
+      case 'pdf':
+      case 'video':
+      case 'audio':
+        return (
+          <Form.Item 
+            name="fileUrl" 
+            label={type === 'pdf' ? 'PDF/Document URL' : type === 'video' ? 'Video URL' : 'Audio URL'} 
+            rules={[{ required: true }]}
+          >
+            <Input 
+              placeholder={
+                type === 'pdf' ? 'https://example.com/document.pdf' : 
+                type === 'video' ? 'https://example.com/video.mp4' : 
+                'https://example.com/audio.mp3'
+              } 
+              size="large" 
+              prefix={<LinkOutlined />} 
+              onChange={handleFormChange} 
+            />
+          </Form.Item>
+        );
+
+      case 'review':
+        return (
+          <Form.Item name="reviewUrl" label="Google Review URL" rules={[{ required: true }]}>
+            <Input 
+              placeholder="https://g.page/r/..." 
+              size="large" 
+              prefix={<LinkOutlined />} 
+              onChange={handleFormChange} 
+            />
+          </Form.Item>
+        );
+
+      case 'feedback':
+        return (
+          <Form.Item name="feedbackUrl" label="Feedback/Survey URL" rules={[{ required: true }]}>
+            <Input 
+              placeholder="https://forms.google.com/..." 
+              size="large" 
+              prefix={<LinkOutlined />} 
+              onChange={handleFormChange} 
+            />
+          </Form.Item>
+        );
+
+      case 'coupon':
+        return (
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item name="couponCode" label="Coupon Code" rules={[{ required: true }]}>
+                <Input placeholder="SAVE20" size="large" onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="discount" label="Discount">
+                <Input placeholder="20% OFF" size="large" onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item name="couponDescription" label="Description">
+                <TextArea rows={2} placeholder="Valid for all products..." onChange={handleFormChange} />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item name="validUntil" label="Valid Until">
+                <Input type="date" onChange={handleFormChange} />
               </Form.Item>
             </Col>
           </Row>

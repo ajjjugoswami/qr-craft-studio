@@ -1,5 +1,5 @@
 // Types that should display content instead of redirecting
-export const DIRECT_CONTENT_TYPES = ['vcard', 'wifi', 'phone', 'sms', 'email', 'location', 'text'];
+export const DIRECT_CONTENT_TYPES = ['vcard', 'mecard', 'wifi', 'phone', 'sms', 'email', 'location', 'text', 'event', 'coupon'];
 
 export type SmartRedirect = {
   appUrl: string | null;

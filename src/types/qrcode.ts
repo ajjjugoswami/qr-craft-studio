@@ -1,23 +1,35 @@
 export type QRType = 
+  // Basic
   | 'url' 
-  | 'vcard' 
-  | 'text' 
   | 'wifi' 
+  | 'vcard' 
+  | 'mecard'
   | 'email' 
   | 'phone' 
   | 'sms' 
   | 'location' 
+  | 'event'
+  | 'text'
+  // Social & Communication
+  | 'whatsapp'
   | 'instagram' 
   | 'facebook' 
   | 'youtube' 
-  | 'whatsapp'
   | 'tiktok'
   | 'twitter'
   | 'linkedin'
   | 'spotify'
   | 'telegram'
+  // Media & Files
+  | 'pdf'
+  | 'video'
+  | 'audio'
+  | 'image'
+  // Business & Marketing
   | 'paypal'
-  | 'image';
+  | 'coupon'
+  | 'review'
+  | 'feedback';
 
 export interface CustomField {
   id: string;

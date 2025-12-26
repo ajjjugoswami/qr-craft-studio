@@ -2,7 +2,8 @@ import React from 'react';
 import { Button } from 'antd';
 import { 
   Phone, Mail, MessageSquare, MapPin, Globe, Copy, Check,
-  Instagram, Facebook, Youtube, Music, Send, CreditCard, Twitter, Linkedin, Video, MessageCircle
+  Instagram, Facebook, Youtube, Music, Send, CreditCard, Twitter, Linkedin, Video, MessageCircle,
+  Calendar, FileDown, PlayCircle, Headphones, Tag, Star, ClipboardList, Contact
 } from 'lucide-react';
 
 interface GenericContentProps {
@@ -29,6 +30,15 @@ const getIcon = (qrType: string) => {
     case 'spotify': return <Music className={iconClass} />;
     case 'telegram': return <Send className={iconClass} />;
     case 'paypal': return <CreditCard className={iconClass} />;
+    case 'event': return <Calendar className={iconClass} />;
+    case 'mecard': 
+    case 'vcard': return <Contact className={iconClass} />;
+    case 'pdf': return <FileDown className={iconClass} />;
+    case 'video': return <PlayCircle className={iconClass} />;
+    case 'audio': return <Headphones className={iconClass} />;
+    case 'coupon': return <Tag className={iconClass} />;
+    case 'review': return <Star className={iconClass} />;
+    case 'feedback': return <ClipboardList className={iconClass} />;
     default: return <Globe className={iconClass} />;
   }
 };
@@ -50,6 +60,15 @@ const getTitle = (qrType: string) => {
     case 'telegram': return 'Telegram';
     case 'paypal': return 'PayPal';
     case 'text': return 'Text Content';
+    case 'event': return 'Calendar Event';
+    case 'mecard': return 'Contact (MeCard)';
+    case 'vcard': return 'Contact (vCard)';
+    case 'pdf': return 'PDF / Document';
+    case 'video': return 'Video';
+    case 'audio': return 'Audio';
+    case 'coupon': return 'Coupon / Discount';
+    case 'review': return 'Google Review';
+    case 'feedback': return 'Feedback / Survey';
     default: return 'Content';
   }
 };
@@ -70,12 +89,28 @@ const getAction = (qrType: string, content: string) => {
     case 'spotify': return { label: 'Open Spotify', href: content };
     case 'telegram': return { label: 'Open Telegram', href: content };
     case 'paypal': return { label: 'Open PayPal', href: content };
+    case 'pdf': return { label: 'View Document', href: content };
+    case 'video': return { label: 'Play Video', href: content };
+    case 'audio': return { label: 'Play Audio', href: content };
+    case 'review': return { label: 'Leave Review', href: content };
+    case 'feedback': return { label: 'Open Survey', href: content };
     default: return null;
   }
 };
 
 export const GenericContent: React.FC<GenericContentProps> = ({ content, qrType, copied, onCopy }) => {
   const action = getAction(qrType, content);
+
+  // Special handling for coupon type
+  const isCoupon = qrType === 'coupon';
+  let couponData: { code?: string; discount?: string; description?: string; validUntil?: string } = {};
+  if (isCoupon) {
+    try {
+      couponData = JSON.parse(content);
+    } catch {
+      couponData = { code: content };
+    }
+  }
 
   return (
     <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
@@ -87,17 +122,35 @@ export const GenericContent: React.FC<GenericContentProps> = ({ content, qrType,
       </div>
       
       <div className="p-4">
-        <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-          <div className="flex-1 break-all">
-            <p className="text-foreground">{content}</p>
+        {isCoupon ? (
+          <div className="space-y-3">
+            <div className="text-center p-4 bg-primary/10 rounded-lg border-2 border-dashed border-primary">
+              <p className="text-2xl font-bold text-primary">{couponData.code}</p>
+              {couponData.discount && <p className="text-lg font-medium text-foreground">{couponData.discount}</p>}
+            </div>
+            {couponData.description && <p className="text-muted-foreground text-sm">{couponData.description}</p>}
+            {couponData.validUntil && <p className="text-xs text-muted-foreground">Valid until: {couponData.validUntil}</p>}
+            <button 
+              onClick={() => onCopy(couponData.code || content, 'content')} 
+              className="w-full p-3 bg-muted/50 rounded-lg flex items-center justify-center gap-2 hover:bg-muted"
+            >
+              {copied === 'content' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-muted-foreground" />}
+              <span className="text-sm">Copy Code</span>
+            </button>
           </div>
-          <button onClick={() => onCopy(content, 'content')} className="p-1 hover:bg-muted rounded flex-shrink-0">
-            {copied === 'content' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-muted-foreground" />}
-          </button>
-        </div>
+        ) : (
+          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+            <div className="flex-1 break-all">
+              <p className="text-foreground">{content}</p>
+            </div>
+            <button onClick={() => onCopy(content, 'content')} className="p-1 hover:bg-muted rounded flex-shrink-0">
+              {copied === 'content' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-muted-foreground" />}
+            </button>
+          </div>
+        )}
       </div>
       
-      {action && (
+      {action && !isCoupon && (
         <div className="p-4 border-t border-border">
           <Button type="primary" size="large" className="w-full" onClick={() => window.location.href = action.href}>
             {action.label}
