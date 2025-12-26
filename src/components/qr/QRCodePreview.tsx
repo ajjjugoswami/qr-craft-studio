@@ -6,8 +6,8 @@ import { Pencil, Type } from 'lucide-react';
 import type { Color } from 'antd/es/color-picker';
 import { QRTemplate, QRStyling, CustomField, QRType } from '../../types/qrcode';
 
-// Types that should encode content directly (native phone handling)
-const DIRECT_CONTENT_TYPES: QRType[] = ['vcard', 'wifi', 'phone', 'sms', 'email', 'location', 'text'];
+// All QR types should route through /r/{id} so scans are always tracked.
+// For unsaved previews (no id yet), we fallback to /r?u=... (no analytics).
 
 interface QRCodePreviewProps {
   content: string;
@@ -60,19 +60,18 @@ const QROnlyPreview = forwardRef<HTMLDivElement, { content: string; styling: QRS
 
     const getQRData = () => {
       try {
-        if (DIRECT_CONTENT_TYPES.includes(qrType)) {
-          return content || 'https://example.com';
-        }
+        // Always route through redirector when we have an id so scans are tracked for every QR type.
         if (typeof window !== 'undefined') {
           if (typeof content === 'string' && qrId) {
             return `${getAppOrigin()}/r/${qrId}`;
           }
+          // Unsaved preview: no analytics (no id), but still previewable.
           if (typeof content === 'string') {
             return `${getAppOrigin()}/r?u=${encodeURIComponent(content)}`;
           }
         }
         return content || 'https://example.com';
-      } catch (e) {
+      } catch {
         return content || 'https://example.com';
       }
     };
@@ -220,25 +219,18 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
 
   const getQRData = () => {
     try {
-      // For direct content types (vcard, wifi, phone, etc.), encode content directly
-      // These are handled natively by phone apps and don't need redirector
-      if (DIRECT_CONTENT_TYPES.includes(qrType)) {
-        return content || 'https://example.com';
-      }
-      
-      // For redirect types (url, instagram, youtube, etc.), go through redirector for tracking
+      // Always route through redirector when we have an id so scans are tracked for every QR type.
       if (typeof window !== 'undefined') {
-        if (typeof (content) === 'string' && qrId) {
-          // For saved QR codes, point to our frontend redirect route
+        if (typeof content === 'string' && qrId) {
           return `${getAppOrigin()}/r/${qrId}`;
         }
-        // For preview/unsaved QR codes, encode the content into query param
-        if (typeof (content) === 'string') {
+        // Unsaved preview: no analytics (no id), but still previewable.
+        if (typeof content === 'string') {
           return `${getAppOrigin()}/r?u=${encodeURIComponent(content)}`;
         }
       }
       return content || 'https://example.com';
-    } catch (e) {
+    } catch {
       return content || 'https://example.com';
     }
   };
