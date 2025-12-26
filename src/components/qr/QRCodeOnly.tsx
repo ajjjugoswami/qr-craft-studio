@@ -28,22 +28,18 @@ const QRCodeOnly = forwardRef<HTMLDivElement, QRCodeOnlyProps>(({
   const qrCode = useRef<QRCodeStyling | null>(null);
 
   const safeStyling = useMemo(() => ({
-    ...(styling || {}),
-    fgColor: styling?.fgColor || '#000000',
-    bgColor: styling?.bgColor || '#ffffff',
-    dotsType: styling?.dotsType || 'square',
-    level: styling?.level || 'M',
-    imageOptions: styling?.imageOptions || {
+    ...styling,
+    imageOptions: styling.imageOptions || {
       hideBackgroundDots: true,
       imageSize: 0.4,
       margin: 0,
     },
-    cornersSquareOptions: styling?.cornersSquareOptions || {
-      color: styling?.fgColor || '#000000',
+    cornersSquareOptions: styling.cornersSquareOptions || {
+      color: styling.fgColor,
       type: 'square',
     },
-    cornersDotOptions: styling?.cornersDotOptions || {
-      color: styling?.fgColor || '#000000',
+    cornersDotOptions: styling.cornersDotOptions || {
+      color: styling.fgColor,
       type: 'square',
     },
   }), [styling]);
