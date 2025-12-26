@@ -263,11 +263,23 @@
 
 /* Keep inner text vertically centered after forcing control heights */
 .ant-input-affix-wrapper > input.ant-input {
-  height: 28px !important;
+  height: auto !important;
+  min-height: unset !important;
+  padding: 0 !important;
 }
 
 .ant-picker .ant-picker-input > input {
-  height: 28px !important;
+  height: auto !important;
+  min-height: unset !important;
+}
+
+/* Password input specific fixes */
+.ant-input-password,
+.ant-input-affix-wrapper.ant-input-password {
+  height: 32px !important;
+  min-height: 32px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 .ant-select {
