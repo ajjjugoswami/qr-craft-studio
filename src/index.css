@@ -249,12 +249,12 @@
   border-color: hsl(var(--border)) !important;
   border-radius: 8px !important;
   color: hsl(var(--foreground)) !important;
-  min-height: 44px !important;
+  min-height: 40px !important;
 }
 
 .ant-input-lg,
 .ant-input-affix-wrapper-lg {
-  min-height: 48px !important;
+  min-height: 44px !important;
 }
 
 .ant-select {
