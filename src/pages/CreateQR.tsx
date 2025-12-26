@@ -43,7 +43,7 @@ const CreateQR: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const [currentStep, setCurrentStep] = useState(0);
-  const [template, setTemplate] = useState<QRTemplate | null>(defaultTemplates[0]);
+  const [template, setTemplate] = useState<QRTemplate | null>(null);
   const [type, setType] = useState<QRType>('url');
   const [content, setContent] = useState('https://example.com');
   const [styling, setStyling] = useState<QRStyling>(defaultStyling);
@@ -82,7 +82,7 @@ const CreateQR: React.FC = () => {
 
       const existing = getQRCode(id);
       if (existing) {
-        setTemplate(existing.template ?? defaultTemplates[0]);
+        setTemplate(existing.template ?? null);
         setStyling(existing.styling ?? defaultStyling);
         setType(existing.type ?? 'url');
         setContent(existing.content ?? 'https://example.com');
@@ -98,7 +98,7 @@ const CreateQR: React.FC = () => {
         const res = await qrCodeAPI.getOne(id);
         const q: any = res.qrCode;
         if (q) {
-          setTemplate(q.template ?? defaultTemplates[0]);
+          setTemplate(q.template ?? null);
           setStyling(q.styling ?? defaultStyling);
           setType(q.type ?? 'url');
           setContent(q.content ?? 'https://example.com');
@@ -326,7 +326,7 @@ const CreateQR: React.FC = () => {
           <div className="hidden lg:block lg:col-span-2">
             <div className="sticky top-6">
               <Card 
-                title="Live Preview" 
+                title={template ? "Live Preview" : "QR Code Preview"} 
                 extra={
                   template && (
                     <Button
@@ -351,9 +351,13 @@ const CreateQR: React.FC = () => {
                     qrId={editingId || undefined}
                     qrType={type}
                   />
-                  {template && (
+                  {template ? (
                     <Text type="secondary" className="text-xs mt-4 text-center">
                       Click text to edit • Use "Edit" for more options
+                    </Text>
+                  ) : (
+                    <Text type="secondary" className="text-xs mt-4 text-center">
+                      QR code only mode • No card template
                     </Text>
                   )}
                 </div>
@@ -445,9 +449,13 @@ const CreateQR: React.FC = () => {
               qrId={editingId || undefined}
               qrType={type}
             />
-            {template && (
+            {template ? (
               <Text type="secondary" className="text-xs mt-4 text-center">
                 Tap text to edit inline
+              </Text>
+            ) : (
+              <Text type="secondary" className="text-xs mt-4 text-center">
+                QR code only mode
               </Text>
             )}
           </div>
