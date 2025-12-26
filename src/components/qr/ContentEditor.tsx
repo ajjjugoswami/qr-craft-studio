@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, Select, Typography, Row, Col, Upload, Button, message } from 'antd';
+import { Form, Input, Select, Typography, Row, Col, Upload, Button, message, Spin } from 'antd';
 import {
   LinkOutlined,
   PhoneOutlined,
@@ -7,6 +7,11 @@ import {
 } from '@ant-design/icons';
 import { QRType } from '../../types/qrcode';
 import { uploadsAPI } from '@/lib/api';
+
+const isValidImageUrl = (url?: string) => {
+  if (!url || typeof url !== 'string') return false;
+  return /^https?:\/\//i.test(url) || /^data:/i.test(url) || /^blob:/i.test(url);
+};
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -27,6 +32,7 @@ const ContentEditor: React.FC<ContentEditorProps> = ({
   onContentChange,
 }) => {
   const [form] = Form.useForm();
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const generateVCardString = (values: Record<string, string>) => {
     return `BEGIN:VCARD
@@ -232,6 +238,7 @@ END:VCARD`;
             <Upload
               accept="image/*"
               showUploadList={false}
+              disabled={false}
               beforeUpload={(file) => {
                 const isImage = file.type.startsWith('image/');
                 if (!isImage) {
@@ -245,11 +252,9 @@ END:VCARD`;
                 }
 
                 // Upload file
-                const form = new FormData();
-                form.append('image', file);
-
                 (async () => {
-                  const hide = message.loading('Uploading image...', 0);
+                  setIsUploading(true);
+                  const hideMsg = message.loading('Uploading image...', 0);
                   try {
                     const res: any = await uploadsAPI.uploadQRImage(file);
                     if (res && res.success && res.url) {
@@ -261,21 +266,41 @@ END:VCARD`;
                   } catch (e: any) {
                     message.error(e?.response?.data?.message || e?.message || 'Upload failed');
                   } finally {
-                    hide();
+                    hideMsg();
+                    setIsUploading(false);
                   }
                 })();
 
                 return false; // prevent auto upload
               }}
             >
-              <Button size="large">Select Image</Button>
+              <Button size="large" disabled={isUploading}>Select Image</Button>
             </Upload>
 
-            {content && (
-              <div className="mt-4">
-                <img src={content} alt="QR image" style={{ maxWidth: '220px', maxHeight: '220px', borderRadius: 8 }} />
-              </div>
-            )}
+            {/* Show spinner while uploading, show image preview only after a successful upload and only when URL is valid */}
+            <div className="mt-4">
+              {isUploading ? (
+                <div className="w-56 h-56 flex items-center justify-center border border-border rounded-md">
+                  <Spin />
+                </div>
+              ) : (
+                isValidImageUrl(content) && (
+                  <div
+                    role="img"
+                    aria-label="Uploaded image preview"
+                    style={{
+                      width: 220,
+                      height: 220,
+                      borderRadius: 8,
+                      backgroundImage: `url(${content})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      border: '1px solid var(--border)',
+                    }}
+                  />
+                )
+              )}
+            </div>
           </Form.Item>
         );
 
