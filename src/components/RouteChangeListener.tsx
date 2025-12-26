@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 import nprogress from 'nprogress';
 import 'nprogress/nprogress.css';
 
-// Configure nprogress
 nprogress.configure({
   showSpinner: false,
   trickleSpeed: 200,
@@ -18,10 +17,9 @@ const RouteChangeListener = () => {
   useEffect(() => {
     nprogress.start();
 
-    // Simulate a delay or wait for actual loading
     const timer = setTimeout(() => {
       nprogress.done();
-    }, 300); // Adjust delay as needed
+    }, 200); 
 
     return () => {
       clearTimeout(timer);
