@@ -297,21 +297,19 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, viewM
           <div
             className="w-20 h-20 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
             style={{ 
-              background: qrCode.template 
-                ? (qrCode.template.showGradient && qrCode.template.gradientColor
-                    ? `linear-gradient(135deg, ${qrCode.template.backgroundColor} 0%, ${qrCode.template.gradientColor} 100%)`
-                    : qrCode.template.backgroundColor)
-                : qrCode.styling.bgColor
+              background: qrCode.template?.showGradient && qrCode.template?.gradientColor
+                ? `linear-gradient(135deg, ${qrCode.template.backgroundColor} 0%, ${qrCode.template.gradientColor} 100%)`
+                : qrCode.template?.backgroundColor || '#f3f4f6'
             }}
             onClick={() => setDownloadModalOpen(true)}
           >
-            <div className={`${qrCode.template ? 'w-16 h-16 bg-white rounded' : 'w-full h-full'} flex items-center justify-center`}>
+            <div className="w-16 h-16 bg-white rounded flex items-center justify-center">
               <QRCodeOnly
                 content={qrCode.content}
                 template={qrCode.template}
                 styling={qrCode.styling}
                 qrId={qrCode.id}
-                size={qrCode.template ? 58 : 72}
+                size={58}
                 qrType={qrCode.type}
               />
             </div>

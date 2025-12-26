@@ -43,7 +43,7 @@ const CreateQR: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const [currentStep, setCurrentStep] = useState(0);
-  const [template, setTemplate] = useState<QRTemplate | null>(null);
+  const [template, setTemplate] = useState<QRTemplate | null>(defaultTemplates[0]);
   const [type, setType] = useState<QRType>('url');
   const [content, setContent] = useState('https://example.com');
   const [styling, setStyling] = useState<QRStyling>(defaultStyling);
@@ -82,7 +82,7 @@ const CreateQR: React.FC = () => {
 
       const existing = getQRCode(id);
       if (existing) {
-        setTemplate(existing.template ?? null);
+        setTemplate(existing.template ?? defaultTemplates[0]);
         setStyling(existing.styling ?? defaultStyling);
         setType(existing.type ?? 'url');
         setContent(existing.content ?? 'https://example.com');
@@ -98,7 +98,7 @@ const CreateQR: React.FC = () => {
         const res = await qrCodeAPI.getOne(id);
         const q: any = res.qrCode;
         if (q) {
-          setTemplate(q.template ?? null);
+          setTemplate(q.template ?? defaultTemplates[0]);
           setStyling(q.styling ?? defaultStyling);
           setType(q.type ?? 'url');
           setContent(q.content ?? 'https://example.com');
@@ -326,18 +326,16 @@ const CreateQR: React.FC = () => {
           <div className="hidden lg:block lg:col-span-2">
             <div className="sticky top-6">
               <Card 
-                title={template ? "Live Preview" : "QR Code Preview"} 
+                title="Live Preview" 
                 extra={
-                  template && (
-                    <Button
-                      type="primary"
-                      size="small"
-                      icon={<Settings2 size={14} />}
-                      onClick={() => setShowTemplateEditor(true)}
-                    >
-                      Edit
-                    </Button>
-                  )
+                  <Button
+                    type="primary"
+                    size="small"
+                    icon={<Settings2 size={14} />}
+                    onClick={() => setShowTemplateEditor(true)}
+                  >
+                    Edit
+                  </Button>
                 }
               >
                 <div className="flex flex-col items-center">
@@ -346,20 +344,14 @@ const CreateQR: React.FC = () => {
                     content={content}
                     template={template}
                     styling={styling}
-                    editable={!!template}
-                    onTemplateChange={template ? setTemplate : undefined}
+                    editable
+                    onTemplateChange={setTemplate}
                     qrId={editingId || undefined}
                     qrType={type}
                   />
-                  {template ? (
-                    <Text type="secondary" className="text-xs mt-4 text-center">
-                      Click text to edit • Use "Edit" for more options
-                    </Text>
-                  ) : (
-                    <Text type="secondary" className="text-xs mt-4 text-center">
-                      QR code only mode • No card template
-                    </Text>
-                  )}
+                  <Text type="secondary" className="text-xs mt-4 text-center">
+                    Click text to edit • Use "Edit" for more options
+                  </Text>
                 </div>
               </Card>
 
@@ -423,19 +415,17 @@ const CreateQR: React.FC = () => {
           height="80vh"
           className="lg:hidden"
           extra={
-            template && (
-              <Button
-                type="primary"
-                size="small"
-                icon={<Settings2 size={14} />}
-                onClick={() => {
-                  setShowPreviewDrawer(false);
-                  setShowTemplateEditor(true);
-                }}
-              >
-                Edit Template
-              </Button>
-            )
+            <Button
+              type="primary"
+              size="small"
+              icon={<Settings2 size={14} />}
+              onClick={() => {
+                setShowPreviewDrawer(false);
+                setShowTemplateEditor(true);
+              }}
+            >
+              Edit Template
+            </Button>
           }
         >
           <div className="flex flex-col items-center py-4">
@@ -444,20 +434,14 @@ const CreateQR: React.FC = () => {
               content={content}
               template={template}
               styling={styling}
-              editable={!!template}
-              onTemplateChange={template ? setTemplate : undefined}
+              editable
+              onTemplateChange={setTemplate}
               qrId={editingId || undefined}
               qrType={type}
             />
-            {template ? (
-              <Text type="secondary" className="text-xs mt-4 text-center">
-                Tap text to edit inline
-              </Text>
-            ) : (
-              <Text type="secondary" className="text-xs mt-4 text-center">
-                QR code only mode
-              </Text>
-            )}
+            <Text type="secondary" className="text-xs mt-4 text-center">
+              Tap text to edit inline
+            </Text>
           </div>
         </Drawer>
 
