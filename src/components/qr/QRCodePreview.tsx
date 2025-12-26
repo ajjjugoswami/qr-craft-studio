@@ -39,21 +39,24 @@ const QROnlyPreview = forwardRef<HTMLDivElement, { content: string; styling: QRS
   ({ content, styling, compact = false, qrId, qrType = 'url' }, ref) => {
     const qrRef = useRef<HTMLDivElement>(null);
     const qrCode = useRef<QRCodeStyling | null>(null);
-    const qrOnlySize = compact ? 48 : styling.size > 200 ? 200 : styling.size;
+    const qrOnlySize = compact ? 48 : (styling?.size || 200) > 200 ? 200 : (styling?.size || 200);
 
     const safeStyling = useMemo(() => ({
-      ...styling,
-      imageOptions: styling.imageOptions || {
+      ...(styling || {}),
+      fgColor: styling?.fgColor || '#000000',
+      bgColor: styling?.bgColor || '#ffffff',
+      level: styling?.level || 'M',
+      imageOptions: styling?.imageOptions || {
         hideBackgroundDots: true,
         imageSize: 0.2,
         margin: 0,
       },
-      cornersSquareOptions: styling.cornersSquareOptions || {
-        color: styling.fgColor,
+      cornersSquareOptions: styling?.cornersSquareOptions || {
+        color: styling?.fgColor || '#000000',
         type: 'square',
       },
-      cornersDotOptions: styling.cornersDotOptions || {
-        color: styling.fgColor,
+      cornersDotOptions: styling?.cornersDotOptions || {
+        color: styling?.fgColor || '#000000',
         type: 'square',
       },
     }), [styling]);
@@ -160,25 +163,28 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   const qrCode = useRef<QRCodeStyling | null>(null);
 
   // Memoize safe styling to prevent unnecessary recalculations
+  // Memoize safe styling to prevent unnecessary recalculations
   const safeStyling = useMemo(() => ({
-    ...styling,
-    imageOptions: styling.imageOptions || {
+    ...(styling || {}),
+    fgColor: styling?.fgColor || '#000000',
+    bgColor: styling?.bgColor || '#ffffff',
+    imageOptions: styling?.imageOptions || {
       hideBackgroundDots: true,
       imageSize: 0.2,
       margin: 0,
     },
-    cornersSquareOptions: styling.cornersSquareOptions || {
-      color: styling.fgColor,
+    cornersSquareOptions: styling?.cornersSquareOptions || {
+      color: styling?.fgColor || '#000000',
       type: 'square',
     },
-    cornersDotOptions: styling.cornersDotOptions || {
-      color: styling.fgColor,
+    cornersDotOptions: styling?.cornersDotOptions || {
+      color: styling?.fgColor || '#000000',
       type: 'square',
     },
   }), [styling]);
 
-  // If template is null, render QR only using separate component
-  if (!template) {
+  // If template is null or missing required fields, render QR only using separate component
+  if (!template || !template.id) {
     return <QROnlyPreview ref={ref} content={content} styling={styling} compact={compact} qrId={qrId} qrType={qrType} />;
   }
 
