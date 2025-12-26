@@ -10,10 +10,15 @@ import { uploadsAPI } from '@/lib/api';
 
 const isValidImageUrl = (url?: string) => {
   if (!url || typeof url !== 'string' || url.trim() === '') return false;
-  // Must be a valid URL with actual path/content, not just the protocol
   const trimmed = url.trim();
-  if (trimmed.length < 10) return false; // Too short to be a valid image URL
-  return /^https?:\/\/.+/i.test(trimmed) || /^data:image\/.+/i.test(trimmed) || /^blob:/i.test(trimmed);
+
+  // Accept explicit image sources
+  if (/^data:image\//i.test(trimmed)) return true;
+  if (/^blob:/i.test(trimmed)) return true;
+
+  // Only treat http(s) URLs as images if they look like image files
+  if (!/^https?:\/\//i.test(trimmed)) return false;
+  return /\.(png|jpe?g|webp|gif|bmp|svg)(\?.*)?$/i.test(trimmed);
 };
 
 const { Title, Text } = Typography;
