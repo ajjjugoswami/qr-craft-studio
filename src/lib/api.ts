@@ -60,6 +60,11 @@ export const authAPI = {
     const response = await api.post('/auth/signin', data);
     return response.data;
   },
+
+  googleAuth: async (data: { credential: string }) => {
+    const response = await api.post('/auth/google-auth', data);
+    return response.data;
+  },
   
   getProfile: async () => {
     const response = await api.get('/auth/profile');

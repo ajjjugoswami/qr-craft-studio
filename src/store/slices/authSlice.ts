@@ -199,6 +199,68 @@ export const signUp = createAsyncThunk(
   }
 );
 
+// Google Sign In
+export const googleSignIn = createAsyncThunk(
+  'auth/googleSignIn',
+  async ({ credential }: { credential: string }, { rejectWithValue }) => {
+    try {
+      const data = await authAPI.googleAuth({ credential });
+      const { token } = data;
+
+      if (!token) {
+        return rejectWithValue('No token returned from Google authentication');
+      }
+
+      // Persist token immediately
+      localStorage.setItem(TOKEN_KEY, token);
+
+      // Fetch canonical current user from /auth/me
+      let profile: any = null;
+      try {
+        const me = await authAPI.getCurrentUser();
+        profile = me._id ? me : me.user ? me.user : me;
+      } catch (err) {
+        // Fallback to data returned by google auth
+        profile = { 
+          _id: data._id, 
+          name: data.name, 
+          email: data.email, 
+          isAdmin: data.isAdmin, 
+          theme: data.theme,
+          mobile: data.mobile,
+          country: data.country,
+          city: data.city,
+          profilePicture: data.profilePicture,
+          language: data.language,
+          timezone: data.timezone,
+        };
+      }
+
+      const user: User = { 
+        _id: profile._id, 
+        name: profile.name, 
+        email: profile.email, 
+        isAdmin: profile.isAdmin, 
+        theme: profile.theme,
+        mobile: profile.mobile,
+        country: profile.country,
+        city: profile.city,
+        profilePicture: profile.profilePicture,
+        language: profile.language,
+        timezone: profile.timezone,
+      };
+
+      // Persist user and token
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ user }));
+
+      return { user, token };
+    } catch (error: any) {
+      const serverMessage = error?.response?.data?.message || error?.message;
+      return rejectWithValue(serverMessage || 'Google authentication failed');
+    }
+  }
+);
+
 // Update profile
 export const updateProfile = createAsyncThunk(
   'auth/updateProfile',
@@ -275,6 +337,20 @@ const authSlice = createSlice({
         message.success('Account created');
       })
       .addCase(signUp.rejected, (state, action) => {
+        state.loading = false;
+        message.error(action.payload as string);
+      })
+      // Google Sign In
+      .addCase(googleSignIn.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(googleSignIn.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        message.success('Signed in with Google successfully');
+      })
+      .addCase(googleSignIn.rejected, (state, action) => {
         state.loading = false;
         message.error(action.payload as string);
       })
