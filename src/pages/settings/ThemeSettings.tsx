@@ -1,6 +1,6 @@
-import React from 'react';
-import { Card, Typography, message } from 'antd';
-import { Palette } from 'lucide-react';
+import React, { useState } from 'react';
+import { Card, Typography, message, Button } from 'antd';
+import { Palette, Save } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 import { themes, ThemeName } from '../../context/themeTypes';
 
@@ -8,30 +8,55 @@ const { Title, Text } = Typography;
 
 const ThemeSettings: React.FC = () => {
   const { currentTheme, setTheme } = useTheme();
+  const [selectedTheme, setSelectedTheme] = useState<ThemeName>(currentTheme);
+  const [saving, setSaving] = useState(false);
 
-  const handleThemeChange = (themeName: string) => {
-    const theme = themeName as ThemeName;
-    setTheme(theme);
-    message.success(`Theme changed to ${themes[theme].label}`);
+  const hasChanges = selectedTheme !== currentTheme;
+
+  const handleThemeSelect = (themeName: string) => {
+    setSelectedTheme(themeName as ThemeName);
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await setTheme(selectedTheme);
+      message.success(`Theme changed to ${themes[selectedTheme].label}`);
+    } catch {
+      message.error('Failed to save theme');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       {/* Theme Selection Card */}
       <Card className="shadow-sm">
-        <div className="flex items-center mb-4">
-          <Palette className="mr-3 text-primary" size={24} />
-          <Title level={4} className="!mb-0">Color Theme</Title>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            <Palette className="mr-3 text-primary" size={24} />
+            <Title level={4} className="!mb-0">Color Theme</Title>
+          </div>
+          <Button
+            type="primary"
+            icon={<Save size={16} />}
+            onClick={handleSave}
+            loading={saving}
+            disabled={!hasChanges}
+          >
+            Save Theme
+          </Button>
         </div>
 
         <Text type="secondary" className="mb-6 block">
-          Choose your preferred accent color. Your selection will be saved automatically.
+          Choose your preferred accent color and click Save to apply.
         </Text>
 
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
           {Object.entries(themes).map(([key, theme]) => {
             const isGradient = key.startsWith('gradient_');
-            const isSelected = currentTheme === key;
+            const isSelected = selectedTheme === key;
 
             return (
               <div
@@ -46,7 +71,7 @@ const ThemeSettings: React.FC = () => {
                     ? `linear-gradient(135deg, hsl(${theme.colors.primary}) 0%, hsl(${theme.colors.accent}) 100%)`
                     : `hsl(${theme.colors.primaryLight})`,
                 }}
-                onClick={() => handleThemeChange(key)}
+                onClick={() => handleThemeSelect(key)}
               >
                 {isSelected && (
                   <div className="absolute top-1 right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
