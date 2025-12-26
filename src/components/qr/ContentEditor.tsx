@@ -1,11 +1,12 @@
-import React from 'react';
-import { Form, Input, Select, Typography, Row, Col } from 'antd';
+import React, { useState } from 'react';
+import { Form, Input, Select, Typography, Row, Col, Upload, Button, message } from 'antd';
 import {
   LinkOutlined,
   PhoneOutlined,
   EnvironmentOutlined,
 } from '@ant-design/icons';
 import { QRType } from '../../types/qrcode';
+import { uploadsAPI } from '@/lib/api';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -223,6 +224,59 @@ END:VCARD`;
               </Form.Item>
             </Col>
           </Row>
+        );
+
+      case 'image':
+        return (
+          <Form.Item label="Upload Image">
+            <Upload
+              accept="image/*"
+              showUploadList={false}
+              beforeUpload={(file) => {
+                const isImage = file.type.startsWith('image/');
+                if (!isImage) {
+                  message.error('Only image files are allowed');
+                  return false;
+                }
+                const isLt2MB = file.size / 1024 / 1024 < 2;
+                if (!isLt2MB) {
+                  message.error('Image must be smaller than 2MB!');
+                  return false;
+                }
+
+                // Upload file
+                const form = new FormData();
+                form.append('image', file);
+
+                (async () => {
+                  const hide = message.loading('Uploading image...', 0);
+                  try {
+                    const res: any = await uploadsAPI.uploadQRImage(file);
+                    if (res && res.success && res.url) {
+                      onContentChange(res.url);
+                      message.success('Image uploaded');
+                    } else {
+                      message.error(res?.message || 'Upload failed');
+                    }
+                  } catch (e: any) {
+                    message.error(e?.response?.data?.message || e?.message || 'Upload failed');
+                  } finally {
+                    hide();
+                  }
+                })();
+
+                return false; // prevent auto upload
+              }}
+            >
+              <Button size="large">Select Image</Button>
+            </Upload>
+
+            {content && (
+              <div className="mt-4">
+                <img src={content} alt="QR image" style={{ maxWidth: '220px', maxHeight: '220px', borderRadius: 8 }} />
+              </div>
+            )}
+          </Form.Item>
         );
 
       case 'wifi':

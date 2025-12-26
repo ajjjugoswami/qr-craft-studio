@@ -150,6 +150,11 @@ const CreateQR: React.FC = () => {
         scanLimit: scanLimit || null,
       };
 
+      // If QR is an image, store the displayed image as previewImage as well
+      if (type === 'image') {
+        payload.previewImage = content || null;
+      }
+
       if (editingId) {
         await updateQRCode(editingId, payload);
         message.success('QR Code updated');

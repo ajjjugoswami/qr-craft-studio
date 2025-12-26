@@ -13,6 +13,7 @@ import {
   YoutubeOutlined,
   WhatsAppOutlined,
   IdcardOutlined,
+  PictureOutlined,
 } from '@ant-design/icons';
 import { QRType } from '../../types/qrcode';
 
@@ -36,6 +37,7 @@ const qrTypes: { value: QRType; label: string; icon: React.ReactNode }[] = [
   { value: 'youtube', label: 'YouTube', icon: <YoutubeOutlined /> },
   { value: 'whatsapp', label: 'WhatsApp', icon: <WhatsAppOutlined /> },
   { value: 'vcard', label: 'Business Card', icon: <IdcardOutlined /> },
+  { value: 'image', label: 'Image', icon: <PictureOutlined /> },
 ];
 
 const QRTypeSelector: React.FC<QRTypeSelectorProps> = ({

@@ -117,7 +117,7 @@ export const qrCodeAPI = {
 
   // Create new QR code
   create: async (data: {
-    type: 'url' | 'text' | 'email' | 'phone' | 'sms' | 'wifi' | 'location' | 'upi' | 'vcard' | 'instagram' | 'facebook' | 'youtube' | 'whatsapp';
+    type: 'url' | 'text' | 'email' | 'phone' | 'sms' | 'wifi' | 'location' | 'upi' | 'vcard' | 'instagram' | 'facebook' | 'youtube' | 'whatsapp' | 'image';
     content: string;
     name: string;
     template?: {
@@ -197,6 +197,14 @@ export const qrCodeAPI = {
 export const uploadsAPI = {
   uploadLogo: async (dataUrl: string) => {
     const response = await api.post('/uploads/logo', { dataUrl });
+    return response.data;
+  },
+  uploadQRImage: async (file: File) => {
+    const fd = new FormData();
+    fd.append('image', file);
+    const response = await api.post('/uploads/qr-image', fd, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return response.data;
   },
 };

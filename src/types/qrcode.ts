@@ -10,7 +10,8 @@ export type QRType =
   | 'instagram' 
   | 'facebook' 
   | 'youtube' 
-  | 'whatsapp';
+  | 'whatsapp'
+  | 'image';
 
 export interface CustomField {
   id: string;

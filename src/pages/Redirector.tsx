@@ -16,7 +16,7 @@ const passwordSchema = z
   .max(128, 'Password is too long');
 
 // Types that should display content instead of redirecting
-const DIRECT_CONTENT_TYPES = ['vcard', 'wifi', 'phone', 'sms', 'email', 'location', 'text'];
+const DIRECT_CONTENT_TYPES = ['vcard', 'wifi', 'phone', 'sms', 'email', 'location', 'text', 'image'];
 
 type SmartRedirect = {
   appUrl: string | null;
@@ -590,6 +590,29 @@ const Redirector: React.FC = () => {
     );
   };
 
+  // Render image content
+  const renderImageContent = () => {
+    if (!content) return null;
+    return (
+      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+        <div className="p-4 text-center">
+          <img src={content} alt="QR content" className="w-full rounded-md" />
+        </div>
+        <div className="p-4 border-t border-border flex gap-2">
+          <Button type="primary" size="middle" className="flex-1" onClick={() => window.open(content, '_blank')}>Open Image</Button>
+          <Button size="middle" onClick={() => {
+            const a = document.createElement('a');
+            a.href = content;
+            a.download = 'image';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          }}>Download</Button>
+        </div>
+      </div>
+    );
+  };
+
   // Render direct content based on type
   const renderDirectContent = () => {
     switch (qrType) {
@@ -597,6 +620,8 @@ const Redirector: React.FC = () => {
         return renderVCardContent();
       case 'wifi':
         return renderWiFiContent();
+      case 'image':
+        return renderImageContent();
       default:
         return renderGenericContent();
     }
