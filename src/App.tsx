@@ -24,6 +24,7 @@ import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./context/ThemeContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
+import RouteChangeListener from "./components/RouteChangeListener";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
           <Sonner />
           <ThemeProvider>
             <BrowserRouter>
+              <RouteChangeListener />
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/sign-in" element={<SignIn />} />
