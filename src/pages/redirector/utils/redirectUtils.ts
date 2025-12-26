@@ -76,14 +76,16 @@ export const getSmartRedirectUrl = (url: string): SmartRedirect => {
 
     // LinkedIn
     if (hostname.includes('linkedin.com')) {
-      return { appUrl: `linkedin://${pathname}`, webUrl: url, platform: 'LinkedIn' };
+      const androidIntent = `intent://www.linkedin.com${pathname}${search}#Intent;package=com.linkedin.android;scheme=https;end`;
+      return { appUrl: `linkedin://${pathname}`, webUrl: url, platform: 'LinkedIn', androidIntent };
     }
 
     // Spotify
-    if (hostname.includes('spotify.com')) {
+    if (hostname.includes('spotify.com') || hostname.includes('open.spotify.com')) {
       const parts = pathname.split('/').filter(Boolean);
       if (parts.length >= 2) {
-        return { appUrl: `spotify://${parts[0]}/${parts[1]}`, webUrl: url, platform: 'Spotify' };
+        const androidIntent = `intent://open.spotify.com${pathname}#Intent;package=com.spotify.music;scheme=https;end`;
+        return { appUrl: `spotify://${parts[0]}/${parts[1]}`, webUrl: url, platform: 'Spotify', androidIntent };
       }
       return { appUrl: 'spotify://', webUrl: url, platform: 'Spotify' };
     }
@@ -91,12 +93,19 @@ export const getSmartRedirectUrl = (url: string): SmartRedirect => {
     // WhatsApp
     if (hostname.includes('wa.me') || hostname.includes('whatsapp.com')) {
       const phone = pathname.slice(1) || urlObj.searchParams.get('phone') || '';
-      return { appUrl: `whatsapp://send?phone=${phone}`, webUrl: url, platform: 'WhatsApp' };
+      const androidIntent = `intent://send?phone=${phone}#Intent;package=com.whatsapp;scheme=whatsapp;end`;
+      return { appUrl: `whatsapp://send?phone=${phone}`, webUrl: url, platform: 'WhatsApp', androidIntent };
     }
 
     // Telegram
     if (hostname.includes('t.me') || hostname.includes('telegram.me')) {
-      return { appUrl: `tg://resolve?domain=${pathname.slice(1)}`, webUrl: url, platform: 'Telegram' };
+      const androidIntent = `intent://t.me${pathname}#Intent;package=org.telegram.messenger;scheme=https;end`;
+      return { appUrl: `tg://resolve?domain=${pathname.slice(1)}`, webUrl: url, platform: 'Telegram', androidIntent };
+    }
+
+    // PayPal
+    if (hostname.includes('paypal.me') || hostname.includes('paypal.com')) {
+      return { appUrl: null, webUrl: url, platform: 'PayPal' };
     }
 
     return { appUrl: null, webUrl: url, platform: 'Website' };

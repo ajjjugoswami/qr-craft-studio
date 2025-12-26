@@ -11,6 +11,12 @@ export type QRType =
   | 'facebook' 
   | 'youtube' 
   | 'whatsapp'
+  | 'tiktok'
+  | 'twitter'
+  | 'linkedin'
+  | 'spotify'
+  | 'telegram'
+  | 'paypal'
   | 'image';
 
 export interface CustomField {
