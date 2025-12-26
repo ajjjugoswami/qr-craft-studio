@@ -33,6 +33,7 @@ const ContentEditor: React.FC<ContentEditorProps> = ({
 }) => {
   const [form] = Form.useForm();
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [uploadedPublicId, setUploadedPublicId] = useState<string | null>(null);
 
   const generateVCardString = (values: Record<string, string>) => {
     return `BEGIN:VCARD
@@ -259,6 +260,7 @@ END:VCARD`;
                     const res: any = await uploadsAPI.uploadQRImage(file);
                     if (res && res.success && res.url) {
                       onContentChange(res.url);
+                      setUploadedPublicId(res.public_id || null);
                       message.success('Image uploaded');
                     } else {
                       message.error(res?.message || 'Upload failed');
@@ -278,26 +280,63 @@ END:VCARD`;
             </Upload>
 
             {/* Show spinner while uploading, show image preview only after a successful upload and only when URL is valid */}
-            <div className="mt-4">
+            <div className="mt-4 flex items-start gap-3">
               {isUploading ? (
                 <div className="w-56 h-56 flex items-center justify-center border border-border rounded-md">
                   <Spin />
                 </div>
               ) : (
                 isValidImageUrl(content) && (
-                  <div
-                    role="img"
-                    aria-label="Uploaded image preview"
-                    style={{
-                      width: 220,
-                      height: 220,
-                      borderRadius: 8,
-                      backgroundImage: `url(${content})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      border: '1px solid var(--border)',
-                    }}
-                  />
+                  <div className="relative">
+                    <div
+                      role="img"
+                      aria-label="Uploaded image preview"
+                      style={{
+                        width: 220,
+                        height: 220,
+                        borderRadius: 8,
+                        backgroundImage: `url(${content})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        border: '1px solid var(--border)',
+                      }}
+                    />
+
+                    {/* Remove button */}
+                    <div style={{ position: 'absolute', top: -8, right: -8 }}>
+                      <Button
+                        size="small"
+                        danger
+                        onClick={async () => {
+                          // confirm before removing
+                          const confirm = window.confirm('Remove this image? This will only remove the reference and optionally delete the uploaded image if it was uploaded from this session.');
+                          if (!confirm) return;
+
+                          // If we have public id, attempt deletion on server
+                          if (uploadedPublicId) {
+                            try {
+                              const res: any = await uploadsAPI.deleteQRImage(uploadedPublicId);
+                              if (res && res.success) {
+                                onContentChange('');
+                                setUploadedPublicId(null);
+                                message.success('Image removed');
+                              } else {
+                                message.error(res?.message || 'Failed to remove image');
+                              }
+                            } catch (e: any) {
+                              message.error(e?.response?.data?.message || e?.message || 'Failed to remove image');
+                            }
+                          } else {
+                            // No public id known — just clear the reference
+                            onContentChange('');
+                            message.success('Image reference removed');
+                          }
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
                 )
               )}
             </div>

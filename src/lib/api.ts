@@ -207,6 +207,10 @@ export const uploadsAPI = {
     });
     return response.data;
   },
+  deleteQRImage: async (publicId: string) => {
+    const response = await api.post('/uploads/qr-image/remove', { publicId });
+    return response.data;
+  },
 };
 
 // Scans API
