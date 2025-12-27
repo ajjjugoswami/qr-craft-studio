@@ -3,32 +3,16 @@ import { VCardContent } from './VCardContent';
 import { WiFiContent } from './WiFiContent';
 import { GenericContent } from './GenericContent';
 import { ImageContent } from './ImageContent';
-// import { StyledLandingPage } from './StyledLandingPage';
-import { QRTemplate } from '@/types/qrcode';
+import { SMSContent } from './SMSContent';
 
 interface DirectContentProps {
   content: string;
   qrType: string;
-  // template?: QRTemplate | null;
   copied: string | null;
   onCopy: (text: string, field: string) => void;
 }
 
 export const DirectContent: React.FC<DirectContentProps> = ({ content, qrType, copied, onCopy }) => {
-  // If we have a styled template, use the StyledLandingPage
-  // if (template && template.id && template.title) {
-  //   return (
-  //     <StyledLandingPage 
-  //       content={content} 
-  //       qrType={qrType} 
-  //       template={template} 
-  //       copied={copied} 
-  //       onCopy={onCopy} 
-  //     />
-  //   );
-  // }
-
-  // Otherwise, use the default components
   switch (qrType) {
     case 'vcard':
       return <VCardContent content={content} copied={copied} onCopy={onCopy} />;
@@ -36,7 +20,15 @@ export const DirectContent: React.FC<DirectContentProps> = ({ content, qrType, c
       return <WiFiContent content={content} copied={copied} onCopy={onCopy} />;
     case 'image':
       return <ImageContent content={content} />;
+    case 'sms':
+      return <SMSContent content={content} copied={copied} onCopy={onCopy} />;
     default:
-      return <GenericContent content={content} qrType={qrType} copied={copied} onCopy={onCopy} />;
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+          <div className="max-w-md w-full">
+            <GenericContent content={content} qrType={qrType} copied={copied} onCopy={onCopy} />
+          </div>
+        </div>
+      );
   }
 };

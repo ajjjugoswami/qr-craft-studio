@@ -20,14 +20,14 @@ const Redirector: React.FC = () => {
 
   const { copied, copyToClipboard } = useCopyToClipboard();
 
-  // For styled landing pages, render full-screen (no wrapper padding)
+  // For direct content types that have full-screen layouts
+  const fullScreenTypes = ['image', 'sms', 'vcard', 'wifi'];
   
-  if (showDirectContent && content && qrType ) {
+  if (showDirectContent && content && qrType && fullScreenTypes.includes(qrType)) {
     return (
       <DirectContent
         content={content}
         qrType={qrType}
-        // template={template}
         copied={copied}
         onCopy={copyToClipboard}
       />
