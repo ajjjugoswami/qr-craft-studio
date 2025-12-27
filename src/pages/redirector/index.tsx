@@ -20,10 +20,8 @@ const Redirector: React.FC = () => {
 
   const { copied, copyToClipboard } = useCopyToClipboard();
 
-  // For direct content types that have full-screen layouts
-  const fullScreenTypes = ['image', 'sms', 'vcard', 'wifi'];
-  
-  if (showDirectContent && content && qrType && fullScreenTypes.includes(qrType)) {
+  // All direct content types now have full-screen layouts
+  if (showDirectContent && content && qrType) {
     return (
       <DirectContent
         content={content}
@@ -43,14 +41,6 @@ const Redirector: React.FC = () => {
             passwordError={passwordError}
             onPasswordChange={setPasswordInputValue}
             onSubmit={onSubmitPassword}
-          />
-        ) : showDirectContent && content && qrType ? (
-          <DirectContent
-            content={content}
-            qrType={qrType}
-            // template={template}
-            copied={copied}
-            onCopy={copyToClipboard}
           />
         ) : loading ? (
           <LoadingState progress={progress} platform={redirectInfo?.platform} />
