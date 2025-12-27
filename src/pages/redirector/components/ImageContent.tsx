@@ -40,7 +40,7 @@ export const ImageContent: React.FC<ImageContentProps> = ({ content }) => {
 
   if (imageError) {
     return (
-      <div className="min-h-screen bg-stone-100 flex flex-col">
+      <div className="min-h-[100dvh] h-[100dvh] overflow-hidden bg-stone-100 flex flex-col">
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-8 text-center max-w-sm w-full">
             <div className="w-16 h-16 mx-auto bg-stone-100 rounded-full flex items-center justify-center mb-4">
@@ -62,7 +62,7 @@ export const ImageContent: React.FC<ImageContentProps> = ({ content }) => {
   }
 
   return (
-    <div className="min-h-screen bg-stone-900 flex flex-col">
+    <div className="min-h-[100dvh] h-[100dvh] overflow-hidden bg-stone-900 flex flex-col">
       {/* Header */}
       <div className="p-4 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
@@ -96,7 +96,7 @@ export const ImageContent: React.FC<ImageContentProps> = ({ content }) => {
       </div>
 
       {/* Actions */}
-      <div className="p-4 flex gap-3 flex-shrink-0">
+      <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] flex gap-3 flex-shrink-0">
         <button 
           onClick={handleDownload}
           className="flex-1 py-3.5 bg-white text-stone-900 font-medium rounded-xl flex items-center justify-center gap-2"

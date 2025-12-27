@@ -83,17 +83,17 @@ export const GenericContent: React.FC<GenericContentProps> = ({ content, qrType,
   };
 
   return (
-    <div className={`min-h-screen ${config.color} flex flex-col`}>
+    <div className={`min-h-[100dvh] h-[100dvh] overflow-hidden ${config.color} flex flex-col`}>
       {/* Header */}
-      <div className="p-6 text-center flex-shrink-0">
-        <div className="w-16 h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center mb-3">
-          <Icon className="w-8 h-8 text-white" />
+      <div className="px-4 pt-4 pb-3 text-center flex-shrink-0 sm:p-6">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center mb-2 sm:mb-3">
+          <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
         </div>
-        <h1 className="text-xl font-semibold text-white">{config.title}</h1>
+        <h1 className="text-lg sm:text-xl font-semibold text-white">{config.title}</h1>
       </div>
 
       {/* Content Card */}
-      <div className="flex-1 px-4 pb-4 flex flex-col min-h-0">
+      <div className="flex-1 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] flex flex-col min-h-0"> 
         <div className="bg-white rounded-2xl flex-1 flex flex-col overflow-hidden">
           {isCoupon ? (
             <>
