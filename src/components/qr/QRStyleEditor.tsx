@@ -6,6 +6,7 @@ import SettingsTab from './SettingsTab';
 import ShapeTab from './ShapeTab';
 import LogoTab from './LogoTab';
 import FrameTab from './FrameTab';
+import EffectsTab from './EffectsTab';
 
 const { Title } = Typography;
 
@@ -25,11 +26,6 @@ const QRStyleEditor: React.FC<QRStyleEditorProps> = ({
       children: <ColorsTab styling={styling} onStyleChange={onStyleChange} />,
     },
     {
-      key: 'settings',
-      label: 'Settings',
-      children: <SettingsTab styling={styling} onStyleChange={onStyleChange} />,
-    },
-    {
       key: 'shape',
       label: 'Shape',
       children: <ShapeTab styling={styling} onStyleChange={onStyleChange} />,
@@ -41,8 +37,18 @@ const QRStyleEditor: React.FC<QRStyleEditorProps> = ({
     },
     {
       key: 'frame',
-      label: 'Frame',
+      label: 'Corners',
       children: <FrameTab styling={styling} onStyleChange={onStyleChange} />,
+    },
+    {
+      key: 'effects',
+      label: 'Effects',
+      children: <EffectsTab styling={styling} onStyleChange={onStyleChange} />,
+    },
+    {
+      key: 'settings',
+      label: 'Settings',
+      children: <SettingsTab styling={styling} onStyleChange={onStyleChange} />,
     },
   ];
 
