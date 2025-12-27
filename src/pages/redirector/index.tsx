@@ -8,7 +8,6 @@ const Redirector: React.FC = () => {
     loading,
     content,
     qrType,
-    template,
     redirectInfo,
     progress,
     passwordInput,
@@ -22,9 +21,8 @@ const Redirector: React.FC = () => {
   const { copied, copyToClipboard } = useCopyToClipboard();
 
   // For styled landing pages, render full-screen (no wrapper padding)
-  const hasStyledTemplate = template && template.id && template.title;
   
-  if (showDirectContent && content && qrType && hasStyledTemplate) {
+  if (showDirectContent && content && qrType ) {
     return (
       <DirectContent
         content={content}
