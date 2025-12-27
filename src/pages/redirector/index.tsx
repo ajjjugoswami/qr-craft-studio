@@ -29,7 +29,7 @@ const Redirector: React.FC = () => {
       <DirectContent
         content={content}
         qrType={qrType}
-        template={template}
+        // template={template}
         copied={copied}
         onCopy={copyToClipboard}
       />
@@ -50,7 +50,7 @@ const Redirector: React.FC = () => {
           <DirectContent
             content={content}
             qrType={qrType}
-            template={template}
+            // template={template}
             copied={copied}
             onCopy={copyToClipboard}
           />
