@@ -6,4 +6,4 @@ export { VCardContent } from './VCardContent';
 export { WiFiContent } from './WiFiContent';
 export { GenericContent } from './GenericContent';
 export { ImageContent } from './ImageContent';
-export { StyledLandingPage } from './StyledLandingPage';
+export { SMSContent } from './SMSContent';

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from 'antd';
-import { Download, Image as ImageIcon, ZoomIn, ZoomOut, ExternalLink } from 'lucide-react';
+import { Download, Image as ImageIcon, ZoomIn, ZoomOut, ExternalLink, Share2 } from 'lucide-react';
 
 interface ImageContentProps {
   content: string;
@@ -23,92 +22,114 @@ export const ImageContent: React.FC<ImageContentProps> = ({ content }) => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      // Fallback: open in new tab
       window.open(content, '_blank');
     }
   };
 
-  const handleOpenOriginal = () => {
-    window.open(content, '_blank');
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ url: content });
+      } catch (error) {
+        console.log('Share cancelled');
+      }
+    } else {
+      window.open(content, '_blank');
+    }
   };
 
   if (imageError) {
     return (
-      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-        <div className="bg-primary/10 p-6 text-center">
-          <div className="w-20 h-20 mx-auto bg-primary rounded-full flex items-center justify-center mb-4">
-            <ImageIcon className="w-10 h-10 text-primary-foreground" />
+      <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 flex items-center justify-center p-4">
+        <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl max-w-md w-full overflow-hidden">
+          <div className="p-8 text-center">
+            <div className="w-24 h-24 mx-auto bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
+              <ImageIcon className="w-12 h-12 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Image</h2>
+            <p className="text-gray-500 mb-6">Unable to load image preview</p>
+            <button 
+              onClick={() => window.open(content, '_blank')}
+              className="w-full py-4 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+            >
+              <ExternalLink className="w-5 h-5" />
+              Open Original
+            </button>
           </div>
-          <h2 className="text-xl font-semibold text-foreground">Image</h2>
-        </div>
-        <div className="p-6 text-center">
-          <p className="text-muted-foreground mb-4">Unable to load image preview</p>
-          <Button type="primary" size="large" onClick={handleOpenOriginal} icon={<ExternalLink className="w-4 h-4" />}>
-            Open Original
-          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 flex flex-col">
       {/* Header */}
-      <div className="bg-primary/10 p-4 flex items-center justify-between">
+      <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-            <ImageIcon className="w-5 h-5 text-primary-foreground" />
+          <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+            <ImageIcon className="w-5 h-5 text-white" />
           </div>
-          <h2 className="text-lg font-semibold text-foreground">Image</h2>
+          <h1 className="text-lg font-semibold text-white">Image</h1>
         </div>
-        <button
-          onClick={() => setIsZoomed(!isZoomed)}
-          className="p-2 hover:bg-primary/20 rounded-lg transition-colors"
-        >
-          {isZoomed ? (
-            <ZoomOut className="w-5 h-5 text-foreground" />
-          ) : (
-            <ZoomIn className="w-5 h-5 text-foreground" />
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsZoomed(!isZoomed)}
+            className="p-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full transition-colors"
+          >
+            {isZoomed ? (
+              <ZoomOut className="w-5 h-5 text-white" />
+            ) : (
+              <ZoomIn className="w-5 h-5 text-white" />
+            )}
+          </button>
+          <button
+            onClick={handleShare}
+            className="p-2 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full transition-colors"
+          >
+            <Share2 className="w-5 h-5 text-white" />
+          </button>
+        </div>
       </div>
 
       {/* Image Container */}
-      <div 
-        className={`relative bg-muted/30 flex items-center justify-center overflow-hidden transition-all duration-300 ${
-          isZoomed ? 'max-h-[70vh]' : 'max-h-80'
-        }`}
-      >
-        <img
-          src={content}
-          alt="QR Code Image"
-          className={`w-full h-full object-contain transition-transform duration-300 ${
-            isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'
-          }`}
-          onClick={() => setIsZoomed(!isZoomed)}
-          onError={() => setImageError(true)}
-        />
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="bg-white/10 backdrop-blur-sm rounded-3xl overflow-hidden shadow-2xl max-w-2xl w-full">
+          <div 
+            className={`relative flex items-center justify-center overflow-hidden transition-all duration-300 ${
+              isZoomed ? 'max-h-[70vh]' : 'max-h-[50vh]'
+            }`}
+          >
+            <img
+              src={content}
+              alt="QR Code Image"
+              className={`w-full h-full object-contain transition-transform duration-300 ${
+                isZoomed ? 'cursor-zoom-out scale-110' : 'cursor-zoom-in'
+              }`}
+              onClick={() => setIsZoomed(!isZoomed)}
+              onError={() => setImageError(true)}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Actions */}
-      <div className="p-4 border-t border-border flex gap-3">
-        <Button 
-          type="primary" 
-          size="large" 
-          className="flex-1" 
-          onClick={handleDownload}
-          icon={<Download className="w-4 h-4" />}
-        >
-          Download
-        </Button>
-        <Button 
-          size="large" 
-          className="flex-1" 
-          onClick={handleOpenOriginal}
-          icon={<ExternalLink className="w-4 h-4" />}
-        >
-          Open Original
-        </Button>
+      <div className="p-4 pb-8">
+        <div className="max-w-md mx-auto flex gap-3">
+          <button 
+            onClick={handleDownload}
+            className="flex-1 py-4 bg-white text-purple-700 font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+          >
+            <Download className="w-5 h-5" />
+            Download
+          </button>
+          <button 
+            onClick={() => window.open(content, '_blank')}
+            className="flex-1 py-4 bg-white/20 backdrop-blur-sm text-white font-semibold rounded-2xl hover:bg-white/30 transition-all flex items-center justify-center gap-2"
+          >
+            <ExternalLink className="w-5 h-5" />
+            Open Original
+          </button>
+        </div>
       </div>
     </div>
   );
