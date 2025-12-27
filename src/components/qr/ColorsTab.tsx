@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, ColorPicker, Segmented, Input, Slider } from 'antd';
+import { Typography, ColorPicker, Segmented, Slider } from 'antd';
 import type { Color } from 'antd/es/color-picker';
 import { QRStyling } from '../../types/qrcode';
 
@@ -68,8 +68,9 @@ const ColorsTab: React.FC<ColorsTabProps> = ({ styling, onStyleChange }) => {
   };
 
   return (
-    <div className="pt-4">
-      <div className="mb-6">
+    <div className="pt-4 space-y-6">
+      {/* QR Code Color Section */}
+      <div>
         <Text strong className="block mb-3">QR Code Color Type</Text>
         <Segmented
           options={['Solid', 'Linear', 'Radial']}
@@ -80,7 +81,7 @@ const ColorsTab: React.FC<ColorsTabProps> = ({ styling, onStyleChange }) => {
         />
       </div>
 
-      <div className="mb-6">
+      <div>
         <Text strong className="block mb-3">QR Code Color</Text>
         <div className="flex items-center gap-3 mb-3">
           <ColorPicker
@@ -92,22 +93,42 @@ const ColorsTab: React.FC<ColorsTabProps> = ({ styling, onStyleChange }) => {
           <Text type="secondary">{styling.fgColor}</Text>
         </div>
         {fgGradientType !== 'solid' && (
-          <div className="flex items-center gap-3">
-            <ColorPicker
-              value={fgGradientColor2}
-              onChange={(color) => {
-                setFgGradientColor2(color.toHexString());
-                handleGradientChange('fg', fgGradientType);
-              }}
-              showText
-              size="large"
-            />
-            <Text type="secondary">{fgGradientColor2}</Text>
-          </div>
+          <>
+            <div className="flex items-center gap-3 mb-3">
+              <ColorPicker
+                value={fgGradientColor2}
+                onChange={(color) => {
+                  setFgGradientColor2(color.toHexString());
+                  handleGradientChange('fg', fgGradientType);
+                }}
+                showText
+                size="large"
+              />
+              <Text type="secondary">{fgGradientColor2}</Text>
+            </div>
+            <div>
+              <Text className="block mb-2 text-sm">Gradient Angle: {styling.dotsGradient?.rotation || 45}°</Text>
+              <Slider
+                min={0}
+                max={360}
+                step={15}
+                value={styling.dotsGradient?.rotation || 45}
+                onChange={(value) => {
+                  if (styling.dotsGradient) {
+                    onStyleChange({
+                      ...styling,
+                      dotsGradient: { ...styling.dotsGradient, rotation: value },
+                    });
+                  }
+                }}
+              />
+            </div>
+          </>
         )}
       </div>
 
-      <div className="mb-6">
+      {/* Background Color Section */}
+      <div>
         <Text strong className="block mb-3">Background Type</Text>
         <Segmented
           options={['Solid', 'Linear', 'Radial']}
@@ -118,7 +139,7 @@ const ColorsTab: React.FC<ColorsTabProps> = ({ styling, onStyleChange }) => {
         />
       </div>
 
-      <div className="mb-6">
+      <div>
         <Text strong className="block mb-3">Background Color</Text>
         <div className="flex items-center gap-3 mb-3">
           <ColorPicker
@@ -130,19 +151,73 @@ const ColorsTab: React.FC<ColorsTabProps> = ({ styling, onStyleChange }) => {
           <Text type="secondary">{styling.bgColor}</Text>
         </div>
         {bgGradientType !== 'solid' && (
-          <div className="flex items-center gap-3">
-            <ColorPicker
-              value={bgGradientColor2}
-              onChange={(color) => {
-                setBgGradientColor2(color.toHexString());
-                handleGradientChange('bg', bgGradientType);
-              }}
-              showText
-              size="large"
-            />
-            <Text type="secondary">{bgGradientColor2}</Text>
-          </div>
+          <>
+            <div className="flex items-center gap-3 mb-3">
+              <ColorPicker
+                value={bgGradientColor2}
+                onChange={(color) => {
+                  setBgGradientColor2(color.toHexString());
+                  handleGradientChange('bg', bgGradientType);
+                }}
+                showText
+                size="large"
+              />
+              <Text type="secondary">{bgGradientColor2}</Text>
+            </div>
+            <div>
+              <Text className="block mb-2 text-sm">Gradient Angle: {styling.backgroundGradient?.rotation || 45}°</Text>
+              <Slider
+                min={0}
+                max={360}
+                step={15}
+                value={styling.backgroundGradient?.rotation || 45}
+                onChange={(value) => {
+                  if (styling.backgroundGradient) {
+                    onStyleChange({
+                      ...styling,
+                      backgroundGradient: { ...styling.backgroundGradient, rotation: value },
+                    });
+                  }
+                }}
+              />
+            </div>
+          </>
         )}
+      </div>
+
+      {/* Quick Color Presets */}
+      <div>
+        <Text strong className="block mb-3">Quick Presets</Text>
+        <div className="grid grid-cols-5 gap-2">
+          {[
+            { fg: '#000000', bg: '#ffffff', label: 'Classic' },
+            { fg: '#1e40af', bg: '#f8fafc', label: 'Business' },
+            { fg: '#7c3aed', bg: '#faf5ff', label: 'Purple' },
+            { fg: '#16a34a', bg: '#f0fdf4', label: 'Green' },
+            { fg: '#ea580c', bg: '#fff7ed', label: 'Orange' },
+            { fg: '#dc2626', bg: '#fef2f2', label: 'Red' },
+            { fg: '#0891b2', bg: '#ecfeff', label: 'Cyan' },
+            { fg: '#d4af37', bg: '#1a1a1a', label: 'Gold' },
+            { fg: '#ffffff', bg: '#000000', label: 'Inverted' },
+            { fg: '#ec4899', bg: '#fce7f3', label: 'Pink' },
+          ].map((preset) => (
+            <button
+              key={preset.label}
+              onClick={() => onStyleChange({ ...styling, fgColor: preset.fg, bgColor: preset.bg })}
+              className="p-2 rounded-lg border border-border hover:border-primary transition-colors flex flex-col items-center gap-1"
+              title={preset.label}
+            >
+              <div 
+                className="w-6 h-6 rounded-full border"
+                style={{ 
+                  background: `linear-gradient(135deg, ${preset.fg} 50%, ${preset.bg} 50%)`,
+                  borderColor: preset.bg === '#ffffff' ? '#e5e7eb' : 'transparent'
+                }}
+              />
+              <Text className="text-[10px]">{preset.label}</Text>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -170,6 +170,12 @@ export interface QRStyling {
     rotation?: number;
     colorStops: { offset: number; color: string }[];
   };
+  // New enhanced options
+  gradientRotation?: number;
+  marginSize?: number;
+  bgOpacity?: number;
+  shadow?: 'none' | 'sm' | 'md' | 'lg';
+  rotation?: number;
 }
 
 export interface VCardData {
