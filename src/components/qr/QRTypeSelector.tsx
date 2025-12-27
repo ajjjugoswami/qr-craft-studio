@@ -63,9 +63,9 @@ const qrTypeCategories: QRTypeCategory[] = [
     label: 'Business & Marketing',
     types: [
       { value: 'paypal', label: 'PayPal', icon: <CreditCard className="w-5 h-5" /> },
-      { value: 'coupon', label: 'Coupon / Discount', icon: <Tag className="w-5 h-5" /> },
+      { value: 'coupon', label: 'Coupon', icon: <Tag className="w-5 h-5" /> },
       { value: 'review', label: 'Google Review', icon: <Star className="w-5 h-5" /> },
-      { value: 'feedback', label: 'Feedback / Survey', icon: <ClipboardList className="w-5 h-5" /> },
+      { value: 'feedback', label: 'Feedback', icon: <ClipboardList className="w-5 h-5" /> },
     ]
   }
 ];
