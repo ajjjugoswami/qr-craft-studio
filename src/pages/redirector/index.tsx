@@ -8,6 +8,7 @@ const Redirector: React.FC = () => {
     loading,
     content,
     qrType,
+    template,
     redirectInfo,
     progress,
     passwordInput,
@@ -19,6 +20,21 @@ const Redirector: React.FC = () => {
   } = useRedirector();
 
   const { copied, copyToClipboard } = useCopyToClipboard();
+
+  // For styled landing pages, render full-screen (no wrapper padding)
+  const hasStyledTemplate = template && template.id && template.title;
+  
+  if (showDirectContent && content && qrType && hasStyledTemplate) {
+    return (
+      <DirectContent
+        content={content}
+        qrType={qrType}
+        template={template}
+        copied={copied}
+        onCopy={copyToClipboard}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -34,6 +50,7 @@ const Redirector: React.FC = () => {
           <DirectContent
             content={content}
             qrType={qrType}
+            template={template}
             copied={copied}
             onCopy={copyToClipboard}
           />

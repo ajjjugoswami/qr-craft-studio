@@ -4,6 +4,7 @@ import { message } from 'antd';
 import { z } from 'zod';
 import { qrCodeAPI } from '@/lib/api';
 import { getSmartRedirectUrl, DIRECT_CONTENT_TYPES } from '../utils/redirectUtils';
+import { QRTemplate } from '@/types/qrcode';
 
 const passwordSchema = z
   .string()
@@ -15,6 +16,7 @@ export interface RedirectorState {
   loading: boolean;
   content: string | null;
   qrType: string | null;
+  template: QRTemplate | null;
   redirectInfo: { platform: string } | null;
   progress: number;
   serverPassword: string | null;
@@ -32,6 +34,7 @@ export const useRedirector = () => {
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState<string | null>(null);
   const [qrType, setQrType] = useState<string | null>(null);
+  const [template, setTemplate] = useState<QRTemplate | null>(null);
   const [redirectInfo, setRedirectInfo] = useState<{ platform: string } | null>(null);
   const [progress, setProgress] = useState(0);
 
@@ -171,11 +174,13 @@ export const useRedirector = () => {
         const qr = res?.qrCode || res;
         const targetContent = qr?.content;
         const type = qr?.type || 'url';
+        const qrTemplate = qr?.template || null;
         
         if (!targetContent) throw new Error('Destination not found');
 
         setContent(targetContent);
         setQrType(type);
+        setTemplate(qrTemplate);
 
         const p = (qr?.password ?? null) as string | null;
         if (p && p.trim().length > 0) {
@@ -238,6 +243,7 @@ export const useRedirector = () => {
     loading,
     content,
     qrType,
+    template,
     redirectInfo,
     progress,
     passwordInput,
