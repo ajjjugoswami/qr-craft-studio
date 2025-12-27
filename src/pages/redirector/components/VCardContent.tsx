@@ -26,17 +26,17 @@ export const VCardContent: React.FC<VCardContentProps> = ({ content, copied, onC
   };
 
   return (
-    <div className="min-h-screen bg-blue-600 flex flex-col">
+    <div className="min-h-[100dvh] h-[100dvh] overflow-hidden bg-blue-600 flex flex-col">
       {/* Header */}
-      <div className="p-6 text-center flex-shrink-0">
-        <div className="w-16 h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center mb-3">
+      <div className="px-4 pt-4 pb-3 text-center flex-shrink-0 sm:p-6">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center mb-2 sm:mb-3">
           {vcard.name ? (
             <span className="text-xl font-bold text-white">{getInitials(vcard.name)}</span>
           ) : (
-            <User className="w-8 h-8 text-white" />
+            <User className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
           )}
         </div>
-        <h1 className="text-xl font-semibold text-white">{vcard.name || 'Contact'}</h1>
+        <h1 className="text-lg sm:text-xl font-semibold text-white">{vcard.name || 'Contact'}</h1>
         {vcard.title && (
           <p className="text-white/80 text-sm mt-1 flex items-center justify-center gap-1">
             <Briefcase className="w-3 h-3" /> {vcard.title}
@@ -50,7 +50,7 @@ export const VCardContent: React.FC<VCardContentProps> = ({ content, copied, onC
       </div>
 
       {/* Content Card */}
-      <div className="flex-1 px-4 pb-4 flex flex-col min-h-0">
+      <div className="flex-1 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] flex flex-col min-h-0">
         <div className="bg-white rounded-2xl flex-1 flex flex-col overflow-hidden">
           <div className="p-4 space-y-2 flex-1 overflow-auto">
             {vcard.phone && (
@@ -111,7 +111,7 @@ export const VCardContent: React.FC<VCardContentProps> = ({ content, copied, onC
           </div>
 
           {/* Action */}
-          <div className="p-4 flex-shrink-0 border-t border-stone-100">
+          <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] flex-shrink-0 border-t border-stone-100">
             <button 
               onClick={downloadVCard}
               className="w-full py-3.5 bg-blue-600 text-white font-medium rounded-xl flex items-center justify-center gap-2"
