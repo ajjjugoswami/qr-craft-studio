@@ -382,7 +382,7 @@ const CreateQR: React.FC = () => {
                     loading={saving}
                     disabled={saving}
                   >
-                    {saving ? 'Saving...' : 'Save QR Code'}
+                    {saving ? 'Save QR Code' : 'Save QR Code'}
                   </Button>
                 ) : (
                   <Button
