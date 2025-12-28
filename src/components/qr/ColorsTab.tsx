@@ -184,41 +184,6 @@ const ColorsTab: React.FC<ColorsTabProps> = ({ styling, onStyleChange }) => {
           </>
         )}
       </div>
-
-      {/* Quick Color Presets */}
-      <div>
-        <Text strong className="block mb-3">Quick Presets</Text>
-        <div className="grid grid-cols-5 gap-2">
-          {[
-            { fg: '#000000', bg: '#ffffff', label: 'Classic' },
-            { fg: '#1e40af', bg: '#f8fafc', label: 'Business' },
-            { fg: '#7c3aed', bg: '#faf5ff', label: 'Purple' },
-            { fg: '#16a34a', bg: '#f0fdf4', label: 'Green' },
-            { fg: '#ea580c', bg: '#fff7ed', label: 'Orange' },
-            { fg: '#dc2626', bg: '#fef2f2', label: 'Red' },
-            { fg: '#0891b2', bg: '#ecfeff', label: 'Cyan' },
-            { fg: '#d4af37', bg: '#1a1a1a', label: 'Gold' },
-            { fg: '#ffffff', bg: '#000000', label: 'Inverted' },
-            { fg: '#ec4899', bg: '#fce7f3', label: 'Pink' },
-          ].map((preset) => (
-            <button
-              key={preset.label}
-              onClick={() => onStyleChange({ ...styling, fgColor: preset.fg, bgColor: preset.bg })}
-              className="p-2 rounded-lg border border-border hover:border-primary transition-colors flex flex-col items-center gap-1"
-              title={preset.label}
-            >
-              <div 
-                className="w-6 h-6 rounded-full border"
-                style={{ 
-                  background: `linear-gradient(135deg, ${preset.fg} 50%, ${preset.bg} 50%)`,
-                  borderColor: preset.bg === '#ffffff' ? '#e5e7eb' : 'transparent'
-                }}
-              />
-              <Text className="text-[10px]">{preset.label}</Text>
-            </button>
-          ))}
-        </div>
-      </div>
     </div>
   );
 };
