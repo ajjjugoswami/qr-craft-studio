@@ -12,6 +12,9 @@ import {
   Lock,
   Target,
   Power,
+  CheckCircle,
+  XCircle,
+  MoreHorizontal,
 } from 'lucide-react';
 import { toPng, toJpeg } from 'html-to-image';
 import { QRCodeData } from '../../types/qrcode';
@@ -111,6 +114,21 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
     },
   ];
 
+  const actionsMenuItems = [
+    {
+      key: 'edit',
+      label: 'Edit',
+      icon: <Edit size={16} />,
+      onClick: () => onEdit(qrCode.id),
+    },
+    ...(onToggleStatus ? [{
+      key: 'toggle-status',
+      label: qrCode.status === 'active' ? 'Deactivate' : 'Activate',
+      icon: qrCode.status === 'active' ? <XCircle size={16} className="text-red-600" /> : <CheckCircle size={16} className="text-green-600" />,
+      onClick: () => onToggleStatus(qrCode.id),
+    }] : []),
+  ];
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: '2-digit',
@@ -180,7 +198,12 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
             <Tag color={typeColors[qrCode.type]} className="m-0 uppercase text-xs">
               {qrCode.type}
             </Tag>
-            <Tag color={qrCode.status === 'active' ? 'success' : 'error'} className="m-0 text-xs">
+            <Tag color={qrCode.status === 'active' ? 'success' : 'error'} className="m-0 text-xs flex items-center gap-1">
+              {qrCode.status === 'active' ? (
+                <CheckCircle size={10} />
+              ) : (
+                <XCircle size={10} />
+              )}
               {qrCode.status}
             </Tag>
           </div>
@@ -195,24 +218,12 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
                 <Eye size={16} />
               </button>
             </Tooltip>
-            {onToggleStatus && (
-              <Tooltip title={qrCode.status === 'active' ? 'Deactivate' : 'Activate'}>
-                <button
-                  className={`p-2 rounded hover:bg-muted transition-colors ${
-                    qrCode.status === 'active' ? 'text-green-600' : 'text-red-600'
-                  }`}
-                  onClick={() => onToggleStatus(qrCode.id)}
-                >
-                  <Power size={16} />
-                </button>
-              </Tooltip>
-            )}
-            <Tooltip title="Edit">
+            <Tooltip title="Analytics">
               <button
                 className="p-2 rounded hover:bg-muted transition-colors"
-                onClick={() => onEdit(qrCode.id)}
+                onClick={() => navigate(`/analytics/${qrCode.id}`)}
               >
-                <Edit size={16} />
+                <BarChart3 size={16} />
               </button>
             </Tooltip>
             <Dropdown menu={{ items: downloadMenuItems }} placement="bottomRight" trigger={['click']}>
@@ -222,14 +233,6 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
                 </button>
               </Tooltip>
             </Dropdown>
-            <Tooltip title="Analytics">
-              <button
-                className="p-2 rounded hover:bg-muted transition-colors"
-                onClick={() => navigate(`/analytics/${qrCode.id}`)}
-              >
-                <BarChart3 size={16} />
-              </button>
-            </Tooltip>
             <Popconfirm
               title="Delete QR Code"
               description="Are you sure you want to delete this QR code?"
@@ -243,6 +246,13 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
                 </button>
               </Tooltip>
             </Popconfirm>
+            <Dropdown menu={{ items: actionsMenuItems }} placement="bottomRight" trigger={['click']}>
+              <Tooltip title="More Actions">
+                <button className="p-2 rounded hover:bg-muted transition-colors">
+                  <MoreHorizontal size={16} />
+                </button>
+              </Tooltip>
+            </Dropdown>
           </div>
         </Card>
 
@@ -354,7 +364,12 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
               <Text type="secondary" className="text-xs">
                 <span style={{ color: 'hsl(var(--primary))' }}>{qrCode.scans}</span> scans
               </Text>
-              <Tag color={qrCode.status === 'active' ? 'success' : 'error'} className="m-0">
+              <Tag color={qrCode.status === 'active' ? 'success' : 'error'} className="m-0 flex items-center gap-1">
+                {qrCode.status === 'active' ? (
+                  <CheckCircle size={10} />
+                ) : (
+                  <XCircle size={10} />
+                )}
                 {qrCode.status}
               </Tag>
               <Text type="secondary" className="text-xs">
@@ -370,12 +385,20 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
 
           {/* Actions */}
           <div className="flex items-center gap-1">
-            <Tooltip title="Edit">
+            <Tooltip title="Preview">
               <button
                 className="w-8 h-8 flex items-center justify-center rounded hover:bg-muted transition-colors"
-                onClick={() => onEdit(qrCode.id)}
+                onClick={() => setDownloadModalOpen(true)}
               >
-                <Edit size={16} />
+                <Eye size={16} />
+              </button>
+            </Tooltip>
+            <Tooltip title="Analytics">
+              <button 
+                className="w-8 h-8 flex items-center justify-center rounded hover:bg-muted transition-colors"
+                onClick={() => navigate(`/analytics/${qrCode.id}`)}
+              >
+                <BarChart3 size={16} />
               </button>
             </Tooltip>
             <Dropdown menu={{ items: downloadMenuItems }} placement="bottomRight" trigger={['click']}>
@@ -385,26 +408,6 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
                 </button>
               </Tooltip>
             </Dropdown>
-            <Tooltip title="Analytics">
-              <button 
-                className="w-8 h-8 flex items-center justify-center rounded hover:bg-muted transition-colors"
-                onClick={() => navigate(`/analytics/${qrCode.id}`)}
-              >
-                <BarChart3 size={16} />
-              </button>
-            </Tooltip>
-            {onToggleStatus && (
-              <Tooltip title={qrCode.status === 'active' ? 'Deactivate' : 'Activate'}>
-                <button
-                  className={`w-8 h-8 flex items-center justify-center rounded hover:bg-muted transition-colors ${
-                    qrCode.status === 'active' ? 'text-green-600' : 'text-red-600'
-                  }`}
-                  onClick={() => onToggleStatus(qrCode.id)}
-                >
-                  <Power size={16} />
-                </button>
-              </Tooltip>
-            )}
             <Popconfirm
               title="Delete QR Code"
               description="Are you sure you want to delete this QR code?"
@@ -418,6 +421,13 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
                 </button>
               </Tooltip>
             </Popconfirm>
+            <Dropdown menu={{ items: actionsMenuItems }} placement="bottomRight" trigger={['click']}>
+              <Tooltip title="More Actions">
+                <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-muted transition-colors">
+                  <MoreHorizontal size={16} />
+                </button>
+              </Tooltip>
+            </Dropdown>
           </div>
         </div>
       </Card>
