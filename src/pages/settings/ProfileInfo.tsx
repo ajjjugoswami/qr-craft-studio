@@ -450,8 +450,8 @@ const ProfileInfo: React.FC = () => {
               crop={crop}
               zoom={zoom}
               aspect={1}
-              cropShape="rect"
-              showGrid={true}
+              cropShape="round"
+              showGrid={false}
               onCropChange={setCrop}
               onCropComplete={onCropComplete}
               onZoomChange={setZoom}
