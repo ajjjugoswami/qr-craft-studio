@@ -443,7 +443,7 @@ const ProfileInfo: React.FC = () => {
           </div>
         }
       >
-        <div className="relative w-full h-[350px] bg-black rounded-lg overflow-hidden">
+        <div className="relative w-full h-[350px] bg-muted/50 rounded-lg overflow-hidden my-4">
           {imageToCrop && (
             <Cropper
               image={imageToCrop}
@@ -455,6 +455,12 @@ const ProfileInfo: React.FC = () => {
               onCropChange={setCrop}
               onCropComplete={onCropComplete}
               onZoomChange={setZoom}
+              objectFit="contain"
+              style={{
+                containerStyle: {
+                  background: 'hsl(var(--muted) / 0.3)',
+                },
+              }}
             />
           )}
         </div>
