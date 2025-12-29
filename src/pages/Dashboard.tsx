@@ -31,6 +31,7 @@ const Dashboard: React.FC = () => {
     qrCodes,
     loading,
     deleteQRCode,
+    toggleQRCodeStatus,
     page,
     limit,
     total,
@@ -59,6 +60,10 @@ const Dashboard: React.FC = () => {
 
   const handleDelete = (id: string) => {
     deleteQRCode(id);
+  };
+
+  const handleToggleStatus = (id: string) => {
+    toggleQRCodeStatus(id);
   };
 
   // Server-side filtered list (search applied on server)
@@ -256,6 +261,7 @@ const Dashboard: React.FC = () => {
                     qrCode={qrCode}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    onToggleStatus={handleToggleStatus}
                     viewMode="list"
                   />
                 ))}
@@ -268,6 +274,7 @@ const Dashboard: React.FC = () => {
                     qrCode={qrCode}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    onToggleStatus={handleToggleStatus}
                     viewMode="grid"
                   />
                 ))}

@@ -18,6 +18,9 @@ const QRUnavailable: React.FC = () => {
   } else if (reason === 'limit') {
     title = 'Scan Limit Reached';
     message = 'This QR code has reached the maximum number of scans.';
+  } else if (reason === 'inactive') {
+    title = 'QR Code Inactive';
+    message = 'This QR code has been deactivated by the owner.';
   }
 
   return (

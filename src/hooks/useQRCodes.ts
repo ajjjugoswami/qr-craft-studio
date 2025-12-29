@@ -86,6 +86,18 @@ export const useQRCodes = () => {
     [dispatch]
   );
 
+  // Toggle QR code status (active/inactive)
+  const toggleQRCodeStatus = useCallback(
+    async (id: string) => {
+      const qrCode = qrCodes.find(q => q.id === id);
+      if (!qrCode) return;
+      
+      const newStatus = qrCode.status === 'active' ? 'inactive' : 'active';
+      await dispatch(updateQRCode({ id, data: { status: newStatus } })).unwrap();
+    },
+    [dispatch, qrCodes]
+  );
+
   // Delete QR code
   const handleDeleteQRCode = useCallback(
     async (id: string) => {
@@ -143,6 +155,7 @@ export const useQRCodes = () => {
     totalActive,
     saveQRCode,
     updateQRCode: handleUpdateQRCode,
+    toggleQRCodeStatus,
     deleteQRCode: handleDeleteQRCode,
     getQRCode,
     fetchSingleQRCode,
