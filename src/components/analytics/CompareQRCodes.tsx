@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { Card, Typography, Select, Empty, Row, Col, Statistic, Tag } from 'antd';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-import { GitCompare, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Card, Typography, Select, Empty, Row, Col, Tag } from 'antd';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from 'recharts';
+import { GitCompare } from 'lucide-react';
 import { QRCodeData } from '@/types/qrcode';
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 interface CompareQRCodesProps {
   qrCodes: QRCodeData[];
@@ -23,15 +23,13 @@ const CompareQRCodes: React.FC<CompareQRCodesProps> = ({ qrCodes }) => {
     if (selectedQRData.length < 2) return null;
 
     const metrics = selectedQRData.map((qr) => ({
-      name: qr.name.length > 15 ? qr.name.substring(0, 15) + '...' : qr.name,
+      name: qr.name.length > 12 ? qr.name.substring(0, 12) + '...' : qr.name,
       fullName: qr.name,
       scans: qr.scans,
       type: qr.type,
       status: qr.status,
       createdAt: new Date(qr.createdAt).toLocaleDateString(),
-      // Calculate days active
-      daysActive: Math.floor((Date.now() - new Date(qr.createdAt).getTime()) / (1000 * 60 * 60 * 24)),
-      // Scans per day (avoid division by zero)
+      daysActive: Math.max(1, Math.floor((Date.now() - new Date(qr.createdAt).getTime()) / (1000 * 60 * 60 * 24))),
       scansPerDay: Math.round((qr.scans / Math.max(1, Math.floor((Date.now() - new Date(qr.createdAt).getTime()) / (1000 * 60 * 60 * 24)))) * 10) / 10,
     }));
 
@@ -65,12 +63,6 @@ const CompareQRCodes: React.FC<CompareQRCodesProps> = ({ qrCodes }) => {
     ];
   }, [comparisonData]);
 
-  const getTrendIcon = (value: number, best: number) => {
-    if (value === best) return <TrendingUp size={14} className="text-green-500" />;
-    if (value < best * 0.5) return <TrendingDown size={14} className="text-red-500" />;
-    return <Minus size={14} className="text-muted-foreground" />;
-  };
-
   return (
     <Card 
       title={
@@ -89,21 +81,13 @@ const CompareQRCodes: React.FC<CompareQRCodesProps> = ({ qrCodes }) => {
             mode="multiple"
             placeholder="Select QR codes to compare"
             value={selectedQRs}
-            onChange={setSelectedQRs}
+            onChange={(vals) => setSelectedQRs(vals.slice(0, 4))}
             className="w-full"
             maxTagCount={4}
             options={qrCodes.map((qr) => ({
-              label: (
-                <div className="flex items-center gap-2">
-                  <span>{qr.name}</span>
-                  <Tag color={qr.status === 'active' ? 'green' : 'default'} className="text-xs">
-                    {qr.scans} scans
-                  </Tag>
-                </div>
-              ),
+              label: `${qr.name} (${qr.scans} scans)`,
               value: qr.id,
             }))}
-            disabled={selectedQRs.length >= 4}
             optionFilterProp="label"
           />
         </div>
@@ -115,31 +99,29 @@ const CompareQRCodes: React.FC<CompareQRCodesProps> = ({ qrCodes }) => {
           />
         ) : (
           <div className="space-y-6">
-            {/* Stats Comparison */}
-            <Row gutter={[16, 16]}>
+            {/* Stats Comparison Cards */}
+            <Row gutter={[12, 12]}>
               {comparisonData?.map((qr, index) => (
-                <Col key={qr.fullName} xs={24} sm={12} lg={24 / Math.min(comparisonData.length, 4)}>
+                <Col key={qr.fullName} xs={24} sm={8}>
                   <Card 
                     size="small" 
                     className="text-center"
                     style={{ borderTop: `3px solid ${CHART_COLORS[index]}` }}
                   >
-                    <Text strong className="block mb-2 truncate" title={qr.fullName}>
+                    <Text strong className="block mb-2 truncate text-sm" title={qr.fullName}>
                       {qr.name}
                     </Text>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="flex justify-center gap-6 text-xs">
                       <div>
-                        <Text type="secondary">Scans</Text>
-                        <div className="font-bold text-lg" style={{ color: CHART_COLORS[index] }}>
+                        <Text type="secondary" className="block">Scans</Text>
+                        <div className="font-bold text-base" style={{ color: CHART_COLORS[index] }}>
                           {qr.scans}
-                          {getTrendIcon(qr.scans, Math.max(...comparisonData.map((d) => d.scans)))}
                         </div>
                       </div>
                       <div>
-                        <Text type="secondary">Scans/Day</Text>
-                        <div className="font-bold text-lg" style={{ color: CHART_COLORS[index] }}>
+                        <Text type="secondary" className="block">Scans/Day</Text>
+                        <div className="font-bold text-base" style={{ color: CHART_COLORS[index] }}>
                           {qr.scansPerDay}
-                          {getTrendIcon(qr.scansPerDay, Math.max(...comparisonData.map((d) => d.scansPerDay)))}
                         </div>
                       </div>
                     </div>
@@ -154,7 +136,7 @@ const CompareQRCodes: React.FC<CompareQRCodesProps> = ({ qrCodes }) => {
             {/* Bar Chart Comparison */}
             <div>
               <Text strong className="block mb-2">Scans Comparison</Text>
-              <ResponsiveContainer width="100%" height={200}>
+              <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={comparisonData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} />
@@ -171,26 +153,26 @@ const CompareQRCodes: React.FC<CompareQRCodesProps> = ({ qrCodes }) => {
               </ResponsiveContainer>
             </div>
 
-            {/* Radar Chart for multi-metric comparison */}
+            {/* Radar Chart */}
             {comparisonData && comparisonData.length >= 2 && (
               <div>
                 <Text strong className="block mb-2">Performance Overview</Text>
-                <ResponsiveContainer width="100%" height={250}>
+                <ResponsiveContainer width="100%" height={220}>
                   <RadarChart data={radarData}>
                     <PolarGrid stroke="hsl(var(--border))" />
-                    <PolarAngleAxis dataKey="metric" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }} />
+                    <PolarAngleAxis dataKey="metric" tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
                     <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} />
                     {comparisonData.map((_, index) => (
                       <Radar
                         key={index}
-                        name={comparisonData[index].fullName}
+                        name={comparisonData[index].name}
                         dataKey={`qr${index}`}
                         stroke={CHART_COLORS[index]}
                         fill={CHART_COLORS[index]}
                         fillOpacity={0.2}
                       />
                     ))}
-                    <Legend />
+                    <Legend wrapperStyle={{ fontSize: 11 }} />
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
