@@ -365,11 +365,8 @@ const Analytics: React.FC = () => {
 
         {/* Heatmap & Compare */}
         <Row gutter={[16, 16]}>
-          <Col xs={24} lg={14}>
+          <Col xs={24} lg={24}>
             <HeatmapByTime scans={scans} mode={mode} />
-          </Col>
-          <Col xs={24} lg={10}>
-            <CompareQRCodes qrCodes={qrCodes} />
           </Col>
         </Row>
 
