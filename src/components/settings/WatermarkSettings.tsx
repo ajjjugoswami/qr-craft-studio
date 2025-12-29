@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
-import { Card, Typography, Switch, Input, message, Button, Alert, Space } from 'antd';
-import { Droplets, Save, Info } from 'lucide-react';
+import { Card, Typography, Switch, Input, message, Button } from 'antd';
+import { Droplets, Save, HelpCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { authAPI } from '@/lib/api';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const { Title, Text } = Typography;
 
@@ -44,6 +50,18 @@ const WatermarkSettings: React.FC = () => {
         <Title level={4} className="mb-0 flex items-center gap-2">
           <Droplets size={18} />
           Watermark Settings
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="cursor-help">
+                  <HelpCircle size={16} className="text-muted-foreground hover:text-foreground transition-colors" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="max-w-xs">
+                <p>Watermarks are small text or logos added to your QR code designs. They help with branding but can be removed for a cleaner look.</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </Title>
         <Button
           type="primary"
@@ -54,15 +72,6 @@ const WatermarkSettings: React.FC = () => {
           Save Changes
         </Button>
       </div>
-
-      <Alert
-        message="About Watermarks"
-        description="Watermarks are small text or logos added to your QR code designs. They help with branding but can be removed for a cleaner look."
-        type="info"
-        icon={<Info size={16} />}
-        className="mb-6"
-        showIcon
-      />
 
       <div className="space-y-6">
         {/* Remove Watermark Toggle */}
