@@ -16,6 +16,7 @@ import {
   Search,
   LayoutGrid,
   List,
+  XCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../components/layout/DashboardLayout";
@@ -94,7 +95,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           <Card className="card-compact">
             {loading ? (
               <div className="space-y-2">
@@ -153,6 +154,27 @@ const Dashboard: React.FC = () => {
                 </div>
                 <span className="text-lg md:text-2xl font-bold text-warning">
                   {totalActive}
+                </span>
+              </div>
+            )}
+          </Card>
+
+          <Card className="card-compact">
+            {loading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-6 w-12" />
+              </div>
+            ) : (
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <XCircle size={14} className="text-destructive" />
+                  <span className="text-[11px] md:text-xs text-muted-foreground">
+                    Inactive
+                  </span>
+                </div>
+                <span className="text-lg md:text-2xl font-bold text-destructive">
+                  {Number(total) - Number(totalActive)}
                 </span>
               </div>
             )}
