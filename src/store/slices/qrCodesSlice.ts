@@ -97,6 +97,7 @@ export const fetchQRCode = createAsyncThunk(
         password: q.password ?? null,
         expirationDate: q.expirationDate ?? q.expirationdate ?? null,
         scanLimit: q.scanLimit ?? q.scanlimit ?? null,
+        whiteLabel: q.whiteLabel || null,
       };
       return qrCode;
     } catch (err: any) {

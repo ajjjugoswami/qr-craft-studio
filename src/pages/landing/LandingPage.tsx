@@ -573,7 +573,7 @@ const LandingPage = () => {
 
             {/* Copyright */}
             <p className="text-sm text-muted-foreground">
-              © 2024 QR Studio. All rights reserved.
+              © 2026 QR Studio. All rights reserved.
             </p>
           </div>
         </div>

@@ -84,6 +84,7 @@ export interface QRCodeData {
   password?: string | null;
   expirationDate?: string | null;
   scanLimit?: number | null;
+  whiteLabel?: any; // White label config from owner
 }
 
 export interface QRTemplate {
