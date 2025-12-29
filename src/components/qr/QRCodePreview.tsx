@@ -5,6 +5,7 @@ import { Input, ColorPicker, Slider, Popover } from 'antd';
 import { Pencil, Type } from 'lucide-react';
 import type { Color } from 'antd/es/color-picker';
 import { QRTemplate, QRStyling, CustomField, QRType } from '../../types/qrcode';
+import { useAuth } from '../../hooks/useAuth';
 
 // All QR types should route through /r/{id} so scans are always tracked.
 // For unsaved previews (no id yet), we fallback to /r?u=... (no analytics).
@@ -46,10 +47,15 @@ const QROnlyPreview = forwardRef<HTMLDivElement, {
   showWatermark?: boolean;
   watermarkText?: string;
 }>(
-  ({ content, styling, compact = false, qrId, qrType = 'url', showWatermark = true, watermarkText = 'QR Studio' }, ref) => {
+  ({ content, styling, compact = false, qrId, qrType = 'url', showWatermark, watermarkText }, ref) => {
+    const { user } = useAuth();
     const qrRef = useRef<HTMLDivElement>(null);
     const qrCode = useRef<QRCodeStyling | null>(null);
     const qrOnlySize = compact ? 48 : styling.size > 200 ? 200 : styling.size;
+
+    // Use user settings for watermark defaults
+    const effectiveShowWatermark = showWatermark !== undefined ? showWatermark : !user?.removeWatermark;
+    const effectiveWatermarkText = watermarkText !== undefined ? watermarkText : user?.watermarkText || 'QR Studio';
 
     const safeStyling = useMemo(() => ({
       ...styling,
@@ -146,12 +152,12 @@ const QROnlyPreview = forwardRef<HTMLDivElement, {
         >
           <div ref={qrRef} />
           {/* Watermark */}
-          {showWatermark && watermarkText && !compact && (
+          {effectiveShowWatermark && effectiveWatermarkText && !compact && (
             <div 
               className="absolute bottom-1 right-1 text-[8px] opacity-50"
               style={{ color: styling.fgColor }}
             >
-              {watermarkText}
+              {effectiveWatermarkText}
             </div>
           )}
         </div>
@@ -171,12 +177,17 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   onTemplateChange,
   qrId,
   qrType = 'url',
-  showWatermark = true,
-  watermarkText = 'QR Studio',
+  showWatermark,
+  watermarkText,
 }, ref) => {
+  const { user } = useAuth();
   const [hovered, setHovered] = useState(false);
   const [showTitleEditor, setShowTitleEditor] = useState(false);
   const [showSubtitleEditor, setShowSubtitleEditor] = useState(false);
+
+  // Use user settings for watermark defaults
+  const effectiveShowWatermark = showWatermark !== undefined ? showWatermark : !user?.removeWatermark;
+  const effectiveWatermarkText = watermarkText !== undefined ? watermarkText : user?.watermarkText || 'QR Studio';
   const qrRef = useRef<HTMLDivElement>(null);
   const qrCode = useRef<QRCodeStyling | null>(null);
 
@@ -200,7 +211,7 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
 
   // If template is null, render QR only using separate component
   if (!template) {
-    return <QROnlyPreview ref={ref} content={content} styling={styling} compact={compact} qrId={qrId} qrType={qrType} showWatermark={showWatermark} watermarkText={watermarkText} />;
+    return <QROnlyPreview ref={ref} content={content} styling={styling} compact={compact} qrId={qrId} qrType={qrType} showWatermark={effectiveShowWatermark} watermarkText={effectiveWatermarkText} />;
   }
 
   const isHorizontal = template.qrPosition === 'left' || template.qrPosition === 'right';
@@ -616,13 +627,22 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   const renderQRCode = () => (
     <div className="flex flex-col items-center z-10">
       <div
-        className="rounded-xl shadow-inner"
+        className="rounded-xl shadow-inner relative"
         style={{ 
           backgroundColor: styling.bgColor,
           padding: compact ? 4 : 12,
         }}
       >
         <div ref={qrRef} />
+        {/* Watermark */}
+        {effectiveShowWatermark && effectiveWatermarkText && !compact && (
+          <div 
+            className="absolute bottom-0 right-2 text-[10px] opacity-50"
+            style={{ color: styling.fgColor }}
+          >
+            {effectiveWatermarkText}
+          </div>
+        )}
       </div>
       {!compact && template.qrLabel && (
         <span 
