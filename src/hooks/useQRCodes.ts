@@ -12,6 +12,8 @@ import {
   selectQRCodesLimit,
   selectQRCodesTotal,
   selectQRCodesTotalPages,
+  selectQRCodesTotalScans,
+  selectQRCodesTotalActive,
   selectQRCodeById,
   selectShouldFetchQRCodes,
   clearQRCodes,
@@ -31,6 +33,8 @@ export const useQRCodes = () => {
   const limit = useAppSelector(selectQRCodesLimit);
   const total = useAppSelector(selectQRCodesTotal);
   const totalPages = useAppSelector(selectQRCodesTotalPages);
+  const totalScans = useAppSelector(selectQRCodesTotalScans);
+  const totalActive = useAppSelector(selectQRCodesTotalActive);
   const shouldFetch = useAppSelector(selectShouldFetchQRCodes);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const user = useAppSelector(selectUser);
@@ -135,6 +139,8 @@ export const useQRCodes = () => {
     limit,
     total,
     totalPages,
+    totalScans,
+    totalActive,
     saveQRCode,
     updateQRCode: handleUpdateQRCode,
     deleteQRCode: handleDeleteQRCode,

@@ -35,6 +35,8 @@ const Dashboard: React.FC = () => {
     limit,
     total,
     totalPages,
+    totalScans,
+    totalActive,
     setPage,
     setSearch,
   } = useQRCodes();
@@ -58,9 +60,6 @@ const Dashboard: React.FC = () => {
   const handleDelete = (id: string) => {
     deleteQRCode(id);
   };
-
-  const totalScans = qrCodes.reduce((acc, qr) => acc + qr.scans, 0);
-  const activeQRs = qrCodes.filter((qr) => qr.status === "active").length;
 
   // Server-side filtered list (search applied on server)
   const filteredQRCodes = qrCodes;
@@ -148,7 +147,7 @@ const Dashboard: React.FC = () => {
                   </span>
                 </div>
                 <span className="text-lg md:text-2xl font-bold text-warning">
-                  {activeQRs}
+                  {totalActive}
                 </span>
               </div>
             )}
