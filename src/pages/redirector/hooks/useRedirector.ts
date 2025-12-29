@@ -36,12 +36,13 @@ export const useRedirector = () => {
   const { id } = useParams<{ id?: string }>();
   const [searchParams] = useSearchParams();
 
+  const [initializing, setInitializing] = useState(true); // True until we have white-label config
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState<string | null>(null);
   const [qrType, setQrType] = useState<string | null>(null);
   const [redirectInfo, setRedirectInfo] = useState<{ platform: string } | null>(null);
   const [progress, setProgress] = useState(0);
-  const [whiteLabel, setWhiteLabel] = useState<WhiteLabelConfig | null>(null);
+  const [whiteLabel, setWhiteLabel] = useState<WhiteLabelConfig>(defaultWhiteLabel);
 
   const [serverPassword, setServerPassword] = useState<string | null>(null);
   const [passwordInput, setPasswordInput] = useState('');
@@ -190,6 +191,9 @@ export const useRedirector = () => {
         if (ownerWhiteLabel && ownerWhiteLabel.enabled) {
           setWhiteLabel(ownerWhiteLabel);
         }
+        
+        // Mark initialization complete - we now know the white-label config
+        setInitializing(false);
 
         const p = (qr?.password ?? null) as string | null;
         if (p && p.trim().length > 0) {
@@ -249,16 +253,16 @@ export const useRedirector = () => {
   };
 
   return {
-    loading,
+    loading: initializing || loading, // Keep loading true until we have white-label config
     content,
     qrType,
     redirectInfo,
-    progress,
+    progress: initializing ? 0 : progress, // Show 0 progress during initialization
     passwordInput,
     passwordError,
     showDirectContent,
-    needsPassword,
-    whiteLabel: whiteLabel || defaultWhiteLabel,
+    needsPassword: !initializing && needsPassword, // Only show password prompt after init
+    whiteLabel,
     onSubmitPassword,
     setPasswordInputValue,
   };
