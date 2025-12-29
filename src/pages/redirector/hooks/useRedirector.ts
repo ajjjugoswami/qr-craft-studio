@@ -4,6 +4,7 @@ import { message } from 'antd';
 import { z } from 'zod';
 import { qrCodeAPI } from '@/lib/api';
 import { getSmartRedirectUrl, DIRECT_CONTENT_TYPES } from '../utils/redirectUtils';
+import type { WhiteLabelConfig } from '@/context/authTypes';
 
 const passwordSchema = z
   .string()
@@ -23,7 +24,13 @@ export interface RedirectorState {
   passwordValidated: boolean;
   showDirectContent: boolean;
   needsPassword: boolean;
+  whiteLabel: WhiteLabelConfig | null;
 }
+
+const defaultWhiteLabel: WhiteLabelConfig = {
+  enabled: false,
+  showPoweredBy: true,
+};
 
 export const useRedirector = () => {
   const { id } = useParams<{ id?: string }>();
@@ -34,6 +41,7 @@ export const useRedirector = () => {
   const [qrType, setQrType] = useState<string | null>(null);
   const [redirectInfo, setRedirectInfo] = useState<{ platform: string } | null>(null);
   const [progress, setProgress] = useState(0);
+  const [whiteLabel, setWhiteLabel] = useState<WhiteLabelConfig | null>(null);
 
   const [serverPassword, setServerPassword] = useState<string | null>(null);
   const [passwordInput, setPasswordInput] = useState('');
@@ -177,6 +185,12 @@ export const useRedirector = () => {
         setContent(targetContent);
         setQrType(type);
 
+        // Get white-label config from QR owner (stored on QR or fetched separately)
+        const ownerWhiteLabel = qr?.whiteLabel || qr?.owner?.whiteLabel || null;
+        if (ownerWhiteLabel && ownerWhiteLabel.enabled) {
+          setWhiteLabel(ownerWhiteLabel);
+        }
+
         const p = (qr?.password ?? null) as string | null;
         if (p && p.trim().length > 0) {
           setServerPassword(p);
@@ -244,6 +258,7 @@ export const useRedirector = () => {
     passwordError,
     showDirectContent,
     needsPassword,
+    whiteLabel: whiteLabel || defaultWhiteLabel,
     onSubmitPassword,
     setPasswordInputValue,
   };

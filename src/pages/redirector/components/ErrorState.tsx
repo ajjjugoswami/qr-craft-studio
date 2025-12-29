@@ -1,12 +1,18 @@
 import React from 'react';
 import { Button } from 'antd';
 import { AlertCircle, ExternalLink } from 'lucide-react';
+import type { WhiteLabelConfig } from '@/context/authTypes';
 
 interface ErrorStateProps {
   content: string | null;
+  whiteLabel?: WhiteLabelConfig | null;
 }
 
-export const ErrorState: React.FC<ErrorStateProps> = ({ content }) => {
+export const ErrorState: React.FC<ErrorStateProps> = ({ content, whiteLabel }) => {
+  const primaryColor = whiteLabel?.enabled && whiteLabel.primaryColor 
+    ? whiteLabel.primaryColor 
+    : undefined;
+
   return (
     <div className="bg-card rounded-xl p-6 border border-border shadow-sm text-center">
       <div className="w-12 h-12 mx-auto bg-destructive/10 rounded-full flex items-center justify-center mb-4">
@@ -22,9 +28,16 @@ export const ErrorState: React.FC<ErrorStateProps> = ({ content }) => {
           className="w-full"
           onClick={() => (window.location.href = content)}
           icon={<ExternalLink className="w-4 h-4" />}
+          style={primaryColor ? { backgroundColor: primaryColor, borderColor: primaryColor } : undefined}
         >
           Open Link
         </Button>
+      )}
+
+      {whiteLabel?.showPoweredBy !== false && (
+        <p className="text-xs text-muted-foreground/60 mt-6">
+          Powered by QR Studio
+        </p>
       )}
     </div>
   );

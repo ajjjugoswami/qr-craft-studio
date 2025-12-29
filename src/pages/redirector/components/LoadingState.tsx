@@ -1,12 +1,18 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
+import type { WhiteLabelConfig } from '@/context/authTypes';
 
 interface LoadingStateProps {
   progress: number;
   platform?: string;
+  whiteLabel?: WhiteLabelConfig | null;
 }
 
-export const LoadingState: React.FC<LoadingStateProps> = ({ progress, platform }) => {
+export const LoadingState: React.FC<LoadingStateProps> = ({ progress, platform, whiteLabel }) => {
+  const primaryColor = whiteLabel?.enabled && whiteLabel.primaryColor 
+    ? whiteLabel.primaryColor 
+    : 'hsl(var(--primary))';
+
   return (
     <div className="text-center">
       <div className="relative w-16 h-16 mx-auto mb-6">
@@ -24,7 +30,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({ progress, platform }
             cy="50"
             r="42"
             fill="none"
-            stroke="hsl(var(--primary))"
+            stroke={primaryColor}
             strokeWidth="6"
             strokeLinecap="round"
             strokeDasharray={`${progress * 2.64} 264`}
@@ -32,16 +38,33 @@ export const LoadingState: React.FC<LoadingStateProps> = ({ progress, platform }
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="w-6 h-6 text-primary animate-spin" />
+          <Loader2 
+            className="w-6 h-6 animate-spin" 
+            style={{ color: primaryColor }}
+          />
         </div>
       </div>
 
       <h2 className="text-lg font-semibold text-foreground mb-1">
-        {platform ? `Opening ${platform}` : 'Loading'}
+        {whiteLabel?.enabled && whiteLabel.brandName 
+          ? whiteLabel.brandName 
+          : platform 
+            ? `Opening ${platform}` 
+            : 'Loading'}
       </h2>
       <p className="text-sm text-muted-foreground">
-        {progress < 100 ? 'Please wait...' : 'Redirecting...'}
+        {whiteLabel?.enabled && whiteLabel.loadingText 
+          ? whiteLabel.loadingText 
+          : progress < 100 
+            ? 'Please wait...' 
+            : 'Redirecting...'}
       </p>
+      
+      {whiteLabel?.showPoweredBy !== false && (
+        <p className="text-xs text-muted-foreground/60 mt-6">
+          Powered by QR Studio
+        </p>
+      )}
     </div>
   );
 };

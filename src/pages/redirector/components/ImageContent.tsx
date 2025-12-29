@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Download, Image as ImageIcon, ZoomIn, ZoomOut, ExternalLink, Share2 } from 'lucide-react';
+import type { WhiteLabelConfig } from '@/context/authTypes';
 
 interface ImageContentProps {
   content: string;
+  whiteLabel?: WhiteLabelConfig | null;
 }
 
-export const ImageContent: React.FC<ImageContentProps> = ({ content }) => {
+export const ImageContent: React.FC<ImageContentProps> = ({ content, whiteLabel }) => {
   const [isZoomed, setIsZoomed] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -96,21 +98,29 @@ export const ImageContent: React.FC<ImageContentProps> = ({ content }) => {
       </div>
 
       {/* Actions */}
-      <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] flex gap-3 flex-shrink-0">
-        <button 
-          onClick={handleDownload}
-          className="flex-1 py-3.5 bg-white text-stone-900 font-medium rounded-xl flex items-center justify-center gap-2"
-        >
-          <Download className="w-4 h-4" />
-          Download
-        </button>
-        <button 
-          onClick={() => window.open(content, '_blank')}
-          className="flex-1 py-3.5 bg-white/10 text-white font-medium rounded-xl flex items-center justify-center gap-2"
-        >
-          <ExternalLink className="w-4 h-4" />
-          Open
-        </button>
+      <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] flex-shrink-0">
+        <div className="flex gap-3">
+          <button 
+            onClick={handleDownload}
+            className="flex-1 py-3.5 bg-white text-stone-900 font-medium rounded-xl flex items-center justify-center gap-2"
+          >
+            <Download className="w-4 h-4" />
+            Download
+          </button>
+          <button 
+            onClick={() => window.open(content, '_blank')}
+            className="flex-1 py-3.5 bg-white/10 text-white font-medium rounded-xl flex items-center justify-center gap-2"
+          >
+            <ExternalLink className="w-4 h-4" />
+            Open
+          </button>
+        </div>
+        
+        {whiteLabel?.showPoweredBy !== false && (
+          <p className="text-xs text-white/40 text-center mt-3">
+            Powered by QR Studio
+          </p>
+        )}
       </div>
     </div>
   );

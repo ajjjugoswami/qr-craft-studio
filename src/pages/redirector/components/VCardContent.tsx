@@ -1,14 +1,16 @@
 import React from 'react';
 import { User, Phone, Mail, Globe, MapPin, Copy, Check, Download, Building2, Briefcase } from 'lucide-react';
 import { parseVCard } from '../utils/contentParsers';
+import type { WhiteLabelConfig } from '@/context/authTypes';
 
 interface VCardContentProps {
   content: string;
   copied: string | null;
   onCopy: (text: string, field: string) => void;
+  whiteLabel?: WhiteLabelConfig | null;
 }
 
-export const VCardContent: React.FC<VCardContentProps> = ({ content, copied, onCopy }) => {
+export const VCardContent: React.FC<VCardContentProps> = ({ content, copied, onCopy, whiteLabel }) => {
   const vcard = parseVCard(content);
   
   const downloadVCard = () => {
@@ -25,8 +27,10 @@ export const VCardContent: React.FC<VCardContentProps> = ({ content, copied, onC
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
+  const primaryColor = whiteLabel?.enabled && whiteLabel.primaryColor ? whiteLabel.primaryColor : '#2563eb';
+
   return (
-    <div className="min-h-[100dvh] h-[100dvh] overflow-hidden bg-blue-600 flex flex-col">
+    <div className="min-h-[100dvh] h-[100dvh] overflow-hidden flex flex-col" style={{ backgroundColor: primaryColor }}>
       {/* Header */}
       <div className="px-4 pt-4 pb-3 text-center flex-shrink-0 sm:p-6">
         <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center mb-2 sm:mb-3">
@@ -114,11 +118,18 @@ export const VCardContent: React.FC<VCardContentProps> = ({ content, copied, onC
           <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] flex-shrink-0 border-t border-stone-100">
             <button 
               onClick={downloadVCard}
-              className="w-full py-3.5 bg-blue-600 text-white font-medium rounded-xl flex items-center justify-center gap-2"
+              className="w-full py-3.5 text-white font-medium rounded-xl flex items-center justify-center gap-2"
+              style={{ backgroundColor: primaryColor }}
             >
               <Download className="w-4 h-4" />
               Save Contact
             </button>
+            
+            {whiteLabel?.showPoweredBy !== false && (
+              <p className="text-xs text-stone-400 text-center mt-3">
+                Powered by QR Studio
+              </p>
+            )}
           </div>
         </div>
       </div>
