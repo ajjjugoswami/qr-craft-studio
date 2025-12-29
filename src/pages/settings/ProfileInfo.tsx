@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Card, Typography, Avatar, Button, Form, Input, message, Space, Upload, Select, UploadProps, Modal } from 'antd';
-import { User, Check, Upload as UploadIcon, X, Eye } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
+import { Card, Typography, Avatar, Button, Form, Input, message, Space, Upload, Select, UploadProps, Modal, Slider } from 'antd';
+import { User, Check, Upload as UploadIcon, X, Eye, Crop } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { authAPI } from '@/lib/api';
+import Cropper, { Area } from 'react-easy-crop';
 
 const { Title, Text } = Typography;
 
@@ -35,12 +36,69 @@ const timezones = [
   { value: 'Australia/Sydney', label: 'Sydney' },
 ];
 
+// Helper function to create cropped image
+const createCroppedImage = async (
+  imageSrc: string,
+  pixelCrop: Area
+): Promise<File> => {
+  const image = new Image();
+  image.src = imageSrc;
+  
+  await new Promise((resolve) => {
+    image.onload = resolve;
+  });
+
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  if (!ctx) {
+    throw new Error('No 2d context');
+  }
+
+  canvas.width = pixelCrop.width;
+  canvas.height = pixelCrop.height;
+
+  ctx.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    pixelCrop.width,
+    pixelCrop.height
+  );
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          const file = new File([blob], 'profile-picture.jpg', { type: 'image/jpeg' });
+          resolve(file);
+        } else {
+          reject(new Error('Canvas is empty'));
+        }
+      },
+      'image/jpeg',
+      0.9
+    );
+  });
+};
+
 const ProfileInfo: React.FC = () => {
   const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [form] = Form.useForm();
+
+  // Crop states
+  const [cropModalVisible, setCropModalVisible] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
   const uploadProps: UploadProps = {
     beforeUpload: (file) => {
@@ -49,15 +107,50 @@ const ProfileInfo: React.FC = () => {
         message.error('You can only upload image files!');
         return false;
       }
-      const isLt1MB = file.size / 1024 / 1024 < 1;
-      if (!isLt1MB) {
-        message.error('Image must be smaller than 1MB!');
+      const isLt3MB = file.size / 1024 / 1024 < 3;
+      if (!isLt3MB) {
+        message.error('Image must be smaller than 3MB!');
         return false;
       }
-      setProfilePictureFile(file);
+      
+      // Read file and open crop modal
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageToCrop(reader.result as string);
+        setCropModalVisible(true);
+        setCrop({ x: 0, y: 0 });
+        setZoom(1);
+      };
+      reader.readAsDataURL(file);
+      
       return false; // Prevent auto upload
     },
     showUploadList: false,
+  };
+
+  const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const handleCropSave = async () => {
+    if (!imageToCrop || !croppedAreaPixels) return;
+    
+    try {
+      const croppedFile = await createCroppedImage(imageToCrop, croppedAreaPixels);
+      setProfilePictureFile(croppedFile);
+      setCropModalVisible(false);
+      setImageToCrop(null);
+      message.success('Image cropped successfully');
+    } catch (error) {
+      message.error('Failed to crop image');
+    }
+  };
+
+  const handleCropCancel = () => {
+    setCropModalVisible(false);
+    setImageToCrop(null);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
   };
 
   // Initialize form with user data
@@ -327,6 +420,54 @@ const ProfileInfo: React.FC = () => {
           style={{ width: '100%', height: 'auto' }}
           src={user?.profilePicture}
         />
+      </Modal>
+
+      {/* Crop Modal */}
+      <Modal
+        open={cropModalVisible}
+        title={
+          <div className="flex items-center gap-2">
+            <Crop size={18} />
+            Crop Image
+          </div>
+        }
+        onCancel={handleCropCancel}
+        centered
+        width={500}
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button onClick={handleCropCancel}>Cancel</Button>
+            <Button type="primary" onClick={handleCropSave}>
+              Crop & Save
+            </Button>
+          </div>
+        }
+      >
+        <div className="relative w-full h-[350px] bg-black rounded-lg overflow-hidden">
+          {imageToCrop && (
+            <Cropper
+              image={imageToCrop}
+              crop={crop}
+              zoom={zoom}
+              aspect={1}
+              cropShape="rect"
+              showGrid={true}
+              onCropChange={setCrop}
+              onCropComplete={onCropComplete}
+              onZoomChange={setZoom}
+            />
+          )}
+        </div>
+        <div className="mt-4">
+          <Text className="block mb-2">Zoom: {Math.round(zoom * 100)}%</Text>
+          <Slider
+            min={1}
+            max={3}
+            step={0.1}
+            value={zoom}
+            onChange={(value) => setZoom(value)}
+          />
+        </div>
       </Modal>
     </div>
   );
