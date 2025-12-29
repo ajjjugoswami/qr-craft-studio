@@ -10,6 +10,8 @@ export type User = {
   profilePicture?: string;
   language?: string;
   timezone?: string;
+  removeWatermark?: boolean;
+  watermarkText?: string;
 };
 
 export type AuthContextType = {

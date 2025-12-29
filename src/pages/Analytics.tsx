@@ -8,6 +8,8 @@ import DashboardLayout from '../components/layout/DashboardLayout';
 import { useQRCodes } from '../hooks/useQRCodes';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { getDemoScansOverTime, demoDeviceData, demoTopQRCodes, demoLocations } from '@/lib/hardCodeAnalyticsData';
+import HeatmapByTime from '@/components/analytics/HeatmapByTime';
+import CompareQRCodes from '@/components/analytics/CompareQRCodes';
 
 const { Title, Text } = Typography;
 
@@ -358,6 +360,16 @@ const Analytics: React.FC = () => {
                 </BarChart>
               </ResponsiveContainer>
             </Card>
+          </Col>
+        </Row>
+
+        {/* Heatmap & Compare */}
+        <Row gutter={[16, 16]}>
+          <Col xs={24} lg={14}>
+            <HeatmapByTime scans={scans} mode={mode} />
+          </Col>
+          <Col xs={24} lg={10}>
+            <CompareQRCodes qrCodes={qrCodes} />
           </Col>
         </Row>
 

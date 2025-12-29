@@ -25,6 +25,7 @@ import DashboardLayout from "../components/layout/DashboardLayout";
 import QRCodeCard from "../components/qr/QRCodeCard";
 import EmptyQRState from "../components/qr/EmptyQRState";
 import { useQRCodes } from "../hooks/useQRCodes";
+import QuickActionsWidget from "../components/dashboard/QuickActionsWidget";
 
 const { Title, Text } = Typography;
 
@@ -92,70 +93,78 @@ const Dashboard: React.FC = () => {
           </Button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-3 md:gap-4">
-          <Card className="card-compact">
-            {loading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-6 w-12" />
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <QrCode size={14} className="text-primary" />
-                  <span className="text-[11px] md:text-xs text-muted-foreground">
-                    Total
+        {/* Stats Cards & Quick Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-3 md:gap-4">
+          {/* Stats Cards */}
+          <div className="lg:col-span-3 grid grid-cols-3 gap-3 md:gap-4">
+            <Card className="card-compact">
+              {loading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-6 w-12" />
+                </div>
+              ) : (
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <QrCode size={14} className="text-primary" />
+                    <span className="text-[11px] md:text-xs text-muted-foreground">
+                      Total
+                    </span>
+                  </div>
+                  <span className="text-lg md:text-2xl font-bold text-primary">
+                    {Number(total)}
                   </span>
                 </div>
-                <span className="text-lg md:text-2xl font-bold text-primary">
-                  {Number(total)}
-                </span>
-              </div>
-            )}
-          </Card>
+              )}
+            </Card>
 
-          <Card className="card-compact">
-            {loading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-6 w-12" />
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <Eye size={14} className="text-success" />
-                  <span className="text-[11px] md:text-xs text-muted-foreground">
-                    Scans
+            <Card className="card-compact">
+              {loading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-6 w-12" />
+                </div>
+              ) : (
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Eye size={14} className="text-success" />
+                    <span className="text-[11px] md:text-xs text-muted-foreground">
+                      Scans
+                    </span>
+                  </div>
+                  <span className="text-lg md:text-2xl font-bold text-success">
+                    {totalScans}
                   </span>
                 </div>
-                <span className="text-lg md:text-2xl font-bold text-success">
-                  {totalScans}
-                </span>
-              </div>
-            )}
-          </Card>
+              )}
+            </Card>
 
-          <Card className="card-compact">
-            {loading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-6 w-12" />
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <TrendingUp size={14} className="text-warning" />
-                  <span className="text-[11px] md:text-xs text-muted-foreground">
-                    Active
+            <Card className="card-compact">
+              {loading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-6 w-12" />
+                </div>
+              ) : (
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <TrendingUp size={14} className="text-warning" />
+                    <span className="text-[11px] md:text-xs text-muted-foreground">
+                      Active
+                    </span>
+                  </div>
+                  <span className="text-lg md:text-2xl font-bold text-warning">
+                    {activeQRs}
                   </span>
                 </div>
-                <span className="text-lg md:text-2xl font-bold text-warning">
-                  {activeQRs}
-                </span>
-              </div>
-            )}
-          </Card>
+              )}
+            </Card>
+          </div>
+
+          {/* Quick Actions Widget */}
+          <div className="lg:col-span-1">
+            <QuickActionsWidget />
+          </div>
         </div>
 
         {/* Content */}

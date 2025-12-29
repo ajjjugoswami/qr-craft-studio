@@ -16,6 +16,8 @@ export interface User {
   profilePicture?: string;
   language?: string;
   timezone?: string;
+  removeWatermark?: boolean;
+  watermarkText?: string;
 }
 
 interface AuthState {

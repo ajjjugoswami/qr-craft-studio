@@ -18,6 +18,8 @@ interface QRCodePreviewProps {
   onTemplateChange?: (template: QRTemplate) => void;
   qrId?: string;
   qrType?: QRType;
+  showWatermark?: boolean;
+  watermarkText?: string;
 }
 
 const fontWeightMap = {
@@ -35,8 +37,16 @@ const gradientDirectionMap = {
 };
 
 // Separate component for QR-only rendering (no template)
-const QROnlyPreview = forwardRef<HTMLDivElement, { content: string; styling: QRStyling; compact?: boolean; qrId?: string; qrType?: QRType }>(
-  ({ content, styling, compact = false, qrId, qrType = 'url' }, ref) => {
+const QROnlyPreview = forwardRef<HTMLDivElement, { 
+  content: string; 
+  styling: QRStyling; 
+  compact?: boolean; 
+  qrId?: string; 
+  qrType?: QRType;
+  showWatermark?: boolean;
+  watermarkText?: string;
+}>(
+  ({ content, styling, compact = false, qrId, qrType = 'url', showWatermark = true, watermarkText = 'QR Studio' }, ref) => {
     const qrRef = useRef<HTMLDivElement>(null);
     const qrCode = useRef<QRCodeStyling | null>(null);
     const qrOnlySize = compact ? 48 : styling.size > 200 ? 200 : styling.size;
@@ -128,13 +138,22 @@ const QROnlyPreview = forwardRef<HTMLDivElement, { content: string; styling: QRS
     return (
       <div ref={ref} className="flex items-center justify-center p-4">
         <div
-          className="rounded-lg"
+          className="rounded-lg relative"
           style={{ 
             backgroundColor: styling.bgColor,
             padding: compact ? 8 : 16,
           }}
         >
           <div ref={qrRef} />
+          {/* Watermark */}
+          {showWatermark && watermarkText && !compact && (
+            <div 
+              className="absolute bottom-1 right-1 text-[8px] opacity-50"
+              style={{ color: styling.fgColor }}
+            >
+              {watermarkText}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -152,6 +171,8 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   onTemplateChange,
   qrId,
   qrType = 'url',
+  showWatermark = true,
+  watermarkText = 'QR Studio',
 }, ref) => {
   const [hovered, setHovered] = useState(false);
   const [showTitleEditor, setShowTitleEditor] = useState(false);
@@ -179,7 +200,7 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
 
   // If template is null, render QR only using separate component
   if (!template) {
-    return <QROnlyPreview ref={ref} content={content} styling={styling} compact={compact} qrId={qrId} qrType={qrType} />;
+    return <QROnlyPreview ref={ref} content={content} styling={styling} compact={compact} qrId={qrId} qrType={qrType} showWatermark={showWatermark} watermarkText={watermarkText} />;
   }
 
   const isHorizontal = template.qrPosition === 'left' || template.qrPosition === 'right';

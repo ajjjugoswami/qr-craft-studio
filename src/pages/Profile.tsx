@@ -1,10 +1,11 @@
 import React from 'react';
 import { Typography, Tabs } from 'antd';
-import { User, Palette, Shield } from 'lucide-react';
+import { User, Palette, Shield, Droplets } from 'lucide-react';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import ProfileInfo from './settings/ProfileInfo';
 import ThemeSettings from './settings/ThemeSettings';
 import SecuritySettings from './settings/SecuritySettings';
+import WatermarkSettings from '@/components/settings/WatermarkSettings';
 
 const { Title, Text } = Typography;
 
@@ -29,6 +30,16 @@ const Profile: React.FC = () => {
         </span>
       ),
       children: <ThemeSettings />,
+    },
+    {
+      key: 'watermark',
+      label: (
+        <span className="flex items-center gap-2">
+          <Droplets size={16} />
+          Watermark
+        </span>
+      ),
+      children: <WatermarkSettings />,
     },
     {
       key: 'security',
