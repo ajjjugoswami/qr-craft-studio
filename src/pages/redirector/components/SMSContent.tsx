@@ -1,10 +1,12 @@
 import React from 'react';
 import { MessageSquare, Phone, Copy, Check, Send, User } from 'lucide-react';
+import type { WhiteLabelConfig } from '@/context/authTypes';
 
 interface SMSContentProps {
   content: string;
   copied: string | null;
   onCopy: (text: string, field: string) => void;
+  whiteLabel?: WhiteLabelConfig | null;
 }
 
 interface SMSData {
@@ -41,8 +43,10 @@ const parseSMSContent = (content: string): SMSData => {
   return { phoneNumber: phoneNumber.trim(), message: message.trim() };
 };
 
-export const SMSContent: React.FC<SMSContentProps> = ({ content, copied, onCopy }) => {
+export const SMSContent: React.FC<SMSContentProps> = ({ content, copied, onCopy, whiteLabel }) => {
   const { phoneNumber, message } = parseSMSContent(content);
+
+  const primaryColor = whiteLabel?.enabled && whiteLabel.primaryColor ? whiteLabel.primaryColor : '#059669';
 
   const handleSendSMS = () => {
     let smsUrl = `sms:${phoneNumber}`;
@@ -57,7 +61,7 @@ export const SMSContent: React.FC<SMSContentProps> = ({ content, copied, onCopy 
   };
 
   return (
-    <div className="min-h-[100dvh] h-[100dvh] overflow-hidden bg-emerald-600 flex flex-col">
+    <div className="min-h-[100dvh] h-[100dvh] overflow-hidden flex flex-col" style={{ backgroundColor: primaryColor }}>
       {/* Header */}
       <div className="px-4 pt-4 pb-3 text-center flex-shrink-0 sm:p-6">
         <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center mb-2 sm:mb-3">
@@ -73,8 +77,8 @@ export const SMSContent: React.FC<SMSContentProps> = ({ content, copied, onCopy 
             {/* Phone Number */}
             <div className="bg-stone-50 rounded-xl p-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <User className="w-5 h-5 text-emerald-600" />
+                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${primaryColor}20` }}>
+                  <User className="w-5 h-5" style={{ color: primaryColor }} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-stone-500 font-medium">To</p>
@@ -115,7 +119,8 @@ export const SMSContent: React.FC<SMSContentProps> = ({ content, copied, onCopy 
           <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] space-y-2 flex-shrink-0 border-t border-stone-100">
             <button 
               onClick={handleSendSMS}
-              className="w-full py-3.5 bg-emerald-600 text-white font-medium rounded-xl flex items-center justify-center gap-2"
+              className="w-full py-3.5 text-white font-medium rounded-xl flex items-center justify-center gap-2"
+              style={{ backgroundColor: primaryColor }}
             >
               <Send className="w-4 h-4" />
               Send SMS
@@ -127,6 +132,12 @@ export const SMSContent: React.FC<SMSContentProps> = ({ content, copied, onCopy 
               <Phone className="w-4 h-4" />
               Call Instead
             </button>
+            
+            {whiteLabel?.showPoweredBy !== false && (
+              <p className="text-xs text-stone-400 text-center mt-2">
+                Powered by QR Studio
+              </p>
+            )}
           </div>
         </div>
       </div>

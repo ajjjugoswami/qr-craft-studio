@@ -14,6 +14,7 @@ const Redirector: React.FC = () => {
     passwordError,
     showDirectContent,
     needsPassword,
+    whiteLabel,
     onSubmitPassword,
     setPasswordInputValue,
   } = useRedirector();
@@ -28,6 +29,7 @@ const Redirector: React.FC = () => {
         qrType={qrType}
         copied={copied}
         onCopy={copyToClipboard}
+        whiteLabel={whiteLabel}
       />
     );
   }
@@ -41,11 +43,16 @@ const Redirector: React.FC = () => {
             passwordError={passwordError}
             onPasswordChange={setPasswordInputValue}
             onSubmit={onSubmitPassword}
+            whiteLabel={whiteLabel}
           />
         ) : loading ? (
-          <LoadingState progress={progress} platform={redirectInfo?.platform} />
+          <LoadingState 
+            progress={progress} 
+            platform={redirectInfo?.platform} 
+            whiteLabel={whiteLabel}
+          />
         ) : (
-          <ErrorState content={content} />
+          <ErrorState content={content} whiteLabel={whiteLabel} />
         )}
       </div>
     </div>

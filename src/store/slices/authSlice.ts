@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import { authAPI } from '@/lib/api';
 import { clearQRCodes } from './qrCodesSlice';
+import type { WhiteLabelConfig } from '@/context/authTypes';
 
 // ============ Types ============
 export interface User {
@@ -18,6 +19,7 @@ export interface User {
   timezone?: string;
   removeWatermark?: boolean;
   watermarkText?: string;
+  whiteLabel?: WhiteLabelConfig;
 }
 
 interface AuthState {

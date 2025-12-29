@@ -1,3 +1,11 @@
+export interface WhiteLabelConfig {
+  enabled: boolean;
+  brandName?: string;
+  primaryColor?: string;
+  loadingText?: string;
+  showPoweredBy: boolean;
+}
+
 export type User = {
   _id: string;
   name: string;
@@ -12,6 +20,7 @@ export type User = {
   timezone?: string;
   removeWatermark?: boolean;
   watermarkText?: string;
+  whiteLabel?: WhiteLabelConfig;
 };
 
 export type AuthContextType = {

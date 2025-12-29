@@ -1,16 +1,20 @@
 import React from 'react';
 import { Wifi, WifiOff, Lock, Shield, Copy, Check, Eye, EyeOff } from 'lucide-react';
 import { parseWiFi } from '../utils/contentParsers';
+import type { WhiteLabelConfig } from '@/context/authTypes';
 
 interface WiFiContentProps {
   content: string;
   copied: string | null;
   onCopy: (text: string, field: string) => void;
+  whiteLabel?: WhiteLabelConfig | null;
 }
 
-export const WiFiContent: React.FC<WiFiContentProps> = ({ content, copied, onCopy }) => {
+export const WiFiContent: React.FC<WiFiContentProps> = ({ content, copied, onCopy, whiteLabel }) => {
   const wifi = parseWiFi(content);
   const [showPassword, setShowPassword] = React.useState(false);
+
+  const primaryColor = whiteLabel?.enabled && whiteLabel.primaryColor ? whiteLabel.primaryColor : '#0891b2';
   
   if (!wifi) {
     return (
@@ -39,7 +43,7 @@ export const WiFiContent: React.FC<WiFiContentProps> = ({ content, copied, onCop
   };
 
   return (
-    <div className="min-h-[100dvh] h-[100dvh] overflow-hidden bg-cyan-600 flex flex-col">
+    <div className="min-h-[100dvh] h-[100dvh] overflow-hidden flex flex-col" style={{ backgroundColor: primaryColor }}>
       {/* Header */}
       <div className="px-4 pt-4 pb-3 text-center flex-shrink-0 sm:p-6">
         <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto bg-white/20 rounded-full flex items-center justify-center mb-2 sm:mb-3">
@@ -56,8 +60,8 @@ export const WiFiContent: React.FC<WiFiContentProps> = ({ content, copied, onCop
             {/* Network Name */}
             <div className="bg-stone-50 rounded-xl p-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Wifi className="w-5 h-5 text-cyan-600" />
+                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${primaryColor}20` }}>
+                  <Wifi className="w-5 h-5" style={{ color: primaryColor }} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-stone-500 font-medium">Network</p>
@@ -125,11 +129,17 @@ export const WiFiContent: React.FC<WiFiContentProps> = ({ content, copied, onCop
 
           {/* Footer */}
           <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] flex-shrink-0 border-t border-stone-100">
-            <div className="bg-cyan-50 rounded-xl p-3 text-center">
-              <p className="text-cyan-800 text-sm">
+            <div className="rounded-xl p-3 text-center" style={{ backgroundColor: `${primaryColor}10` }}>
+              <p className="text-sm" style={{ color: primaryColor }}>
                 Open <strong>WiFi Settings</strong> to connect
               </p>
             </div>
+            
+            {whiteLabel?.showPoweredBy !== false && (
+              <p className="text-xs text-stone-400 text-center mt-3">
+                Powered by QR Studio
+              </p>
+            )}
           </div>
         </div>
       </div>
