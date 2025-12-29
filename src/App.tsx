@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import CreateQR from "./pages/CreateQR";
 import Analytics from "./pages/Analytics";
 import QRAnalytics from "./pages/QRAnalytics";
+import CompareQRCodesPage from "./pages/CompareQRCodes";
 import Redirector from "./pages/Redirector";
 import QRUnavailable from "./pages/QRUnavailable";
 import FAQs from "./pages/FAQs";
@@ -75,6 +76,10 @@ const App = () => (
                 <Route
                   path="/analytics/:id"
                   element={<ProtectedRoute><QRAnalytics /></ProtectedRoute>}
+                />
+                <Route
+                  path="/compare"
+                  element={<ProtectedRoute><CompareQRCodesPage /></ProtectedRoute>}
                 />
                 <Route
                   path="/settings"

@@ -13,6 +13,7 @@ import {
   Plus,
   QrCode,
   Users,
+  GitCompare,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -39,6 +40,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       key: "/analytics",
       icon: <BarChart3 size={18} />,
       label: "Analytics",
+    },
+    {
+      key: "/compare",
+      icon: <GitCompare size={18} />,
+      label: "Compare QR Codes",
     },
     {
       key: "/faqs",
