@@ -435,7 +435,7 @@ const ProfileInfo: React.FC = () => {
         centered
         width={500}
         footer={
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end gap-2 mt-2">
             <Button onClick={handleCropCancel}>Cancel</Button>
             <Button type="primary" onClick={handleCropSave}>
               Crop & Save
