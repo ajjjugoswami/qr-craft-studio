@@ -7,6 +7,9 @@ import DashboardLayout from '../components/layout/DashboardLayout';
 import { useQRCodes } from '../hooks/useQRCodes';
 import { useQRAnalytics } from '@/hooks/useQRAnalytics';
 import { useDateFormatter } from '@/hooks/useDateFormatter';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { formatTimeStringShort } from '@/utils/timeFormatter';
 import type { ScanData } from '../types/qrcode';
 import { generateMockScanData, getDemoQRCodeAnalytics } from '@/lib/hardCodeQRCodeAnalyticsData';
 
@@ -20,6 +23,8 @@ const QRAnalytics: React.FC = () => {
   const { getQRCode } = useQRCodes();
   const { scans: realScans, analytics: realAnalytics, loading } = useQRAnalytics(id);
   const formatter = useDateFormatter();
+  const user = useSelector((state: RootState) => state.auth.user);
+  const is24Hour = user?.timeFormat === '24';
   const [mode, setMode] = useState<'real' | 'demo'>('real');
 
   const qrCode = id ? getQRCode(id) : undefined;
@@ -95,7 +100,7 @@ const QRAnalytics: React.FC = () => {
       dataIndex: 'time', 
       key: 'time', 
       width: 100,
-      render: (time: string) => <Text type="secondary">{time}</Text>
+      render: (time: string) => <Text type="secondary">{formatTimeStringShort(time, is24Hour)}</Text>
     },
     { 
       title: 'Browser', 

@@ -262,11 +262,12 @@ const ProfileInfo: React.FC = () => {
       const hasCityChanged = values.city !== (user?.city || '');
       const hasLanguageChanged = values.language !== (user?.language || 'en');
       const hasTimezoneChanged = values.timezone !== (user?.timezone || 'UTC');
+      const hasTimeFormatChanged = values.timeFormat !== (user?.timeFormat || '12');
       const hasProfilePictureChanged = !!profilePictureFile;
       
       const hasAnyChanges = hasNameChanged || hasMobileChanged || hasCountryChanged || 
                            hasCityChanged || hasLanguageChanged || hasTimezoneChanged || 
-                           hasProfilePictureChanged;
+                           hasTimeFormatChanged || hasProfilePictureChanged;
       
       if (!hasAnyChanges) {
         message.info('No changes to save');
