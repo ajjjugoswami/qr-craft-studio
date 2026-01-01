@@ -9,6 +9,7 @@ import StatsOverview from '@/components/analytics/StatsOverview';
 import MainCharts from '@/components/analytics/MainCharts';
 import SecondaryCharts from '@/components/analytics/SecondaryCharts';
 import AdvancedAnalyticsSection from '@/components/analytics/AdvancedAnalyticsSection';
+import EmptyAnalyticsState from '@/components/analytics/EmptyAnalyticsState';
 
 const Analytics: React.FC = () => {
   const [mode, setMode] = useState<'real' | 'demo'>('real');
@@ -134,6 +135,27 @@ const Analytics: React.FC = () => {
               <Card className="h-full"><Skeleton className="w-full h-72 rounded-lg" /></Card>
             </Col>
           </Row>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Check if there's no data (no scans and no QR codes, or all zeros)
+  const hasNoData = mode === 'real' && (
+    (qrCodes.length === 0 && scans.length === 0) ||
+    (displayedTotalScans === 0 && scans.length === 0)
+  );
+
+  if (hasNoData) {
+    return (
+      <DashboardLayout>
+        <div className="animate-fade-in">
+          <AnalyticsHeader 
+            mode={mode} 
+            onModeChange={setMode} 
+            onDownloadCSV={downloadCSV} 
+          />
+          <EmptyAnalyticsState onSwitchToDemo={() => setMode('demo')} />
         </div>
       </DashboardLayout>
     );
