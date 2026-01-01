@@ -12,7 +12,7 @@ const CompareQRCodesPage: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <CompareQRCodes qrCodes={qrCodes} />
+      <CompareQRCodes qrCodes={qrCodes} loading={loading} />
     </DashboardLayout>
   );
 };
