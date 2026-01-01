@@ -362,8 +362,10 @@ const authSlice = createSlice({
       // Update profile
       .addCase(updateProfile.fulfilled, (state, action) => {
         if (state.user && action.payload) {
-          state.user = { ...state.user, ...action.payload };
-          localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: state.user }));
+          // The API returns { success: true, user: {...} }
+          const updatedUser = action.payload.user || action.payload;
+          state.user = { ...state.user, ...updatedUser };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({ user: state.user, token: state.token }));
           message.success('Profile updated');
         }
       });
