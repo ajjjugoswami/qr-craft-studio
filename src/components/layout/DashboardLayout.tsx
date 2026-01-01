@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layout, Menu, Avatar, Typography, Drawer, Button } from "antd";
+import { Layout, Menu, Avatar, Typography, Drawer, Button, Badge } from "antd";
 import { useAuth } from "@/hooks/useAuth";
 import {
   BarChart3,
@@ -126,13 +126,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           className="flex items-center gap-3 p-2 rounded-xl hover:bg-muted transition-colors cursor-pointer"
           onClick={() => handleMenuClick("/settings")}
         >
-          <Avatar
-            className="avatar-primary"
-            size={36}
-            src={user?.profilePicture}
-          >
-            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
-          </Avatar>
+          <Badge dot status="success" offset={[-5, 30]}>
+            <Avatar
+              className="avatar-primary pulse-avatar"
+              size={36}
+              src={user?.profilePicture}
+            >
+              {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+            </Avatar>
+          </Badge>
           <div className="flex flex-col flex-1 min-w-0">
             <Text strong className="text-sm truncate">
               {user?.name ?? "User"}
@@ -172,14 +174,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           <Text strong className="text-base">QR Studio</Text>
         <div className="flex items-center gap-2">
           
-          <Avatar
-            className="avatar-primary cursor-pointer"
-            size={32}
-            src={user?.profilePicture}
-            onClick={() => navigate("/settings")}
-          >
-            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
-          </Avatar>
+          <Badge dot status="success" offset={[-8, 40]}>
+            <Avatar
+              className="avatar-primary cursor-pointer"
+              size={48}
+              src={user?.profilePicture}
+              onClick={() => handleMenuClick("/settings")}
+            >
+              {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+            </Avatar>
+          </Badge>
         </div>
         </div>
       </header>

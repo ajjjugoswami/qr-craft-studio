@@ -142,7 +142,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
     return (
       <>
         <Card 
-          className="hover:shadow-lg transition-all duration-200 cursor-pointer group h-full relative"
+          className="qr-card glass-card hover:shadow-lg transition-all duration-200 cursor-pointer group h-full relative"
           styles={{ body: { padding: '16px', height: '100%', position: 'relative' } }}
         >
           {/* Top Right Corner Icons */}
@@ -315,7 +315,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
   // List View Card (original)
   return (
     <>
-      <Card className="mb-4 hover:shadow-md transition-shadow" styles={{ body: { padding: '16px 24px' } }}>
+      <Card className="qr-card glass-card mb-4 hover:shadow-md transition-shadow" styles={{ body: { padding: '16px 24px' } }}>
         <div className="flex items-center gap-4">
           {/* QR Preview Mini */}
           <div

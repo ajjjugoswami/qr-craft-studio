@@ -6,8 +6,12 @@ import {
   Card,
   Input,
   Pagination,
+  Segmented,
+  message,
 } from "antd";
 import { Skeleton } from "@/components/ui/skeleton";
+import CountUp from 'react-countup';
+import confetti from 'canvas-confetti';
 import {
   Plus,
   QrCode,
@@ -61,10 +65,30 @@ const Dashboard: React.FC = () => {
 
   const handleDelete = (id: string) => {
     deleteQRCode(id);
+    message.success('QR Code deleted successfully!');
   };
 
   const handleToggleStatus = (id: string) => {
     toggleQRCodeStatus(id);
+    // Confetti on activation
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#a855f7', '#8b5cf6', '#7c3aed']
+    });
+    message.success('QR Code status updated!');
+  };
+
+  const handleCreateClick = () => {
+    navigate("/create");
+    // Confetti on create button click
+    confetti({
+      particleCount: 150,
+      spread: 80,
+      origin: { y: 0.5 },
+      colors: ['#a855f7', '#8b5cf6', '#7c3aed', '#6366f1']
+    });
   };
 
   // Server-side filtered list (search applied on server)
@@ -96,7 +120,7 @@ const Dashboard: React.FC = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-          <Card className="card-compact">
+          <Card className="card-compact glass-card stat-card">
             {loading ? (
               <div className="space-y-2">
                 <Skeleton className="h-3 w-16" />
@@ -107,17 +131,17 @@ const Dashboard: React.FC = () => {
                 <div className="flex items-center gap-1.5 mb-1">
                   <QrCode size={14} className="text-primary" />
                   <span className="text-[11px] md:text-xs text-muted-foreground">
-                    Total
+                    Total QR Codes
                   </span>
                 </div>
-                <span className="text-lg md:text-2xl font-bold text-primary">
-                  {Number(total)}
+                <span className="text-lg md:text-2xl font-bold text-primary animated-number">
+                  <CountUp end={Number(total)} duration={2} />
                 </span>
               </div>
             )}
           </Card>
 
-          <Card className="card-compact">
+          <Card className="card-compact glass-card stat-card">
             {loading ? (
               <div className="space-y-2">
                 <Skeleton className="h-3 w-16" />
@@ -128,17 +152,17 @@ const Dashboard: React.FC = () => {
                 <div className="flex items-center gap-1.5 mb-1">
                   <Eye size={14} className="text-success" />
                   <span className="text-[11px] md:text-xs text-muted-foreground">
-                    Scans
+                    Total Scans
                   </span>
                 </div>
-                <span className="text-lg md:text-2xl font-bold text-success">
-                  {totalScans}
+                <span className="text-lg md:text-2xl font-bold text-success animated-number">
+                  <CountUp end={totalScans} duration={2.5} separator="," />
                 </span>
               </div>
             )}
           </Card>
 
-          <Card className="card-compact">
+          <Card className="card-compact glass-card stat-card">
             {loading ? (
               <div className="space-y-2">
                 <Skeleton className="h-3 w-16" />
@@ -149,17 +173,17 @@ const Dashboard: React.FC = () => {
                 <div className="flex items-center gap-1.5 mb-1">
                   <TrendingUp size={14} className="text-warning" />
                   <span className="text-[11px] md:text-xs text-muted-foreground">
-                    Active
+                    Active Codes
                   </span>
                 </div>
-                <span className="text-lg md:text-2xl font-bold text-warning">
-                  {totalActive}
+                <span className="text-lg md:text-2xl font-bold text-warning animated-number">
+                  <CountUp end={totalActive} duration={2} />
                 </span>
               </div>
             )}
           </Card>
 
-          <Card className="card-compact">
+          <Card className="card-compact glass-card stat-card">
             {loading ? (
               <div className="space-y-2">
                 <Skeleton className="h-3 w-16" />
@@ -173,8 +197,8 @@ const Dashboard: React.FC = () => {
                     Inactive
                   </span>
                 </div>
-                <span className="text-lg md:text-2xl font-bold text-destructive">
-                  {Number(total) - Number(totalActive)}
+                <span className="text-lg md:text-2xl font-bold text-destructive animated-number">
+                  <CountUp end={Number(total) - Number(totalActive)} duration={2} />
                 </span>
               </div>
             )}
@@ -239,28 +263,31 @@ const Dashboard: React.FC = () => {
                   className="flex-1 sm:w-48 md:w-64"
                   allowClear
                 />
-                <div className="flex items-center border border-border rounded-lg overflow-hidden bg-card">
-                  <button
-                    onClick={() => setViewMode("list")}
-                    className={`p-2.5 transition-colors ${
-                      viewMode === "list"
-                        ? "bg-primary text-primary-foreground"
-                        : "text-foreground hover:bg-muted"
-                    }`}
-                  >
-                    <List size={16} />
-                  </button>
-                  <button
-                    onClick={() => setViewMode("grid")}
-                    className={`p-2.5 transition-colors ${
-                      viewMode === "grid"
-                        ? "bg-primary text-primary-foreground"
-                        : "text-foreground hover:bg-muted"
-                    }`}
-                  >
-                    <LayoutGrid size={16} />
-                  </button>
-                </div>
+                <Segmented
+                  value={viewMode}
+                  onChange={(value) => setViewMode(value as "list" | "grid")}
+                  options={[
+                    {
+                      label: (
+                        <div className="flex items-center gap-2">
+                          <List size={16} />
+                          <span className="hidden sm:inline">List</span>
+                        </div>
+                      ),
+                      value: "list",
+                    },
+                    {
+                      label: (
+                        <div className="flex items-center gap-2">
+                          <LayoutGrid size={16} />
+                          <span className="hidden sm:inline">Grid</span>
+                        </div>
+                      ),
+                      value: "grid",
+                    },
+                  ]}
+                  className="segmented-animated"
+                />
               </div>
             </div>
             {filteredQRCodes.length === 0 ? (
