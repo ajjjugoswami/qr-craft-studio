@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import { scansAPI } from '@/lib/api';
+import { AdvancedAnalytics } from '@/types/analytics';
 
 // ============ Types ============
 interface ScanRecord {
@@ -23,13 +24,6 @@ interface AnalyticsData {
     countries?: Record<string, number>;
     topQRCodes?: Array<{ name: string; count: number }>;
   };
-}
-
-interface AdvancedAnalytics {
-  heatmap?: any;
-  peakTimes?: any;
-  retention?: any;
-  referrers?: any;
 }
 
 interface AnalyticsState {

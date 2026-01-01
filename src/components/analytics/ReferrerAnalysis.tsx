@@ -2,11 +2,12 @@ import React from 'react';
 import { Card, Spin, Empty, Typography, Table } from 'antd';
 import { Share2 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { ReferrerAnalyticsData, ReferrerData } from '@/types/analytics';
 
 const { Title, Text } = Typography;
 
 interface ReferrerProps {
-  data?: any;
+  data?: ReferrerAnalyticsData;
   loading?: boolean;
   qrCodeId?: string;
 }
@@ -24,7 +25,7 @@ const ReferrerAnalysis: React.FC<ReferrerProps> = ({ data, loading }) => {
     );
   }
 
-  if (!data || !data.referrers) {
+  if (!data || !data.referrers || !Array.isArray(data.referrers)) {
     return (
       <Card title="Referrer Analysis">
         <Empty description="No data available" />
@@ -32,7 +33,7 @@ const ReferrerAnalysis: React.FC<ReferrerProps> = ({ data, loading }) => {
     );
   }
 
-  const categoryData = Object.entries(data.categorized).map(([name, value]) => ({
+  const categoryData = Object.entries(data.categorized || {}).map(([name, value]) => ({
     name: name.charAt(0).toUpperCase() + name.slice(1),
     value: value as number,
   })).filter(d => d.value > 0);
@@ -44,7 +45,7 @@ const ReferrerAnalysis: React.FC<ReferrerProps> = ({ data, loading }) => {
       key: 'referrer',
       render: (text: string) => (
         <Text code className="text-xs">
-          {text.length > 50 ? text.substring(0, 50) + '...' : text}
+          {text && text.length > 50 ? text.substring(0, 50) + '...' : (text || 'Unknown')}
         </Text>
       ),
     },
@@ -93,13 +94,13 @@ const ReferrerAnalysis: React.FC<ReferrerProps> = ({ data, loading }) => {
         </div>
       )}
 
-      {data.referrers && data.referrers.length > 0 && (
+      {data.referrers && Array.isArray(data.referrers) && data.referrers.length > 0 && (
         <div className="mt-6">
           <Title level={5}>Top Referrers</Title>
-          <Table
+          <Table<ReferrerData>
             columns={columns}
             dataSource={data.referrers}
-            rowKey="referrer"
+            rowKey={(record, index) => record.referrer || `referrer-${index}`}
             pagination={{ pageSize: 10, size: 'small' }}
             size="small"
           />

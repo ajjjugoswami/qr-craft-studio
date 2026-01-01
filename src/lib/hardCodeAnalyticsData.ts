@@ -1,4 +1,12 @@
-export const getDemoScansOverTime = () => {
+import { 
+  ScanData, 
+  DeviceData, 
+  QRCodeScanData, 
+  LocationData, 
+  AdvancedAnalytics 
+} from '@/types/analytics';
+
+export const getDemoScansOverTime = (): ScanData[] => {
   return Array.from({ length: 30 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() - (29 - i));
@@ -6,13 +14,13 @@ export const getDemoScansOverTime = () => {
   });
 };
 
-export const demoDeviceData = [
+export const demoDeviceData: DeviceData[] = [
   { name: 'Mobile', value: 65 },
   { name: 'Desktop', value: 25 },
   { name: 'Tablet', value: 10 },
 ];
 
-export const demoTopQRCodes = [
+export const demoTopQRCodes: QRCodeScanData[] = [
   { name: 'Promo Card', scans: 420 },
   { name: 'Business Card', scans: 320 },
   { name: 'Event Invite', scans: 210 },
@@ -20,7 +28,7 @@ export const demoTopQRCodes = [
   { name: 'Music Link', scans: 120 },
 ];
 
-export const demoLocations = [
+export const demoLocations: LocationData[] = [
   { country: 'India', scans: 450 },
   { country: 'USA', scans: 320 },
   { country: 'UK', scans: 180 },
@@ -35,7 +43,7 @@ export const getDemoWeeklyData = () => {
 
 // Advanced Analytics Demo Data
 
-export const demoAdvancedAnalytics = {
+export const demoAdvancedAnalytics: AdvancedAnalytics = {
   // Geographic Heatmap Data
   heatmap: {
     cityData: [
@@ -68,30 +76,30 @@ export const demoAdvancedAnalytics = {
   // Peak Times Analysis Data
   peakTimes: {
     hourlyData: [
-      { hour: '12 AM', scans: 12 },
-      { hour: '1 AM', scans: 8 },
-      { hour: '2 AM', scans: 5 },
-      { hour: '3 AM', scans: 4 },
-      { hour: '4 AM', scans: 6 },
-      { hour: '5 AM', scans: 10 },
-      { hour: '6 AM', scans: 18 },
-      { hour: '7 AM', scans: 32 },
-      { hour: '8 AM', scans: 45 },
-      { hour: '9 AM', scans: 62 },
-      { hour: '10 AM', scans: 78 },
-      { hour: '11 AM', scans: 85 },
-      { hour: '12 PM', scans: 92 },
-      { hour: '1 PM', scans: 88 },
-      { hour: '2 PM', scans: 95 },
-      { hour: '3 PM', scans: 105 },
-      { hour: '4 PM', scans: 98 },
-      { hour: '5 PM', scans: 87 },
-      { hour: '6 PM', scans: 76 },
-      { hour: '7 PM', scans: 68 },
-      { hour: '8 PM', scans: 54 },
-      { hour: '9 PM', scans: 42 },
-      { hour: '10 PM', scans: 28 },
-      { hour: '11 PM', scans: 18 },
+      { hour: 0, scans: 12 },
+      { hour: 1, scans: 8 },
+      { hour: 2, scans: 5 },
+      { hour: 3, scans: 4 },
+      { hour: 4, scans: 6 },
+      { hour: 5, scans: 10 },
+      { hour: 6, scans: 18 },
+      { hour: 7, scans: 32 },
+      { hour: 8, scans: 45 },
+      { hour: 9, scans: 62 },
+      { hour: 10, scans: 78 },
+      { hour: 11, scans: 85 },
+      { hour: 12, scans: 92 },
+      { hour: 13, scans: 88 },
+      { hour: 14, scans: 95 },
+      { hour: 15, scans: 105 },
+      { hour: 16, scans: 98 },
+      { hour: 17, scans: 87 },
+      { hour: 18, scans: 76 },
+      { hour: 19, scans: 68 },
+      { hour: 20, scans: 54 },
+      { hour: 21, scans: 42 },
+      { hour: 22, scans: 28 },
+      { hour: 23, scans: 18 },
     ],
     dailyData: [
       { day: 'Monday', scans: 823 },

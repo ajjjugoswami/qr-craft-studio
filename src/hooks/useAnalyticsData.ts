@@ -4,8 +4,34 @@ import { useAnalytics } from './useAnalytics';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { fetchAdvancedAnalytics, selectAdvancedAnalytics, selectAdvancedLoading } from '@/store/slices/analyticsSlice';
 import { getDemoScansOverTime, demoDeviceData, demoTopQRCodes, demoLocations, demoAdvancedAnalytics } from '@/lib/hardCodeAnalyticsData';
+import { 
+  ScanData, 
+  DeviceData, 
+  QRCodeScanData, 
+  LocationData, 
+  QRTypeData, 
+  WeeklyData, 
+  AdvancedAnalytics 
+} from '@/types/analytics';
 
-export const useAnalyticsData = (mode: 'real' | 'demo') => {
+interface UseAnalyticsDataReturn {
+  loading: boolean;
+  scans: any[];
+  qrCodes: any[];
+  activeQRs: number;
+  scansOverTime: ScanData[];
+  weeklyData: WeeklyData[];
+  deviceData: DeviceData[];
+  topQRCodes: QRCodeScanData[];
+  qrTypeDistribution: QRTypeData[];
+  locationData: LocationData[];
+  displayedTotalScans: number;
+  avgScansPerQR: number;
+  advancedAnalytics: AdvancedAnalytics | null;
+  advancedLoading: boolean;
+}
+
+export const useAnalyticsData = (mode: 'real' | 'demo'): UseAnalyticsDataReturn => {
   const { qrCodes } = useQRCodes();
   const { scans, analytics, loading } = useAnalytics();
   const dispatch = useAppDispatch();
@@ -45,9 +71,11 @@ export const useAnalyticsData = (mode: 'real' | 'demo') => {
       const key = d.toISOString().split('T')[0];
       map[key] = 0;
     }
-    scans.forEach((s: any) => {
-      const key = new Date(s.createdAt).toISOString().split('T')[0];
-      if (map[key] !== undefined) map[key] += 1;
+    (scans || []).forEach((s: any) => {
+      if (s?.createdAt) {
+        const key = new Date(s.createdAt).toISOString().split('T')[0];
+        if (map[key] !== undefined) map[key] += 1;
+      }
     });
     return Object.entries(map).map(([date, scans]) => ({ date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), scans }));
   }, [scans, analytics, mode]);
@@ -58,9 +86,11 @@ export const useAnalyticsData = (mode: 'real' | 'demo') => {
       return days.map(day => ({ day, scans: Math.floor(Math.random() * 100) + 20 }));
     }
     const map: Record<string, number> = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
-    scans.forEach((s: any) => {
-      const day = new Date(s.createdAt).toLocaleDateString('en-US', { weekday: 'short' });
-      map[day] = (map[day] || 0) + 1;
+    (scans || []).forEach((s: any) => {
+      if (s?.createdAt) {
+        const day = new Date(s.createdAt).toLocaleDateString('en-US', { weekday: 'short' });
+        map[day] = (map[day] || 0) + 1;
+      }
     });
     return Object.entries(map).map(([day, scans]) => ({ day, scans }));
   }, [scans, mode]);
@@ -71,22 +101,22 @@ export const useAnalyticsData = (mode: 'real' | 'demo') => {
       return Object.entries(analytics.analytics.devices).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
     }
     const counts: Record<string, number> = {};
-    scans.forEach((s: any) => { const t = s.device?.type || 'desktop'; counts[t] = (counts[t] || 0) + 1; });
+    (scans || []).forEach((s: any) => { const t = s?.device?.type || 'desktop'; counts[t] = (counts[t] || 0) + 1; });
     return Object.entries(counts).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
   }, [scans, analytics, mode]);
 
   const topQRCodes = useMemo(() => {
     if (mode === 'demo') return demoTopQRCodes;
-    if (analytics?.analytics?.topQRCodes) {
-      return analytics.analytics.topQRCodes.map((t: any) => ({ name: t.name || 'Untitled', scans: t.count }));
+    if (analytics?.analytics?.topQRCodes && Array.isArray(analytics.analytics.topQRCodes)) {
+      return analytics.analytics.topQRCodes.map((t: any) => ({ name: t?.name || 'Untitled', scans: t?.count || 0 }));
     }
     const groups: Record<string, number> = {};
-    scans.forEach((s: any) => { const name = s.qrCode?.name || 'Unknown'; groups[name] = (groups[name] || 0) + 1; });
+    (scans || []).forEach((s: any) => { const name = s?.qrCode?.name || 'Unknown'; groups[name] = (groups[name] || 0) + 1; });
     return Object.entries(groups).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, scans]) => ({ name, scans }));
   }, [scans, analytics, mode]);
 
   const qrTypeDistribution = useMemo(() => {
-    const counts = qrCodes.reduce((acc, qr) => { acc[qr.type] = (acc[qr.type] || 0) + 1; return acc; }, {} as Record<string, number>);
+    const counts = (qrCodes || []).reduce((acc, qr) => { if (qr?.type) acc[qr.type] = (acc[qr.type] || 0) + 1; return acc; }, {} as Record<string, number>);
     return Object.entries(counts).map(([name, value]) => ({ name, value }));
   }, [qrCodes]);
 
@@ -96,14 +126,14 @@ export const useAnalyticsData = (mode: 'real' | 'demo') => {
       return Object.entries(analytics.analytics.countries).map(([country, scans]) => ({ country, scans }));
     }
     const counts: Record<string, number> = {};
-    scans.forEach((s: any) => { const c = s.location?.country || 'Unknown'; counts[c] = (counts[c] || 0) + 1; });
+    (scans || []).forEach((s: any) => { const c = s?.location?.country || 'Unknown'; counts[c] = (counts[c] || 0) + 1; });
     return Object.entries(counts).map(([country, scans]) => ({ country, scans })).slice(0, 10);
   }, [scans, analytics, mode]);
 
   const demoScans = useMemo(() => getDemoScansOverTime(), []);
-  const demoTotalScans = useMemo(() => demoScans.reduce((acc, d) => acc + d.scans, 0), [demoScans]);
-  const displayedTotalScans = mode === 'real' ? (analytics?.totalScans ?? scans.length) : demoTotalScans;
-  const avgScansPerQR = qrCodes.length ? Math.round(displayedTotalScans / qrCodes.length) : 0;
+  const demoTotalScans = useMemo(() => demoScans.reduce((acc, d) => acc + (d?.scans || 0), 0), [demoScans]);
+  const displayedTotalScans = mode === 'real' ? (analytics?.totalScans ?? (scans || []).length) : demoTotalScans;
+  const avgScansPerQR = (qrCodes || []).length ? Math.round(displayedTotalScans / (qrCodes || []).length) : 0;
 
   // Use demo data for advanced analytics when in demo mode
   const finalAdvancedAnalytics = mode === 'demo' ? demoAdvancedAnalytics : advancedAnalytics;

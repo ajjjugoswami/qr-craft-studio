@@ -1,11 +1,12 @@
 import React from 'react';
 import { Card, Spin, Empty, Typography, Statistic, Row, Col } from 'antd';
 import { MapPin } from 'lucide-react';
+import { GeographicHeatmapData, CityData } from '@/types/analytics';
 
 const { Title, Text } = Typography;
 
 interface HeatmapProps {
-  data?: any;
+  data?: GeographicHeatmapData;
   loading?: boolean;
   qrCodeId?: string;
 }
@@ -21,7 +22,7 @@ const GeographicHeatmap: React.FC<HeatmapProps> = ({ data, loading }) => {
     );
   }
 
-  if (!data || !data.cityData || data.cityData.length === 0) {
+  if (!data || !data.cityData || !Array.isArray(data.cityData) || data.cityData.length === 0) {
     return (
       <Card title="Geographic Distribution">
         <Empty description="No geographic data available" />
@@ -29,8 +30,12 @@ const GeographicHeatmap: React.FC<HeatmapProps> = ({ data, loading }) => {
     );
   }
 
-  const topCities = data.cityData.slice(0, 10);
-  const maxCount = Math.max(...topCities.map((c: any) => c.count));
+  const topCities = (data.cityData || []).slice(0, 10);
+  const maxCount = Math.max(...topCities.map((c: any) => c.count || c.scans || 0), 1);
+  
+  // Calculate total scans if not provided
+  const totalScans = data.total || data.totalScansWithCoordinates || 
+    (data.cityData || []).reduce((sum, city) => sum + (city.count || city.scans || 0), 0);
 
   return (
     <Card 
@@ -43,24 +48,25 @@ const GeographicHeatmap: React.FC<HeatmapProps> = ({ data, loading }) => {
     >
       <Row gutter={[16, 16]} className="mb-6">
         <Col span={12}>
-          <Statistic title="Total Locations" value={data.cityData.length} />
+          <Statistic title="Total Locations" value={data.cityData?.length || 0} />
         </Col>
         <Col span={12}>
-          <Statistic title="Total Scans" value={data.total} />
+          <Statistic title="Total Scans" value={totalScans} />
         </Col>
       </Row>
 
       <div className="space-y-3">
         <Title level={5}>Top Locations</Title>
-        {topCities.map((city: any, index: number) => {
-          const percentage = (city.count / maxCount) * 100;
+        {topCities.map((city: CityData, index: number) => {
+          const count = city.count || city.scans || 0;
+          const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
           return (
             <div key={index} className="space-y-1">
               <div className="flex items-center justify-between">
                 <Text strong>
-                  {city.city}, {city.country}
+                  {city.city || 'Unknown'}, {city.country || 'Unknown'}
                 </Text>
-                <Text type="secondary">{city.count} scans</Text>
+                <Text type="secondary">{count} scans</Text>
               </div>
               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div

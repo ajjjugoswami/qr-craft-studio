@@ -2,11 +2,12 @@ import React from 'react';
 import { Card, Spin, Empty, Typography } from 'antd';
 import { Clock } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { PeakTimesData, HourlyData } from '@/types/analytics';
 
 const { Title } = Typography;
 
 interface PeakTimesProps {
-  data?: any;
+  data?: PeakTimesData;
   loading?: boolean;
   qrCodeId?: string;
 }
@@ -22,27 +23,31 @@ const PeakTimesAnalysis: React.FC<PeakTimesProps> = ({ data, loading }) => {
     );
   }
 
-  if (!data || !data.hourlyData) {
+  if (!data || !data.hourlyData || !Array.isArray(data.hourlyData) || data.hourlyData.length === 0) {
     return (
       <Card title="Peak Usage Times">
         <Empty description="No data available" />
       </Card>
     );
   }
-  const formatHour = (hour: number) => {
+  const formatHour = (hour: number | string): string => {
+    // If already a string, return it
+    if (typeof hour === 'string') return hour;
+    
+    // Convert number to formatted string
     if (hour === 0) return '12 AM';
     if (hour === 12) return '12 PM';
     if (hour < 12) return `${hour} AM`;
     return `${hour - 12} PM`;
   };
 
-  const hourlyChartData = data.hourlyData.map((d: any) => ({
-    hour: formatHour(d.hour),
-    count: d.count,
-    hourValue: d.hour,
+  const hourlyChartData = (data.hourlyData || []).map((d: HourlyData) => ({
+    hour: formatHour(d.hour ?? 0),
+    count: d.count || d.scans || 0,
+    hourValue: typeof d.hour === 'number' ? d.hour : 0,
   }));
 
-  const maxCount = Math.max(...data.hourlyData.map((d: any) => d.count));
+  const maxCount = Math.max(...(data.hourlyData || []).map((d: HourlyData) => d.count || d.scans || 0), 1);
   const getBarColor = (count: number) => {
     const intensity = count / maxCount;
     if (intensity > 0.7) return '#ef4444'; // red - very busy

@@ -1,13 +1,14 @@
 import React from 'react';
 import { Card, Row, Col } from 'antd';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { WeeklyData, QRTypeData, LocationData } from '@/types/analytics';
 
 const CHART_COLORS = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
 
 interface SecondaryChartsProps {
-  weeklyData: Array<{ day: string; scans: number }>;
-  qrTypeDistribution: Array<{ name: string; value: number }>;
-  locationData: Array<{ country: string; scans: number }>;
+  weeklyData: WeeklyData[];
+  qrTypeDistribution: QRTypeData[];
+  locationData: LocationData[];
 }
 
 const SecondaryCharts: React.FC<SecondaryChartsProps> = ({

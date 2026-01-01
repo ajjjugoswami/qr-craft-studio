@@ -1,12 +1,13 @@
 import React from 'react';
 import { Card, Row, Col } from 'antd';
 import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { ScanData, DeviceData } from '@/types/analytics';
 
 const CHART_COLORS = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
 
 interface MainChartsProps {
-  scansOverTime: Array<{ date: string; scans: number }>;
-  deviceData: Array<{ name: string; value: number }>;
+  scansOverTime: ScanData[];
+  deviceData: DeviceData[];
 }
 
 const MainCharts: React.FC<MainChartsProps> = ({ scansOverTime, deviceData }) => {

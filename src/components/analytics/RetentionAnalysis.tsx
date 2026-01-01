@@ -2,11 +2,12 @@ import React from 'react';
 import { Card, Spin, Empty, Typography, Statistic, Row, Col, Progress } from 'antd';
 import { Users, UserCheck, UserPlus, Repeat } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { RetentionData } from '@/types/analytics';
 
 const { Title, Text } = Typography;
 
 interface RetentionProps {
-  data?: any;
+  data?: RetentionData;
   loading?: boolean;
   qrCodeId?: string;
 }
@@ -29,8 +30,14 @@ const RetentionAnalysis: React.FC<RetentionProps> = ({ data, loading }) => {
       </Card>
     );
   }
-  const newScanPercentage = data.totalScans > 0 ? (data.newScans / data.totalScans) * 100 : 0;
-  const returningScanPercentage = data.totalScans > 0 ? (data.returningScans / data.totalScans) * 100 : 0;
+  const totalScans = data.totalScans || 0;
+  const newScans = data.newScans || 0;
+  const returningScans = data.returningScans || 0;
+  const uniqueScanners = data.uniqueScanners || 0;
+  const repeatRate = data.repeatRate || 0;
+  
+  const newScanPercentage = totalScans > 0 ? (newScans / totalScans) * 100 : 0;
+  const returningScanPercentage = totalScans > 0 ? (returningScans / totalScans) * 100 : 0;
 
   return (
     <Card 
@@ -47,7 +54,7 @@ const RetentionAnalysis: React.FC<RetentionProps> = ({ data, loading }) => {
           <Card size="small" className="text-center">
             <Statistic 
               title={<span className="text-xs">Unique</span>}
-              value={data.uniqueScanners} 
+              value={uniqueScanners} 
               prefix={<Users size={14} className="text-purple-500" />}
               valueStyle={{ color: '#8b5cf6', fontSize: '18px' }}
             />
@@ -57,7 +64,7 @@ const RetentionAnalysis: React.FC<RetentionProps> = ({ data, loading }) => {
           <Card size="small" className="text-center">
             <Statistic 
               title={<span className="text-xs">New</span>}
-              value={data.newScans} 
+              value={newScans} 
               prefix={<UserPlus size={14} className="text-blue-500" />}
               valueStyle={{ color: '#6366f1', fontSize: '18px' }}
             />
@@ -67,7 +74,7 @@ const RetentionAnalysis: React.FC<RetentionProps> = ({ data, loading }) => {
           <Card size="small" className="text-center">
             <Statistic 
               title={<span className="text-xs">Returning</span>}
-              value={data.returningScans} 
+              value={returningScans} 
               prefix={<UserCheck size={14} className="text-green-500" />}
               valueStyle={{ color: '#22c55e', fontSize: '18px' }}
             />
@@ -77,7 +84,7 @@ const RetentionAnalysis: React.FC<RetentionProps> = ({ data, loading }) => {
           <Card size="small" className="text-center">
             <Statistic 
               title={<span className="text-xs">Rate</span>}
-              value={data.repeatRate} 
+              value={repeatRate} 
               suffix="%" 
               prefix={<Repeat size={14} className="text-orange-500" />}
               valueStyle={{ color: '#f59e0b', fontSize: '18px' }}
