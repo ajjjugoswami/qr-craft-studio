@@ -42,11 +42,10 @@ const EmptyAnalyticsState: React.FC<EmptyAnalyticsStateProps> = ({ onSwitchToDem
                   <Button 
                     type="primary" 
                     size="large"
-                    icon={<QrCode size={18} />}
                     onClick={() => navigate('/create')}
                     className="gradient-button"
                   >
-                    Create Your First QR Code
+                    Create Your First QR
                   </Button>
                   {onSwitchToDemo && (
                     <Button 

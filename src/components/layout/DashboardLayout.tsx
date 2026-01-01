@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Layout, Menu, Avatar, Typography, Drawer, Button, Badge } from "antd";
+import { Layout, Menu, Avatar, Typography, Drawer, Button, Badge, Tooltip } from "antd";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import {
   BarChart3,
   HelpCircle,
@@ -14,6 +15,8 @@ import {
   QrCode,
   Users,
   GitCompare,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -28,7 +31,20 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, signout } = useAuth();
+  const { mode, setMode } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleThemeMode = () => {
+    setMode(mode === 'light' ? 'dark' : 'light');
+  };
+
+  const getThemeIcon = () => {
+    return mode === 'dark' ? <Moon size={18} /> : <Sun size={18} />;
+  };
+
+  const getThemeTooltip = () => {
+    return mode === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+  };
 
   const menuItems = [
     {
@@ -146,6 +162,21 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         </div>
       </div>
 
+      {/* Theme Toggle */}
+      <div className="p-3 border-t border-border">
+        <Tooltip title={getThemeTooltip()} placement="right">
+          <button
+            onClick={toggleThemeMode}
+            className="flex items-center gap-3 w-full p-3 rounded-xl cursor-pointer border border-border hover:bg-muted transition-colors"
+          >
+            {getThemeIcon()}
+            <span className="font-medium text-sm">
+              {mode === 'dark' ? 'Dark' : 'Light'} Mode
+            </span>
+          </button>
+        </Tooltip>
+      </div>
+
       {/* Logout */}
       <div className="p-3 border-t border-border">
         <button
@@ -172,8 +203,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           />
           <img src="/logo.png" alt="QR Studio" className="w-8 h-8 object-contain" />
           <Text strong className="text-base">QR Studio</Text>
+        </div>
         <div className="flex items-center gap-2">
-          
+          <Tooltip title={getThemeTooltip()}>
+            <Button
+              type="text"
+              icon={getThemeIcon()}
+              onClick={toggleThemeMode}
+              className="flex items-center justify-center"
+            />
+          </Tooltip>
           <Badge dot status="success" offset={[-8, 40]}>
             <Avatar
               className="avatar-primary cursor-pointer"
@@ -184,7 +223,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
             </Avatar>
           </Badge>
-        </div>
         </div>
       </header>
 
