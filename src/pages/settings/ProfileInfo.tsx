@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { Card, Typography, Avatar, Button, Form, Input, message, Space, Upload, Select, UploadProps, Modal, Slider } from 'antd';
-import { User, Check, Upload as UploadIcon, X, Eye, Crop } from 'lucide-react';
+import { Card, Typography, Avatar, Button, Form, Input, message, Space, Upload, Select, UploadProps, Modal, Slider, Tooltip } from 'antd';
+import { User, Check, Upload as UploadIcon, X, Eye, Crop, HelpCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { authAPI } from '@/lib/api';
 import Cropper, { Area } from 'react-easy-crop';
@@ -266,6 +266,9 @@ const ProfileInfo: React.FC = () => {
           <Title level={4} className="mb-0 flex items-center gap-2">
             <User size={18} />
             Profile Information
+            <Tooltip title="Manage your personal information, profile picture, and preferences. Your email cannot be changed after registration.">
+              <HelpCircle size={16} className="text-muted-foreground hover:text-foreground transition-colors cursor-help" />
+            </Tooltip>
           </Title>
           <Button
             type="primary"
