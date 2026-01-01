@@ -170,15 +170,18 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           />
           <img src="/logo.png" alt="QR Studio" className="w-8 h-8 object-contain" />
           <Text strong className="text-base">QR Studio</Text>
+        <div className="flex items-center gap-2">
+          
+          <Avatar
+            className="avatar-primary cursor-pointer"
+            size={32}
+            src={user?.profilePicture}
+            onClick={() => navigate("/settings")}
+          >
+            {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+          </Avatar>
         </div>
-        <Avatar
-          className="avatar-primary cursor-pointer"
-          size={32}
-          src={user?.profilePicture}
-          onClick={() => navigate("/settings")}
-        >
-          {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
-        </Avatar>
+        </div>
       </header>
 
       {/* Mobile Drawer */}

@@ -1,5 +1,7 @@
 export type ThemeName = 'purple' | 'blue' | 'green' | 'orange' | 'rose' | 'slate' | 'teal' | 'indigo' | 'emerald' | 'cyan' | 'violet' | 'fuchsia' | 'gradient_sunset' | 'gradient_ocean' | 'gradient_forest' | 'gradient_royal';
 
+export type ThemeMode = 'light' | 'dark' | 'system';
+
 export interface ThemeColors {
   primary: string;
   primaryForeground: string;
@@ -15,6 +17,16 @@ export interface Theme {
   name: ThemeName;
   label: string;
   colors: ThemeColors;
+  darkColors?: ThemeColors;
+  darkColors?: ThemeColors;
+}
+
+export interface ThemeContextType {
+  currentTheme: ThemeName;
+  mode: ThemeMode;
+  setTheme: (theme: ThemeName) => void;
+  setMode: (mode: ThemeMode) => void;
+  theme: Theme;
 }
 
 export const themes: Record<ThemeName, Theme> = {

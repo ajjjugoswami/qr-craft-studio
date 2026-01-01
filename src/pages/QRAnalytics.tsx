@@ -82,20 +82,81 @@ const QRAnalytics: React.FC = () => {
   }, [analytics]);
 
   const columns = [
-    { title: 'Scan Date', dataIndex: 'date', key: 'date', width: 100 },
-    { title: 'Scan Time', dataIndex: 'time', key: 'time', width: 90 },
-    { title: 'Browser', dataIndex: 'browser', key: 'browser', width: 200, ellipsis: true },
-    { title: 'Operating System', dataIndex: 'os', key: 'os', width: 120 },
-    { title: 'Device Type', dataIndex: 'deviceType', key: 'deviceType', width: 100, render: (type: string) => (<Tag color={type === 'mobile' ? 'blue' : type === 'tablet' ? 'purple' : 'green'}>{type}</Tag>) },
-    { title: 'Device Vendor', dataIndex: 'deviceVendor', key: 'deviceVendor', width: 110 },
-    { title: 'Device Model', dataIndex: 'deviceModel', key: 'deviceModel', width: 110 },
-    { title: 'IP Address', dataIndex: 'ipAddress', key: 'ipAddress', width: 130 },
-    { title: 'Location', key: 'location', width: 250, render: (_: any, record: ScanData) => (
-      <span className="text-xs">
-        {record.location.city}, {record.location.region}, {record.location.country}
-        {record.location.lat ? ` (Lat ${record.location.lat}, Lng ${record.location.lng})` : ''}
-      </span>
-    ) },
+    { 
+      title: 'Scan Date', 
+      dataIndex: 'date', 
+      key: 'date', 
+      width: 120,
+      render: (date: string) => <Text>{date}</Text>
+    },
+    { 
+      title: 'Scan Time', 
+      dataIndex: 'time', 
+      key: 'time', 
+      width: 100,
+      render: (time: string) => <Text type="secondary">{time}</Text>
+    },
+    { 
+      title: 'Browser', 
+      dataIndex: 'browser', 
+      key: 'browser', 
+      width: 180, 
+      ellipsis: true,
+      render: (browser: string) => <Text>{browser}</Text>
+    },
+    { 
+      title: 'Operating System', 
+      dataIndex: 'os', 
+      key: 'os', 
+      width: 150,
+      render: (os: string) => <Text>{os}</Text>
+    },
+    { 
+      title: 'Device Type', 
+      dataIndex: 'deviceType', 
+      key: 'deviceType', 
+      width: 120, 
+      render: (type: string) => (
+        <Tag color={type === 'mobile' ? 'blue' : type === 'tablet' ? 'purple' : 'green'}>
+          {type.charAt(0).toUpperCase() + type.slice(1)}
+        </Tag>
+      ) 
+    },
+    { 
+      title: 'Device Vendor', 
+      dataIndex: 'deviceVendor', 
+      key: 'deviceVendor', 
+      width: 130,
+      render: (vendor: string) => <Text type="secondary">{vendor || '-'}</Text>
+    },
+    { 
+      title: 'Device Model', 
+      dataIndex: 'deviceModel', 
+      key: 'deviceModel', 
+      width: 130,
+      render: (model: string) => <Text type="secondary">{model || '-'}</Text>
+    },
+    { 
+      title: 'IP Address', 
+      dataIndex: 'ipAddress', 
+      key: 'ipAddress', 
+      width: 140,
+      render: (ip: string) => <Text code copyable>{ip}</Text>
+    },
+    { 
+      title: 'Location', 
+      key: 'location', 
+      width: 280, 
+      render: (_: any, record: ScanData) => (
+        <div className="flex items-start gap-1">
+          <MapPin size={14} className="text-muted-foreground mt-0.5 flex-shrink-0" />
+          <Text className="text-xs">
+            {record.location.city}, {record.location.region}, {record.location.country}
+            {record.location.lat ? ` (${record.location.lat}, ${record.location.lng})` : ''}
+          </Text>
+        </div>
+      ) 
+    },
   ];
 
   const totalScans = analytics?.totalScans ?? scanData.length;
@@ -245,8 +306,22 @@ const QRAnalytics: React.FC = () => {
         </Row>
 
         {/* Scan Details Table */}
-        <Card title="Scan Details" className="overflow-hidden">
-          <Table columns={columns} dataSource={scanData} rowKey="id" scroll={{ x: 1200 }} pagination={{ pageSize: 10, showSizeChanger: true, showTotal: (total) => `Total ${total} scans` }} size="small" />
+        <Card title={<div className="flex items-center gap-2"><Eye size={18} className="text-primary" /> Scan Details</div>} className="overflow-hidden">
+          <Table 
+            columns={columns} 
+            dataSource={scanData} 
+            rowKey="id" 
+            scroll={{ x: 1400 }} 
+            pagination={{ 
+              current: 1,
+              pageSize: 10, 
+              showSizeChanger: true, 
+              pageSizeOptions: ['5', '10', '20', '50'],
+              showTotal: (total) => `Total ${total} scans`,
+              size: 'default'
+            }} 
+            size="middle"
+          />
         </Card>
       </div>
     </DashboardLayout>

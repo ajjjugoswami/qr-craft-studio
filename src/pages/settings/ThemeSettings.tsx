@@ -1,20 +1,32 @@
 import React, { useState } from 'react';
-import { Card, Typography, message, Button } from 'antd';
-import { Palette, Save } from 'lucide-react';
+import { Card, Typography, message, Button, Segmented } from 'antd';
+import { Palette, Save, Moon, Sun, Monitor } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
-import { themes, ThemeName } from '../../context/themeTypes';
+import { themes, ThemeName, ThemeMode } from '../../context/themeTypes';
 
 const { Title, Text } = Typography;
 
 const ThemeSettings: React.FC = () => {
-  const { currentTheme, setTheme } = useTheme();
+  const { currentTheme, mode, setTheme, setMode } = useTheme();
   const [selectedTheme, setSelectedTheme] = useState<ThemeName>(currentTheme);
   const [saving, setSaving] = useState(false);
+
+  // Detect system preference for effective mode calculation
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const effectiveMode = mode === 'system' ? (systemPrefersDark ? 'dark' : 'light') : mode;
+  const isDarkMode = effectiveMode === 'dark';
 
   const hasChanges = selectedTheme !== currentTheme;
 
   const handleThemeSelect = (themeName: string) => {
     setSelectedTheme(themeName as ThemeName);
+  };
+
+  const handleModeChange = (value: string | number) => {
+    const newMode = value as ThemeMode;
+    setMode(newMode);
+    const modeLabels = { light: 'Light', dark: 'Dark', system: 'System' };
+    message.success(`${modeLabels[newMode]} mode enabled`);
   };
 
   const handleSave = async () => {
@@ -31,6 +43,55 @@ const ThemeSettings: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Appearance Mode Card */}
+      <Card className="shadow-sm">
+        <div className="flex items-center gap-3 mb-4">
+          <Palette className="text-primary" size={24} />
+          <div>
+            <Title level={4} className="!mb-0">Appearance</Title>
+            <Text type="secondary" className="text-sm">
+              Choose your preferred theme appearance
+            </Text>
+          </div>
+        </div>
+        
+        <Segmented
+          value={mode}
+          onChange={handleModeChange}
+          block
+          size="large"
+          options={[
+            {
+              label: (
+                <div className="flex items-center justify-center gap-2 py-2">
+                  <Sun size={18} />
+                  <span className="font-medium">Light</span>
+                </div>
+              ),
+              value: 'light',
+            },
+            {
+              label: (
+                <div className="flex items-center justify-center gap-2 py-2">
+                  <Moon size={18} />
+                  <span className="font-medium">Dark</span>
+                </div>
+              ),
+              value: 'dark',
+            },
+            {
+              label: (
+                <div className="flex items-center justify-center gap-2 py-2">
+                  <Monitor size={18} />
+                  <span className="font-medium">System</span>
+                </div>
+              ),
+              value: 'system',
+            },
+          ]}
+        />
+      </Card>
+
       {/* Theme Selection Card */}
       <Card className="shadow-sm">
         <div className="flex items-center justify-between mb-4">
@@ -53,10 +114,27 @@ const ThemeSettings: React.FC = () => {
           Choose your preferred accent color and click Save to apply.
         </Text>
 
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
-          {Object.entries(themes).map(([key, theme]) => {
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">{Object.entries(themes).map(([key, theme]) => {
             const isGradient = key.startsWith('gradient_');
             const isSelected = selectedTheme === key;
+
+            // Get background color based on mode
+            let backgroundColor;
+            if (isGradient) {
+              backgroundColor = `linear-gradient(135deg, hsl(${theme.colors.primary}) 0%, hsl(${theme.colors.accent}) 100%)`;
+            } else {
+              // Use darker background in dark mode with primary color tint
+              backgroundColor = isDarkMode 
+                ? `hsl(${theme.colors.primary} / 0.15)` 
+                : `hsl(${theme.colors.primaryLight})`;
+            }
+
+            // Text color - always visible with good contrast
+            const textColor = isGradient 
+              ? 'white' 
+              : isDarkMode 
+                ? `hsl(${theme.colors.primary} / 0.9)` 
+                : `hsl(${theme.colors.primary})`;
 
             return (
               <div
@@ -64,12 +142,12 @@ const ThemeSettings: React.FC = () => {
                 className={`relative p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-105 ${
                   isSelected
                     ? 'border-primary shadow-lg ring-2 ring-primary/20'
-                    : 'border-border hover:border-primary/50'
+                    : isDarkMode 
+                      ? 'border-border/40 hover:border-primary/50 bg-card/30' 
+                      : 'border-border hover:border-primary/50'
                 }`}
                 style={{
-                  background: isGradient
-                    ? `linear-gradient(135deg, hsl(${theme.colors.primary}) 0%, hsl(${theme.colors.accent}) 100%)`
-                    : `hsl(${theme.colors.primaryLight})`,
+                  background: backgroundColor,
                 }}
                 onClick={() => handleThemeSelect(key)}
               >
@@ -82,19 +160,22 @@ const ThemeSettings: React.FC = () => {
                 <div className="text-center">
                   <div className="flex justify-center gap-0.5 mb-1.5">
                     <div
-                      className="w-3 h-3 rounded-full border border-white/20"
+                      className={`w-3 h-3 rounded-full ${isDarkMode ? 'border border-white/30' : 'border border-white/20'}`}
                       style={{ backgroundColor: `hsl(${theme.colors.primary})` }}
                     />
                     <div
-                      className="w-3 h-3 rounded-full border border-white/20"
+                      className={`w-3 h-3 rounded-full ${isDarkMode ? 'border border-white/30' : 'border border-white/20'}`}
                       style={{ backgroundColor: `hsl(${theme.colors.accent})` }}
                     />
                   </div>
 
                   <Text
                     strong
-                    className={`text-xs ${isGradient ? 'text-white' : ''}`}
-                    style={{ color: isGradient ? 'white' : `hsl(${theme.colors.primary})` }}
+                    className="text-xs block"
+                    style={{ 
+                      color: textColor,
+                      textShadow: isDarkMode && !isGradient ? '0 1px 2px rgba(0,0,0,0.5)' : 'none'
+                    }}
                   >
                     {theme.label}
                   </Text>
