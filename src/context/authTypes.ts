@@ -18,6 +18,7 @@ export type User = {
   profilePicture?: string;
   language?: string;
   timezone?: string;
+  timeFormat?: '12' | '24';
   removeWatermark?: boolean;
   watermarkText?: string;
   whiteLabel?: WhiteLabelConfig;

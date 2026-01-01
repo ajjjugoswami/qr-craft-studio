@@ -4,6 +4,7 @@ import { Trash2 } from 'lucide-react';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { useContacts } from '@/hooks/useContacts';
 import { useAuth } from '@/hooks/useAuth';
+import { useDateFormatter } from '@/hooks/useDateFormatter';
 import type { ContactSubmission } from '@/store/slices/contactsSlice';
 
 const { Title } = Typography;
@@ -11,6 +12,7 @@ const { Title } = Typography;
 const Submissions: React.FC = () => {
   const { user } = useAuth();
   const { contacts, loading, updateStatus, deleteContact } = useContacts();
+  const formatter = useDateFormatter();
 
   const columns = [
     { title: 'Name', dataIndex: 'name', key: 'name' },
@@ -18,7 +20,7 @@ const Submissions: React.FC = () => {
     { title: 'Subject', dataIndex: 'subject', key: 'subject' },
     { title: 'Message', dataIndex: 'message', key: 'message', width: 360, ellipsis: true },
     { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={s === 'new' ? 'blue' : s === 'read' ? 'green' : 'orange'}>{s}</Tag> },
-    { title: 'Received', dataIndex: 'createdAt', key: 'createdAt', render: (d: string) => new Date(d).toLocaleString() },
+    { title: 'Received', dataIndex: 'createdAt', key: 'createdAt', render: (d: string) => formatter.dateTime(d) },
     { 
       title: 'Actions', 
       key: 'actions', 

@@ -3,6 +3,7 @@ import { Table, Tag, Typography, Spin, Alert, Button, Input, Space, Tooltip, Pop
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { RefreshCw, User } from 'lucide-react';
 import { adminAPI } from "@/lib/api";
+import { useDateFormatter } from "@/hooks/useDateFormatter";
 
 const { Title, Text } = Typography;
 
@@ -33,12 +34,9 @@ interface AdminUserRow {
 
 type FetchOptions = { page?: number; limit?: number; search?: string };
 
-// ----- Helpers -----
-const formatDate = (v?: string | null) =>
-  v ? new Date(v).toLocaleString() : "-";
-
 // ----- Component -----
 const AdminData: React.FC = () => {
+  const formatter = useDateFormatter();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<AdminUserRow[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -163,7 +161,7 @@ const AdminData: React.FC = () => {
       dataIndex: ["user", "createdAt"],
       key: "createdAt",
       render: (val: string | null | undefined) => (
-        <Text type="secondary">{formatDate(val as any)}</Text>
+        <Text type="secondary">{formatter.dateTime(val as any)}</Text>
       ),
     },
     {
@@ -253,7 +251,7 @@ const AdminData: React.FC = () => {
         title: "Created",
         dataIndex: "createdAt",
         key: "createdAt",
-        render: (v: any) => formatDate(v),
+        render: (v: any) => formatter.dateTime(v),
       },
       {
         title: "Status",

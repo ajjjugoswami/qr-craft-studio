@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Typography, Card, Table, Tag, Button, Statistic, Row, Col, Spin, Segmented, message } from 'antd';
@@ -7,6 +6,7 @@ import { AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Cart
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { useQRCodes } from '../hooks/useQRCodes';
 import { useQRAnalytics } from '@/hooks/useQRAnalytics';
+import { useDateFormatter } from '@/hooks/useDateFormatter';
 import type { ScanData } from '../types/qrcode';
 import { generateMockScanData, getDemoQRCodeAnalytics } from '@/lib/hardCodeQRCodeAnalyticsData';
 
@@ -19,6 +19,7 @@ const QRAnalytics: React.FC = () => {
   const navigate = useNavigate();
   const { getQRCode } = useQRCodes();
   const { scans: realScans, analytics: realAnalytics, loading } = useQRAnalytics(id);
+  const formatter = useDateFormatter();
   const [mode, setMode] = useState<'real' | 'demo'>('real');
 
   const qrCode = id ? getQRCode(id) : undefined;

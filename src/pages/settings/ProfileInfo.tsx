@@ -23,17 +23,57 @@ const languages = [
 ];
 
 const timezones = [
-  { value: 'UTC', label: 'UTC' },
-  { value: 'America/New_York', label: 'Eastern Time' },
-  { value: 'America/Chicago', label: 'Central Time' },
-  { value: 'America/Denver', label: 'Mountain Time' },
-  { value: 'America/Los_Angeles', label: 'Pacific Time' },
-  { value: 'Europe/London', label: 'London' },
-  { value: 'Europe/Paris', label: 'Paris' },
-  { value: 'Europe/Berlin', label: 'Berlin' },
-  { value: 'Asia/Tokyo', label: 'Tokyo' },
-  { value: 'Asia/Shanghai', label: 'Shanghai' },
-  { value: 'Australia/Sydney', label: 'Sydney' },
+  { value: 'UTC', label: 'UTC (Coordinated Universal Time)' },
+  // Americas
+  { value: 'America/New_York', label: 'America - New York (Eastern Time)' },
+  { value: 'America/Chicago', label: 'America - Chicago (Central Time)' },
+  { value: 'America/Denver', label: 'America - Denver (Mountain Time)' },
+  { value: 'America/Los_Angeles', label: 'America - Los Angeles (Pacific Time)' },
+  { value: 'America/Toronto', label: 'America - Toronto' },
+  { value: 'America/Mexico_City', label: 'America - Mexico City' },
+  { value: 'America/Sao_Paulo', label: 'America - São Paulo' },
+  { value: 'America/Buenos_Aires', label: 'America - Buenos Aires' },
+  // Europe
+  { value: 'Europe/London', label: 'Europe - London (GMT/BST)' },
+  { value: 'Europe/Paris', label: 'Europe - Paris (CET)' },
+  { value: 'Europe/Berlin', label: 'Europe - Berlin (CET)' },
+  { value: 'Europe/Rome', label: 'Europe - Rome' },
+  { value: 'Europe/Madrid', label: 'Europe - Madrid' },
+  { value: 'Europe/Amsterdam', label: 'Europe - Amsterdam' },
+  { value: 'Europe/Stockholm', label: 'Europe - Stockholm' },
+  { value: 'Europe/Moscow', label: 'Europe - Moscow' },
+  // Asia
+  { value: 'Asia/Dubai', label: 'Asia - Dubai (UAE)' },
+  { value: 'Asia/Kolkata', label: 'Asia - India (IST)' },
+  { value: 'Asia/Mumbai', label: 'Asia - Mumbai (IST)' },
+  { value: 'Asia/Delhi', label: 'Asia - Delhi (IST)' },
+  { value: 'Asia/Bangalore', label: 'Asia - Bangalore (IST)' },
+  { value: 'Asia/Karachi', label: 'Asia - Karachi (Pakistan)' },
+  { value: 'Asia/Dhaka', label: 'Asia - Dhaka (Bangladesh)' },
+  { value: 'Asia/Bangkok', label: 'Asia - Bangkok (Thailand)' },
+  { value: 'Asia/Singapore', label: 'Asia - Singapore' },
+  { value: 'Asia/Hong_Kong', label: 'Asia - Hong Kong' },
+  { value: 'Asia/Shanghai', label: 'Asia - Shanghai (China)' },
+  { value: 'Asia/Tokyo', label: 'Asia - Tokyo (Japan)' },
+  { value: 'Asia/Seoul', label: 'Asia - Seoul (South Korea)' },
+  { value: 'Asia/Jakarta', label: 'Asia - Jakarta (Indonesia)' },
+  { value: 'Asia/Manila', label: 'Asia - Manila (Philippines)' },
+  // Australia & Pacific
+  { value: 'Australia/Sydney', label: 'Australia - Sydney' },
+  { value: 'Australia/Melbourne', label: 'Australia - Melbourne' },
+  { value: 'Australia/Brisbane', label: 'Australia - Brisbane' },
+  { value: 'Australia/Perth', label: 'Australia - Perth' },
+  { value: 'Pacific/Auckland', label: 'Pacific - Auckland (New Zealand)' },
+  // Africa
+  { value: 'Africa/Cairo', label: 'Africa - Cairo (Egypt)' },
+  { value: 'Africa/Johannesburg', label: 'Africa - Johannesburg (South Africa)' },
+  { value: 'Africa/Lagos', label: 'Africa - Lagos (Nigeria)' },
+  { value: 'Africa/Nairobi', label: 'Africa - Nairobi (Kenya)' },
+];
+
+const timeFormats = [
+  { value: '12', label: '12-hour (2:30 PM)' },
+  { value: '24', label: '24-hour (14:30)' },
 ];
 
 // Helper function to create cropped image
@@ -163,6 +203,7 @@ const ProfileInfo: React.FC = () => {
         city: user.city || '',
         language: user.language || 'en',
         timezone: user.timezone || 'UTC',
+        timeFormat: user.timeFormat || '12',
       });
     }
   }, [user, form]);
@@ -193,6 +234,7 @@ const ProfileInfo: React.FC = () => {
       formData.append('city', user?.city || '');
       formData.append('language', user?.language || 'en');
       formData.append('timezone', user?.timezone || 'UTC');
+      formData.append('timeFormat', user?.timeFormat || '12');
       formData.append('profilePicture', ''); // Remove profile picture
 
       const response = await authAPI.updateProfile(formData);
@@ -239,6 +281,7 @@ const ProfileInfo: React.FC = () => {
       if (values.city) formData.append('city', values.city);
       if (values.language) formData.append('language', values.language);
       if (values.timezone) formData.append('timezone', values.timezone);
+      if (values.timeFormat) formData.append('timeFormat', values.timeFormat);
       
       if (profilePictureFile) {
         formData.append('profilePicture', profilePictureFile);
@@ -404,9 +447,20 @@ const ProfileInfo: React.FC = () => {
               label="Timezone"
               name="timezone"
             >
-              <Select placeholder="Select your timezone">
+              <Select placeholder="Select your timezone" showSearch optionFilterProp="label">
                 {timezones.map(tz => (
                   <Option key={tz.value} value={tz.value}>{tz.label}</Option>
+                ))}
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              label="Time Format"
+              name="timeFormat"
+            >
+              <Select placeholder="Select time format">
+                {timeFormats.map(tf => (
+                  <Option key={tf.value} value={tf.value}>{tf.label}</Option>
                 ))}
               </Select>
             </Form.Item>

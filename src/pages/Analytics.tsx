@@ -7,6 +7,7 @@ import { AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Cart
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { useQRCodes } from '../hooks/useQRCodes';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useDateFormatter } from '@/hooks/useDateFormatter';
 import { getDemoScansOverTime, demoDeviceData, demoTopQRCodes, demoLocations } from '@/lib/hardCodeAnalyticsData';
 import HeatmapByTime from '@/components/analytics/HeatmapByTime';
 import CompareQRCodes from '@/components/analytics/CompareQRCodes';
@@ -18,6 +19,7 @@ const CHART_COLORS = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#0
 const Analytics: React.FC = () => {
   const { qrCodes } = useQRCodes();
   const { scans, analytics, loading } = useAnalytics();
+  const formatter = useDateFormatter();
   const [mode, setMode] = useState<'real' | 'demo'>('real');
 
   const activeQRs = useMemo(() => qrCodes.filter(qr => qr.status === 'active').length, [qrCodes]);
