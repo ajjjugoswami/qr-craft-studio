@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo, useState, useCallback } from 'react';
-import { Typography, Card, Row, Col, Statistic, Table, Tag, Segmented, Button, message } from 'antd';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
+import { Typography, Card, Row, Col, Statistic, Table, Tag, Segmented, Button, message, Tabs } from 'antd';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Eye, QrCode, TrendingUp, Users, Download } from 'lucide-react';
 import { AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -11,6 +10,11 @@ import { useDateFormatter } from '@/hooks/useDateFormatter';
 import { getDemoScansOverTime, demoDeviceData, demoTopQRCodes, demoLocations } from '@/lib/hardCodeAnalyticsData';
 import HeatmapByTime from '@/components/analytics/HeatmapByTime';
 import CompareQRCodes from '@/components/analytics/CompareQRCodes';
+import GeographicHeatmap from '@/components/analytics/GeographicHeatmap';
+import PeakTimesAnalysis from '@/components/analytics/PeakTimesAnalysis';
+import RetentionAnalysis from '@/components/analytics/RetentionAnalysis';
+import ReferrerAnalysis from '@/components/analytics/ReferrerAnalysis';
+import { scansAPI } from '@/lib/api';
 
 const { Title, Text } = Typography;
 
@@ -21,6 +25,27 @@ const Analytics: React.FC = () => {
   const { scans, analytics, loading } = useAnalytics();
   const formatter = useDateFormatter();
   const [mode, setMode] = useState<'real' | 'demo'>('real');
+  const [advancedAnalytics, setAdvancedAnalytics] = useState<any>(null);
+  const [advancedLoading, setAdvancedLoading] = useState(false);
+
+  // Fetch combined advanced analytics
+  useEffect(() => {
+    const fetchAdvancedAnalytics = async () => {
+      try {
+        setAdvancedLoading(true);
+        const data = await scansAPI.getAdvancedAnalytics();
+        setAdvancedAnalytics(data);
+      } catch (error) {
+        console.error('Failed to fetch advanced analytics:', error);
+      } finally {
+        setAdvancedLoading(false);
+      }
+    };
+
+    if (mode === 'real') {
+      fetchAdvancedAnalytics();
+    }
+  }, [mode]);
 
   const activeQRs = useMemo(() => qrCodes.filter(qr => qr.status === 'active').length, [qrCodes]);
 
@@ -372,30 +397,86 @@ const Analytics: React.FC = () => {
           </Col>
         </Row>
 
-        {/* Top Performing & Recent Activity */}
-        <Row gutter={[16, 16]}>
-          <Col xs={24} lg={12}>
-            <Card title="Top Performing QR Codes" className="h-full">
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={topQRCodes} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                  <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={12} width={100} />
-                  <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
-                  <Bar dataKey="scans" fill="#6366f1" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-          <Col xs={24} lg={12}>
-            <Card title="Recent Activity">
-              <Table columns={activityColumns} dataSource={recentActivity} pagination={false} size="small" />
-            </Card>
-          </Col>
-        </Row>
+        {/* Advanced Analytics - New Section */}
+        <Tabs
+          defaultActiveKey="overview"
+          items={[
+            {
+              key: 'overview',
+              label: 'Overview',
+              children: (
+                <Row gutter={[16, 16]}>
+                  <Col xs={24} lg={12}>
+                    <Card title="Top Performing QR Codes" className="h-full">
+                      <ResponsiveContainer width="100%" height={250}>
+                        <BarChart data={topQRCodes} layout="vertical">
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                          <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                          <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" fontSize={12} width={100} />
+                          <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }} />
+                          <Bar dataKey="scans" fill="#6366f1" radius={[0, 4, 4, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </Card>
+                  </Col>
+                  <Col xs={24} lg={12}>
+                    <Card title="Recent Activity">
+                      <Table columns={activityColumns} dataSource={recentActivity} pagination={false} size="small" />
+                    </Card>
+                  </Col>
+                </Row>
+              ),
+            },
+            {
+              key: 'geographic',
+              label: 'Geographic',
+              children: (
+                <Row gutter={[16, 16]}>
+                  <Col xs={24}>
+                    <GeographicHeatmap data={advancedAnalytics?.heatmap} loading={advancedLoading} />
+                  </Col>
+                </Row>
+              ),
+            },
+            {
+              key: 'timing',
+              label: 'Peak Times',
+              children: (
+                <Row gutter={[16, 16]}>
+                  <Col xs={24}>
+                    <PeakTimesAnalysis data={advancedAnalytics?.peakTimes} loading={advancedLoading} />
+                  </Col>
+                </Row>
+              ),
+            },
+            {
+              key: 'retention',
+              label: 'Retention',
+              children: (
+                <Row gutter={[16, 16]}>
+                  <Col xs={24}>
+                    <RetentionAnalysis data={advancedAnalytics?.retention} loading={advancedLoading} />
+                  </Col>
+                </Row>
+              ),
+            },
+            {
+              key: 'referrers',
+              label: 'Referrers',
+              children: (
+                <Row gutter={[16, 16]}>
+                  <Col xs={24}>
+                    <ReferrerAnalysis data={advancedAnalytics?.referrers} loading={advancedLoading} />
+                  </Col>
+                </Row>
+              ),
+            },
+          ]}
+        />
       </div>
     </DashboardLayout>
   );
 };
 
-export default Analytics;
+export default Analytics;;
+

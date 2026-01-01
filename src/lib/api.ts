@@ -232,6 +232,13 @@ export const scansAPI = {
     const response = await api.get(`/qrcodes/${id}/scans`);
     return response.data;
   },
+
+  // Combined advanced analytics endpoint
+  getAdvancedAnalytics: async (id?: string) => {
+    const url = id ? `/scans/analytics/advanced/${id}` : '/scans/analytics/advanced';
+    const response = await api.get(url);
+    return response.data;
+  },
 };
 
 // Admin API
