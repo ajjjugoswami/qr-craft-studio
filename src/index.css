@@ -162,7 +162,6 @@
 .dark .ant-menu-item-selected {
   background: hsl(var(--primary) / 0.15) !important;
   color: hsl(var(--primary)) !important;
-  border-left: 3px solid hsl(var(--primary)) !important;
   font-weight: 600 !important;
 }
 
