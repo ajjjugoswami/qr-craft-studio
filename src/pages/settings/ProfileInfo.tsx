@@ -266,7 +266,11 @@ const ProfileInfo: React.FC = () => {
           <Title level={4} className="mb-0 flex items-center gap-2">
             <User size={18} />
             Profile Information
-            <Tooltip title="Manage your personal information, profile picture, and preferences. Your email cannot be changed after registration.">
+            <Tooltip 
+              title="Manage your personal information, profile picture, and preferences. Your email cannot be changed after registration."
+              color="white"
+              overlayInnerStyle={{ color: '#333' }}
+            >
               <HelpCircle size={16} className="text-muted-foreground hover:text-foreground transition-colors cursor-help" />
             </Tooltip>
           </Title>

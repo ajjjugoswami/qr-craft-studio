@@ -1,15 +1,9 @@
 import React, { useState } from 'react';
-import { Card, Typography, Switch, Input, message, Button, ColorPicker } from 'antd';
+import { Card, Typography, Switch, Input, message, Button, ColorPicker, Tooltip } from 'antd';
 import { Palette, Save, Eye, HelpCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { authAPI } from '@/lib/api';
 import type { Color } from 'antd/es/color-picker';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 const { Title, Text } = Typography;
 
@@ -67,18 +61,13 @@ const WhiteLabelSettings: React.FC = () => {
         <Title level={4} className="mb-0 flex items-center gap-2">
           <Palette size={18} />
           White-Label Settings
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="cursor-help">
-                  <HelpCircle size={16} className="text-muted-foreground hover:text-foreground transition-colors" />
-                </span>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="max-w-xs">
-                <p>Customize the appearance of your QR code redirect pages. Remove branding and add your own colors and text for a professional experience.</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip 
+            title="Customize the appearance of your QR code redirect pages. Remove branding and add your own colors and text for a professional experience."
+            color="white"
+            overlayInnerStyle={{ color: '#333' }}
+          >
+            <HelpCircle size={16} className="text-muted-foreground hover:text-foreground transition-colors cursor-help" />
+          </Tooltip>
         </Title>
         <Button
           type="primary"
