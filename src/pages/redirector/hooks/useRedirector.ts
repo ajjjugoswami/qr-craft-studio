@@ -81,6 +81,10 @@ export const useRedirector = () => {
               window.location.href = `/qr/unavailable/${id}?reason=limit`;
               return;
             }
+            if (status === 403 && msg.toLowerCase().includes('inactive')) {
+              window.location.href = `/qr/unavailable/${id}?reason=inactive`;
+              return;
+            }
           }
         }
 
