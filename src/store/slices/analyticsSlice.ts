@@ -25,10 +25,19 @@ interface AnalyticsData {
   };
 }
 
+interface AdvancedAnalytics {
+  heatmap?: any;
+  peakTimes?: any;
+  retention?: any;
+  referrers?: any;
+}
+
 interface AnalyticsState {
   scans: ScanRecord[];
   analytics: AnalyticsData | null;
+  advancedAnalytics: AdvancedAnalytics | null;
   loading: boolean;
+  advancedLoading: boolean;
   error: string | null;
   lastFetched: number | null;
 }
@@ -38,7 +47,9 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 const initialState: AnalyticsState = {
   scans: [],
   analytics: null,
+  advancedAnalytics: null,
   loading: false,
+  advancedLoading: false,
   error: null,
   lastFetched: null,
 };
@@ -68,6 +79,22 @@ export const fetchAnalytics = createAsyncThunk(
   }
 );
 
+// Fetch advanced analytics
+export const fetchAdvancedAnalytics = createAsyncThunk(
+  'analytics/fetchAdvanced',
+  async (qrCodeId: string | undefined = undefined, { rejectWithValue }) => {
+    try {
+      const data = await scansAPI.getAdvancedAnalytics(qrCodeId);
+      return data;
+    } catch (err: any) {
+      if (err?.response?.status === 401) {
+        return rejectWithValue('unauthorized');
+      }
+      return rejectWithValue(err?.response?.data?.message || 'Failed to load advanced analytics');
+    }
+  }
+);
+
 // ============ Slice ============
 const analyticsSlice = createSlice({
   name: 'analytics',
@@ -76,6 +103,7 @@ const analyticsSlice = createSlice({
     clearAnalytics: (state) => {
       state.scans = [];
       state.analytics = null;
+      state.advancedAnalytics = null;
       state.lastFetched = null;
       state.error = null;
     },
@@ -101,6 +129,19 @@ const analyticsSlice = createSlice({
         if (action.payload !== 'unauthorized') {
           message.error(action.payload as string);
         }
+      })
+      .addCase(fetchAdvancedAnalytics.pending, (state) => {
+        state.advancedLoading = true;
+      })
+      .addCase(fetchAdvancedAnalytics.fulfilled, (state, action) => {
+        state.advancedLoading = false;
+        state.advancedAnalytics = action.payload;
+      })
+      .addCase(fetchAdvancedAnalytics.rejected, (state, action) => {
+        state.advancedLoading = false;
+        if (action.payload !== 'unauthorized') {
+          message.error(action.payload as string);
+        }
       });
   },
 });
@@ -111,6 +152,8 @@ export const { clearAnalytics, invalidateAnalyticsCache } = analyticsSlice.actio
 export const selectScans = (state: { analytics: AnalyticsState }) => state.analytics.scans;
 export const selectAnalyticsData = (state: { analytics: AnalyticsState }) => state.analytics.analytics;
 export const selectAnalyticsLoading = (state: { analytics: AnalyticsState }) => state.analytics.loading;
+export const selectAdvancedAnalytics = (state: { analytics: AnalyticsState }) => state.analytics.advancedAnalytics;
+export const selectAdvancedLoading = (state: { analytics: AnalyticsState }) => state.analytics.advancedLoading;
 export const selectShouldFetchAnalytics = (state: { analytics: AnalyticsState }) => {
   const { lastFetched, loading } = state.analytics;
   if (loading) return false;

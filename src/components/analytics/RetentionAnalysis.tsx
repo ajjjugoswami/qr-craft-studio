@@ -36,108 +36,112 @@ const RetentionAnalysis: React.FC<RetentionProps> = ({ data, loading }) => {
     <Card 
       title={
         <div className="flex items-center gap-2">
-          <Users size={18} className="text-primary" />
-          Retention Analysis
+          <Users size={16} className="text-primary" />
+          <span className="text-sm font-medium">Retention Analysis</span>
         </div>
       }
+      size="small"
     >
-      <Row gutter={[16, 16]} className="mb-6">
+      <Row gutter={[8, 8]} className="mb-4">
         <Col xs={12} sm={6}>
-          <Card className="text-center">
+          <Card size="small" className="text-center">
             <Statistic 
-              title="Unique Scanners" 
+              title={<span className="text-xs">Unique</span>}
               value={data.uniqueScanners} 
-              prefix={<Users size={20} className="text-purple-500" />}
-              valueStyle={{ color: '#8b5cf6' }}
+              prefix={<Users size={14} className="text-purple-500" />}
+              valueStyle={{ color: '#8b5cf6', fontSize: '18px' }}
             />
           </Card>
         </Col>
         <Col xs={12} sm={6}>
-          <Card className="text-center">
+          <Card size="small" className="text-center">
             <Statistic 
-              title="New Scans" 
+              title={<span className="text-xs">New</span>}
               value={data.newScans} 
-              prefix={<UserPlus size={20} className="text-blue-500" />}
-              valueStyle={{ color: '#6366f1' }}
+              prefix={<UserPlus size={14} className="text-blue-500" />}
+              valueStyle={{ color: '#6366f1', fontSize: '18px' }}
             />
           </Card>
         </Col>
         <Col xs={12} sm={6}>
-          <Card className="text-center">
+          <Card size="small" className="text-center">
             <Statistic 
-              title="Returning Scans" 
+              title={<span className="text-xs">Returning</span>}
               value={data.returningScans} 
-              prefix={<UserCheck size={20} className="text-green-500" />}
-              valueStyle={{ color: '#22c55e' }}
+              prefix={<UserCheck size={14} className="text-green-500" />}
+              valueStyle={{ color: '#22c55e', fontSize: '18px' }}
             />
           </Card>
         </Col>
         <Col xs={12} sm={6}>
-          <Card className="text-center">
+          <Card size="small" className="text-center">
             <Statistic 
-              title="Repeat Rate" 
+              title={<span className="text-xs">Rate</span>}
               value={data.repeatRate} 
               suffix="%" 
-              prefix={<Repeat size={20} className="text-orange-500" />}
-              valueStyle={{ color: '#f59e0b' }}
+              prefix={<Repeat size={14} className="text-orange-500" />}
+              valueStyle={{ color: '#f59e0b', fontSize: '18px' }}
             />
           </Card>
         </Col>
       </Row>
 
-      <div className="space-y-4 mb-6">
+      <div className="space-y-3 mb-4">
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <Text strong>New Visitors</Text>
-            <Text>{newScanPercentage.toFixed(1)}%</Text>
+          <div className="flex items-center justify-between mb-1">
+            <Text className="text-xs">New Visitors</Text>
+            <Text className="text-xs">{newScanPercentage.toFixed(1)}%</Text>
           </div>
           <Progress 
             percent={newScanPercentage} 
             showInfo={false}
             strokeColor="#6366f1"
+            size="small"
           />
         </div>
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <Text strong>Returning Visitors</Text>
-            <Text>{returningScanPercentage.toFixed(1)}%</Text>
+          <div className="flex items-center justify-between mb-1">
+            <Text className="text-xs">Returning Visitors</Text>
+            <Text className="text-xs">{returningScanPercentage.toFixed(1)}%</Text>
           </div>
           <Progress 
             percent={returningScanPercentage} 
             showInfo={false}
             strokeColor="#22c55e"
+            size="small"
           />
         </div>
       </div>
 
       {data.dailyRetention && data.dailyRetention.length > 0 && (
-        <div className="mt-6">
-          <Title level={5}>Daily Unique Users (Last 30 Days)</Title>
-          <ResponsiveContainer width="100%" height={200}>
+        <div className="mt-4">
+          <Text strong className="text-xs">Daily Unique Users</Text>
+          <ResponsiveContainer width="100%" height={160}>
             <LineChart data={data.dailyRetention}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis 
                 dataKey="date" 
                 stroke="hsl(var(--muted-foreground))" 
-                fontSize={10}
+                fontSize={9}
                 angle={-45}
                 textAnchor="end"
-                height={60}
+                height={50}
               />
-              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+              <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} />
               <Tooltip 
                 contentStyle={{ 
                   backgroundColor: 'hsl(var(--card))', 
                   border: '1px solid hsl(var(--border))', 
-                  borderRadius: '8px' 
+                  borderRadius: '8px',
+                  fontSize: '12px'
                 }} 
               />
               <Line 
                 type="monotone" 
                 dataKey="uniqueUsers" 
                 stroke="#8b5cf6" 
-                strokeWidth={2}
-                dot={{ fill: '#8b5cf6', r: 3 }}
+                strokeWidth={1.5}
+                dot={{ fill: '#8b5cf6', r: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>
