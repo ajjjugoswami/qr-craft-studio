@@ -191,6 +191,12 @@ export const qrCodeAPI = {
     const response = await api.post(`/qrcodes/${id}/scan`);
     return response.data;
   },
+
+  // Get stats (total counts, not affected by search)
+  getStats: async () => {
+    const response = await api.get('/qrcodes/stats');
+    return response.data;
+  },
 };
 
 // Uploads API

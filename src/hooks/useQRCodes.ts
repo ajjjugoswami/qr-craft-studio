@@ -12,12 +12,18 @@ import {
   selectQRCodesLimit,
   selectQRCodesTotal,
   selectQRCodesTotalPages,
-  selectQRCodesTotalScans,
-  selectQRCodesTotalActive,
   selectQRCodeById,
   selectShouldFetchQRCodes,
   clearQRCodes,
 } from '@/store/slices/qrCodesSlice';
+import {
+  fetchStats,
+  selectStatsTotal,
+  selectStatsTotalScans,
+  selectStatsTotalActive,
+  selectShouldFetchStats,
+  clearStats,
+} from '@/store/slices/statsSlice';
 import { selectIsAuthenticated, selectUser } from '@/store/slices/authSlice';
 import { QRCodeData } from '@/types/qrcode';
 
@@ -33,13 +39,25 @@ export const useQRCodes = () => {
   const limit = useAppSelector(selectQRCodesLimit);
   const total = useAppSelector(selectQRCodesTotal);
   const totalPages = useAppSelector(selectQRCodesTotalPages);
-  const totalScans = useAppSelector(selectQRCodesTotalScans);
-  const totalActive = useAppSelector(selectQRCodesTotalActive);
+  
+  // Stats from separate slice
+  const statsTotal = useAppSelector(selectStatsTotal);
+  const totalScans = useAppSelector(selectStatsTotalScans);
+  const totalActive = useAppSelector(selectStatsTotalActive);
+  const shouldFetchStats = useAppSelector(selectShouldFetchStats);
+  
   const shouldFetch = useAppSelector(selectShouldFetchQRCodes);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const user = useAppSelector(selectUser);
   
   const prevUserIdRef = useRef<string | undefined>();
+
+  // Fetch stats once on mount (independent of QR codes list)
+  useEffect(() => {
+    if (isAuthenticated && shouldFetchStats) {
+      dispatch(fetchStats());
+    }
+  }, [dispatch, isAuthenticated, shouldFetchStats]);
 
   // Fetch QR codes on mount if needed (load first page)
   useEffect(() => {
@@ -56,7 +74,9 @@ export const useQRCodes = () => {
     if (currentUserId && prevUserId && currentUserId !== prevUserId) {
       // User changed, clear cache and refetch
       dispatch(clearQRCodes());
+      dispatch(clearStats());
       dispatch(fetchQRCodes({ page: 1, limit }));
+      dispatch(fetchStats());
     }
     
     prevUserIdRef.current = currentUserId;
@@ -66,6 +86,7 @@ export const useQRCodes = () => {
   useEffect(() => {
     if (!isAuthenticated) {
       dispatch(clearQRCodes());
+      dispatch(clearStats());
     }
   }, [dispatch, isAuthenticated]);
 
@@ -73,6 +94,8 @@ export const useQRCodes = () => {
   const saveQRCode = useCallback(
     async (qrInput: Partial<QRCodeData> & { previewImage?: string }) => {
       const result = await dispatch(createQRCode(qrInput)).unwrap();
+      // Refetch stats after creating
+      dispatch(fetchStats());
       return result;
     },
     [dispatch]
@@ -94,6 +117,8 @@ export const useQRCodes = () => {
       
       const newStatus = qrCode.status === 'active' ? 'inactive' : 'active';
       await dispatch(updateQRCode({ id, data: { status: newStatus } })).unwrap();
+      // Refetch stats after status change
+      dispatch(fetchStats());
     },
     [dispatch, qrCodes]
   );
@@ -102,6 +127,8 @@ export const useQRCodes = () => {
   const handleDeleteQRCode = useCallback(
     async (id: string) => {
       await dispatch(deleteQRCode(id)).unwrap();
+      // Refetch stats after delete
+      dispatch(fetchStats());
     },
     [dispatch]
   );
@@ -151,8 +178,10 @@ export const useQRCodes = () => {
     limit,
     total,
     totalPages,
+    // Stats from stats slice
     totalScans,
     totalActive,
+    statsTotal,
     saveQRCode,
     updateQRCode: handleUpdateQRCode,
     toggleQRCodeStatus,

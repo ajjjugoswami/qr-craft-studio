@@ -14,9 +14,6 @@ interface QRCodesState {
   limit: number;
   total: number;
   totalPages: number;
-  // Stats
-  totalScans: number;
-  totalActive: number;
 }
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
@@ -30,8 +27,6 @@ const initialState: QRCodesState = {
   limit: 10,
   total: 0,
   totalPages: 1,
-  totalScans: 0,
-  totalActive: 0,
 };
 
 // ============ Async Thunks ============
@@ -64,8 +59,6 @@ export const fetchQRCodes = createAsyncThunk(
         limit: res.limit || params.limit || 10,
         total: res.total || 0,
         totalPages: res.totalPages || Math.max(1, Math.ceil((res.total || 0) / (res.limit || params.limit || 10))),
-        totalScans: res.stats?.totalScans || 0,
-        totalActive: res.stats?.totalActive || 0,
       };
     } catch (err: any) {
       if (err?.response?.status === 401) {
@@ -180,6 +173,24 @@ export const updateQRCode = createAsyncThunk(
   }
 );
 
+// Fetch stats only (separate from list) - MOVED TO statsSlice.ts
+// This is kept for backward compatibility but redirects to stats slice
+export const fetchStats = createAsyncThunk(
+  'qrCodes/fetchStats',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await qrCodeAPI.getStats();
+      return {
+        total: res.total || 0,
+        totalScans: res.totalScans || 0,
+        totalActive: res.totalActive || 0,
+      };
+    } catch (err: any) {
+      return rejectWithValue(err?.response?.data?.message || 'Failed to load stats');
+    }
+  }
+);
+
 // Delete QR code
 export const deleteQRCode = createAsyncThunk(
   'qrCodes/delete',
@@ -221,8 +232,6 @@ const qrCodesSlice = createSlice({
         state.limit = action.payload.limit || state.limit;
         state.total = action.payload.total || 0;
         state.totalPages = action.payload.totalPages || 1;
-        state.totalScans = action.payload.totalScans || 0;
-        state.totalActive = action.payload.totalActive || 0;
         state.lastFetched = Date.now();
       })
       .addCase(fetchQRCodes.rejected, (state, action) => {
@@ -272,6 +281,7 @@ const qrCodesSlice = createSlice({
       .addCase(deleteQRCode.rejected, (state, action) => {
         message.error(action.payload as string);
       });
+      // Note: fetchStats is handled in statsSlice.ts
   },
 });
 
@@ -284,8 +294,9 @@ export const selectQRCodesPage = (state: { qrCodes: QRCodesState }) => state.qrC
 export const selectQRCodesLimit = (state: { qrCodes: QRCodesState }) => state.qrCodes.limit;
 export const selectQRCodesTotal = (state: { qrCodes: QRCodesState }) => state.qrCodes.total;
 export const selectQRCodesTotalPages = (state: { qrCodes: QRCodesState }) => state.qrCodes.totalPages;
-export const selectQRCodesTotalScans = (state: { qrCodes: QRCodesState }) => state.qrCodes.totalScans;
-export const selectQRCodesTotalActive = (state: { qrCodes: QRCodesState }) => state.qrCodes.totalActive;
+// Deprecated: Use stats slice selectors instead
+export const selectQRCodesTotalScans = (state: { qrCodes: QRCodesState }) => 0;
+export const selectQRCodesTotalActive = (state: { qrCodes: QRCodesState }) => 0;
 export const selectQRCodeById = (id: string) => (state: { qrCodes: QRCodesState }) =>
   state.qrCodes.items.find((q) => q.id === id);
 export const selectShouldFetchQRCodes = (state: { qrCodes: QRCodesState }) => {

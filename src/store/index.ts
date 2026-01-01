@@ -6,6 +6,7 @@ import uiReducer from './slices/uiSlice';
 import analyticsReducer from './slices/analyticsSlice';
 import contactsReducer from './slices/contactsSlice';
 import qrAnalyticsReducer from './slices/qrAnalyticsSlice';
+import statsReducer from './slices/statsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     analytics: analyticsReducer,
     contacts: contactsReducer,
     qrAnalytics: qrAnalyticsReducer,
+    stats: statsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

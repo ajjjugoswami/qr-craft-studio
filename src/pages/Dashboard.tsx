@@ -2,30 +2,18 @@ import React from "react";
 import {
   Typography,
   Button,
-  Empty,
-  Card,
-  Input,
   Pagination,
-  Segmented,
   message,
 } from "antd";
-import { Skeleton } from "@/components/ui/skeleton";
-import CountUp from 'react-countup';
 import confetti from 'canvas-confetti';
-import {
-  Plus,
-  QrCode,
-  Eye,
-  TrendingUp,
-  Search,
-  LayoutGrid,
-  List,
-  XCircle,
-} from "lucide-react";
+import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../components/layout/DashboardLayout";
-import QRCodeCard from "../components/qr/QRCodeCard";
 import EmptyQRState from "../components/qr/EmptyQRState";
+import StatsCards from "../components/dashboard/StatsCards";
+import SearchBar from "../components/dashboard/SearchBar";
+import QRCodesList from "../components/dashboard/QRCodesList";
+import NoSearchResults from "../components/dashboard/NoSearchResults";
 import { useQRCodes } from "../hooks/useQRCodes";
 
 const { Title, Text } = Typography;
@@ -43,11 +31,26 @@ const Dashboard: React.FC = () => {
     totalPages,
     totalScans,
     totalActive,
+    statsTotal,
     setPage,
     setSearch,
   } = useQRCodes();
   const [searchTerm, setSearchTerm] = React.useState("");
   const [viewMode, setViewMode] = React.useState<"list" | "grid">("grid");
+
+  // Memoize stats from Redux store - they don't change during search
+  const stats = React.useMemo(() => ({
+    total: statsTotal,
+    totalScans,
+    totalActive,
+    inactive: Number(statsTotal) - Number(totalActive)
+  }), [statsTotal, totalScans, totalActive]);
+
+  // Initial loading (first time) vs search loading
+  const isInitialLoading = loading && qrCodes.length === 0 && !searchTerm;
+  
+  // Check if user has no QR codes at all (not searching)
+  const hasNoQRCodes = statsTotal === 0 && !loading;
 
   // debounce search input
   const searchTimeoutRef = React.useRef<number | null>(null);
@@ -80,19 +83,20 @@ const Dashboard: React.FC = () => {
     message.success('QR Code status updated!');
   };
 
-  const handleCreateClick = () => {
-    navigate("/create");
-    // Confetti on create button click
-    confetti({
-      particleCount: 150,
-      spread: 80,
-      origin: { y: 0.5 },
-      colors: ['#a855f7', '#8b5cf6', '#7c3aed', '#6366f1']
-    });
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    if (searchTimeoutRef.current) {
+      window.clearTimeout(searchTimeoutRef.current);
+    }
+    searchTimeoutRef.current = window.setTimeout(() => {
+      setSearch(value.trim());
+    }, 400);
   };
 
-  // Server-side filtered list (search applied on server)
-  const filteredQRCodes = qrCodes;
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setSearch('');
+  };
 
   return (
     <DashboardLayout>
@@ -118,122 +122,11 @@ const Dashboard: React.FC = () => {
           </Button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-          <Card className="card-compact glass-card stat-card">
-            {loading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-6 w-12" />
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <QrCode size={14} className="text-primary" />
-                  <span className="text-[11px] md:text-xs text-muted-foreground">
-                    Total QR Codes
-                  </span>
-                </div>
-                <span className="text-lg md:text-2xl font-bold text-primary animated-number">
-                  <CountUp end={Number(total)} duration={2} />
-                </span>
-              </div>
-            )}
-          </Card>
-
-          <Card className="card-compact glass-card stat-card">
-            {loading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-6 w-12" />
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <Eye size={14} className="text-success" />
-                  <span className="text-[11px] md:text-xs text-muted-foreground">
-                    Total Scans
-                  </span>
-                </div>
-                <span className="text-lg md:text-2xl font-bold text-success animated-number">
-                  <CountUp end={totalScans} duration={2.5} separator="," />
-                </span>
-              </div>
-            )}
-          </Card>
-
-          <Card className="card-compact glass-card stat-card">
-            {loading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-6 w-12" />
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <TrendingUp size={14} className="text-warning" />
-                  <span className="text-[11px] md:text-xs text-muted-foreground">
-                    Active Codes
-                  </span>
-                </div>
-                <span className="text-lg md:text-2xl font-bold text-warning animated-number">
-                  <CountUp end={totalActive} duration={2} />
-                </span>
-              </div>
-            )}
-          </Card>
-
-          <Card className="card-compact glass-card stat-card">
-            {loading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-3 w-16" />
-                <Skeleton className="h-6 w-12" />
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <XCircle size={14} className="text-destructive" />
-                  <span className="text-[11px] md:text-xs text-muted-foreground">
-                    Inactive
-                  </span>
-                </div>
-                <span className="text-lg md:text-2xl font-bold text-destructive animated-number">
-                  <CountUp end={Number(total) - Number(totalActive)} duration={2} />
-                </span>
-              </div>
-            )}
-          </Card>
-        </div>
+        {/* Stats Cards - Never reload during search */}
+        <StatsCards loading={isInitialLoading} stats={stats} />
 
         {/* Content */}
-        {loading ? (
-          viewMode === "list" ? (
-            <div className="space-y-3">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <Card key={i}>
-                  <div className="flex items-center gap-3">
-                    <Skeleton className="w-14 h-14 rounded-lg flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <Skeleton className="h-4 w-32 mb-2" />
-                      <Skeleton className="h-3 w-48" />
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <Card key={i}>
-                  <div className="flex flex-col items-center">
-                    <Skeleton className="w-full aspect-square rounded-lg mb-3" />
-                    <Skeleton className="h-4 w-24" />
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )
-        ) : qrCodes.length === 0 ? (
+        {hasNoQRCodes ? (
           <div style={{ marginTop: "150px" }}>
             <EmptyQRState />
           </div>
@@ -244,90 +137,26 @@ const Dashboard: React.FC = () => {
               <Title level={4} className="!mb-0 !text-base md:!text-lg">
                 Your QR Codes
               </Title>
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <Input
-                  placeholder="Search..."
-                  prefix={
-                    <Search size={16} className="text-muted-foreground" />
-                  }
-                  value={searchTerm}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    setSearchTerm(v);
-                    if (searchTimeoutRef.current)
-                      window.clearTimeout(searchTimeoutRef.current);
-                    searchTimeoutRef.current = window.setTimeout(() => {
-                      setSearch(v.trim());
-                    }, 400);
-                  }}
-                  className="flex-1 sm:w-48 md:w-64"
-                  allowClear
-                />
-                <Segmented
-                  value={viewMode}
-                  onChange={(value) => setViewMode(value as "list" | "grid")}
-                  options={[
-                    {
-                      label: (
-                        <div className="flex items-center gap-2">
-                          <List size={16} />
-                          <span className="hidden sm:inline">List</span>
-                        </div>
-                      ),
-                      value: "list",
-                    },
-                    {
-                      label: (
-                        <div className="flex items-center gap-2">
-                          <LayoutGrid size={16} />
-                          <span className="hidden sm:inline">Grid</span>
-                        </div>
-                      ),
-                      value: "grid",
-                    },
-                  ]}
-                  className="segmented-animated"
-                />
-              </div>
+              <SearchBar
+                searchTerm={searchTerm}
+                onSearchChange={handleSearchChange}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+              />
             </div>
-            {filteredQRCodes.length === 0 ? (
-              <Card className="py-8 md:py-12">
-                <Empty
-                  description={
-                    <div className="text-center">
-                      <Text type="secondary">
-                        No QR codes found for "{searchTerm}"
-                      </Text>
-                    </div>
-                  }
-                />
-              </Card>
-            ) : viewMode === "list" ? (
-              <div className="space-y-3">
-                {filteredQRCodes.map((qrCode) => (
-                  <QRCodeCard
-                    key={qrCode.id}
-                    qrCode={qrCode}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onToggleStatus={handleToggleStatus}
-                    viewMode="list"
-                  />
-                ))}
-              </div>
+
+            {/* QR Codes List or No Results */}
+            {qrCodes.length === 0 && searchTerm.trim() ? (
+              <NoSearchResults searchTerm={searchTerm} onClearSearch={handleClearSearch} />
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-                {filteredQRCodes.map((qrCode) => (
-                  <QRCodeCard
-                    key={qrCode.id}
-                    qrCode={qrCode}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onToggleStatus={handleToggleStatus}
-                    viewMode="grid"
-                  />
-                ))}
-              </div>
+              <QRCodesList
+                qrCodes={qrCodes}
+                loading={loading}
+                viewMode={viewMode}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onToggleStatus={handleToggleStatus}
+              />
             )}
           </>
         )}
