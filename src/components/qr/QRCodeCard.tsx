@@ -7,13 +7,10 @@ import {
   BarChart3,
   Trash2,
   FileImage,
-  FileType,
   FileCode,
-  FileText,
   Eye,
   Lock,
   Target,
-  Power,
   CheckCircle,
   XCircle,
   MoreHorizontal,
@@ -54,7 +51,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
   const { user } = useAuth();
   const previewRef = useRef<HTMLDivElement>(null);
   const [downloadModalOpen, setDownloadModalOpen] = React.useState(false);
-  const [downloadingFormat, setDownloadingFormat] = React.useState<'png' | 'svg' | 'pdf' | null>(null);
+  const [downloadingFormat, setDownloadingFormat] = React.useState<'png' | 'svg' | null>(null);
 
   // Support both camelCase and legacy snake/lowercase fields from APIs
   const scanLimitValue = (qrCode.scanLimit ?? (qrCode as any).scanlimit) as number | null | undefined;
@@ -65,7 +62,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
   const showWatermark = !user?.removeWatermark;
   const watermarkText = user?.watermarkText || 'QR Studio';
 
-  const handleDownload = async (format: 'png' | 'svg' | 'pdf') => {
+  const handleDownload = async (format: 'png' | 'svg') => {
     if (!previewRef.current || downloadingFormat) return;
 
     setDownloadingFormat(format);
@@ -93,45 +90,6 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
         link.download = `${fileName}.svg`;
         link.href = dataUrl;
         link.click();
-      } else if (format === 'pdf') {
-        const dataUrl = await toPng(node, {
-          quality: 1,
-          pixelRatio: 2,
-          cacheBust: true,
-        });
-        
-        // Create PDF with embedded image
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const padding = 40;
-          canvas.width = img.width + padding * 2;
-          canvas.height = img.height + padding * 2;
-          const ctx = canvas.getContext('2d');
-          if (ctx) {
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, padding, padding);
-            
-            const pdfDataUrl = canvas.toDataURL('image/png');
-            const link = document.createElement('a');
-            link.download = `${fileName}.pdf`;
-            // For proper PDF, we use a simple approach with the image
-            // In production, consider using jsPDF for vector PDF
-            link.href = pdfDataUrl.replace('image/png', 'application/pdf');
-            
-            // Alternative: create actual PDF blob
-            const pdfBlob = dataURLtoBlob(pdfDataUrl, 'application/pdf');
-            link.href = URL.createObjectURL(pdfBlob);
-            link.click();
-            URL.revokeObjectURL(link.href);
-          }
-        };
-        img.src = dataUrl;
-        message.success('Downloaded as PDF!');
-        setDownloadModalOpen(false);
-        setDownloadingFormat(null);
-        return;
       }
 
       message.success(`Downloaded as ${format.toUpperCase()}!`);
@@ -144,16 +102,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
     }
   };
 
-  // Helper to convert dataURL to Blob
-  const dataURLtoBlob = (dataURL: string, mimeType: string): Blob => {
-    const byteString = atob(dataURL.split(',')[1]);
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-    return new Blob([ab], { type: mimeType });
-  };
+  // Helper removed - no longer needed without PDF
 
   const downloadMenuItems = [
     {
@@ -166,12 +115,6 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
       key: 'svg',
       label: 'SVG (Vector)',
       icon: <FileCode size={16} />,
-      onClick: () => setDownloadModalOpen(true),
-    },
-    {
-      key: 'pdf',
-      label: 'PDF (Print Ready)',
-      icon: <FileText size={16} />,
       onClick: () => setDownloadModalOpen(true),
     },
   ];
@@ -374,18 +317,6 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
                 )}
                 SVG
               </button>
-              <button
-                onClick={() => handleDownload('pdf')}
-                disabled={downloadingFormat !== null}
-                className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
-              >
-                {downloadingFormat === 'pdf' ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-foreground/70 border-t-transparent" />
-                ) : (
-                  <FileText size={18} />
-                )}
-                PDF
-              </button>
             </div>
           </div>
         </Modal>
@@ -569,20 +500,8 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
               )}
               SVG
             </button>
-            <button
-              onClick={() => handleDownload('pdf')}
-              disabled={downloadingFormat !== null}
-              className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
-            >
-              {downloadingFormat === 'pdf' ? (
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-foreground/70 border-t-transparent" />
-              ) : (
-                <FileText size={18} />
-              )}
-              PDF
-            </button>
+            </div>
           </div>
-        </div>
       </Modal>
     </>
   );
