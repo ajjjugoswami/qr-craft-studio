@@ -18,7 +18,6 @@ export interface Theme {
   label: string;
   colors: ThemeColors;
   darkColors?: ThemeColors;
-  darkColors?: ThemeColors;
 }
 
 export interface ThemeContextType {
@@ -254,10 +253,4 @@ export const themes: Record<ThemeName, Theme> = {
       sidebarAccent: '262 83% 96%',
     },
   },
-};
-
-export type ThemeContextType = {
-  currentTheme: ThemeName;
-  setTheme: (theme: ThemeName) => void;
-  theme: Theme;
 };
