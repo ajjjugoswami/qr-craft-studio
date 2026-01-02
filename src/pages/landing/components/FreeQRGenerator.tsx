@@ -158,25 +158,32 @@ const FreeQRGenerator = () => {
             />
           </div>
           <div className="w-full mt-6 space-y-3">
-            <Button
-              className="w-full gap-2"
-              disabled={content.trim() === ''}
-              onClick={() => {
-                if (!content.trim()) {
-                  toast({ title: 'Missing content', description: 'Please enter the QR content before downloading.' });
-                  return;
-                }
-                const downloadEvent = new CustomEvent('download-qr', {
-                  detail: { format: 'png' },
-                });
-                window.dispatchEvent(downloadEvent);
-              }}
-            >
-              <Download className="h-4 w-4" />
-              Download PNG
-            </Button>
+            <div className="grid grid-cols-3 gap-2">
+              {['png', 'svg', 'pdf'].map((format) => (
+                <Button
+                  key={format}
+                  variant={format === 'png' ? 'default' : 'outline'}
+                  className="gap-1.5"
+                  size="sm"
+                  disabled={content.trim() === ''}
+                  onClick={() => {
+                    if (!content.trim()) {
+                      toast({ title: 'Missing content', description: 'Please enter the QR content before downloading.' });
+                      return;
+                    }
+                    const downloadEvent = new CustomEvent('download-qr', {
+                      detail: { format },
+                    });
+                    window.dispatchEvent(downloadEvent);
+                  }}
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  {format.toUpperCase()}
+                </Button>
+              ))}
+            </div>
             <p className="text-xs text-center text-muted-foreground">
-              Sign up for SVG and PDF downloads
+              All downloads include QR Studio watermark
             </p>
           </div>
         </div>
