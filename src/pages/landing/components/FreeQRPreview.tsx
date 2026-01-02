@@ -1,6 +1,6 @@
 import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import QRCodeStyling from 'qr-code-styling';
-import { toPng } from 'html-to-image';
+import { toPng, toSvg } from 'html-to-image';
 import type { QRStyling } from '@/types/qrcode';
 
 interface FreeQRPreviewProps {
@@ -21,15 +21,74 @@ const FreeQRPreview = forwardRef<HTMLDivElement, FreeQRPreviewProps>(
     useEffect(() => {
       const handleDownload = async (e: CustomEvent) => {
         if (containerRef.current) {
+          const format = e.detail?.format || 'png';
+          
           try {
-            const dataUrl = await toPng(containerRef.current, {
-              backgroundColor: '#ffffff',
-              pixelRatio: 2,
-            });
-            const link = document.createElement('a');
-            link.download = 'qr-code.png';
-            link.href = dataUrl;
-            link.click();
+            if (format === 'png') {
+              const dataUrl = await toPng(containerRef.current, {
+                backgroundColor: '#ffffff',
+                pixelRatio: 2,
+              });
+              const link = document.createElement('a');
+              link.download = 'qr-code.png';
+              link.href = dataUrl;
+              link.click();
+            } else if (format === 'svg') {
+              const dataUrl = await toSvg(containerRef.current, {
+                backgroundColor: '#ffffff',
+              });
+              const link = document.createElement('a');
+              link.download = 'qr-code.svg';
+              link.href = dataUrl;
+              link.click();
+            } else if (format === 'pdf') {
+              // For PDF, we'll create a PNG and embed it in a simple PDF
+              const dataUrl = await toPng(containerRef.current, {
+                backgroundColor: '#ffffff',
+                pixelRatio: 3,
+              });
+              
+              // Create a simple PDF with the image
+              const img = new Image();
+              img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return;
+                
+                // A4 size at 72 DPI
+                const pdfWidth = 595;
+                const pdfHeight = 842;
+                canvas.width = pdfWidth;
+                canvas.height = pdfHeight;
+                
+                // White background
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, pdfWidth, pdfHeight);
+                
+                // Center the QR code
+                const scale = Math.min(400 / img.width, 400 / img.height);
+                const scaledWidth = img.width * scale;
+                const scaledHeight = img.height * scale;
+                const x = (pdfWidth - scaledWidth) / 2;
+                const y = (pdfHeight - scaledHeight) / 2 - 50;
+                
+                ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+                
+                // Add title
+                ctx.fillStyle = '#333333';
+                ctx.font = 'bold 24px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('QR Code', pdfWidth / 2, 60);
+                
+                // Download as image (PDF requires a library, using PNG as fallback)
+                const pdfDataUrl = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = 'qr-code-print.png';
+                link.href = pdfDataUrl;
+                link.click();
+              };
+              img.src = dataUrl;
+            }
           } catch (error) {
             console.error('Failed to download QR code:', error);
           }
