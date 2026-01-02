@@ -7,7 +7,7 @@ import {
   BarChart3,
   Trash2,
   FileImage,
-  FileCode,
+  Image,
   Eye,
   Lock,
   Target,
@@ -15,7 +15,7 @@ import {
   XCircle,
   MoreHorizontal,
 } from 'lucide-react';
-import { toPng, toSvg } from 'html-to-image';
+import { toPng, toJpeg } from 'html-to-image';
 import { QRCodeData } from '../../types/qrcode';
 import QRCodePreview from './QRCodePreview';
 import QRCodeOnly from './QRCodeOnly';
@@ -51,7 +51,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
   const { user } = useAuth();
   const previewRef = useRef<HTMLDivElement>(null);
   const [downloadModalOpen, setDownloadModalOpen] = React.useState(false);
-  const [downloadingFormat, setDownloadingFormat] = React.useState<'png' | 'svg' | null>(null);
+  const [downloadingFormat, setDownloadingFormat] = React.useState<'png' | 'jpg' | 'webp' | null>(null);
 
   // Support both camelCase and legacy snake/lowercase fields from APIs
   const scanLimitValue = (qrCode.scanLimit ?? (qrCode as any).scanlimit) as number | null | undefined;
@@ -62,7 +62,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
   const showWatermark = !user?.removeWatermark;
   const watermarkText = user?.watermarkText || 'QR Studio';
 
-  const handleDownload = async (format: 'png' | 'svg') => {
+  const handleDownload = async (format: 'png' | 'jpg' | 'webp') => {
     if (!previewRef.current || downloadingFormat) return;
 
     setDownloadingFormat(format);
@@ -72,25 +72,44 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
       const node = previewRef.current;
       const fileName = `${qrCode.name}-${Date.now()}`;
       
+      let dataUrl: string;
       if (format === 'png') {
-        const dataUrl = await toPng(node, {
+        dataUrl = await toPng(node, {
           quality: 1,
           pixelRatio: 2,
           cacheBust: true,
         });
-        const link = document.createElement('a');
-        link.download = `${fileName}.png`;
-        link.href = dataUrl;
-        link.click();
-      } else if (format === 'svg') {
-        const dataUrl = await toSvg(node, {
+      } else {
+        // JPG and WebP use toJpeg with different quality
+        dataUrl = await toJpeg(node, {
+          quality: format === 'webp' ? 0.9 : 0.95,
+          pixelRatio: 2,
           cacheBust: true,
+          backgroundColor: '#ffffff',
         });
-        const link = document.createElement('a');
-        link.download = `${fileName}.svg`;
-        link.href = dataUrl;
-        link.click();
+        
+        // For WebP, we need to convert via canvas
+        if (format === 'webp') {
+          const img = new window.Image();
+          await new Promise<void>((resolve) => {
+            img.onload = () => resolve();
+            img.src = dataUrl;
+          });
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0);
+            dataUrl = canvas.toDataURL('image/webp', 0.9);
+          }
+        }
       }
+
+      const link = document.createElement('a');
+      link.download = `${fileName}.${format}`;
+      link.href = dataUrl;
+      link.click();
 
       message.success(`Downloaded as ${format.toUpperCase()}!`);
       setDownloadModalOpen(false);
@@ -112,9 +131,15 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
       onClick: () => setDownloadModalOpen(true),
     },
     {
-      key: 'svg',
-      label: 'SVG (Vector)',
-      icon: <FileCode size={16} />,
+      key: 'jpg',
+      label: 'JPG (Smaller Size)',
+      icon: <Image size={16} />,
+      onClick: () => setDownloadModalOpen(true),
+    },
+    {
+      key: 'webp',
+      label: 'WebP (Best Compression)',
+      icon: <Image size={16} />,
       onClick: () => setDownloadModalOpen(true),
     },
   ];
@@ -306,16 +331,28 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
                 PNG
               </button>
               <button
-                onClick={() => handleDownload('svg')}
+                onClick={() => handleDownload('jpg')}
                 disabled={downloadingFormat !== null}
                 className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
               >
-                {downloadingFormat === 'svg' ? (
+                {downloadingFormat === 'jpg' ? (
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-foreground/70 border-t-transparent" />
                 ) : (
-                  <FileCode size={18} />
+                  <Image size={18} />
                 )}
-                SVG
+                JPG
+              </button>
+              <button
+                onClick={() => handleDownload('webp')}
+                disabled={downloadingFormat !== null}
+                className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
+              >
+                {downloadingFormat === 'webp' ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-foreground/70 border-t-transparent" />
+                ) : (
+                  <Image size={18} />
+                )}
+                WebP
               </button>
             </div>
           </div>
@@ -489,16 +526,28 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
               PNG
             </button>
             <button
-              onClick={() => handleDownload('svg')}
+              onClick={() => handleDownload('jpg')}
               disabled={downloadingFormat !== null}
               className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
             >
-              {downloadingFormat === 'svg' ? (
+              {downloadingFormat === 'jpg' ? (
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-foreground/70 border-t-transparent" />
               ) : (
-                <FileCode size={18} />
+                <Image size={18} />
               )}
-              SVG
+              JPG
+            </button>
+            <button
+              onClick={() => handleDownload('webp')}
+              disabled={downloadingFormat !== null}
+              className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50"
+            >
+              {downloadingFormat === 'webp' ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-foreground/70 border-t-transparent" />
+              ) : (
+                <Image size={18} />
+              )}
+              WebP
             </button>
             </div>
           </div>
