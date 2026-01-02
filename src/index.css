@@ -155,8 +155,9 @@
 }
 
 .ant-menu-item-selected {
-  background: hsl(var(--sidebar-accent)) !important;
-  color: hsl(var(--sidebar-accent-foreground)) !important;
+  background: hsl(var(--primary) / 0.12) !important;
+  color: hsl(var(--primary)) !important;
+  font-weight: 600 !important;
 }
 
 .dark .ant-menu-item-selected {
