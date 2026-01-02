@@ -15,6 +15,8 @@ import SearchBar from "../components/dashboard/SearchBar";
 import QRCodesList from "../components/dashboard/QRCodesList";
 import NoSearchResults from "../components/dashboard/NoSearchResults";
 import { useQRCodes } from "../hooks/useQRCodes";
+import { useAppSelector } from "../store";
+import { selectStatsLoading } from "../store/slices/statsSlice";
 
 const { Title, Text } = Typography;
 
@@ -37,6 +39,9 @@ const Dashboard: React.FC = () => {
   } = useQRCodes();
   const [searchTerm, setSearchTerm] = React.useState("");
   const [viewMode, setViewMode] = React.useState<"list" | "grid">("grid");
+  
+  // Get separate loading state for stats
+  const statsLoading = useAppSelector(selectStatsLoading);
 
   // Memoize stats from Redux store - they don't change during search
   const stats = React.useMemo(() => ({
@@ -46,11 +51,11 @@ const Dashboard: React.FC = () => {
     inactive: Number(statsTotal) - Number(totalActive)
   }), [statsTotal, totalScans, totalActive]);
 
-  // Initial loading (first time) vs search loading
+  // Initial loading (first time) vs search loading - for QR codes list only
   const isInitialLoading = loading && qrCodes.length === 0 && !searchTerm;
   
   // Check if user has no QR codes at all (not searching)
-  const hasNoQRCodes = statsTotal === 0 && !loading;
+  const hasNoQRCodes = statsTotal === 0 && !statsLoading && !loading;
 
   // debounce search input
   const searchTimeoutRef = React.useRef<number | null>(null);
@@ -122,8 +127,8 @@ const Dashboard: React.FC = () => {
           </Button>
         </div>
 
-        {/* Stats Cards - Never reload during search */}
-        <StatsCards loading={isInitialLoading} stats={stats} />
+        {/* Stats Cards - Independent loading state */}
+        <StatsCards loading={statsLoading} stats={stats} />
 
         {/* Content */}
         {hasNoQRCodes ? (

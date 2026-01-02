@@ -26,6 +26,8 @@ const QRAnalytics: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const is24Hour = user?.timeFormat === '24';
   const [mode, setMode] = useState<'real' | 'demo'>('real');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   const qrCode = id ? getQRCode(id) : undefined;
 
@@ -319,12 +321,16 @@ const QRAnalytics: React.FC = () => {
             rowKey="id" 
             scroll={{ x: 1400 }} 
             pagination={{ 
-              current: 1,
-              pageSize: 10, 
+              current: currentPage,
+              pageSize: pageSize, 
               showSizeChanger: true, 
               pageSizeOptions: ['5', '10', '20', '50'],
               showTotal: (total) => `Total ${total} scans`,
-              size: 'default'
+              size: 'default',
+              onChange: (page, pageSize) => {
+                setCurrentPage(page);
+                setPageSize(pageSize);
+              },
             }} 
             size="middle"
           />

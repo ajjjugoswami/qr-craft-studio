@@ -15,8 +15,24 @@ const AdvancedAnalyticsSection: React.FC<AdvancedAnalyticsSectionProps> = ({
   advancedAnalytics,
   advancedLoading,
 }) => {
-  // Safety check - if no data and not loading, show empty state
-  if (!advancedLoading && !advancedAnalytics) {
+  // Show loading skeleton while fetching
+  if (advancedLoading) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
+          <GeographicHeatmap data={undefined} loading={true} />
+          <PeakTimesAnalysis data={undefined} loading={true} />
+        </div>
+        <div className="flex flex-col gap-4">
+          <ReferrerAnalysis data={undefined} loading={true} />
+          <RetentionAnalysis data={undefined} loading={true} />
+        </div>
+      </div>
+    );
+  }
+
+  // Only show empty state after loading is complete and there's no data
+  if (!advancedAnalytics) {
     return (
       <Card>
         <Empty description="No advanced analytics data available" />

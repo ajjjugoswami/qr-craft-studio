@@ -101,8 +101,12 @@ const ReferrerAnalysis: React.FC<ReferrerProps> = ({ data, loading }) => {
             columns={columns}
             dataSource={data.referrers}
             rowKey={(record, index) => record.referrer || `referrer-${index}`}
-            pagination={{ pageSize: 10, size: 'small' }}
-            size="small"
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              pageSizeOptions: ["5", "10", "20", "50"],
+            }}
+            size="large"
           />
         </div>
       )}

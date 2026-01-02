@@ -141,7 +141,8 @@ const Analytics: React.FC = () => {
   }
 
   // Check if there's no data (no scans and no QR codes, or all zeros)
-  const hasNoData = mode === 'real' && (
+  // Only show empty state when NOT loading to avoid flash of "no data" during initial load
+  const hasNoData = mode === 'real' && !loading && (
     (qrCodes.length === 0 && scans.length === 0) ||
     (displayedTotalScans === 0 && scans.length === 0)
   );
