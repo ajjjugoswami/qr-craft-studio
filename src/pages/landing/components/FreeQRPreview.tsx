@@ -72,6 +72,10 @@ const FreeQRPreview = forwardRef<HTMLDivElement, FreeQRPreviewProps>(
     return (
       <div className={`bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-border ${className}`}>
         <div ref={qrRef} className="flex items-center justify-center" />
+        <div className="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-border/50">
+          <img src="/logo.png" alt="QR Studio" className="w-5 h-5 object-contain" />
+          <span className="text-xs font-medium text-muted-foreground">QR Studio</span>
+        </div>
       </div>
     );
   }
