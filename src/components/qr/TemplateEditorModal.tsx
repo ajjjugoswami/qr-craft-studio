@@ -29,7 +29,7 @@ import {
   Settings2,
   Palette,
   Layout,
-  MousePointerClick,
+  
   QrCode,
 } from "lucide-react";
 import type { Color } from "antd/es/color-picker";
@@ -777,7 +777,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
             />
           </Card>
 
-          {/* Gradient Presets */}
+          {/* Card Style Presets */}
           <Card size="small" title="Card Style Presets" className="border-border">
             <div className="grid grid-cols-4 gap-3">
               {/* No gradient / Solid */}
@@ -903,7 +903,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
                 style={{ background: 'linear-gradient(180deg, #1e3c72, #2a5298)' }}
               />
 
-              {/* Preset 7: Gold */}
+              {/* Preset 7: Gold Fire */}
               <div
                 onClick={() => onTemplateChange({ 
                   ...template, 
@@ -920,123 +920,152 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
                 }`}
                 style={{ background: 'linear-gradient(90deg, #f5af19, #f12711)' }}
               />
+
+              {/* Preset 8: Midnight */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#0f0c29',
+                  gradientColor: '#302b63',
+                  gradientDirection: 'to-bottom',
+                  textColor: '#ffffff'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#0f0c29'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(180deg, #0f0c29, #302b63)' }}
+              />
+
+              {/* Preset 9: Peach */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#ffecd2',
+                  gradientColor: '#fcb69f',
+                  gradientDirection: 'to-bottom-right',
+                  textColor: '#1a1a1a'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#ffecd2'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(135deg, #ffecd2, #fcb69f)' }}
+              />
+
+              {/* Preset 10: Aqua */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#00c6ff',
+                  gradientColor: '#0072ff',
+                  gradientDirection: 'to-bottom',
+                  textColor: '#ffffff'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#00c6ff'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(180deg, #00c6ff, #0072ff)' }}
+              />
+
+              {/* Preset 11: Lavender */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#e8ceff',
+                  gradientColor: '#c9a7eb',
+                  gradientDirection: 'to-bottom',
+                  textColor: '#1a1a1a'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#e8ceff'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(180deg, #e8ceff, #c9a7eb)' }}
+              />
+
+              {/* Preset 12: Crimson */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#ed213a',
+                  gradientColor: '#93291e',
+                  gradientDirection: 'to-bottom',
+                  textColor: '#ffffff'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#ed213a'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(180deg, #ed213a, #93291e)' }}
+              />
+
+              {/* Preset 13: Mint */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#a8edea',
+                  gradientColor: '#fed6e3',
+                  gradientDirection: 'to-right',
+                  textColor: '#1a1a1a'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#a8edea'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(90deg, #a8edea, #fed6e3)' }}
+              />
+
+              {/* Preset 14: Cyber */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#00f260',
+                  gradientColor: '#0575e6',
+                  gradientDirection: 'to-bottom-right',
+                  textColor: '#ffffff'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#00f260'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(135deg, #00f260, #0575e6)' }}
+              />
+
+              {/* Preset 15: Bronze */}
+              <div
+                onClick={() => onTemplateChange({ 
+                  ...template, 
+                  showGradient: true,
+                  backgroundColor: '#8e6a3e',
+                  gradientColor: '#5c4033',
+                  gradientDirection: 'to-bottom',
+                  textColor: '#f5e6d3'
+                })}
+                className={`aspect-square rounded-lg border-2 cursor-pointer transition-all ${
+                  template.showGradient && template.backgroundColor === '#8e6a3e'
+                    ? 'border-primary ring-2 ring-primary/30' 
+                    : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background: 'linear-gradient(180deg, #8e6a3e, #5c4033)' }}
+              />
             </div>
           </Card>
-        </div>
-      ),
-    },
-    {
-      key: "cta",
-      label: (
-        <span className="flex items-center gap-2">
-          <MousePointerClick size={14} />
-          CTA Button
-        </span>
-      ),
-      children: (
-        <div className="space-y-4 h-[520px] overflow-y-auto pr-2">
-          <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
-            <label className="text-sm font-medium">Show CTA Button</label>
-            <Switch
-              checked={!!template.ctaButton}
-              onChange={(checked) => {
-                if (checked) {
-                  onTemplateChange({
-                    ...template,
-                    ctaButton: {
-                      text: "Scan to Connect",
-                      backgroundColor: template.accentColor || "#00ff88",
-                      textColor: template.backgroundColor,
-                      borderRadius: 24,
-                    },
-                  });
-                } else {
-                  const { ctaButton, ...rest } = template;
-                  onTemplateChange(rest as QRTemplate);
-                }
-              }}
-            />
-          </div>
-
-          {template.ctaButton && (
-            <Card size="small" title="Button Settings" className="border-border">
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs font-medium block mb-1">Button Text</label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={template.ctaButton.text}
-                      onChange={(e) =>
-                        onTemplateChange({
-                          ...template,
-                          ctaButton: { ...template.ctaButton!, text: e.target.value },
-                        })
-                      }
-                      className="flex-1"
-                    />
-                    <Popover
-                      content={
-                        <EmojiPicker
-                          onSelect={(emoji) =>
-                            onTemplateChange({
-                              ...template,
-                              ctaButton: { ...template.ctaButton!, text: template.ctaButton!.text + emoji },
-                            })
-                          }
-                        />
-                      }
-                      trigger="click"
-                      placement="bottomRight"
-                    >
-                      <Button icon={<Smile size={16} />} />
-                    </Popover>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-medium block mb-2">Background</label>
-                    <ColorPicker
-                      value={template.ctaButton.backgroundColor}
-                      onChange={(c) =>
-                        onTemplateChange({
-                          ...template,
-                          ctaButton: { ...template.ctaButton!, backgroundColor: c.toHexString() },
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium block mb-2">Text Color</label>
-                    <ColorPicker
-                      value={template.ctaButton.textColor}
-                      onChange={(c) =>
-                        onTemplateChange({
-                          ...template,
-                          ctaButton: { ...template.ctaButton!, textColor: c.toHexString() },
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs font-medium block mb-1">
-                    Border Radius: {template.ctaButton.borderRadius || 8}px
-                  </label>
-                  <Slider
-                    min={0}
-                    max={32}
-                    value={template.ctaButton.borderRadius || 8}
-                    onChange={(v) =>
-                      onTemplateChange({
-                        ...template,
-                        ctaButton: { ...template.ctaButton!, borderRadius: v },
-                      })
-                    }
-                  />
-                </div>
-              </div>
-            </Card>
-          )}
         </div>
       ),
     },
