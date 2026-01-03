@@ -998,6 +998,38 @@ h5.ant-typography {
 /* ============================== */
 .ant-switch {
   background: hsl(var(--muted-foreground)) !important;
+
+/* ============================== */
+/* Admin Tabs Styling             */
+/* ============================== */
+.admin-tabs .ant-tabs-tab {
+  padding: 12px 20px !important;
+  margin: 0 8px 0 0 !important;
+  font-weight: 500 !important;
+  border-radius: 8px 8px 0 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+.admin-tabs .ant-tabs-tab:hover {
+  background: hsl(var(--accent)) !important;
+}
+
+.admin-tabs .ant-tabs-tab-active {
+  background: hsl(var(--background)) !important;
+  border-color: hsl(var(--primary)) !important;
+}
+
+.admin-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: hsl(var(--primary)) !important;
+}
+
+.admin-tabs .ant-tabs-content-holder {
+  background: hsl(var(--card)) !important;
+  border-radius: 0 8px 8px 8px !important;
+  padding: 24px !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-top: 2px solid hsl(var(--primary)) !important;
+}
 }
 
 .ant-switch-checked {
