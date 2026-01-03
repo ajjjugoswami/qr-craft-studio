@@ -150,7 +150,7 @@ const CreateQR: React.FC = () => {
         message.error('Please enter a QR code title');
         return;
       }
-      if (!content.trim() || content === 'https://example.com') {
+      if (!content.trim()) {
         message.error('Please fill in the required content fields');
         return;
       }
