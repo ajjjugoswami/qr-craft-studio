@@ -10,6 +10,7 @@ import {
   selectToken,
   selectAuthLoading,
   selectAuthInitialized,
+  selectAuthInitializing,
 } from '@/store/slices/authSlice';
 import type { User } from '@/context/authTypes';
 
@@ -22,13 +23,14 @@ export const useAuth = () => {
   const token = useAppSelector(selectToken);
   const loading = useAppSelector(selectAuthLoading);
   const initialized = useAppSelector(selectAuthInitialized);
+  const initializing = useAppSelector(selectAuthInitializing);
 
-  // Initialize auth on first load
+  // Initialize auth on first load (deduped via slice condition)
   useEffect(() => {
-    if (!initialized) {
+    if (!initialized && !initializing) {
       dispatch(initializeAuth());
     }
-  }, [dispatch, initialized]);
+  }, [dispatch, initialized, initializing]);
 
   const signin = useCallback(
     async (email: string, password: string) => {

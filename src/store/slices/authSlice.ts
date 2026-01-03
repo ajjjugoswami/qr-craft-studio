@@ -28,6 +28,7 @@ interface AuthState {
   token: string | null;
   loading: boolean;
   initialized: boolean;
+  initializing: boolean;
 }
 
 const TOKEN_KEY = 'qc-token';
@@ -38,6 +39,7 @@ const initialState: AuthState = {
   token: null,
   loading: true,
   initialized: false,
+  initializing: false,
 };
 
 // ============ Async Thunks ============
@@ -47,7 +49,7 @@ export const initializeAuth = createAsyncThunk(
   'auth/initialize',
   async (_, { rejectWithValue }) => {
     const storedToken = localStorage.getItem(TOKEN_KEY);
-    
+
     if (storedToken) {
       try {
         const res = await authAPI.getCurrentUser();
@@ -60,7 +62,7 @@ export const initializeAuth = createAsyncThunk(
         return { user: null, token: null };
       }
     }
-    
+
     // Fallback to old storage format
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
@@ -74,8 +76,16 @@ export const initializeAuth = createAsyncThunk(
         localStorage.removeItem(STORAGE_KEY);
       }
     }
-    
+
     return { user: null, token: null };
+  },
+  {
+    condition: (_, { getState }) => {
+      const state = getState() as any;
+      const auth = state.auth as AuthState;
+      // Prevent duplicate /auth/me calls when multiple components mount at once
+      return !auth.initialized && !auth.initializing;
+    },
   }
 );
 
@@ -304,15 +314,18 @@ const authSlice = createSlice({
       // Initialize
       .addCase(initializeAuth.pending, (state) => {
         state.loading = true;
+        state.initializing = true;
       })
       .addCase(initializeAuth.fulfilled, (state, action) => {
         state.loading = false;
+        state.initializing = false;
         state.initialized = true;
         state.user = action.payload.user;
         state.token = action.payload.token;
       })
       .addCase(initializeAuth.rejected, (state) => {
         state.loading = false;
+        state.initializing = false;
         state.initialized = true;
         state.user = null;
         state.token = null;
@@ -380,5 +393,6 @@ export const selectToken = (state: { auth: AuthState }) => state.auth.token;
 export const selectAuthLoading = (state: { auth: AuthState }) => state.auth.loading;
 export const selectIsAuthenticated = (state: { auth: AuthState }) => !!state.auth.user;
 export const selectAuthInitialized = (state: { auth: AuthState }) => state.auth.initialized;
+export const selectAuthInitializing = (state: { auth: AuthState }) => state.auth.initializing;
 
 export default authSlice.reducer;
