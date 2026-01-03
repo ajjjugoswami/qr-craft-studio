@@ -95,7 +95,10 @@ const QROnlyPreview = forwardRef<HTMLDivElement, {
     useEffect(() => {
       if (qrRef.current) {
         const hasLogo = !!safeStyling.image;
-        const errorLevel = hasLogo ? 'H' : safeStyling.level;
+        const hasGradients = !!(safeStyling.dotsGradient || safeStyling.backgroundGradient || 
+          safeStyling.cornersSquareOptions?.gradient || safeStyling.cornersDotOptions?.gradient);
+        // Use higher error correction for logos or gradient styles for better scannability
+        const errorLevel = hasLogo || hasGradients ? 'H' : safeStyling.level;
         const logoSize = safeStyling.imageOptions?.imageSize || 0.2;
         
         const options = {
@@ -116,16 +119,17 @@ const QROnlyPreview = forwardRef<HTMLDivElement, {
             color: safeStyling.bgColor,
             ...(safeStyling.backgroundGradient && { gradient: safeStyling.backgroundGradient }),
           },
-          cornersSquareOptions: safeStyling.cornersSquareOptions ? {
-            color: safeStyling.cornersSquareOptions.color ?? safeStyling.fgColor,
-            type: safeStyling.cornersSquareOptions.type ?? 'square',
-            ...(safeStyling.cornersSquareOptions.gradient && { gradient: safeStyling.cornersSquareOptions.gradient }),
-          } : undefined,
-          cornersDotOptions: safeStyling.cornersDotOptions ? {
-            color: safeStyling.cornersDotOptions.color ?? safeStyling.fgColor,
-            type: safeStyling.cornersDotOptions.type ?? 'square',
-            ...(safeStyling.cornersDotOptions.gradient && { gradient: safeStyling.cornersDotOptions.gradient }),
-          } : undefined,
+          // Always provide corner options with proper fallbacks for scannability
+          cornersSquareOptions: {
+            color: safeStyling.cornersSquareOptions?.color ?? safeStyling.fgColor,
+            type: safeStyling.cornersSquareOptions?.type ?? 'square',
+            ...(safeStyling.cornersSquareOptions?.gradient && { gradient: safeStyling.cornersSquareOptions.gradient }),
+          },
+          cornersDotOptions: {
+            color: safeStyling.cornersDotOptions?.color ?? safeStyling.fgColor,
+            type: safeStyling.cornersDotOptions?.type ?? 'square',
+            ...(safeStyling.cornersDotOptions?.gradient && { gradient: safeStyling.cornersDotOptions.gradient }),
+          },
           imageOptions: safeStyling.imageOptions ? {
             hideBackgroundDots: true,
             imageSize: logoSize,
@@ -269,9 +273,11 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
 
   useEffect(() => {
     if (qrRef.current) {
-      // When an image/logo is present, force high error correction for scannability
+      // When an image/logo is present or gradients are used, force high error correction for scannability
       const hasLogo = !!safeStyling.image;
-      const errorLevel = hasLogo ? 'H' : safeStyling.level;
+      const hasGradients = !!(safeStyling.dotsGradient || safeStyling.backgroundGradient || 
+        safeStyling.cornersSquareOptions?.gradient || safeStyling.cornersDotOptions?.gradient);
+      const errorLevel = hasLogo || hasGradients ? 'H' : safeStyling.level;
       const logoSize = safeStyling.imageOptions?.imageSize || 0.2;
       
       const options = {
@@ -292,16 +298,17 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
           color: safeStyling.bgColor,
           ...(safeStyling.backgroundGradient && { gradient: safeStyling.backgroundGradient }),
         },
-        cornersSquareOptions: safeStyling.cornersSquareOptions ? {
-          color: safeStyling.cornersSquareOptions.color ?? safeStyling.fgColor,
-          type: safeStyling.cornersSquareOptions.type ?? 'square',
-          ...(safeStyling.cornersSquareOptions.gradient && { gradient: safeStyling.cornersSquareOptions.gradient }),
-        } : undefined,
-        cornersDotOptions: safeStyling.cornersDotOptions ? {
-          color: safeStyling.cornersDotOptions.color ?? safeStyling.fgColor,
-          type: safeStyling.cornersDotOptions.type ?? 'square',
-          ...(safeStyling.cornersDotOptions.gradient && { gradient: safeStyling.cornersDotOptions.gradient }),
-        } : undefined,
+        // Always provide corner options with proper fallbacks for scannability
+        cornersSquareOptions: {
+          color: safeStyling.cornersSquareOptions?.color ?? safeStyling.fgColor,
+          type: safeStyling.cornersSquareOptions?.type ?? 'square',
+          ...(safeStyling.cornersSquareOptions?.gradient && { gradient: safeStyling.cornersSquareOptions.gradient }),
+        },
+        cornersDotOptions: {
+          color: safeStyling.cornersDotOptions?.color ?? safeStyling.fgColor,
+          type: safeStyling.cornersDotOptions?.type ?? 'square',
+          ...(safeStyling.cornersDotOptions?.gradient && { gradient: safeStyling.cornersDotOptions.gradient }),
+        },
         imageOptions: safeStyling.imageOptions ? {
           hideBackgroundDots: true,
           imageSize: logoSize,

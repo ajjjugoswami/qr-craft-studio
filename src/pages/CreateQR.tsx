@@ -120,6 +120,18 @@ const CreateQR: React.FC = () => {
   useEffect(() => {}, [initialized]);
 
   const handleNext = () => {
+    // Validate content step (step 2)
+    if (currentStep === 2) {
+      if (!name.trim()) {
+        message.error('Please enter a QR code title');
+        return;
+      }
+      if (!content.trim() || content === 'https://example.com') {
+        message.error('Please fill in the required content fields');
+        return;
+      }
+    }
+    
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }

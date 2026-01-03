@@ -104,6 +104,11 @@ const FreeQRPreview = forwardRef<HTMLDivElement, FreeQRPreviewProps>(
     useEffect(() => {
       if (!qrRef.current) return;
 
+      const hasGradients = !!(styling.dotsGradient || styling.backgroundGradient || 
+        styling.cornersSquareOptions?.gradient || styling.cornersDotOptions?.gradient);
+      // Use higher error correction for gradient styles for better scannability
+      const errorLevel = hasGradients ? 'H' : (styling.level || 'M');
+
       const qrOptions = {
         width: size,
         height: size,
@@ -111,21 +116,26 @@ const FreeQRPreview = forwardRef<HTMLDivElement, FreeQRPreviewProps>(
         type: 'svg' as const,
         dotsOptions: {
           color: styling.fgColor || '#000000',
-          type: (styling.dotsType || 'square') as any
+          type: (styling.dotsType || 'square') as any,
+          ...(styling.dotsGradient && { gradient: styling.dotsGradient }),
         },
         backgroundOptions: {
-          color: styling.bgColor || '#ffffff'
+          color: styling.bgColor || '#ffffff',
+          ...(styling.backgroundGradient && { gradient: styling.backgroundGradient }),
         },
+        // Always provide corner options with proper fallbacks for scannability
         cornersSquareOptions: {
           color: styling.cornersSquareOptions?.color || styling.fgColor || '#000000',
-          type: (styling.cornersSquareOptions?.type || 'square') as any
+          type: (styling.cornersSquareOptions?.type || 'square') as any,
+          ...(styling.cornersSquareOptions?.gradient && { gradient: styling.cornersSquareOptions.gradient }),
         },
         cornersDotOptions: {
           color: styling.cornersDotOptions?.color || styling.fgColor || '#000000',
-          type: (styling.cornersDotOptions?.type || 'square') as any
+          type: (styling.cornersDotOptions?.type || 'square') as any,
+          ...(styling.cornersDotOptions?.gradient && { gradient: styling.cornersDotOptions.gradient }),
         },
         qrOptions: {
-          errorCorrectionLevel: styling.level || 'M'
+          errorCorrectionLevel: errorLevel
         }
       };
 
