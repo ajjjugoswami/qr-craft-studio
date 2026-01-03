@@ -819,7 +819,7 @@ const LandingPage = () => {
             </div>
 
             {/* Links */}
-            <nav className="flex items-center gap-5 text-[10px]">
+            <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[10px]">
               <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
                 Features
               </a>
@@ -831,6 +831,18 @@ const LandingPage = () => {
               </Link>
               <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
                 Contact
+              </Link>
+              <Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
+                Privacy Policy
+              </Link>
+              <Link to="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
+                Terms & Conditions
+              </Link>
+              <Link to="/refunds" className="text-muted-foreground hover:text-foreground transition-colors">
+                Refunds
+              </Link>
+              <Link to="/shipping-policy" className="text-muted-foreground hover:text-foreground transition-colors">
+                Shipping
               </Link>
             </nav>
 

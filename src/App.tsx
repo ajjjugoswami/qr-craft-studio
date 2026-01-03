@@ -31,6 +31,10 @@ import AdminDataPage from "./pages/AdminData";
 import Profile from "./pages/Profile";
 import PricingPage from "./pages/PricingPage";
 import NotFound from "./pages/NotFound";
+import ShippingPolicy from "./pages/ShippingPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import CancellationsAndRefunds from "./pages/CancellationsAndRefunds";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const queryClient = new QueryClient();
 
@@ -105,6 +109,10 @@ const AppContent = () => {
             />
             <Route path="/faqs" element={<FAQs />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/shipping-policy" element={<ShippingPolicy />} />
+            <Route path="/terms" element={<TermsAndConditions />} />
+            <Route path="/refunds" element={<CancellationsAndRefunds />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/submissions" element={<AdminRoute><Submissions /></AdminRoute>} />
             <Route path="/admin/users" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
 
