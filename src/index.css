@@ -307,12 +307,38 @@
   height: 32px !important;
 }
 
+/* Textarea specific styles - more specific selectors */
+.ant-input.ant-input,
+textarea.ant-input {
+  height: auto !important;
+  min-height: 32px !important;
+  resize: vertical !important;
+  line-height: 1.6 !important;
+  padding: 8px 12px !important;
+}
+
+/* Regular input fields should stay fixed height */
+input.ant-input:not(textarea) {
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 4px 12px !important;
+}
+
 .ant-input-lg,
 .ant-input-affix-wrapper-lg,
 .ant-select-lg .ant-select-selector,
 .ant-picker-large {
   min-height: 36px !important;
   height: 36px !important;
+}
+
+/* Textarea large size - more specific */
+textarea.ant-input.ant-input-lg,
+.ant-input-lg.ant-input[data-type="textarea"] {
+  min-height: 40px !important;
+  height: auto !important;
+  padding: 10px 16px !important;
+  line-height: 1.6 !important;
 }
 
 /* Keep inner text vertically centered after forcing control heights */
