@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { Row, Col, Typography, Spin } from 'antd';
+import { Loader2 } from 'lucide-react';
 import { usePayment } from '@/hooks/usePayment';
 import type { Plans } from '@/types/payment';
 import DurationToggle from './DurationToggle';
 import CurrentPlanDisplay from './CurrentPlanDisplay';
 import PlanCard from './PlanCard';
 import FeatureComparison from './FeatureComparison';
-
-const { Title, Text, Paragraph } = Typography;
 
 interface PricingProps {
   onSelectPlan?: (planType: string, duration: number) => void;
@@ -57,22 +55,22 @@ const PricingPlans: React.FC<PricingProps> = ({
 
   if (plansLoading || subscriptionLoading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <Spin size="large" />
+      <div className="flex justify-center items-center py-16">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   if (!plans) {
     return (
-      <div className="text-center py-12">
-        <Text type="secondary">Unable to load pricing plans</Text>
+      <div className="text-center py-16">
+        <p className="text-muted-foreground">Unable to load pricing plans</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       <CurrentPlanDisplay 
         subscription={subscription} 
         showCurrentPlan={showCurrentPlan} 
@@ -84,41 +82,38 @@ const PricingPlans: React.FC<PricingProps> = ({
       />
 
       {/* Plans Grid */}
-      <Row gutter={[24, 24]} className="mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {/* Free Plan */}
-        <Col xs={24} lg={6}>
-          <PlanCard
-            planType="free"
-            selectedDuration={selectedDuration}
-            isCurrentPlan={isCurrentPlan('free')}
-            processingPlan={processingPlan}
-            onSelectPlan={handleSelectPlan}
-            canUpgrade={canUpgrade('free')}
-            subscription={subscription}
-          />
-        </Col>
+        <PlanCard
+          planType="free"
+          selectedDuration={selectedDuration}
+          isCurrentPlan={isCurrentPlan('free')}
+          processingPlan={processingPlan}
+          onSelectPlan={handleSelectPlan}
+          canUpgrade={canUpgrade('free')}
+          subscription={subscription}
+        />
 
         {/* Paid Plans */}
         {Object.entries(plans).map(([planType, plan]) => {
           const isPopular = planType === 'pro';
           
           return (
-            <Col xs={24} lg={6} key={planType}>
-              <PlanCard
-                planType={planType}
-                plan={plan}
-                selectedDuration={selectedDuration}
-                isCurrentPlan={isCurrentPlan(planType)}
-                isPopular={isPopular}
-                processingPlan={processingPlan}
-                onSelectPlan={handleSelectPlan}
-                canUpgrade={canUpgrade(planType)}
-                subscription={subscription}
-              />
-            </Col>
+            <PlanCard
+              key={planType}
+              planType={planType}
+              plan={plan}
+              selectedDuration={selectedDuration}
+              isCurrentPlan={isCurrentPlan(planType)}
+              isPopular={isPopular}
+              processingPlan={processingPlan}
+              onSelectPlan={handleSelectPlan}
+              canUpgrade={canUpgrade(planType)}
+              subscription={subscription}
+            />
           );
         })}
-      </Row>
+      </div>
 
       <FeatureComparison plans={plans} />
     </div>

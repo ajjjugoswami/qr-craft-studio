@@ -1,7 +1,6 @@
 import React from 'react';
-import { Card, Badge, Typography } from 'antd';
-
-const { Title, Text, Paragraph } = Typography;
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface CurrentPlanDisplayProps {
   subscription: {
@@ -21,25 +20,35 @@ const CurrentPlanDisplay: React.FC<CurrentPlanDisplayProps> = ({
   }
 
   return (
-    <Card className="mb-8 border-primary/20">
-      <div className="text-center">
-        <Badge.Ribbon text="Current Plan" color="blue">
-          <Title level={4}>
-            {subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1)} Plan
-          </Title>
-        </Badge.Ribbon>
-        <Paragraph className="mt-4">
-          Status: <Badge 
-            status={subscription.status === 'active' ? 'success' : 'error'} 
-            text={subscription.status}
-          />
-        </Paragraph>
-        {subscription.endDate && (
-          <Text type="secondary">
-            Valid until: {new Date(subscription.endDate).toLocaleDateString()}
-          </Text>
-        )}
-      </div>
+    <Card className="mb-8 border-border bg-muted/30">
+      <CardContent className="py-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h3 className="text-lg font-semibold text-foreground">
+              {subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1)} Plan
+            </h3>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground">
+                Status: 
+              </span>
+              <div className="flex items-center gap-1.5">
+                <span className={`w-2 h-2 rounded-full ${
+                  subscription.status === 'active' ? 'bg-green-500' : 'bg-red-500'
+                }`} />
+                <span className="text-sm text-foreground capitalize">{subscription.status}</span>
+              </div>
+            </div>
+            {subscription.endDate && (
+              <p className="text-sm text-muted-foreground">
+                Valid until: {new Date(subscription.endDate).toLocaleDateString()}
+              </p>
+            )}
+          </div>
+          <Badge variant="outline" className="text-primary border-primary">
+            Current Plan
+          </Badge>
+        </div>
+      </CardContent>
     </Card>
   );
 };
