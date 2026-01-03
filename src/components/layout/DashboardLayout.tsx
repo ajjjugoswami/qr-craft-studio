@@ -157,7 +157,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               {subscription?.planType === 'enterprise' ? (
                 <Sparkles size={16} className="text-purple-500" />
               ) : subscription?.planType === 'pro' ? (
-                <Crown size={16} className="text-amber-500" />
+                <CreditCard size={16} className="text-blue-500" />
               ) : (
                 <CreditCard size={16} className="text-gray-500 dark:text-gray-400" />
               )}
@@ -208,30 +208,25 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         </div>
       </div>
 
-      {/* Theme Toggle */}
+      {/* Logout & Theme Toggle */}
       <div className="p-3 border-t border-border">
-        <Tooltip title={getThemeTooltip()} placement="right">
+        <div className="flex items-center gap-2">
           <button
-            onClick={toggleThemeMode}
-            className="flex items-center gap-3 w-full p-3 rounded-xl cursor-pointer border border-border hover:bg-muted transition-colors"
+            onClick={() => signout()}
+            className="flex items-center gap-3 flex-1 p-3 rounded-xl cursor-pointer border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors"
           >
-            {getThemeIcon()}
-            <span className="font-medium text-sm">
-              {mode === 'dark' ? 'Dark' : 'Light'} Mode
-            </span>
+            <LogOut size={18} />
+            <span className="font-medium">Logout</span>
           </button>
-        </Tooltip>
-      </div>
-
-      {/* Logout */}
-      <div className="p-3 border-t border-border">
-        <button
-          onClick={() => signout()}
-          className="flex items-center gap-3 w-full p-3 rounded-xl cursor-pointer border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors"
-        >
-          <LogOut size={18} />
-          <span className="font-medium">Logout</span>
-        </button>
+          <Tooltip title={getThemeTooltip()} placement="top">
+            <button
+              onClick={toggleThemeMode}
+              className="flex items-center justify-center p-3 rounded-xl cursor-pointer border border-border hover:bg-muted transition-colors"
+            >
+              {getThemeIcon()}
+            </button>
+          </Tooltip>
+        </div>
       </div>
     </div>
   );
