@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Layout, Menu, Avatar, Typography, Drawer, Button, Badge, Tooltip } from "antd";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
+import { usePayment } from "@/hooks/usePayment";
 import {
   BarChart3,
   HelpCircle,
@@ -18,6 +19,8 @@ import {
   Sun,
   Moon,
   CreditCard,
+  Crown,
+  Sparkles,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -33,6 +36,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { user, signout } = useAuth();
   const { mode, setMode } = useTheme();
+  const { subscription, subscriptionLoading } = usePayment();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleThemeMode = () => {
@@ -141,6 +145,42 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         onClick={({ key }) => handleMenuClick(key)}
         className="flex-1 border-none mt-2"
       />
+
+      {/* Plan Status */}
+      <div className="p-3 border-t border-border">
+        <div
+          className="p-3 rounded-xl bg-muted/50 cursor-pointer hover:bg-muted transition-colors"
+          onClick={() => handleMenuClick("/pricing")}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              {subscription?.planType === 'enterprise' ? (
+                <Sparkles size={16} className="text-purple-500" />
+              ) : subscription?.planType === 'pro' ? (
+                <Crown size={16} className="text-amber-500" />
+              ) : (
+                <CreditCard size={16} className="text-gray-500 dark:text-gray-400" />
+              )}
+              <Text strong className="text-sm capitalize">
+                {subscription?.planType || 'Free'} Plan
+              </Text>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className={`w-2 h-2 rounded-full ${
+                subscription?.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
+              }`} />
+              <Text className="text-xs text-gray-500 dark:text-gray-400 capitalize">
+                {subscription?.status || 'active'}
+              </Text>
+            </div>
+          </div>
+          {subscription?.planType !== 'enterprise' && (
+            <Text className="text-xs text-primary cursor-pointer hover:underline">
+              {subscription?.planType === 'free' || !subscription ? 'Upgrade Plan →' : 'Manage Plan →'}
+            </Text>
+          )}
+        </div>
+      </div>
 
       {/* User Section */}
       <div className="p-3 border-t border-border">
