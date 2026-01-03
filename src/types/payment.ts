@@ -5,6 +5,7 @@ export interface Plan {
     maxQRCodes: number;
     maxScansPerQR: number;
     analytics: boolean;
+    advancedAnalytics: boolean;
     whiteLabel: boolean;
     removeWatermark: boolean;
   };
@@ -34,6 +35,7 @@ export interface Subscription {
     maxQRCodes: number;
     maxScansPerQR: number;
     analytics: boolean;
+    advancedAnalytics: boolean;
     whiteLabel: boolean;
     removeWatermark: boolean;
   };
