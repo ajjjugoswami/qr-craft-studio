@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Typography, Segmented, Pagination } from 'antd';
 import { CheckCircleFilled } from '@ant-design/icons';
+import { QrCode } from 'lucide-react';
 import { QRTemplate, defaultTemplates } from '../../types/qrcode';
 
 const { Title, Text } = Typography;
 
 interface TemplateSelectorProps {
   selectedTemplate: QRTemplate | null;
-  onSelect: (template: QRTemplate) => void;
+  onSelect: (template: QRTemplate | null) => void;
 }
 
 const categories = [
@@ -60,7 +61,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
 }) => {
   const [category, setCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 12;
+  const pageSize = 11; // 11 templates + 1 "No Template" option = 12 per page
 
   const filteredTemplates = defaultTemplates.filter((template) => {
     const matchesCategory = category === 'all' || getCategoryForTemplate(template) === category;
@@ -81,12 +82,15 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
     setCurrentPage(1);
   };
 
+  // Show "No Template" option only on first page of "All" category
+  const showNoTemplate = category === 'all' && currentPage === 1;
+
   return (
     <div className="animate-fade-in">
       <div className="mb-6">
         <Title level={4}>Choose Your Card Template</Title>
         <Text type="secondary" className="text-sm">
-          Select a template to customize your QR code card
+          Select a template to customize your QR code card, or choose "No Template" for a plain QR code
         </Text>
       </div>
 
@@ -104,6 +108,40 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {/* No Template Option - only show on first page of All category */}
+        {showNoTemplate && (
+          <div
+            className={`
+              rounded-xl cursor-pointer transition-all overflow-hidden
+              hover:ring-2 hover:ring-primary hover:shadow-lg hover:scale-[1.02]
+              ${selectedTemplate === null ? 'ring-2 ring-primary shadow-lg scale-[1.02]' : 'ring-1 ring-border'}
+            `}
+            onClick={() => onSelect(null)}
+          >
+            <div
+              className="h-36 flex flex-col items-center justify-center relative p-4 bg-muted"
+            >
+              {selectedTemplate === null && (
+                <CheckCircleFilled
+                  className="absolute top-2 right-2 text-lg text-primary"
+                  style={{ 
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' 
+                  }}
+                />
+              )}
+              <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow-md border border-border">
+                <QrCode size={32} className="text-foreground" />
+              </div>
+              <p className="text-xs text-muted-foreground text-center mt-2">
+                Plain QR Code
+              </p>
+            </div>
+            <div className="p-3 bg-card text-center border-t border-border">
+              <Text strong className="text-sm truncate block">No Template</Text>
+            </div>
+          </div>
+        )}
+
         {currentTemplates.map((template) => (
           <div
             key={template.id}
