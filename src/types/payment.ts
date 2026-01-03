@@ -98,6 +98,8 @@ export interface RazorpayOptions {
   };
   modal: {
     ondismiss: () => void;
+    escape?: boolean;
+    backdrop?: boolean;
   };
 }
 

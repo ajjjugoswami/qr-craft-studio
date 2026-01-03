@@ -226,6 +226,18 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
         const order = orderResponse.order;
 
         return new Promise((resolve) => {
+          // Add timeout for cleanup
+          let timeoutId: NodeJS.Timeout;
+          let isResolved = false;
+
+          const resolveOnce = (result: boolean) => {
+            if (!isResolved) {
+              isResolved = true;
+              clearTimeout(timeoutId);
+              resolve(result);
+            }
+          };
+
           const options: RazorpayOptions = {
             key: import.meta.env.VITE_RAZORPAY_KEY_ID || '',
             amount: order.amount,
@@ -243,19 +255,28 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
                 });
 
                 if (verifyResponse.success) {
-                  message.success('Payment successful! Your subscription has been activated.');
+                  message.success({
+                    content: 'Payment successful! Your subscription has been activated.',
+                    duration: 5,
+                  });
                   setSubscription(verifyResponse.subscription);
                   // Mark as fetched for this user
                   if (userId) subscriptionFetchedForUserRef.current = userId;
-                  resolve(true);
+                  resolveOnce(true);
                 } else {
-                  message.error('Payment verification failed. Please contact support.');
-                  resolve(false);
+                  message.error({
+                    content: 'Payment verification failed. Please contact support if amount was deducted.',
+                    duration: 6,
+                  });
+                  resolveOnce(false);
                 }
               } catch (error: any) {
                 console.error('Payment verification error:', error);
-                message.error('Payment verification failed. Please contact support.');
-                resolve(false);
+                message.error({
+                  content: 'Payment verification failed. Please contact support if amount was deducted.',
+                  duration: 6,
+                });
+                resolveOnce(false);
               }
             },
             prefill: {
@@ -272,14 +293,45 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
             },
             modal: {
               ondismiss: () => {
-                message.info('Payment cancelled');
-                resolve(false);
+                message.warning({
+                  content: 'Payment was cancelled. You can try again anytime.',
+                  duration: 4,
+                });
+                resolveOnce(false);
               },
+              // Ensure modal closes properly
+              escape: true,
+              backdrop: true,
             },
           };
 
+          // Set timeout to ensure proper cleanup
+          timeoutId = setTimeout(() => {
+            try {
+              razorpayInstance.close();
+            } catch (error) {
+              console.error('Error closing Razorpay instance:', error);
+            }
+            message.error({
+              content: 'Payment session expired. Please try again.',
+              duration: 4,
+            });
+            resolveOnce(false);
+          }, 15 * 60 * 1000); // 15 minutes timeout
+
           const razorpayInstance = new window.Razorpay(options);
-          razorpayInstance.open();
+
+          try {
+            razorpayInstance.open();
+          } catch (error) {
+            clearTimeout(timeoutId);
+            console.error('Error opening Razorpay:', error);
+            message.error({
+              content: 'Failed to open payment gateway. Please try again.',
+              duration: 4,
+            });
+            resolveOnce(false);
+          }
         });
       } catch (error: any) {
         console.error('Payment process error:', error);
