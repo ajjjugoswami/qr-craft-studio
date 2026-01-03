@@ -304,10 +304,13 @@ const PricingPlans: React.FC<PricingProps> = ({
             <tbody>
               {[
                 { label: 'QR Codes', free: '5', key: 'maxQRCodes' },
-                { label: 'Scans per QR', free: '100', key: 'maxScansPerQR' },
+                { label: 'Scans per QR', free: '20', key: 'maxScansPerQR' },
                 { label: 'Advanced Analytics', free: false, key: 'analytics' },
                 { label: 'White Label', free: false, key: 'whiteLabel' },
-                { label: 'Remove Watermark', free: false, key: 'removeWatermark' }
+                { label: 'Remove Watermark', free: false, key: 'removeWatermark' },
+                { label: 'Password Protection', free: false, key: 'passwordProtection' },
+                { label: 'Expiration Date', free: false, key: 'expirationDate' },
+                { label: 'Custom Scan Limit', free: false, key: 'customScanLimit' }
               ].map((feature, index) => (
                 <tr key={feature.label} className={index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : ''}>
                   <td className="py-3 px-4 font-medium">{feature.label}</td>

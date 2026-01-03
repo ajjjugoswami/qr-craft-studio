@@ -8,6 +8,9 @@ export interface Plan {
     advancedAnalytics: boolean;
     whiteLabel: boolean;
     removeWatermark: boolean;
+    passwordProtection: boolean;
+    expirationDate: boolean;
+    customScanLimit: boolean;
   };
 }
 
@@ -38,6 +41,9 @@ export interface Subscription {
     advancedAnalytics: boolean;
     whiteLabel: boolean;
     removeWatermark: boolean;
+    passwordProtection: boolean;
+    expirationDate: boolean;
+    customScanLimit: boolean;
   };
   paymentId?: {
     amount: number;

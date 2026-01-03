@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Tabs } from 'antd';
-import { User, Palette, Shield, Droplets, Tag, CreditCard } from 'lucide-react';
+import { User, Palette, Shield, Droplets, Tag, CreditCard, Crown } from 'lucide-react';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import ProfileInfo from './settings/ProfileInfo';
 import ThemeSettings from './settings/ThemeSettings';
@@ -14,6 +14,10 @@ const { Title, Text } = Typography;
 
 const Profile: React.FC = () => {
   const { subscription, hasFeatureAccess } = usePayment();
+  
+  // Check if user has premium features
+  const canRemoveWatermark = hasFeatureAccess('removeWatermark');
+  const canUseWhiteLabel = hasFeatureAccess('whiteLabel');
   
   const tabItems = [
     {
@@ -42,6 +46,7 @@ const Profile: React.FC = () => {
         <span className="flex items-center gap-2">
           <Droplets size={16} />
           Watermark
+          {!canRemoveWatermark && <Crown size={12} className="text-amber-500" />}
         </span>
       ),
       children: <WatermarkSettings />,
@@ -52,6 +57,7 @@ const Profile: React.FC = () => {
         <span className="flex items-center gap-2">
           <Tag size={16} />
           White-Label
+          {!canUseWhiteLabel && <Crown size={12} className="text-amber-500" />}
         </span>
       ),
       children: <WhiteLabelSettings />,
