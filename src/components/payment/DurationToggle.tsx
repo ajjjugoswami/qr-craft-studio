@@ -1,7 +1,5 @@
 import React from 'react';
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { Switch } from 'antd';
 
 interface DurationToggleProps {
   selectedDuration: 1 | 12;
@@ -14,27 +12,25 @@ const DurationToggle: React.FC<DurationToggleProps> = ({
 }) => {
   return (
     <div className="flex justify-center items-center mb-10">
-      <div className="inline-flex items-center gap-4 bg-muted/50 border border-border p-2 px-4 rounded-full">
-        <span className={cn(
-          "text-sm font-medium transition-colors",
-          selectedDuration === 1 ? 'text-foreground' : 'text-muted-foreground'
-        )}>
+      <div className="inline-flex items-center gap-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 py-2 px-5 rounded-full">
+        <span className={`text-sm font-medium transition-colors ${
+          selectedDuration === 1 ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'
+        }`}>
           Monthly
         </span>
         <Switch
           checked={selectedDuration === 12}
-          onCheckedChange={(checked) => onDurationChange(checked ? 12 : 1)}
+          onChange={(checked) => onDurationChange(checked ? 12 : 1)}
         />
         <div className="flex items-center gap-2">
-          <span className={cn(
-            "text-sm font-medium transition-colors",
-            selectedDuration === 12 ? 'text-foreground' : 'text-muted-foreground'
-          )}>
+          <span className={`text-sm font-medium transition-colors ${
+            selectedDuration === 12 ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'
+          }`}>
             Yearly
           </span>
-          <Badge variant="secondary" className="text-xs font-medium bg-primary/10 text-primary border-0">
+          <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium px-2 py-0.5 rounded-full">
             Save 20%
-          </Badge>
+          </span>
         </div>
       </div>
     </div>

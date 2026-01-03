@@ -1,16 +1,11 @@
 import React from 'react';
+import { Typography, Breadcrumb } from 'antd';
 import { Home, CreditCard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import PricingPlans from '@/components/payment/PricingPlans';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+
+const { Title, Paragraph } = Typography;
 
 const PricingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -19,36 +14,39 @@ const PricingPage: React.FC = () => {
     <DashboardLayout>
       <div className="space-y-8">
         {/* Breadcrumb */}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink 
-                onClick={() => navigate('/dashboard')}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <Home size={16} />
-                Dashboard
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage className="flex items-center gap-2">
-                <CreditCard size={16} />
-                Pricing
-              </BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+        <Breadcrumb
+          items={[
+            {
+              title: (
+                <span 
+                  className="flex items-center gap-2 cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  onClick={() => navigate('/dashboard')}
+                >
+                  <Home size={16} />
+                  Dashboard
+                </span>
+              )
+            },
+            {
+              title: (
+                <span className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <CreditCard size={16} />
+                  Pricing
+                </span>
+              )
+            }
+          ]}
+        />
 
         {/* Page Header */}
         <div className="text-center max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold text-foreground mb-3">
+          <Title level={2} className="!text-gray-900 dark:!text-white !mb-3">
             Choose Your Plan
-          </h1>
-          <p className="text-muted-foreground">
+          </Title>
+          <Paragraph className="text-gray-500 dark:text-gray-400 text-base">
             Upgrade your QR code experience with advanced features, unlimited scans, 
             and powerful analytics. Choose the plan that fits your needs.
-          </p>
+          </Paragraph>
         </div>
 
         {/* Pricing Plans */}
