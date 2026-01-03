@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { message } from 'antd';
 import { paymentAPI } from '@/lib/paymentApi';
 import { useAuth } from '@/hooks/useAuth';
@@ -21,23 +21,16 @@ const loadRazorpayScript = (): Promise<boolean> => {
 };
 
 interface SubscriptionContextType {
-  // Data
   plans: Plans | null;
   subscription: Subscription | null;
   paymentHistory: PaymentHistory[];
-  
-  // Loading states
   loading: boolean;
   plansLoading: boolean;
   subscriptionLoading: boolean;
-  
-  // Actions
   processPayment: (planType: string, duration?: number) => Promise<boolean>;
   cancelSubscription: () => Promise<boolean>;
   refreshSubscription: () => Promise<void>;
   fetchPaymentHistory: (page?: number, limit?: number) => Promise<void>;
-  
-  // Utilities
   hasFeatureAccess: (feature: keyof Subscription['features']) => boolean;
   getRemainingQRCodes: (currentCount: number) => number;
   isUpgradeRequired: (currentQRCount: number) => boolean;
@@ -55,62 +48,105 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [loading, setLoading] = useState(false);
   const [plansLoading, setPlansLoading] = useState(false);
   const [subscriptionLoading, setSubscriptionLoading] = useState(false);
+  
+  // Refs to prevent duplicate calls
+  const plansFetchedRef = useRef(false);
+  const subscriptionFetchedRef = useRef<string | null>(null);
+  const isFetchingPlansRef = useRef(false);
+  const isFetchingSubscriptionRef = useRef(false);
 
-  // Fetch plans
-  const fetchPlans = useCallback(async () => {
-    try {
-      setPlansLoading(true);
-      const response = await paymentAPI.getPlans();
-      if (response.success) {
-        setPlans(response.plans);
+  // Fetch plans - only once
+  useEffect(() => {
+    const fetchPlans = async () => {
+      if (plansFetchedRef.current || isFetchingPlansRef.current) return;
+      
+      isFetchingPlansRef.current = true;
+      try {
+        setPlansLoading(true);
+        const response = await paymentAPI.getPlans();
+        if (response.success) {
+          setPlans(response.plans);
+          plansFetchedRef.current = true;
+        }
+      } catch (error: any) {
+        console.error('Error fetching plans:', error);
+      } finally {
+        setPlansLoading(false);
+        isFetchingPlansRef.current = false;
       }
-    } catch (error: any) {
-      console.error('Error fetching plans:', error);
-    } finally {
-      setPlansLoading(false);
-    }
+    };
+
+    fetchPlans();
   }, []);
 
-  // Fetch subscription
-  const fetchSubscription = useCallback(async () => {
-    if (!user) {
-      setSubscription(null);
-      return;
-    }
+  // Fetch subscription when user changes
+  useEffect(() => {
+    const fetchSubscription = async () => {
+      if (!user) {
+        setSubscription(null);
+        subscriptionFetchedRef.current = null;
+        return;
+      }
+      
+      // Skip if already fetched for this user
+      if (subscriptionFetchedRef.current === user._id || isFetchingSubscriptionRef.current) return;
+      
+      isFetchingSubscriptionRef.current = true;
+      try {
+        setSubscriptionLoading(true);
+        const response = await paymentAPI.getSubscription();
+        if (response.success) {
+          setSubscription(response.subscription);
+          subscriptionFetchedRef.current = user._id;
+        }
+      } catch (error: any) {
+        console.error('Error fetching subscription:', error);
+        // Set default free subscription on error
+        setSubscription({
+          planType: 'free',
+          status: 'active',
+          features: {
+            maxQRCodes: 5,
+            maxScansPerQR: 100,
+            analytics: false,
+            advancedAnalytics: false,
+            whiteLabel: false,
+            removeWatermark: false,
+            passwordProtection: false,
+            expirationDate: false,
+            customScanLimit: false
+          }
+        });
+        subscriptionFetchedRef.current = user._id;
+      } finally {
+        setSubscriptionLoading(false);
+        isFetchingSubscriptionRef.current = false;
+      }
+    };
+
+    fetchSubscription();
+  }, [user?._id]);
+
+  // Refresh subscription (public method - forces refetch)
+  const refreshSubscription = useCallback(async () => {
+    if (!user) return;
+    
+    subscriptionFetchedRef.current = null;
+    isFetchingSubscriptionRef.current = false;
     
     try {
       setSubscriptionLoading(true);
       const response = await paymentAPI.getSubscription();
       if (response.success) {
         setSubscription(response.subscription);
+        subscriptionFetchedRef.current = user._id;
       }
     } catch (error: any) {
-      console.error('Error fetching subscription:', error);
-      // Set default free subscription on error
-      setSubscription({
-        planType: 'free',
-        status: 'active',
-        features: {
-          maxQRCodes: 5,
-          maxScansPerQR: 100,
-          analytics: false,
-          advancedAnalytics: false,
-          whiteLabel: false,
-          removeWatermark: false,
-          passwordProtection: false,
-          expirationDate: false,
-          customScanLimit: false
-        }
-      });
+      console.error('Error refreshing subscription:', error);
     } finally {
       setSubscriptionLoading(false);
     }
-  }, [user]);
-
-  // Refresh subscription (public method)
-  const refreshSubscription = useCallback(async () => {
-    await fetchSubscription();
-  }, [fetchSubscription]);
+  }, [user?._id]);
 
   // Fetch payment history
   const fetchPaymentHistory = useCallback(async (page: number = 1, limit: number = 10) => {
@@ -207,7 +243,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user?.name, user?.email, user?.mobile]);
 
   // Cancel subscription
   const cancelSubscription = useCallback(async (): Promise<boolean> => {
@@ -232,28 +268,25 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     }
   }, []);
 
-  // Check if user has access to a feature
+  // Memoized utility functions
   const hasFeatureAccess = useCallback((feature: keyof Subscription['features']): boolean => {
     if (!subscription) return false;
     const value = subscription.features[feature];
     return value === true || value === -1;
   }, [subscription]);
 
-  // Get remaining QR codes
   const getRemainingQRCodes = useCallback((currentCount: number): number => {
     if (!subscription) return Math.max(0, 5 - currentCount);
     if (subscription.features.maxQRCodes === -1) return -1;
     return Math.max(0, subscription.features.maxQRCodes - currentCount);
   }, [subscription]);
 
-  // Check if upgrade is required
   const isUpgradeRequired = useCallback((currentQRCount: number): boolean => {
     if (!subscription) return currentQRCount >= 5;
     if (subscription.features.maxQRCodes === -1) return false;
     return currentQRCount >= subscription.features.maxQRCodes;
   }, [subscription]);
 
-  // Get plan display name
   const getPlanDisplayName = useCallback((): string => {
     if (!subscription) return 'Free';
     const planNames: Record<string, string> = {
@@ -265,26 +298,13 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     return planNames[subscription.planType] || 'Free';
   }, [subscription]);
 
-  // Get plan status
   const getPlanStatus = useCallback((): string => {
     if (!subscription) return 'active';
     return subscription.status || 'active';
   }, [subscription]);
 
-  // Initialize data on mount and user change
-  useEffect(() => {
-    fetchPlans();
-  }, [fetchPlans]);
-
-  useEffect(() => {
-    if (user) {
-      fetchSubscription();
-    } else {
-      setSubscription(null);
-    }
-  }, [user, fetchSubscription]);
-
-  const value: SubscriptionContextType = {
+  // Memoize the context value to prevent unnecessary re-renders
+  const value = useMemo<SubscriptionContextType>(() => ({
     plans,
     subscription,
     paymentHistory,
@@ -300,7 +320,23 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     isUpgradeRequired,
     getPlanDisplayName,
     getPlanStatus
-  };
+  }), [
+    plans,
+    subscription,
+    paymentHistory,
+    loading,
+    plansLoading,
+    subscriptionLoading,
+    processPayment,
+    cancelSubscription,
+    refreshSubscription,
+    fetchPaymentHistory,
+    hasFeatureAccess,
+    getRemainingQRCodes,
+    isUpgradeRequired,
+    getPlanDisplayName,
+    getPlanStatus
+  ]);
 
   return (
     <SubscriptionContext.Provider value={value}>
