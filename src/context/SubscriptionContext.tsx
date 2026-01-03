@@ -1,0 +1,318 @@
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { message } from 'antd';
+import { paymentAPI } from '@/lib/paymentApi';
+import { useAuth } from '@/hooks/useAuth';
+import type { Plans, Subscription, PaymentHistory, RazorpayOptions, RazorpayResponse } from '@/types/payment';
+
+// Load Razorpay script
+const loadRazorpayScript = (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
+interface SubscriptionContextType {
+  // Data
+  plans: Plans | null;
+  subscription: Subscription | null;
+  paymentHistory: PaymentHistory[];
+  
+  // Loading states
+  loading: boolean;
+  plansLoading: boolean;
+  subscriptionLoading: boolean;
+  
+  // Actions
+  processPayment: (planType: string, duration?: number) => Promise<boolean>;
+  cancelSubscription: () => Promise<boolean>;
+  refreshSubscription: () => Promise<void>;
+  fetchPaymentHistory: (page?: number, limit?: number) => Promise<void>;
+  
+  // Utilities
+  hasFeatureAccess: (feature: keyof Subscription['features']) => boolean;
+  getRemainingQRCodes: (currentCount: number) => number;
+  isUpgradeRequired: (currentQRCount: number) => boolean;
+  getPlanDisplayName: () => string;
+  getPlanStatus: () => string;
+}
+
+const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
+
+export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
+  const [plans, setPlans] = useState<Plans | null>(null);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [paymentHistory, setPaymentHistory] = useState<PaymentHistory[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [plansLoading, setPlansLoading] = useState(false);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false);
+
+  // Fetch plans
+  const fetchPlans = useCallback(async () => {
+    try {
+      setPlansLoading(true);
+      const response = await paymentAPI.getPlans();
+      if (response.success) {
+        setPlans(response.plans);
+      }
+    } catch (error: any) {
+      console.error('Error fetching plans:', error);
+    } finally {
+      setPlansLoading(false);
+    }
+  }, []);
+
+  // Fetch subscription
+  const fetchSubscription = useCallback(async () => {
+    if (!user) {
+      setSubscription(null);
+      return;
+    }
+    
+    try {
+      setSubscriptionLoading(true);
+      const response = await paymentAPI.getSubscription();
+      if (response.success) {
+        setSubscription(response.subscription);
+      }
+    } catch (error: any) {
+      console.error('Error fetching subscription:', error);
+      // Set default free subscription on error
+      setSubscription({
+        planType: 'free',
+        status: 'active',
+        features: {
+          maxQRCodes: 5,
+          maxScansPerQR: 100,
+          analytics: false,
+          advancedAnalytics: false,
+          whiteLabel: false,
+          removeWatermark: false,
+          passwordProtection: false,
+          expirationDate: false,
+          customScanLimit: false
+        }
+      });
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  }, [user]);
+
+  // Refresh subscription (public method)
+  const refreshSubscription = useCallback(async () => {
+    await fetchSubscription();
+  }, [fetchSubscription]);
+
+  // Fetch payment history
+  const fetchPaymentHistory = useCallback(async (page: number = 1, limit: number = 10) => {
+    try {
+      setLoading(true);
+      const response = await paymentAPI.getPaymentHistory(page, limit);
+      if (response.success) {
+        setPaymentHistory(response.payments);
+      }
+    } catch (error: any) {
+      console.error('Error fetching payment history:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Process payment
+  const processPayment = useCallback(async (planType: string, duration: number = 1): Promise<boolean> => {
+    try {
+      setLoading(true);
+
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        message.error('Payment system is currently unavailable. Please try again.');
+        return false;
+      }
+
+      const orderResponse = await paymentAPI.createOrder(planType, duration);
+      if (!orderResponse.success) {
+        message.error('Failed to create payment order');
+        return false;
+      }
+
+      const order = orderResponse.order;
+
+      return new Promise((resolve) => {
+        const options: RazorpayOptions = {
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID || '',
+          amount: order.amount,
+          currency: order.currency,
+          name: 'QR Studio',
+          description: `${order.planName} - ${duration} month${duration > 1 ? 's' : ''}`,
+          image: '/logo.png',
+          order_id: order.id,
+          handler: async (response: RazorpayResponse) => {
+            try {
+              const verifyResponse = await paymentAPI.verifyPayment({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature
+              });
+
+              if (verifyResponse.success) {
+                message.success('Payment successful! Your subscription has been activated.');
+                setSubscription(verifyResponse.subscription);
+                resolve(true);
+              } else {
+                message.error('Payment verification failed. Please contact support.');
+                resolve(false);
+              }
+            } catch (error: any) {
+              console.error('Payment verification error:', error);
+              message.error('Payment verification failed. Please contact support.');
+              resolve(false);
+            }
+          },
+          prefill: {
+            name: user?.name || '',
+            email: user?.email || '',
+            contact: user?.mobile || ''
+          },
+          notes: {
+            planType,
+            duration
+          },
+          theme: {
+            color: '#6366f1'
+          },
+          modal: {
+            ondismiss: () => {
+              message.info('Payment cancelled');
+              resolve(false);
+            }
+          }
+        };
+
+        const razorpayInstance = new window.Razorpay(options);
+        razorpayInstance.open();
+      });
+    } catch (error: any) {
+      console.error('Payment process error:', error);
+      message.error('Payment failed. Please try again.');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  // Cancel subscription
+  const cancelSubscription = useCallback(async (): Promise<boolean> => {
+    try {
+      setLoading(true);
+      const response = await paymentAPI.cancelSubscription();
+      
+      if (response.success) {
+        message.success('Subscription cancelled successfully');
+        setSubscription(response.subscription);
+        return true;
+      } else {
+        message.error('Failed to cancel subscription');
+        return false;
+      }
+    } catch (error: any) {
+      console.error('Cancel subscription error:', error);
+      message.error('Failed to cancel subscription');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Check if user has access to a feature
+  const hasFeatureAccess = useCallback((feature: keyof Subscription['features']): boolean => {
+    if (!subscription) return false;
+    const value = subscription.features[feature];
+    return value === true || value === -1;
+  }, [subscription]);
+
+  // Get remaining QR codes
+  const getRemainingQRCodes = useCallback((currentCount: number): number => {
+    if (!subscription) return Math.max(0, 5 - currentCount);
+    if (subscription.features.maxQRCodes === -1) return -1;
+    return Math.max(0, subscription.features.maxQRCodes - currentCount);
+  }, [subscription]);
+
+  // Check if upgrade is required
+  const isUpgradeRequired = useCallback((currentQRCount: number): boolean => {
+    if (!subscription) return currentQRCount >= 5;
+    if (subscription.features.maxQRCodes === -1) return false;
+    return currentQRCount >= subscription.features.maxQRCodes;
+  }, [subscription]);
+
+  // Get plan display name
+  const getPlanDisplayName = useCallback((): string => {
+    if (!subscription) return 'Free';
+    const planNames: Record<string, string> = {
+      free: 'Free',
+      basic: 'Basic',
+      pro: 'Pro',
+      enterprise: 'Enterprise'
+    };
+    return planNames[subscription.planType] || 'Free';
+  }, [subscription]);
+
+  // Get plan status
+  const getPlanStatus = useCallback((): string => {
+    if (!subscription) return 'active';
+    return subscription.status || 'active';
+  }, [subscription]);
+
+  // Initialize data on mount and user change
+  useEffect(() => {
+    fetchPlans();
+  }, [fetchPlans]);
+
+  useEffect(() => {
+    if (user) {
+      fetchSubscription();
+    } else {
+      setSubscription(null);
+    }
+  }, [user, fetchSubscription]);
+
+  const value: SubscriptionContextType = {
+    plans,
+    subscription,
+    paymentHistory,
+    loading,
+    plansLoading,
+    subscriptionLoading,
+    processPayment,
+    cancelSubscription,
+    refreshSubscription,
+    fetchPaymentHistory,
+    hasFeatureAccess,
+    getRemainingQRCodes,
+    isUpgradeRequired,
+    getPlanDisplayName,
+    getPlanStatus
+  };
+
+  return (
+    <SubscriptionContext.Provider value={value}>
+      {children}
+    </SubscriptionContext.Provider>
+  );
+};
+
+export const useSubscription = (): SubscriptionContextType => {
+  const context = useContext(SubscriptionContext);
+  if (context === undefined) {
+    throw new Error('useSubscription must be used within a SubscriptionProvider');
+  }
+  return context;
+};

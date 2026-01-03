@@ -38,16 +38,15 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
     loading,
     subscriptionLoading,
     cancelSubscription,
-    fetchPaymentHistory,
-    fetchSubscription
+    fetchPaymentHistory
   } = usePayment();
 
+  // Fetch payment history on mount if needed
   useEffect(() => {
-    fetchSubscription();
     if (showPaymentHistory) {
       fetchPaymentHistory();
     }
-  }, []);
+  }, [showPaymentHistory]);
 
   const handleCancelSubscription = () => {
     Modal.confirm({
