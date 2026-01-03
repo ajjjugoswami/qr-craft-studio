@@ -1,11 +1,11 @@
 import React, { useState, forwardRef, useEffect, useRef, useMemo } from 'react';
 import QRCodeStyling from 'qr-code-styling';
-import { getAppOrigin } from '../../lib/config';
 import { Input, ColorPicker, Slider, Popover } from 'antd';
 import { Pencil, Type } from 'lucide-react';
 import type { Color } from 'antd/es/color-picker';
 import { QRTemplate, QRStyling, CustomField, QRType } from '../../types/qrcode';
 import { useAuth } from '../../hooks/useAuth';
+import { createQRCodeOptions, createSafeStyling } from '../../lib/qrUtils';
 
 // All QR types should route through /r/{id} so scans are always tracked.
 // For unsaved previews (no id yet), we fallback to /r?u=... (no analytics).
@@ -38,7 +38,7 @@ const gradientDirectionMap = {
 };
 
 // Separate component for QR-only rendering (no template)
-const QROnlyPreview = forwardRef<HTMLDivElement, { 
+const QROnlyPreview = React.memo(forwardRef<HTMLDivElement, { 
   content: string; 
   styling: QRStyling; 
   compact?: boolean; 
@@ -57,100 +57,23 @@ const QROnlyPreview = forwardRef<HTMLDivElement, {
     const effectiveShowWatermark = showWatermark !== undefined ? showWatermark : !user?.removeWatermark;
     const effectiveWatermarkText = watermarkText !== undefined ? watermarkText : user?.watermarkText || 'QR Studio';
 
-    const safeStyling = useMemo(() => ({
-      ...styling,
-      imageOptions: styling.imageOptions || {
-        hideBackgroundDots: true,
-        imageSize: 0.2,
-        margin: 0,
-      },
-      cornersSquareOptions: styling.cornersSquareOptions || {
-        color: styling.fgColor,
-        type: 'square',
-      },
-      cornersDotOptions: styling.cornersDotOptions || {
-        color: styling.fgColor,
-        type: 'square',
-      },
-    }), [styling]);
-
-    const getQRData = () => {
-      try {
-        // Always route through redirector when we have an id so scans are tracked for every QR type.
-        if (typeof window !== 'undefined') {
-          if (typeof content === 'string' && qrId) {
-            return `${getAppOrigin()}/r/${qrId}`;
-          }
-          // Unsaved preview: no analytics (no id), but still previewable.
-          if (typeof content === 'string') {
-            return `${getAppOrigin()}/r?u=${encodeURIComponent(content)}`;
-          }
-        }
-        return content || 'https://example.com';
-      } catch {
-        return content || 'https://example.com';
-      }
-    };
+    const safeStyling = useMemo(() => createSafeStyling(styling), [styling]);
 
     useEffect(() => {
       if (qrRef.current) {
-        const hasLogo = !!safeStyling.image;
-        const hasGradients = !!(safeStyling.dotsGradient || safeStyling.backgroundGradient || 
-          safeStyling.cornersSquareOptions?.gradient || safeStyling.cornersDotOptions?.gradient);
-        // Use higher error correction for logos or gradient styles for better scannability
-        const errorLevel = hasLogo || hasGradients ? 'H' : safeStyling.level;
-        const logoSize = safeStyling.imageOptions?.imageSize || 0.2;
-        
-        const options = {
-          width: qrOnlySize,
-          height: qrOnlySize,
-          data: getQRData(),
-          type: 'svg' as const,
-          margin: safeStyling.includeMargin ? 4 : 0,
-          qrOptions: {
-            errorCorrectionLevel: errorLevel,
-          },
-          dotsOptions: {
-            color: safeStyling.fgColor,
-            type: safeStyling.dotsType,
-            ...(safeStyling.dotsGradient && { gradient: safeStyling.dotsGradient }),
-          },
-          backgroundOptions: {
-            color: safeStyling.bgColor,
-            ...(safeStyling.backgroundGradient && { gradient: safeStyling.backgroundGradient }),
-          },
-          // Always provide corner options with proper fallbacks for scannability
-          cornersSquareOptions: {
-            color: safeStyling.cornersSquareOptions?.color ?? safeStyling.fgColor,
-            type: safeStyling.cornersSquareOptions?.type ?? 'square',
-            ...(safeStyling.cornersSquareOptions?.gradient && { gradient: safeStyling.cornersSquareOptions.gradient }),
-          },
-          cornersDotOptions: {
-            color: safeStyling.cornersDotOptions?.color ?? safeStyling.fgColor,
-            type: safeStyling.cornersDotOptions?.type ?? 'square',
-            ...(safeStyling.cornersDotOptions?.gradient && { gradient: safeStyling.cornersDotOptions.gradient }),
-          },
-          imageOptions: safeStyling.imageOptions ? {
-            hideBackgroundDots: true,
-            imageSize: logoSize,
-            margin: 0,
-          } : undefined,
-          image: safeStyling.image,
-          shape: safeStyling.shape,
-        };
-
+        const options = createQRCodeOptions(content, styling, qrOnlySize, qrId);
         qrRef.current.innerHTML = '';
         qrCode.current = new QRCodeStyling(options);
         qrCode.current.append(qrRef.current);
       }
-    }, [content, safeStyling, qrId, qrOnlySize, qrType]);
+    }, [content, styling, qrId, qrOnlySize, qrType]);
 
     return (
       <div ref={ref} className="flex items-center justify-center p-4">
         <div
           className="rounded-lg relative"
           style={{ 
-            backgroundColor: styling.bgColor,
+            backgroundColor: safeStyling.bgColor,
             padding: compact ? 8 : 16,
           }}
         >
@@ -159,7 +82,7 @@ const QROnlyPreview = forwardRef<HTMLDivElement, {
           {effectiveShowWatermark && effectiveWatermarkText && !compact && (
             <div 
               className="absolute bottom-1 right-1 text-[8px] opacity-50"
-              style={{ color: styling.fgColor }}
+              style={{ color: safeStyling.fgColor }}
             >
               {effectiveWatermarkText}
             </div>
@@ -168,7 +91,7 @@ const QROnlyPreview = forwardRef<HTMLDivElement, {
       </div>
     );
   }
-);
+));
 
 QROnlyPreview.displayName = 'QROnlyPreview';
 
@@ -234,77 +157,15 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
     }
   };
 
-  const getQRData = () => {
-    try {
-      // Always route through redirector when we have an id so scans are tracked for every QR type.
-      if (typeof window !== 'undefined') {
-        if (typeof content === 'string' && qrId) {
-          return `${getAppOrigin()}/r/${qrId}`;
-        }
-        // Unsaved preview: no analytics (no id), but still previewable.
-        if (typeof content === 'string') {
-          return `${getAppOrigin()}/r?u=${encodeURIComponent(content)}`;
-        }
-      }
-      return content || 'https://example.com';
-    } catch {
-      return content || 'https://example.com';
-    }
-  };
-
   useEffect(() => {
     if (qrRef.current) {
-      // When an image/logo is present or gradients are used, force high error correction for scannability
-      const hasLogo = !!safeStyling.image;
-      const hasGradients = !!(safeStyling.dotsGradient || safeStyling.backgroundGradient || 
-        safeStyling.cornersSquareOptions?.gradient || safeStyling.cornersDotOptions?.gradient);
-      const errorLevel = hasLogo || hasGradients ? 'H' : safeStyling.level;
-      const logoSize = safeStyling.imageOptions?.imageSize || 0.2;
-      
-      const options = {
-        width: qrSize,
-        height: qrSize,
-        data: getQRData(),
-        type: 'svg' as const,
-        margin: safeStyling.includeMargin ? 4 : 0,
-        qrOptions: {
-          errorCorrectionLevel: errorLevel,
-        },
-        dotsOptions: {
-          color: safeStyling.fgColor,
-          type: safeStyling.dotsType,
-          ...(safeStyling.dotsGradient && { gradient: safeStyling.dotsGradient }),
-        },
-        backgroundOptions: {
-          color: safeStyling.bgColor,
-          ...(safeStyling.backgroundGradient && { gradient: safeStyling.backgroundGradient }),
-        },
-        // Always provide corner options with proper fallbacks for scannability
-        cornersSquareOptions: {
-          color: safeStyling.cornersSquareOptions?.color ?? safeStyling.fgColor,
-          type: safeStyling.cornersSquareOptions?.type ?? 'square',
-          ...(safeStyling.cornersSquareOptions?.gradient && { gradient: safeStyling.cornersSquareOptions.gradient }),
-        },
-        cornersDotOptions: {
-          color: safeStyling.cornersDotOptions?.color ?? safeStyling.fgColor,
-          type: safeStyling.cornersDotOptions?.type ?? 'square',
-          ...(safeStyling.cornersDotOptions?.gradient && { gradient: safeStyling.cornersDotOptions.gradient }),
-        },
-        imageOptions: safeStyling.imageOptions ? {
-          hideBackgroundDots: true,
-          imageSize: logoSize,
-          margin: 0,
-        } : undefined,
-        image: safeStyling.image,
-        shape: safeStyling.shape,
-      };
-
+      const options = createQRCodeOptions(content, styling, qrSize, qrId);
       qrRef.current.innerHTML = '';
       qrCode.current = new QRCodeStyling(options);
       qrCode.current.append(qrRef.current);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [content, safeStyling, qrId, qrSize, template?.id, qrType]);
+  }, [content, styling, qrId, qrSize, template?.id, qrType]);
 
   // If template is null, render QR only using separate component
   if (!template) {

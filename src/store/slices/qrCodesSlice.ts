@@ -173,23 +173,8 @@ export const updateQRCode = createAsyncThunk(
   }
 );
 
-// Fetch stats only (separate from list) - MOVED TO statsSlice.ts
-// This is kept for backward compatibility but redirects to stats slice
-export const fetchStats = createAsyncThunk(
-  'qrCodes/fetchStats',
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await qrCodeAPI.getStats();
-      return {
-        total: res.total || 0,
-        totalScans: res.totalScans || 0,
-        totalActive: res.totalActive || 0,
-      };
-    } catch (err: any) {
-      return rejectWithValue(err?.response?.data?.message || 'Failed to load stats');
-    }
-  }
-);
+// Note: fetchStats has been moved to statsSlice.ts
+// Import from '@/store/slices/statsSlice' instead
 
 // Delete QR code
 export const deleteQRCode = createAsyncThunk(
