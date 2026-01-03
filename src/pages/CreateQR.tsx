@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Button, Card, Typography, message, Drawer } from 'antd';
-import { ArrowLeft, Check, Settings2, Eye, ChevronLeft, ChevronRight, Undo2 } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Check, Settings2, Eye, ChevronLeft, ChevronRight, Undo2 } from 'lucide-react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { qrCodeAPI } from '@/lib/api';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import TemplateSelector from '../components/qr/TemplateSelector';
@@ -18,23 +18,26 @@ import {
   QRTemplate,
   QRStyling,
   QRType,
-  defaultTemplates,
   defaultStyling,
 } from '../types/qrcode';
 
 const { Text } = Typography;
 
+const stepKeys = ['template', 'type', 'content', 'design', 'finish', 'advanced'] as const;
+type StepKey = typeof stepKeys[number];
+
 const steps = [
-  { title: 'Template', description: 'Choose design' },
-  { title: 'Type', description: 'QR type' },
-  { title: 'Content', description: 'Enter data' },
-  { title: 'Design', description: 'Customize' },
-  { title: 'Finish', description: 'Fine-tune' },
-  { title: 'Advanced', description: 'Protection & limits' },
+  { key: 'template', title: 'Template', description: 'Choose design' },
+  { key: 'type', title: 'Type', description: 'QR type' },
+  { key: 'content', title: 'Content', description: 'Enter data' },
+  { key: 'design', title: 'Design', description: 'Customize' },
+  { key: 'finish', title: 'Finish', description: 'Fine-tune' },
+  { key: 'advanced', title: 'Advanced', description: 'Protection & limits' },
 ];
 
 const CreateQR: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { saveQRCode, updateQRCode, getQRCode } = useQRCodes();
   const previewRef = useRef<HTMLDivElement>(null);
   const { pushStyle, undo, canUndo } = useStyleHistory();
@@ -42,7 +45,13 @@ const CreateQR: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const [currentStep, setCurrentStep] = useState(0);
+  // Get current step from URL or default to 0
+  const stepParam = searchParams.get('step') as StepKey | null;
+  const currentStep = useMemo(() => {
+    const idx = stepKeys.indexOf(stepParam as StepKey);
+    return idx >= 0 ? idx : 0;
+  }, [stepParam]);
+
   const [template, setTemplate] = useState<QRTemplate | null>(null);
   const [type, setType] = useState<QRType>('url');
   const [content, setContent] = useState('https://example.com');
@@ -52,27 +61,44 @@ const CreateQR: React.FC = () => {
   const [expirationDate, setExpirationDate] = useState<string | null>(null);
   const [scanLimit, setScanLimit] = useState<number | null>(null);
 
-  const [initialized, setInitialized] = useState(false);
   const [showTemplateEditor, setShowTemplateEditor] = useState(false);
   const [showPreviewDrawer, setShowPreviewDrawer] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Wrap setStyling to track history
-  const handleStyleChange = (newStyling: QRStyling) => {
-    pushStyle(styling); // Save current before change
-    setStyling(newStyling);
-  };
+  // Update URL when step changes
+  const setCurrentStep = useCallback((stepIndex: number) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('step', stepKeys[stepIndex]);
+    setSearchParams(newParams, { replace: true });
+  }, [searchParams, setSearchParams]);
 
-  const handleUndo = () => {
+  // Navigate to step by clicking on stepper
+  const goToStep = useCallback((stepIndex: number) => {
+    // Only allow navigation to completed steps or current step
+    if (stepIndex <= currentStep) {
+      setCurrentStep(stepIndex);
+    }
+  }, [currentStep, setCurrentStep]);
+
+  // Wrap setStyling to track history
+  const handleStyleChange = useCallback((newStyling: QRStyling) => {
+    pushStyle(styling);
+    setStyling(newStyling);
+  }, [pushStyle, styling]);
+
+  const handleUndo = useCallback(() => {
     const previousStyle = undo();
     if (previousStyle) {
       setStyling(previousStyle);
       message.info('Styling reverted');
     }
-  };
+  }, [undo]);
 
+  // Initialize step from URL on mount
   useEffect(() => {
-    setInitialized(true);
+    if (!stepParam) {
+      setCurrentStep(0);
+    }
   }, []);
 
   useEffect(() => {
@@ -117,9 +143,7 @@ const CreateQR: React.FC = () => {
     loadForEdit();
   }, [id, getQRCode]);
 
-  // Removed empty useEffect that had no purpose
-
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     // Validate content step (step 2)
     if (currentStep === 2) {
       if (!name.trim()) {
@@ -135,15 +159,15 @@ const CreateQR: React.FC = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
-  };
+  }, [currentStep, name, content, setCurrentStep]);
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
-  };
+  }, [currentStep, setCurrentStep]);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!name.trim()) {
       message.error('Please enter a name for your QR code');
       return;
@@ -162,7 +186,6 @@ const CreateQR: React.FC = () => {
         scanLimit: scanLimit || null,
       };
 
-      // If QR is an image, store the displayed image as previewImage as well
       if (type === 'image') {
         payload.previewImage = content || null;
       }
@@ -180,7 +203,7 @@ const CreateQR: React.FC = () => {
     } finally {
       setSaving(false);
     }
-  };
+  }, [name, type, content, template, styling, password, expirationDate, scanLimit, editingId, updateQRCode, saveQRCode, navigate]);
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -235,7 +258,8 @@ const CreateQR: React.FC = () => {
             {steps.map((_, index) => (
               <div
                 key={index}
-                className={`flex-1 h-1 rounded-full transition-colors ${
+                onClick={() => goToStep(index)}
+                className={`flex-1 h-1.5 rounded-full transition-colors cursor-pointer ${
                   index <= currentStep ? 'bg-primary' : 'bg-muted'
                 }`}
               />
@@ -243,36 +267,51 @@ const CreateQR: React.FC = () => {
           </div>
         </div>
 
-        {/* Desktop Steps */}
-        <Card className="mb-4 md:mb-6 hidden lg:block">
-          <div className="flex items-center justify-between">
+        {/* Desktop Steps - Matching Reference Design */}
+        <Card className="mb-4 md:mb-6 hidden lg:block bg-card border-border">
+          <div className="flex items-center">
             {steps.map((step, index) => (
-              <React.Fragment key={index}>
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center gap-2 mb-1">
-                    {index < currentStep ? (
-                      <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                        <Check size={12} className="text-primary-foreground" />
-                      </div>
-                    ) : index === currentStep ? (
-                      <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                        <span className="text-primary-foreground text-xs font-medium">{index + 1}</span>
-                      </div>
-                    ) : (
-                      <div className="w-6 h-6 rounded-full border-2 border-muted-foreground/30 flex items-center justify-center">
-                        <span className="text-muted-foreground text-xs font-medium">{index + 1}</span>
-                      </div>
-                    )}
-                    <span className={`font-medium text-sm ${index <= currentStep ? 'text-foreground' : 'text-muted-foreground'}`}>
+              <React.Fragment key={step.key}>
+                {/* Step Item */}
+                <div 
+                  className={`flex items-center gap-3 cursor-pointer transition-opacity ${
+                    index <= currentStep ? 'opacity-100' : 'opacity-50'
+                  }`}
+                  onClick={() => goToStep(index)}
+                >
+                  {/* Step Icon */}
+                  {index < currentStep ? (
+                    <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                      <Check size={14} className="text-primary-foreground" />
+                    </div>
+                  ) : (
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      index === currentStep 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-muted text-muted-foreground'
+                    }`}>
+                      <span className="text-xs font-semibold">{index + 1}</span>
+                    </div>
+                  )}
+                  
+                  {/* Step Text */}
+                  <div className="flex flex-col">
+                    <span className={`text-sm font-medium leading-tight ${
+                      index <= currentStep ? 'text-foreground' : 'text-muted-foreground'
+                    }`}>
                       {step.title}
                     </span>
+                    <span className="text-xs text-muted-foreground leading-tight hidden xl:block">
+                      {step.description}
+                    </span>
                   </div>
-                  <Text type="secondary" className="text-xs hidden xl:block">
-                    {step.description}
-                  </Text>
                 </div>
+
+                {/* Connector Line */}
                 {index < steps.length - 1 && (
-                  <div className={`flex-1 h-0.5 mx-2 ${index < currentStep ? 'bg-primary' : 'bg-muted'}`} />
+                  <div className={`flex-1 h-0.5 mx-4 rounded-full transition-colors ${
+                    index < currentStep ? 'bg-primary' : 'bg-muted'
+                  }`} />
                 )}
               </React.Fragment>
             ))}
@@ -402,7 +441,7 @@ const CreateQR: React.FC = () => {
                     loading={saving}
                     disabled={saving}
                   >
-                    {saving ? 'Save QR Code' : 'Save QR Code'}
+                    Save QR Code
                   </Button>
                 ) : (
                   <Button
