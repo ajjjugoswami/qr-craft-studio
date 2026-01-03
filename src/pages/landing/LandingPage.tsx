@@ -166,54 +166,50 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      {/* Floating gradient orbs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-violet-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-20 w-60 h-60 bg-cyan-500/10 rounded-full blur-3xl" />
+      {/* Subtle background pattern */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-40">
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-muted rounded-full blur-[100px]" />
       </div>
 
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/95 backdrop-blur-md">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="h-16 sm:h-20 flex items-center justify-between">
+          <div className="h-16 flex items-center justify-between">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <img 
-                  src="/logo.png" 
-                  alt="QR Studio" 
-                  className="h-12 sm:h-20 w-auto object-contain transition-transform group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <span className="font-bold text-lg sm:text-2xl tracking-tight font-montserrat">
+            <Link to="/" className="flex items-center gap-2.5">
+              <img 
+                src="/logo.png" 
+                alt="QR Studio" 
+                className="h-9 w-auto object-contain"
+              />
+              <span className="font-semibold text-lg tracking-tight">
                 QR<span className="text-primary">Studio</span>
               </span>
             </Link>
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-8">
-              <a href="#generator" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+              <a href="#generator" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Generator
               </a>
-              <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+              <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Features
               </a>
-              <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
+              <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Pricing
               </a>
             </nav>
 
             {/* CTA Buttons */}
-            <div className="hidden md:flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-3">
               <Link to="/sign-in">
-                <Button variant="ghost" size="sm" className="font-medium">
+                <Button variant="ghost" size="sm">
                   Sign In
                 </Button>
               </Link>
               <Link to="/signup">
-                <Button size="sm" className="font-medium shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow">
+                <Button size="sm">
                   Get Started Free
                 </Button>
               </Link>
@@ -224,33 +220,33 @@ const LandingPage = () => {
               className="md:hidden p-2 hover:bg-muted rounded-lg transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
 
           {/* Mobile Menu */}
           {mobileMenuOpen && (
-            <div className="md:hidden py-4 border-t border-border/40 animate-fade-in">
-              <nav className="flex flex-col gap-2">
+            <div className="md:hidden py-4 border-t border-border/50 animate-fade-in">
+              <nav className="flex flex-col gap-1">
                 <a 
                   href="#generator"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-4 py-3 hover:bg-muted rounded-lg transition-colors font-medium"
+                  className="px-3 py-2.5 hover:bg-muted rounded-lg transition-colors text-sm"
                 >
                   Generator
                 </a>
-                <a href="#features" className="px-4 py-3 hover:bg-muted rounded-lg transition-colors font-medium">
+                <a href="#features" className="px-3 py-2.5 hover:bg-muted rounded-lg transition-colors text-sm">
                   Features
                 </a>
-                <a href="#pricing" className="px-4 py-3 hover:bg-muted rounded-lg transition-colors font-medium">
+                <a href="#pricing" className="px-3 py-2.5 hover:bg-muted rounded-lg transition-colors text-sm">
                   Pricing
                 </a>
-                <div className="flex gap-2 px-4 pt-2">
+                <div className="flex gap-2 px-3 pt-3">
                   <Link to="/sign-in" className="flex-1">
-                    <Button variant="outline" className="w-full">Sign In</Button>
+                    <Button variant="outline" size="sm" className="w-full">Sign In</Button>
                   </Link>
                   <Link to="/signup" className="flex-1">
-                    <Button className="w-full">Get Started</Button>
+                    <Button size="sm" className="w-full">Get Started</Button>
                   </Link>
                 </div>
               </nav>
@@ -260,55 +256,56 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative pt-28 pb-24 lg:pt-28 lg:pb-20">
+      <section className="relative pt-28 pb-16 lg:pt-32 lg:pb-20">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-5xl mx-auto text-center">
+          <div className="max-w-4xl mx-auto text-center">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-primary/10 via-violet-500/10 to-primary/10 border border-primary/20 text-primary px-5 py-2.5 rounded-full text-sm font-semibold mb-8 animate-fade-in">
-              <span>Trusted by 10,000+ businesses worldwide</span>
+            <div className="inline-flex items-center gap-2 bg-muted border border-border text-foreground/80 px-4 py-1.5 rounded-full text-xs font-medium mb-6">
+              <span className="w-1.5 h-1.5 bg-primary rounded-full" />
+              Trusted by 10,000+ businesses worldwide
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-8 font-montserrat leading-[1.1]">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight mb-6 leading-[1.1]">
               Create Stunning
-              <span className="block bg-gradient-to-r from-primary via-violet-500 to-primary bg-clip-text text-transparent">
+              <span className="block text-primary">
                 QR Codes in Seconds
               </span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mb-12 leading-relaxed">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
               Design beautiful, trackable QR codes with custom colors, logos, and templates. 
               Perfect for marketing, events, and business.
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-14">
               <a href="#generator">
                 <Button 
                   size="lg" 
-                  className="text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-6 shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all font-semibold gap-2 group w-full sm:w-auto"
+                  className="px-8 gap-2 group w-full sm:w-auto"
                 >
                   Create Free QR Code
-                  <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                 </Button>
               </a>
               <Link to="/signup">
-                <Button size="lg" variant="outline" className="text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-6 font-semibold gap-2 group w-full sm:w-auto">
-                  <Play className="h-5 w-5" />
+                <Button size="lg" variant="outline" className="px-8 gap-2 w-full sm:w-auto">
+                  <Play className="h-4 w-4" />
                   See How It Works
                 </Button>
               </Link>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
-                  <div className="text-2xl md:text-3xl font-bold text-foreground mb-1 font-montserrat">
+                  <div className="text-2xl md:text-3xl font-semibold text-foreground mb-0.5">
                     {stat.value}
                   </div>
-                  <div className="text-sm text-muted-foreground font-medium">
+                  <div className="text-xs text-muted-foreground">
                     {stat.label}
                   </div>
                 </div>
@@ -316,44 +313,17 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-
-        {/* Decorative Elements */}
-        <div className="absolute left-8 top-1/2 -translate-y-1/2 hidden xl:block">
-          <div className="flex flex-col gap-3">
-            {[...Array(5)].map((_, i) => (
-              <div 
-                key={i} 
-                className="w-2 h-2 rounded-full bg-primary/30"
-                style={{ opacity: 1 - i * 0.15 }}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden xl:block">
-          <div className="flex flex-col gap-3">
-            {[...Array(5)].map((_, i) => (
-              <div 
-                key={i} 
-                className="w-2 h-2 rounded-full bg-violet-500/30"
-                style={{ opacity: 1 - i * 0.15 }}
-              />
-            ))}
-          </div>
-        </div>
       </section>
 
-      {/* Generator Section - Always Visible */}
-      <section id="generator" className="py-14 lg:py-14 bg-gradient-to-b from-muted/50 to-background border-y border-border/40">
+      {/* Generator Section */}
+      <section id="generator" className="py-16 lg:py-20 bg-muted/30 border-y border-border/50">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
-              <span>Free Forever</span>
-            </div>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 font-montserrat">
-              Create Your QR Code Now
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-semibold mb-3 tracking-tight">
+              Create Your QR Code
             </h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-              No signup required. Generate beautiful QR codes instantly with our free tool.
+            <p className="text-muted-foreground max-w-lg mx-auto">
+              No signup required. Generate and download your QR code instantly.
             </p>
           </div>
           <FreeQRGenerator />
@@ -361,47 +331,44 @@ const LandingPage = () => {
       </section>
 
       {/* QR Types Section */}
-      <section className="py-14 lg:py-14">
+      <section className="py-16 lg:py-20">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-muted px-4 py-2 rounded-full text-sm font-medium mb-4">
-              <QrCode className="h-4 w-4 text-primary" />
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-muted text-foreground/70 px-3 py-1.5 rounded-full text-xs font-medium mb-4">
+              <QrCode className="h-3.5 w-3.5" />
               <span>12 QR Code Types</span>
             </div>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 font-montserrat">
+            <h2 className="text-2xl md:text-3xl font-semibold mb-4 tracking-tight">
               One Tool, Endless Possibilities
             </h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground max-w-xl mx-auto">
               Create QR codes for websites, contact cards, WiFi networks, social media, and more.
             </p>
           </div>
 
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-4 max-w-5xl mx-auto">
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3 max-w-4xl mx-auto">
             {qrTypes.map((type, index) => (
               <Card 
                 key={index} 
-                className={`p-5 text-center relative transition-all duration-300 group cursor-pointer ${
+                className={`p-4 text-center relative transition-all duration-200 ${
                   type.free 
-                    ? 'hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 hover:border-primary/30' 
-                    : 'bg-muted/30'
+                    ? 'hover:border-primary/50 hover:shadow-sm cursor-pointer' 
+                    : 'bg-muted/30 opacity-75'
                 }`}
               >
                 {!type.free && (
-                  <div className="absolute -top-2 -right-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white h-6 w-6 rounded-full flex items-center justify-center shadow-lg">
-                    <Crown className="h-3 w-3" />
+                  <div className="absolute -top-1.5 -right-1.5 bg-foreground text-background h-5 w-5 rounded-full flex items-center justify-center">
+                    <Crown className="h-2.5 w-2.5" />
                   </div>
                 )}
-                <div className={`h-12 w-12 rounded-xl flex items-center justify-center mx-auto mb-3 transition-all ${
+                <div className={`h-10 w-10 rounded-lg flex items-center justify-center mx-auto mb-2 ${
                   type.free 
-                    ? 'bg-gradient-to-br from-primary/10 to-violet-500/10 text-primary group-hover:scale-110' 
+                    ? 'bg-primary/10 text-primary' 
                     : 'bg-muted text-muted-foreground'
                 }`}>
                   {type.icon}
                 </div>
-                <span className="text-sm font-semibold">{type.label}</span>
-                {type.free && (
-                  <span className="block text-xs text-primary mt-1 font-medium">Free</span>
-                )}
+                <span className="text-xs font-medium">{type.label}</span>
               </Card>
             ))}
           </div>
@@ -409,55 +376,53 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-14 lg:py-14 bg-gradient-to-b from-muted/30 via-muted/50 to-muted/30">
+      <section id="features" className="py-16 lg:py-20 bg-muted/20 border-y border-border/50">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/10 to-orange-500/10 text-amber-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
-              <Crown className="h-4 w-4" />
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-muted text-foreground/70 px-3 py-1.5 rounded-full text-xs font-medium mb-4">
+              <Crown className="h-3.5 w-3.5" />
               <span>Pro Features</span>
             </div>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 font-montserrat">
-              Powerful Features for
-              <span className="block text-primary">Professional Results</span>
+            <h2 className="text-2xl md:text-3xl font-semibold mb-4 tracking-tight">
+              Professional Tools for
+              <span className="text-primary"> Better Results</span>
             </h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground max-w-xl mx-auto">
               Unlock advanced tools to create, track, and optimize your QR code campaigns.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
             {premiumFeatures.map((feature, index) => (
               <Card 
                 key={index} 
-                className="p-8 relative overflow-hidden group hover:shadow-2xl transition-all duration-500 border-2 border-transparent hover:border-primary/20"
+                className="p-6 relative group hover:shadow-md transition-shadow duration-200 border-border/80"
               >
-                {/* Gradient background on hover */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
-                
-                {/* Lock badge */}
-                <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 text-amber-600 text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
-                  <Lock className="h-3 w-3" />
+                {/* Pro badge */}
+                <div className="absolute top-4 right-4 bg-muted text-muted-foreground text-[10px] font-medium px-2 py-0.5 rounded flex items-center gap-1">
+                  <Lock className="h-2.5 w-2.5" />
                   Pro
                 </div>
 
                 {/* Icon */}
-                <div className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-4">
                   {feature.icon}
                 </div>
 
-                <h3 className="font-bold text-lg mb-3 font-montserrat">{feature.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-
-                {/* Hover CTA */}
-                <div className="mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <Link to="/signup">
-                    <Button variant="outline" size="sm" className="gap-2 w-full">
-                      Unlock Feature <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </div>
+                <h3 className="font-semibold text-sm mb-2">{feature.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
               </Card>
             ))}
+          </div>
+
+          {/* CTA */}
+          <div className="text-center mt-10">
+            <Link to="/signup">
+              <Button size="lg" className="gap-2">
+                Start Free Trial
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -544,19 +509,19 @@ const LandingPage = () => {
  
 
       {/* Footer */}
-      <footer className="border-t border-border py-12 bg-muted/20">
+      <footer className="border-t border-border/50 py-10 bg-background">
         <div className="container mx-auto px-4 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Logo */}
-            <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="QR Studio" className="h-8 w-8 object-contain" />
-              <span className="font-bold text-lg font-montserrat">
+            <div className="flex items-center gap-2">
+              <img src="/logo.png" alt="QR Studio" className="h-7 w-7 object-contain" />
+              <span className="font-semibold text-sm">
                 QR<span className="text-primary">Studio</span>
               </span>
             </div>
 
             {/* Links */}
-            <nav className="flex items-center gap-8 text-sm">
+            <nav className="flex items-center gap-6 text-xs">
               <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
                 Features
               </a>
@@ -572,8 +537,8 @@ const LandingPage = () => {
             </nav>
 
             {/* Copyright */}
-            <p className="text-sm text-muted-foreground">
-              © 2026 QR Studio. All rights reserved.
+            <p className="text-xs text-muted-foreground">
+              © 2026 QR Studio
             </p>
           </div>
         </div>

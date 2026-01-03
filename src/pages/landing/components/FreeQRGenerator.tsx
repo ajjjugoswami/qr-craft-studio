@@ -75,13 +75,15 @@ const FreeQRGenerator = () => {
   };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-8">
+    <div className="grid lg:grid-cols-5 gap-6 max-w-5xl mx-auto">
       {/* Left: Form */}
-      <Card className="p-4 sm:p-6">
-        <div className="space-y-6">
+      <Card className="lg:col-span-3 p-5 sm:p-6 border-border/80">
+        <div className="space-y-5">
           {/* QR Type Selection */}
           <div>
-            <Label className="text-sm font-medium mb-3 block">QR Code Type</Label>
+            <Label className="text-xs font-medium mb-2.5 block text-muted-foreground uppercase tracking-wide">
+              QR Code Type
+            </Label>
             <div className="grid grid-cols-4 gap-2">
               {[
                 { type: 'url', icon: <LinkIcon className="h-4 w-4" />, label: 'URL' },
@@ -93,14 +95,16 @@ const FreeQRGenerator = () => {
                   key={item.type}
                   variant={qrType === item.type ? 'default' : 'outline'}
                   size="sm"
-                  className="flex-col h-auto py-3 gap-1"
+                  className={`flex-col h-auto py-2.5 gap-1 transition-all ${
+                    qrType === item.type ? '' : 'border-border/80 hover:border-border'
+                  }`}
                   onClick={() => {
                     setQrType(item.type as typeof qrType);
                     setContent(getPlaceholder(item.type as typeof qrType));
                   }}
                 >
                   {item.icon}
-                  <span className="text-xs">{item.label}</span>
+                  <span className="text-[10px] font-medium">{item.label}</span>
                 </Button>
               ))}
             </div>
@@ -108,7 +112,7 @@ const FreeQRGenerator = () => {
 
           {/* Content Input */}
           <div>
-            <Label htmlFor="content" className="text-sm font-medium mb-2 block">
+            <Label htmlFor="content" className="text-xs font-medium mb-2 block text-muted-foreground uppercase tracking-wide">
               {getLabel()}
             </Label>
             <Input
@@ -116,27 +120,26 @@ const FreeQRGenerator = () => {
               value={content}
               onChange={(e) => handleContentChange(e.target.value)}
               placeholder={getPlaceholder()}
-              className="w-full"
+              className="w-full h-10 border-border/80"
             />
           </div>
 
           {/* Style Options */}
           <FreeStyleOptions styling={styling} onStyleChange={handleStyleChange} />
 
-
           {/* Upgrade CTA */}
-          <div className="bg-muted/50 rounded-lg p-4 border border-border">
+          <div className="bg-muted/40 rounded-lg p-4 border border-border/60">
             <div className="flex items-start gap-3">
               <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
                 <Palette className="h-4 w-4" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium mb-1">Want more customization?</p>
-                <p className="text-xs text-muted-foreground mb-3">
-                  Sign up to access 50+ templates, logo upload, and advanced styling options.
+                <p className="text-sm font-medium mb-0.5">Want more customization?</p>
+                <p className="text-xs text-muted-foreground mb-2.5">
+                  Access 50+ templates, logo upload, and advanced styling.
                 </p>
                 <Link to="/signup">
-                  <Button size="sm" variant="outline" className="gap-1 h-7 text-xs">
+                  <Button size="sm" variant="outline" className="gap-1 h-7 text-xs border-border/80">
                     Sign Up Free <ArrowRight className="h-3 w-3" />
                   </Button>
                 </Link>
@@ -147,23 +150,25 @@ const FreeQRGenerator = () => {
       </Card>
 
       {/* Right: Preview */}
-      <Card className="p-4 sm:p-6">
-        <div className="flex flex-col items-center">
-          <Label className="text-sm sm:text-base font-medium mb-4 self-start">Preview</Label>
-          <div className="flex-1 flex items-center justify-center w-full">
+      <Card className="lg:col-span-2 p-5 sm:p-6 border-border/80">
+        <div className="flex flex-col h-full">
+          <Label className="text-xs font-medium mb-4 text-muted-foreground uppercase tracking-wide">
+            Preview
+          </Label>
+          <div className="flex-1 flex items-center justify-center min-h-[200px]">
             <FreeQRPreview 
               ref={qrRef}
               content={getQRContent()} 
               styling={styling} 
             />
           </div>
-          <div className="w-full mt-6 space-y-3">
+          <div className="mt-5 space-y-3">
             <div className="grid grid-cols-3 gap-2">
               {['png', 'svg', 'pdf'].map((format) => (
                 <Button
                   key={format}
                   variant={format === 'png' ? 'default' : 'outline'}
-                  className="gap-1.5"
+                  className={`gap-1.5 text-xs ${format !== 'png' ? 'border-border/80' : ''}`}
                   size="sm"
                   disabled={content.trim() === ''}
                   onClick={() => {
@@ -177,13 +182,13 @@ const FreeQRGenerator = () => {
                     window.dispatchEvent(downloadEvent);
                   }}
                 >
-                  <Download className="h-3.5 w-3.5" />
+                  <Download className="h-3 w-3" />
                   {format.toUpperCase()}
                 </Button>
               ))}
             </div>
-            <p className="text-xs text-center text-muted-foreground">
-              All downloads include QR Studio watermark
+            <p className="text-[10px] text-center text-muted-foreground">
+              Free downloads include watermark
             </p>
           </div>
         </div>
