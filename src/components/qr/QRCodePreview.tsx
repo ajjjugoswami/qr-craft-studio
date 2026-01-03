@@ -213,27 +213,8 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
     },
   }), [styling]);
 
-  // If template is null, render QR only using separate component
-  if (!template) {
-    return <QROnlyPreview ref={ref} content={content} styling={styling} compact={compact} qrId={qrId} qrType={qrType} showWatermark={effectiveShowWatermark} watermarkText={effectiveWatermarkText} />;
-  }
-
-  const isHorizontal = template.qrPosition === 'left' || template.qrPosition === 'right';
-  const cardWidth = compact ? 'w-16' : isHorizontal ? 'w-full max-w-[420px]' : 'w-full max-w-[360px]';
-  const cardHeight = compact ? 'h-20' : isHorizontal ? 'min-h-[200px]' : 'min-h-[420px]';
+  // Calculate qrSize early since it's needed in useEffect
   const qrSize = compact ? 48 : styling.size > 140 ? 140 : styling.size;
-  
-  const titleFontSize = compact ? 8 : (template.titleFontSize || 24);
-  const subtitleFontSize = compact ? 6 : (template.subtitleFontSize || 14);
-  const fontWeight = fontWeightMap[template.titleFontWeight || 'bold'];
-  const subtitleFontWeight = fontWeightMap[template.subtitleFontWeight || 'normal'];
-  const textAlign = template.textAlign || 'center';
-  const qrPosition = template.qrPosition || 'bottom';
-  const borderRadius = compact ? 8 : (template.borderRadius || 16);
-  const padding = compact ? 4 : (template.padding || 24);
-  const fontFamily = template.fontFamily || 'Inter';
-  const titleLetterSpacing = template.titleLetterSpacing || 0;
-  const subtitleLetterSpacing = template.subtitleLetterSpacing || 0;
 
   const handleTitleChange = (value: string) => {
     if (onTemplateChange) {
@@ -323,7 +304,28 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
       qrCode.current.append(qrRef.current);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [content, safeStyling, qrId, qrSize, template.id, qrType]);
+  }, [content, safeStyling, qrId, qrSize, template?.id, qrType]);
+
+  // If template is null, render QR only using separate component
+  if (!template) {
+    return <QROnlyPreview ref={ref} content={content} styling={styling} compact={compact} qrId={qrId} qrType={qrType} showWatermark={effectiveShowWatermark} watermarkText={effectiveWatermarkText} />;
+  }
+
+  const isHorizontal = template.qrPosition === 'left' || template.qrPosition === 'right';
+  const cardWidth = compact ? 'w-16' : isHorizontal ? 'w-full max-w-[420px]' : 'w-full max-w-[360px]';
+  const cardHeight = compact ? 'h-20' : isHorizontal ? 'min-h-[200px]' : 'min-h-[420px]';
+  
+  const titleFontSize = compact ? 8 : (template.titleFontSize || 24);
+  const subtitleFontSize = compact ? 6 : (template.subtitleFontSize || 14);
+  const fontWeight = fontWeightMap[template.titleFontWeight || 'bold'];
+  const subtitleFontWeight = fontWeightMap[template.subtitleFontWeight || 'normal'];
+  const textAlign = template.textAlign || 'center';
+  const qrPosition = template.qrPosition || 'bottom';
+  const borderRadius = compact ? 8 : (template.borderRadius || 16);
+  const padding = compact ? 4 : (template.padding || 24);
+  const fontFamily = template.fontFamily || 'Inter';
+  const titleLetterSpacing = template.titleLetterSpacing || 0;
+  const subtitleLetterSpacing = template.subtitleLetterSpacing || 0;
 
   const gradientDirection = gradientDirectionMap[template.gradientDirection || 'to-bottom-right'];
   const backgroundStyle = template.showGradient && template.gradientColor

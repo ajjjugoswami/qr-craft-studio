@@ -43,7 +43,7 @@ const CreateQR: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const [currentStep, setCurrentStep] = useState(0);
-  const [template, setTemplate] = useState<QRTemplate | null>(defaultTemplates[0]);
+  const [template, setTemplate] = useState<QRTemplate | null>(null);
   const [type, setType] = useState<QRType>('url');
   const [content, setContent] = useState('https://example.com');
   const [styling, setStyling] = useState<QRStyling>(defaultStyling);
@@ -82,7 +82,7 @@ const CreateQR: React.FC = () => {
 
       const existing = getQRCode(id);
       if (existing) {
-        setTemplate(existing.template ?? defaultTemplates[0]);
+        setTemplate(existing.template ?? null);
         setStyling(existing.styling ?? defaultStyling);
         setType(existing.type ?? 'url');
         setContent(existing.content ?? 'https://example.com');
@@ -98,7 +98,7 @@ const CreateQR: React.FC = () => {
         const res = await qrCodeAPI.getOne(id);
         const q: any = res.qrCode;
         if (q) {
-          setTemplate(q.template ?? defaultTemplates[0]);
+          setTemplate(q.template ?? null);
           setStyling(q.styling ?? defaultStyling);
           setType(q.type ?? 'url');
           setContent(q.content ?? 'https://example.com');
