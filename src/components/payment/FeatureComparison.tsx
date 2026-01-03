@@ -1,8 +1,9 @@
 import React from 'react';
+import { Card, Typography } from 'antd';
 import { Check, X } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Plans } from '@/types/payment';
-import { cn } from '@/lib/utils';
+
+const { Title } = Typography;
 
 interface FeatureComparisonProps {
   plans: Plans;
@@ -13,9 +14,9 @@ const FeatureComparison: React.FC<FeatureComparisonProps> = ({ plans }) => {
     if (value === -1) return 'Unlimited';
     if (typeof value === 'boolean') {
       return value ? (
-        <Check className="w-4 h-4 text-primary mx-auto" />
+        <Check className="w-4 h-4 text-green-600 dark:text-green-500 mx-auto" />
       ) : (
-        <X className="w-4 h-4 text-muted-foreground/40 mx-auto" />
+        <X className="w-4 h-4 text-gray-300 dark:text-gray-600 mx-auto" />
       );
     }
     if (typeof value === 'number') return value.toLocaleString();
@@ -25,9 +26,9 @@ const FeatureComparison: React.FC<FeatureComparisonProps> = ({ plans }) => {
   const formatFreeValue = (value: any) => {
     if (typeof value === 'boolean') {
       return value ? (
-        <Check className="w-4 h-4 text-primary mx-auto" />
+        <Check className="w-4 h-4 text-green-600 dark:text-green-500 mx-auto" />
       ) : (
-        <X className="w-4 h-4 text-muted-foreground/40 mx-auto" />
+        <X className="w-4 h-4 text-gray-300 dark:text-gray-600 mx-auto" />
       );
     }
     return value;
@@ -45,48 +46,48 @@ const FeatureComparison: React.FC<FeatureComparisonProps> = ({ plans }) => {
   ];
 
   return (
-    <Card className="mt-8 border-border">
-      <CardHeader className="border-b border-border">
-        <CardTitle className="text-lg font-semibold">Feature Comparison</CardTitle>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border bg-muted/30">
-                <th className="text-left py-4 px-6 font-medium text-foreground">Features</th>
-                <th className="text-center py-4 px-4 font-medium text-foreground">Free</th>
-                {Object.entries(plans).map(([planType, plan]) => (
-                  <th key={planType} className="text-center py-4 px-4 font-medium text-foreground">
-                    {plan.name}
-                  </th>
+    <Card 
+      className="mt-8 border border-gray-200 dark:border-gray-700"
+      styles={{ body: { padding: 0 } }}
+    >
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <Title level={5} className="!mb-0 !text-gray-800 dark:!text-gray-100">Feature Comparison</Title>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+              <th className="text-left py-4 px-6 font-medium text-gray-700 dark:text-gray-300">Features</th>
+              <th className="text-center py-4 px-4 font-medium text-gray-700 dark:text-gray-300">Free</th>
+              {Object.entries(plans).map(([planType, plan]) => (
+                <th key={planType} className="text-center py-4 px-4 font-medium text-gray-700 dark:text-gray-300">
+                  {plan.name}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {features.map((feature, index) => (
+              <tr 
+                key={feature.label} 
+                className={`border-b border-gray-100 dark:border-gray-700/50 last:border-0 ${
+                  index % 2 === 0 ? 'bg-gray-50/50 dark:bg-gray-800/30' : 'bg-white dark:bg-transparent'
+                }`}
+              >
+                <td className="py-4 px-6 font-medium text-gray-700 dark:text-gray-300">{feature.label}</td>
+                <td className="text-center py-4 px-4 text-gray-600 dark:text-gray-400">
+                  {formatFreeValue(feature.free)}
+                </td>
+                {Object.values(plans).map((plan, planIndex) => (
+                  <td key={planIndex} className="text-center py-4 px-4 text-gray-700 dark:text-gray-300">
+                    {formatFeatureValue(plan.features[feature.key as keyof typeof plan.features])}
+                  </td>
                 ))}
               </tr>
-            </thead>
-            <tbody>
-              {features.map((feature, index) => (
-                <tr 
-                  key={feature.label} 
-                  className={cn(
-                    "border-b border-border last:border-0",
-                    index % 2 === 0 ? 'bg-muted/20' : 'bg-background'
-                  )}
-                >
-                  <td className="py-4 px-6 font-medium text-foreground">{feature.label}</td>
-                  <td className="text-center py-4 px-4 text-muted-foreground">
-                    {formatFreeValue(feature.free)}
-                  </td>
-                  {Object.values(plans).map((plan, planIndex) => (
-                    <td key={planIndex} className="text-center py-4 px-4 text-foreground">
-                      {formatFeatureValue(plan.features[feature.key as keyof typeof plan.features])}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </CardContent>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </Card>
   );
 };

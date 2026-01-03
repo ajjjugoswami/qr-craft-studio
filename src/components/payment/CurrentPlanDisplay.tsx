@@ -1,6 +1,7 @@
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, Typography } from 'antd';
+
+const { Title, Text } = Typography;
 
 interface CurrentPlanDisplayProps {
   subscription: {
@@ -20,35 +21,33 @@ const CurrentPlanDisplay: React.FC<CurrentPlanDisplayProps> = ({
   }
 
   return (
-    <Card className="mb-8 border-border bg-muted/30">
-      <CardContent className="py-6">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h3 className="text-lg font-semibold text-foreground">
-              {subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1)} Plan
-            </h3>
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">
-                Status: 
-              </span>
-              <div className="flex items-center gap-1.5">
-                <span className={`w-2 h-2 rounded-full ${
-                  subscription.status === 'active' ? 'bg-green-500' : 'bg-red-500'
-                }`} />
-                <span className="text-sm text-foreground capitalize">{subscription.status}</span>
-              </div>
+    <Card className="mb-8 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30">
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <Title level={5} className="!mb-1 !text-gray-800 dark:!text-gray-100">
+            {subscription.planType.charAt(0).toUpperCase() + subscription.planType.slice(1)} Plan
+          </Title>
+          <div className="flex items-center gap-3">
+            <Text className="text-gray-500 dark:text-gray-400 text-sm">Status:</Text>
+            <div className="flex items-center gap-1.5">
+              <span className={`w-2 h-2 rounded-full ${
+                subscription.status === 'active' ? 'bg-green-500' : 'bg-red-500'
+              }`} />
+              <Text className="text-gray-700 dark:text-gray-300 text-sm capitalize">
+                {subscription.status}
+              </Text>
             </div>
-            {subscription.endDate && (
-              <p className="text-sm text-muted-foreground">
-                Valid until: {new Date(subscription.endDate).toLocaleDateString()}
-              </p>
-            )}
           </div>
-          <Badge variant="outline" className="text-primary border-primary">
-            Current Plan
-          </Badge>
+          {subscription.endDate && (
+            <Text className="text-gray-500 dark:text-gray-400 text-sm">
+              Valid until: {new Date(subscription.endDate).toLocaleDateString()}
+            </Text>
+          )}
         </div>
-      </CardContent>
+        <span className="border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 px-3 py-1 rounded-full text-sm font-medium">
+          Current Plan
+        </span>
+      </div>
     </Card>
   );
 };

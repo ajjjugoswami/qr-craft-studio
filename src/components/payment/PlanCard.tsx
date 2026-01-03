@@ -1,9 +1,8 @@
 import React from 'react';
+import { Card, Button, Typography, List } from 'antd';
 import { Check, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+
+const { Title, Text } = Typography;
 
 interface PlanCardProps {
   planType: string;
@@ -57,14 +56,11 @@ const PlanCard: React.FC<PlanCardProps> = ({
   const FeatureItem = ({ text, included = true }: { text: string; included?: boolean }) => (
     <div className="flex items-center gap-3 py-2">
       {included ? (
-        <Check className="w-4 h-4 text-primary flex-shrink-0" />
+        <Check className="w-4 h-4 text-green-600 dark:text-green-500 flex-shrink-0" />
       ) : (
-        <X className="w-4 h-4 text-muted-foreground/50 flex-shrink-0" />
+        <X className="w-4 h-4 text-gray-300 dark:text-gray-600 flex-shrink-0" />
       )}
-      <span className={cn(
-        "text-sm",
-        included ? "text-foreground" : "text-muted-foreground"
-      )}>
+      <span className={included ? "text-gray-700 dark:text-gray-300" : "text-gray-400 dark:text-gray-500"}>
         {text}
       </span>
     </div>
@@ -73,42 +69,43 @@ const PlanCard: React.FC<PlanCardProps> = ({
   // Free Plan
   if (planType === 'free') {
     return (
-      <Card className={cn(
-        "h-full transition-all duration-200",
-        isCurrentPlan 
-          ? "border-primary ring-1 ring-primary/20" 
-          : "border-border hover:border-muted-foreground/30"
-      )}>
-        <CardHeader className="text-center pb-2">
-          <h3 className="text-xl font-semibold text-foreground">Free</h3>
-          <div className="mt-4">
-            <span className="text-4xl font-bold text-foreground">₹0</span>
-            <span className="text-muted-foreground text-sm">/month</span>
+      <Card
+        className={`h-full transition-all duration-200 ${
+          isCurrentPlan 
+            ? 'border-2 border-gray-400 dark:border-gray-500' 
+            : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+        }`}
+        styles={{ body: { padding: '28px 24px' } }}
+      >
+        <div className="text-center mb-6">
+          <Title level={4} className="!mb-4 !text-gray-800 dark:!text-gray-100">Free</Title>
+          <div className="mb-3">
+            <span className="text-4xl font-bold text-gray-900 dark:text-white">₹0</span>
+            <Text className="text-gray-500 dark:text-gray-400">/month</Text>
           </div>
-          <p className="text-muted-foreground text-sm mt-2">
+          <Text className="text-gray-500 dark:text-gray-400 text-sm">
             Perfect for trying out QR Studio
-          </p>
-        </CardHeader>
+          </Text>
+        </div>
 
-        <CardContent className="pt-4">
-          <div className="space-y-1 border-t border-border pt-4">
-            <FeatureItem text="Up to 5 QR codes" />
-            <FeatureItem text="Up to 100 scans per QR" />
-            <FeatureItem text="Basic templates" />
-            <FeatureItem text="Standard support" />
-            <FeatureItem text="Watermark included" />
-          </div>
+        <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
+          <FeatureItem text="Up to 5 QR codes" />
+          <FeatureItem text="Up to 100 scans per QR" />
+          <FeatureItem text="Basic templates" />
+          <FeatureItem text="Standard support" />
+          <FeatureItem text="Watermark included" />
+        </div>
 
-          <div className="mt-6">
-            <Button 
-              variant="outline" 
-              className="w-full" 
-              disabled
-            >
-              {isCurrentPlan ? 'Current Plan' : 'Free Forever'}
-            </Button>
-          </div>
-        </CardContent>
+        <div className="mt-6">
+          <Button 
+            block 
+            size="large" 
+            disabled
+            className="!bg-gray-100 dark:!bg-gray-800 !border-gray-200 dark:!border-gray-700 !text-gray-500 dark:!text-gray-400"
+          >
+            {isCurrentPlan ? 'Current Plan' : 'Free Forever'}
+          </Button>
+        </div>
       </Card>
     );
   }
@@ -120,87 +117,88 @@ const PlanCard: React.FC<PlanCardProps> = ({
   const monthlyPrice = selectedDuration === 12 ? Math.round(price / 12) : price;
 
   return (
-    <Card className={cn(
-      "h-full relative transition-all duration-200",
-      isCurrentPlan 
-        ? "border-primary ring-1 ring-primary/20" 
-        : isPopular 
-          ? "border-primary/50 ring-1 ring-primary/10" 
-          : "border-border hover:border-muted-foreground/30"
-    )}>
+    <Card
+      className={`h-full relative transition-all duration-200 ${
+        isCurrentPlan 
+          ? 'border-2 border-gray-500 dark:border-gray-400' 
+          : isPopular 
+            ? 'border-2 border-gray-400 dark:border-gray-500' 
+            : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+      }`}
+      styles={{ body: { padding: '28px 24px' } }}
+    >
       {isPopular && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <Badge className="bg-primary text-primary-foreground px-3 py-1 text-xs font-medium">
+          <span className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-1 rounded-full text-xs font-medium">
             Most Popular
-          </Badge>
+          </span>
         </div>
       )}
       
-      <CardHeader className="text-center pb-2 pt-6">
-        <h3 className="text-xl font-semibold text-foreground">{plan.name}</h3>
+      <div className={`text-center mb-6 ${isPopular ? 'pt-2' : ''}`}>
+        <Title level={4} className="!mb-4 !text-gray-800 dark:!text-gray-100">{plan.name}</Title>
         
-        <div className="mt-4">
-          <span className="text-4xl font-bold text-foreground">₹{monthlyPrice}</span>
-          <span className="text-muted-foreground text-sm">/month</span>
+        <div className="mb-3">
+          <span className="text-4xl font-bold text-gray-900 dark:text-white">₹{monthlyPrice}</span>
+          <Text className="text-gray-500 dark:text-gray-400">/month</Text>
           {selectedDuration === 12 && (
             <div className="mt-1">
-              <span className="text-muted-foreground text-sm line-through">₹{plan.price}/month</span>
-              <span className="text-primary text-sm ml-2 font-medium">Save 20%</span>
+              <Text delete className="text-gray-400 dark:text-gray-500 text-sm">₹{plan.price}/month</Text>
+              <Text className="text-green-600 dark:text-green-500 text-sm ml-2 font-medium">Save 20%</Text>
             </div>
           )}
         </div>
         
-        <p className="text-muted-foreground text-sm mt-2">
+        <Text className="text-gray-500 dark:text-gray-400 text-sm">
           {planType === 'basic' && 'Great for small businesses'}
           {planType === 'pro' && 'Perfect for growing businesses'}
           {planType === 'enterprise' && 'Unlimited power for enterprises'}
-        </p>
-      </CardHeader>
+        </Text>
+      </div>
 
-      <CardContent className="pt-4">
-        <div className="space-y-1 border-t border-border pt-4">
-          <FeatureItem text={`${formatFeatureValue(plan.features.maxQRCodes)} QR codes`} />
-          <FeatureItem text={`${formatFeatureValue(plan.features.maxScansPerQR)} scans per QR`} />
-          <FeatureItem 
-            text="Advanced analytics" 
-            included={plan.features.analytics} 
-          />
-          <FeatureItem 
-            text="White label" 
-            included={plan.features.whiteLabel} 
-          />
-          <FeatureItem 
-            text="Remove watermark" 
-            included={plan.features.removeWatermark} 
-          />
-        </div>
+      <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
+        <FeatureItem text={`${formatFeatureValue(plan.features.maxQRCodes)} QR codes`} />
+        <FeatureItem text={`${formatFeatureValue(plan.features.maxScansPerQR)} scans per QR`} />
+        <FeatureItem text="Advanced analytics" included={plan.features.analytics} />
+        <FeatureItem text="White label" included={plan.features.whiteLabel} />
+        <FeatureItem text="Remove watermark" included={plan.features.removeWatermark} />
+      </div>
 
-        <div className="mt-6">
-          {isCurrentPlan ? (
-            <Button variant="secondary" className="w-full" disabled>
-              Current Plan
-            </Button>
-          ) : !canUpgrade ? (
-            <Button variant="outline" className="w-full" disabled>
-              Downgrade Not Available
-            </Button>
-          ) : (
-            <Button
-              variant={isPopular ? "default" : "outline"}
-              className="w-full"
-              disabled={processingPlan === planType}
-              onClick={() => onSelectPlan(planType)}
-            >
-              {processingPlan === planType 
-                ? 'Processing...' 
-                : subscription?.planType === 'free' 
-                  ? 'Upgrade Now' 
-                  : 'Switch Plan'
-              }
-            </Button>
-          )}
-        </div>
-      </CardContent>
+      <div className="mt-6">
+        {isCurrentPlan ? (
+          <Button 
+            block 
+            size="large" 
+            disabled
+            className="!bg-gray-100 dark:!bg-gray-800 !border-gray-200 dark:!border-gray-700 !text-gray-500 dark:!text-gray-400"
+          >
+            Current Plan
+          </Button>
+        ) : !canUpgrade ? (
+          <Button 
+            block 
+            size="large" 
+            disabled
+            className="!bg-gray-100 dark:!bg-gray-800 !border-gray-200 dark:!border-gray-700 !text-gray-500 dark:!text-gray-400"
+          >
+            Downgrade Not Available
+          </Button>
+        ) : (
+          <Button
+            block
+            size="large"
+            type={isPopular ? 'primary' : 'default'}
+            loading={processingPlan === planType}
+            onClick={() => onSelectPlan(planType)}
+            className={isPopular 
+              ? '!bg-gray-900 dark:!bg-white !border-gray-900 dark:!border-white !text-white dark:!text-gray-900 hover:!bg-gray-800 dark:hover:!bg-gray-100' 
+              : '!border-gray-300 dark:!border-gray-600 !text-gray-700 dark:!text-gray-300 hover:!border-gray-400 dark:hover:!border-gray-500'
+            }
+          >
+            {subscription?.planType === 'free' ? 'Upgrade Now' : 'Switch Plan'}
+          </Button>
+        )}
+      </div>
     </Card>
   );
 };
