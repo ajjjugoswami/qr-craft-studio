@@ -1,8 +1,9 @@
 import React from 'react';
-import { Card, Button, Badge, Typography, List } from 'antd';
-import { Check, Crown, Zap, Gift, Shield, Rocket } from 'lucide-react';
-
-const { Title, Text } = Typography;
+import { Check, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface PlanCardProps {
   planType: string;
@@ -39,108 +40,75 @@ const PlanCard: React.FC<PlanCardProps> = ({
   canUpgrade,
   subscription
 }) => {
-  const getPlanIcon = (type: string) => {
-    switch (type) {
-      case 'free': return <Gift className="w-6 h-6" />;
-      case 'basic': return <Zap className="w-6 h-6" />;
-      case 'pro': return <Crown className="w-6 h-6" />;
-      case 'enterprise': return <Rocket className="w-6 h-6" />;
-      default: return <Shield className="w-6 h-6" />;
-    }
-  };
-
-  const getPlanColor = (type: string) => {
-    switch (type) {
-      case 'free': return '#8c8c8c';
-      case 'basic': return '#52c41a';
-      case 'pro': return '#1890ff';
-      case 'enterprise': return '#722ed1';
-      default: return '#d9d9d9';
-    }
-  };
-
-  const getPlanBorderColor = (type: string) => {
-    switch (type) {
-      case 'free': return 'border-gray-400';
-      case 'basic': return 'border-green-500';
-      case 'pro': return 'border-blue-500';
-      case 'enterprise': return 'border-purple-500';
-      default: return 'border-gray-300';
-    }
-  };
-
   const getDiscountedPrice = (price: number, duration: number) => {
     if (duration === 12) {
-      return Math.round(price * 12 * 0.8); // 20% discount for yearly
+      return Math.round(price * 12 * 0.8);
     }
     return price;
   };
 
   const formatFeatureValue = (value: any) => {
     if (value === -1) return 'Unlimited';
-    if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+    if (typeof value === 'boolean') return value;
     if (typeof value === 'number') return value.toLocaleString();
     return value;
   };
 
+  const FeatureItem = ({ text, included = true }: { text: string; included?: boolean }) => (
+    <div className="flex items-center gap-3 py-2">
+      {included ? (
+        <Check className="w-4 h-4 text-primary flex-shrink-0" />
+      ) : (
+        <X className="w-4 h-4 text-muted-foreground/50 flex-shrink-0" />
+      )}
+      <span className={cn(
+        "text-sm",
+        included ? "text-foreground" : "text-muted-foreground"
+      )}>
+        {text}
+      </span>
+    </div>
+  );
+
   // Free Plan
   if (planType === 'free') {
     return (
-      <Card
-        className={`h-full transition-all duration-300 ${
-          isCurrentPlan 
-            ? `${getPlanBorderColor('free')} border-2 shadow-lg bg-gradient-to-br from-gray-50 to-gray-100` 
-            : 'border-gray-200 hover:shadow-md'
-        }`}
-        bodyStyle={{ padding: '32px 24px' }}
-      >
-        <div className="text-center mb-6">
-          <div 
-            className="inline-flex items-center justify-center w-12 h-12 rounded-lg mb-4"
-            style={{ backgroundColor: `${getPlanColor('free')}20` }}
-          >
-            <div style={{ color: getPlanColor('free') }}>
-              {getPlanIcon('free')}
-            </div>
+      <Card className={cn(
+        "h-full transition-all duration-200",
+        isCurrentPlan 
+          ? "border-primary ring-1 ring-primary/20" 
+          : "border-border hover:border-muted-foreground/30"
+      )}>
+        <CardHeader className="text-center pb-2">
+          <h3 className="text-xl font-semibold text-foreground">Free</h3>
+          <div className="mt-4">
+            <span className="text-4xl font-bold text-foreground">₹0</span>
+            <span className="text-muted-foreground text-sm">/month</span>
           </div>
-          <Title level={3}>Free</Title>
-          <div className="mb-4">
-            <span className="text-4xl font-bold">₹0</span>
-            <Text type="secondary">/month</Text>
+          <p className="text-muted-foreground text-sm mt-2">
+            Perfect for trying out QR Studio
+          </p>
+        </CardHeader>
+
+        <CardContent className="pt-4">
+          <div className="space-y-1 border-t border-border pt-4">
+            <FeatureItem text="Up to 5 QR codes" />
+            <FeatureItem text="Up to 100 scans per QR" />
+            <FeatureItem text="Basic templates" />
+            <FeatureItem text="Standard support" />
+            <FeatureItem text="Watermark included" />
           </div>
-          <Text type="secondary">Perfect for trying out QR Studio</Text>
-        </div>
 
-        <List
-          size="small"
-          dataSource={[
-            'Up to 5 QR codes',
-            'Up to 100 scans per QR',
-            'Basic templates',
-            'Standard support',
-            'Watermark included'
-          ]}
-          renderItem={(item) => (
-            <List.Item className="justify-start">
-              <div className="flex items-center">
-                <Check className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" />
-                <Text>{item}</Text>
-              </div>
-            </List.Item>
-          )}
-        />
-
-        <div className="mt-6">
-          {isCurrentPlan ? (
-            <Button block size="large" disabled>
-              Current Plan
+          <div className="mt-6">
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              disabled
+            >
+              {isCurrentPlan ? 'Current Plan' : 'Free Forever'}
             </Button>
-          ) : (
-            <Button block size="large" type="default" disabled>
-              Current Plan
-            </Button>
-          )}
-        </div>
+          </div>
+        </CardContent>
       </Card>
     );
   }
@@ -152,103 +120,87 @@ const PlanCard: React.FC<PlanCardProps> = ({
   const monthlyPrice = selectedDuration === 12 ? Math.round(price / 12) : price;
 
   return (
-    <Card
-      className={`h-full relative transition-all duration-300 ${
-        isCurrentPlan 
-          ? `${getPlanBorderColor(planType)} border-2 shadow-xl` 
-          : isPopular 
-            ? 'border-blue-300 border-2 shadow-lg hover:shadow-xl' 
-            : 'border-gray-200 hover:shadow-md'
-      } ${
-        isCurrentPlan 
-          ? 'bg-gradient-to-br from-blue-50 to-indigo-100' 
-          : ''
-      }`}
-      bodyStyle={{ padding: '32px 24px' }}
-    >
+    <Card className={cn(
+      "h-full relative transition-all duration-200",
+      isCurrentPlan 
+        ? "border-primary ring-1 ring-primary/20" 
+        : isPopular 
+          ? "border-primary/50 ring-1 ring-primary/10" 
+          : "border-border hover:border-muted-foreground/30"
+    )}>
       {isPopular && (
-        <Badge.Ribbon 
-          text="Most Popular" 
-          color="blue" 
-          style={{ 
-            top: '-6px',
-            right: '-32px',
-            zIndex: 1
-          }}
-        />
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+          <Badge className="bg-primary text-primary-foreground px-3 py-1 text-xs font-medium">
+            Most Popular
+          </Badge>
+        </div>
       )}
       
-      <div className="text-center mb-6">
-        <div 
-          className="inline-flex items-center justify-center w-12 h-12 rounded-lg mb-4"
-          style={{ backgroundColor: `${getPlanColor(planType)}20` }}
-        >
-          <div style={{ color: getPlanColor(planType) }}>
-            {getPlanIcon(planType)}
-          </div>
-        </div>
+      <CardHeader className="text-center pb-2 pt-6">
+        <h3 className="text-xl font-semibold text-foreground">{plan.name}</h3>
         
-        <Title level={3}>{plan.name}</Title>
-        
-        <div className="mb-4">
-          <span className="text-4xl font-bold">₹{monthlyPrice}</span>
-          <Text type="secondary">/month</Text>
+        <div className="mt-4">
+          <span className="text-4xl font-bold text-foreground">₹{monthlyPrice}</span>
+          <span className="text-muted-foreground text-sm">/month</span>
           {selectedDuration === 12 && (
-            <div>
-              <Text delete type="secondary">₹{plan.price}/month</Text>
-              <Text type="success" className="ml-2">Save 20%</Text>
+            <div className="mt-1">
+              <span className="text-muted-foreground text-sm line-through">₹{plan.price}/month</span>
+              <span className="text-primary text-sm ml-2 font-medium">Save 20%</span>
             </div>
           )}
         </div>
         
-        <Text type="secondary">
+        <p className="text-muted-foreground text-sm mt-2">
           {planType === 'basic' && 'Great for small businesses'}
           {planType === 'pro' && 'Perfect for growing businesses'}
           {planType === 'enterprise' && 'Unlimited power for enterprises'}
-        </Text>
-      </div>
+        </p>
+      </CardHeader>
 
-      <List
-        size="small"
-        dataSource={[
-          `${formatFeatureValue(plan.features.maxQRCodes)} QR codes`,
-          `${formatFeatureValue(plan.features.maxScansPerQR)} scans per QR`,
-          `Advanced analytics: ${formatFeatureValue(plan.features.analytics)}`,
-          `White label: ${formatFeatureValue(plan.features.whiteLabel)}`,
-          `Remove watermark: ${formatFeatureValue(plan.features.removeWatermark)}`
-        ]}
-        renderItem={(item) => (
-          <List.Item className="justify-start">
-            <div className="flex items-center">
-              <Check className="w-4 h-4 text-green-500 mr-3 flex-shrink-0" />
-              <Text>{item}</Text>
-            </div>
-          </List.Item>
-        )}
-      />
+      <CardContent className="pt-4">
+        <div className="space-y-1 border-t border-border pt-4">
+          <FeatureItem text={`${formatFeatureValue(plan.features.maxQRCodes)} QR codes`} />
+          <FeatureItem text={`${formatFeatureValue(plan.features.maxScansPerQR)} scans per QR`} />
+          <FeatureItem 
+            text="Advanced analytics" 
+            included={plan.features.analytics} 
+          />
+          <FeatureItem 
+            text="White label" 
+            included={plan.features.whiteLabel} 
+          />
+          <FeatureItem 
+            text="Remove watermark" 
+            included={plan.features.removeWatermark} 
+          />
+        </div>
 
-      <div className="mt-6">
-        {isCurrentPlan ? (
-          <Button block size="large" disabled>
-            Current Plan
-          </Button>
-        ) : !canUpgrade ? (
-          <Button block size="large" type="default" disabled>
-            Downgrade Not Available
-          </Button>
-        ) : (
-          <Button
-            block
-            size="large"
-            type={isPopular ? 'primary' : 'default'}
-            loading={processingPlan === planType}
-            onClick={() => onSelectPlan(planType)}
-            style={isPopular ? undefined : { borderColor: getPlanColor(planType), color: getPlanColor(planType) }}
-          >
-            {subscription?.planType === 'free' ? 'Upgrade Now' : 'Switch Plan'}
-          </Button>
-        )}
-      </div>
+        <div className="mt-6">
+          {isCurrentPlan ? (
+            <Button variant="secondary" className="w-full" disabled>
+              Current Plan
+            </Button>
+          ) : !canUpgrade ? (
+            <Button variant="outline" className="w-full" disabled>
+              Downgrade Not Available
+            </Button>
+          ) : (
+            <Button
+              variant={isPopular ? "default" : "outline"}
+              className="w-full"
+              disabled={processingPlan === planType}
+              onClick={() => onSelectPlan(planType)}
+            >
+              {processingPlan === planType 
+                ? 'Processing...' 
+                : subscription?.planType === 'free' 
+                  ? 'Upgrade Now' 
+                  : 'Switch Plan'
+              }
+            </Button>
+          )}
+        </div>
+      </CardContent>
     </Card>
   );
 };
