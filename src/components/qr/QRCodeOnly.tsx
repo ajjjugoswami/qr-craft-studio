@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, forwardRef, useMemo } from 'react';
 import QRCodeStyling from 'qr-code-styling';
-import { getAppOrigin } from '../../lib/config';
 import { QRTemplate, QRStyling, QRType } from '../../types/qrcode';
+import { createQRCodeOptions, createSafeStyling } from '../../lib/qrUtils';
 
 // All QR types now go through redirector for scan tracking
 // Direct content types (vcard, wifi, etc.) will be displayed on the redirector page
@@ -13,7 +13,7 @@ interface QRCodeOnlyProps {
   styling: QRStyling;
   size?: number;
   qrId?: string;
-  qrType?: QRType; // Add type to determine encoding strategy
+  qrType?: QRType;
 }
 
 const QRCodeOnly = forwardRef<HTMLDivElement, QRCodeOnlyProps>(({
@@ -27,43 +27,9 @@ const QRCodeOnly = forwardRef<HTMLDivElement, QRCodeOnlyProps>(({
   const qrRef = useRef<HTMLDivElement>(null);
   const qrCode = useRef<QRCodeStyling | null>(null);
 
-  const safeStyling = useMemo(() => ({
-    ...styling,
-    imageOptions: styling.imageOptions || {
-      hideBackgroundDots: true,
-      imageSize: 0.4,
-      margin: 0,
-    },
-    cornersSquareOptions: styling.cornersSquareOptions || {
-      color: styling.fgColor,
-      type: 'square',
-    },
-    cornersDotOptions: styling.cornersDotOptions || {
-      color: styling.fgColor,
-      type: 'square',
-    },
-  }), [styling]);
+  const safeStyling = useMemo(() => createSafeStyling(styling), [styling]);
 
   useEffect(() => {
-    const getQRData = () => {
-      try {
-        // ALL QR types now go through redirector for scan tracking
-        // The redirector will handle displaying content for direct types (vcard, wifi, etc.)
-        // and redirecting for URL-based types (url, instagram, youtube, etc.)
-        if (typeof window !== 'undefined') {
-          if (typeof content === 'string' && qrId) {
-            return `${getAppOrigin()}/r/${qrId}`;
-          }
-          if (typeof content === 'string') {
-            return `${getAppOrigin()}/r?u=${encodeURIComponent(content)}`;
-          }
-        }
-        return content || 'https://example.com';
-      } catch (e) {
-        return content || 'https://example.com';
-      }
-    };
-
     if (qrRef.current) {
       // When an image/logo is present, force high error correction for scannability
       const hasLogo = !!safeStyling.image;
@@ -71,50 +37,27 @@ const QRCodeOnly = forwardRef<HTMLDivElement, QRCodeOnlyProps>(({
       // Limit logo size to 25% max for scannability
       const logoSize = hasLogo ? Math.min(safeStyling.imageOptions?.imageSize || 0.4, 0.25) : (safeStyling.imageOptions?.imageSize || 0.4);
       
+      const baseOptions = createQRCodeOptions(content, styling, size, qrId);
+      
+      // Override with specific options for QRCodeOnly
       const qrOptions = {
-        width: size,
-        height: size,
-        data: getQRData(),
-        type: 'svg' as const,
+        ...baseOptions,
         margin: 0,
         qrOptions: {
           errorCorrectionLevel: errorLevel,
         },
-        dotsOptions: {
-          color: safeStyling.fgColor,
-          type: safeStyling.dotsType,
-          ...(safeStyling.dotsGradient && { gradient: safeStyling.dotsGradient }),
-        },
-        backgroundOptions: {
-          color: safeStyling.bgColor,
-          ...(safeStyling.backgroundGradient && { gradient: safeStyling.backgroundGradient }),
-        },
-        cornersSquareOptions: safeStyling.cornersSquareOptions ? {
-          color: safeStyling.cornersSquareOptions.color ?? safeStyling.fgColor,
-          type: safeStyling.cornersSquareOptions.type ?? 'square',
-          ...(safeStyling.cornersSquareOptions.gradient && { gradient: safeStyling.cornersSquareOptions.gradient }),
-        } : undefined,
-        cornersDotOptions: safeStyling.cornersDotOptions ? {
-          color: safeStyling.cornersDotOptions.color ?? safeStyling.fgColor,
-          type: safeStyling.cornersDotOptions.type ?? 'square',
-          ...(safeStyling.cornersDotOptions.gradient && { gradient: safeStyling.cornersDotOptions.gradient }),
-        } : undefined,
         imageOptions: safeStyling.imageOptions ? {
-          hideBackgroundDots: true, // Always hide background dots for better logo visibility
+          hideBackgroundDots: true,
           imageSize: logoSize,
-          margin: safeStyling.imageOptions.margin ?? 2, // Add small margin for better scannability
+          margin: safeStyling.imageOptions.margin ?? 2,
         } : undefined,
-        image: safeStyling.image,
-        shape: safeStyling.shape,
       };
 
-      if (qrRef.current) {
-        qrRef.current.innerHTML = '';
-        qrCode.current = new QRCodeStyling(qrOptions);
-        qrCode.current.append(qrRef.current);
-      }
+      qrRef.current.innerHTML = '';
+      qrCode.current = new QRCodeStyling(qrOptions);
+      qrCode.current.append(qrRef.current);
     }
-  }, [content, safeStyling, qrId, size, qrType]);
+  }, [content, safeStyling, qrId, size, qrType, styling]);
 
   return (
     <div ref={ref} className="flex items-center justify-center">

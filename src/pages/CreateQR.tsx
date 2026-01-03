@@ -117,7 +117,7 @@ const CreateQR: React.FC = () => {
     loadForEdit();
   }, [id, getQRCode]);
 
-  useEffect(() => {}, [initialized]);
+  // Removed empty useEffect that had no purpose
 
   const handleNext = () => {
     // Validate content step (step 2)
