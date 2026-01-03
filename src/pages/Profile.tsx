@@ -1,12 +1,13 @@
 import React from 'react';
 import { Typography, Tabs } from 'antd';
-import { User, Palette, Shield, Droplets, Tag } from 'lucide-react';
+import { User, Palette, Shield, Droplets, Tag, CreditCard } from 'lucide-react';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import ProfileInfo from './settings/ProfileInfo';
 import ThemeSettings from './settings/ThemeSettings';
 import SecuritySettings from './settings/SecuritySettings';
 import WatermarkSettings from '@/components/settings/WatermarkSettings';
 import WhiteLabelSettings from '@/components/settings/WhiteLabelSettings';
+import SubscriptionManagement from '@/components/payment/SubscriptionManagement';
 
 const { Title, Text } = Typography;
 
@@ -51,6 +52,16 @@ const Profile: React.FC = () => {
         </span>
       ),
       children: <WhiteLabelSettings />,
+    },
+    {
+      key: 'subscription',
+      label: (
+        <span className="flex items-center gap-2">
+          <CreditCard size={16} />
+          Subscription
+        </span>
+      ),
+      children: <SubscriptionManagement />,
     },
     {
       key: 'security',

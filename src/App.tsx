@@ -29,6 +29,7 @@ const Contact = lazy(() => import("./pages/Contact"));
 const Submissions = lazy(() => import("./pages/Submissions"));
 const AdminDataPage = lazy(() => import("./pages/AdminData"));
 const Profile = lazy(() => import("./pages/Profile"));
+const PricingPage = lazy(() => import("./pages/PricingPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -119,6 +120,10 @@ const AppContent = () => {
               <Route
                 path="/settings"
                 element={<ProtectedRoute><Profile /></ProtectedRoute>}
+              />
+              <Route
+                path="/pricing"
+                element={<ProtectedRoute><PricingPage /></ProtectedRoute>}
               />
               <Route path="/faqs" element={<FAQs />} />
               <Route path="/contact" element={<Contact />} />
