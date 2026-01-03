@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Card, Typography, Switch, Input, message, Button, ColorPicker, Tooltip } from 'antd';
-import { Palette, Save, Eye, HelpCircle } from 'lucide-react';
+import { Card, Typography, Switch, Input, message, Button, ColorPicker, Tooltip, Alert } from 'antd';
+import { Palette, Save, Eye, HelpCircle, Crown, ArrowUpRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { usePayment } from '@/hooks/usePayment';
 import { authAPI } from '@/lib/api';
 import type { Color } from 'antd/es/color-picker';
 
@@ -16,7 +18,9 @@ export interface WhiteLabelConfig {
 }
 
 const WhiteLabelSettings: React.FC = () => {
+  const navigate = useNavigate();
   const { user, updateUser } = useAuth();
+  const { subscription, hasFeatureAccess } = usePayment();
   
   const [loading, setLoading] = useState(false);
   const [config, setConfig] = useState<WhiteLabelConfig>({
@@ -26,6 +30,9 @@ const WhiteLabelSettings: React.FC = () => {
     loadingText: user?.whiteLabel?.loadingText || '',
     showPoweredBy: user?.whiteLabel?.showPoweredBy ?? true,
   });
+
+  // Check if user has access to white label features
+  const canUseWhiteLabel = hasFeatureAccess('whiteLabel');
 
   const handleSave = async () => {
     try {
@@ -57,7 +64,31 @@ const WhiteLabelSettings: React.FC = () => {
 
   return (
     <Card className="shadow-sm">
-      <div className="flex items-center justify-between mb-6">
+      {/* Premium Feature Alert for Free Users */}
+      {!canUseWhiteLabel && (
+        <Alert
+          type="info"
+          showIcon
+          icon={<Crown size={16} />}
+          message="Premium Feature"
+          description={
+            <div className="flex items-center justify-between">
+              <span>Upgrade to Pro to remove branding and customize your QR code redirect pages</span>
+              <Button 
+                type="primary" 
+                size="small" 
+                icon={<ArrowUpRight size={14} />}
+                onClick={() => navigate('/pricing')}
+              >
+                Upgrade Now
+              </Button>
+            </div>
+          }
+          className="mb-6"
+        />
+      )}
+
+      <div className="flex items-center justify-between mb-6">{' '}
         <Title level={4} className="mb-0 flex items-center gap-2">
           <Palette size={18} />
           White-Label Settings
@@ -74,6 +105,7 @@ const WhiteLabelSettings: React.FC = () => {
           icon={<Save size={16} />}
           onClick={handleSave}
           loading={loading}
+          disabled={!canUseWhiteLabel}
         >
           Save Changes
         </Button>
@@ -81,22 +113,24 @@ const WhiteLabelSettings: React.FC = () => {
 
       <div className="space-y-6">
         {/* Enable White-Label Toggle */}
-        <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border">
+        <div className={`flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border ${!canUseWhiteLabel ? 'opacity-50' : ''}`}>
           <div>
             <Text strong className="block">Enable White-Label Mode</Text>
             <Text type="secondary" className="text-sm">
               Apply custom branding to all your QR code redirect pages
+              {!canUseWhiteLabel && ' (Premium Feature)'}
             </Text>
           </div>
           <Switch
-            checked={config.enabled}
+            checked={config.enabled && canUseWhiteLabel}
             onChange={(enabled) => setConfig(prev => ({ ...prev, enabled }))}
             checkedChildren="ON"
             unCheckedChildren="OFF"
+            disabled={!canUseWhiteLabel}
           />
         </div>
 
-        <div className={!config.enabled ? 'opacity-50 pointer-events-none' : ''}>
+        <div className={(!config.enabled || !canUseWhiteLabel) ? 'opacity-50 pointer-events-none' : ''}>
           {/* Brand Name */}
           <div className="mb-6">
             <Text strong className="block mb-2">Brand Name</Text>
@@ -108,7 +142,7 @@ const WhiteLabelSettings: React.FC = () => {
               onChange={(e) => setConfig(prev => ({ ...prev, brandName: e.target.value }))}
               placeholder="e.g., Your Company"
               maxLength={50}
-              disabled={!config.enabled}
+              disabled={!config.enabled || !canUseWhiteLabel}
             />
           </div>
 
@@ -122,7 +156,7 @@ const WhiteLabelSettings: React.FC = () => {
               value={config.primaryColor}
               onChange={handleColorChange}
               showText
-              disabled={!config.enabled}
+              disabled={!config.enabled || !canUseWhiteLabel}
             />
           </div>
 
@@ -137,7 +171,7 @@ const WhiteLabelSettings: React.FC = () => {
               onChange={(e) => setConfig(prev => ({ ...prev, loadingText: e.target.value }))}
               placeholder="e.g., Taking you there..."
               maxLength={50}
-              disabled={!config.enabled}
+              disabled={!config.enabled || !canUseWhiteLabel}
             />
           </div>
 
@@ -152,7 +186,7 @@ const WhiteLabelSettings: React.FC = () => {
             <Switch
               checked={config.showPoweredBy}
               onChange={(showPoweredBy) => setConfig(prev => ({ ...prev, showPoweredBy }))}
-              disabled={!config.enabled}
+              disabled={!config.enabled || !canUseWhiteLabel}
               checkedChildren="Show"
               unCheckedChildren="Hide"
             />

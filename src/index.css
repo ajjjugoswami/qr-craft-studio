@@ -307,12 +307,38 @@
   height: 32px !important;
 }
 
+/* Textarea specific styles - more specific selectors */
+.ant-input.ant-input,
+textarea.ant-input {
+  height: auto !important;
+  min-height: 32px !important;
+  resize: vertical !important;
+  line-height: 1.6 !important;
+  padding: 8px 12px !important;
+}
+
+/* Regular input fields should stay fixed height */
+input.ant-input:not(textarea) {
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 4px 12px !important;
+}
+
 .ant-input-lg,
 .ant-input-affix-wrapper-lg,
 .ant-select-lg .ant-select-selector,
 .ant-picker-large {
   min-height: 36px !important;
   height: 36px !important;
+}
+
+/* Textarea large size - more specific */
+textarea.ant-input.ant-input-lg,
+.ant-input-lg.ant-input[data-type="textarea"] {
+  min-height: 40px !important;
+  height: auto !important;
+  padding: 10px 16px !important;
+  line-height: 1.6 !important;
 }
 
 /* Keep inner text vertically centered after forcing control heights */
@@ -972,6 +998,38 @@ h5.ant-typography {
 /* ============================== */
 .ant-switch {
   background: hsl(var(--muted-foreground)) !important;
+
+/* ============================== */
+/* Admin Tabs Styling             */
+/* ============================== */
+.admin-tabs .ant-tabs-tab {
+  padding: 12px 20px !important;
+  margin: 0 8px 0 0 !important;
+  font-weight: 500 !important;
+  border-radius: 8px 8px 0 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+.admin-tabs .ant-tabs-tab:hover {
+  background: hsl(var(--accent)) !important;
+}
+
+.admin-tabs .ant-tabs-tab-active {
+  background: hsl(var(--background)) !important;
+  border-color: hsl(var(--primary)) !important;
+}
+
+.admin-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: hsl(var(--primary)) !important;
+}
+
+.admin-tabs .ant-tabs-content-holder {
+  background: hsl(var(--card)) !important;
+  border-radius: 0 8px 8px 8px !important;
+  padding: 24px !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-top: 2px solid hsl(var(--primary)) !important;
+}
 }
 
 .ant-switch-checked {

@@ -14,6 +14,7 @@ import StatsCards from "../components/dashboard/StatsCards";
 import SearchBar from "../components/dashboard/SearchBar";
 import QRCodesList from "../components/dashboard/QRCodesList";
 import NoSearchResults from "../components/dashboard/NoSearchResults";
+import SubscriptionLimitAlert from "../components/payment/SubscriptionLimitAlert";
 import { useQRCodes } from "../hooks/useQRCodes";
 import { useAppSelector } from "../store";
 import { selectStatsLoading } from "../store/slices/statsSlice";
@@ -105,6 +106,9 @@ const Dashboard: React.FC = () => {
 
   return (
     <DashboardLayout>
+      {/* Subscription Limit Alert - Fixed at top */}
+      <SubscriptionLimitAlert currentQRCount={statsTotal || 0} />
+      
       <div className="animate-fade-in space-y-4 md:space-y-6">
         {/* Welcome Header */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

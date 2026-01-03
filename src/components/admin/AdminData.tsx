@@ -1,10 +1,11 @@
 import React, { useCallback, useState, memo } from "react";
-import { Table, Tag, Typography, Spin, Alert, Button, Input, Space, Tooltip, Popconfirm, Avatar, Modal } from "antd";
+import { Table, Tag, Typography, Spin, Alert, Button, Input, Space, Tooltip, Popconfirm, Avatar, Modal, Tabs } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
-import { RefreshCw, User } from 'lucide-react';
+import { RefreshCw, User, Users, CreditCard } from 'lucide-react';
 import { useDateFormatter } from "@/hooks/useDateFormatter";
 import { useAdminData } from "@/hooks/useAdminData";
 import type { AdminUserRow, AdminQRCode } from "@/store/slices/adminSlice";
+import AdminSubscriptions from "./AdminSubscriptions";
 
 const { Title, Text } = Typography;
 
@@ -172,11 +173,10 @@ const AdminData: React.FC = memo(() => {
     );
   }, [formatter]);
 
-  return (
+  const renderUsersTab = () => (
     <div>
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <Title level={4}>Admin: Users & QR Codes</Title>
           <Text type="secondary">
             View user details and the QR codes created by each user.
           </Text>
@@ -234,6 +234,45 @@ const AdminData: React.FC = memo(() => {
           expandable={{ expandedRowRender: renderExpandedRow }}
         />
       )}
+    </div>
+  );
+
+  const tabItems = [
+    {
+      key: '1',
+      label: (
+        <span className="flex items-center gap-2">
+          <Users size={16} />
+          Users & QR Codes
+        </span>
+      ),
+      children: renderUsersTab(),
+    },
+    {
+      key: '2',
+      label: (
+        <span className="flex items-center gap-2">
+          <CreditCard size={16} />
+          Subscriptions & Payments
+        </span>
+      ),
+      children: <AdminSubscriptions />,
+    },
+  ];
+
+  return (
+    <div>
+      <div className="mb-6">
+        <Title level={3}>Admin Dashboard</Title>
+        
+      </div>
+
+      <Tabs
+        defaultActiveKey="1"
+        items={tabItems}
+        size="large"
+        className="admin-tabs"
+      />
 
       <Modal
         open={previewVisible}

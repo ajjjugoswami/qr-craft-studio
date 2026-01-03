@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import {
   Typography,
@@ -155,7 +154,10 @@ const Contact: React.FC = () => {
                 </Form.Item>
 
                 <Form.Item name="message" label="Message" rules={[{ required: true, message: "Please enter your message" }]}>
-                  <TextArea rows={6} placeholder="Tell us how we can help you..." className="resize-none" />
+                  <TextArea 
+                    rows={3} 
+                    placeholder="Tell us how we can help you..." 
+                  />
                 </Form.Item>
 
                 <Form.Item className="mb-0">

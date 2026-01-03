@@ -17,6 +17,7 @@ import {
   GitCompare,
   Sun,
   Moon,
+  CreditCard,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -61,6 +62,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       key: "/compare",
       icon: <GitCompare size={18} />,
       label: "Compare QR Codes",
+    },
+    {
+      key: "/pricing",
+      icon: <CreditCard size={18} />,
+      label: "Pricing",
     },
     {
       key: "/faqs",

@@ -1,6 +1,7 @@
 import { useMemo, useEffect } from 'react';
 import { useQRCodes } from './useQRCodes';
 import { useAnalytics } from './useAnalytics';
+import { usePayment } from './usePayment';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { fetchAdvancedAnalytics, selectAdvancedAnalytics, selectAdvancedLoading } from '@/store/slices/analyticsSlice';
 import { getDemoScansOverTime, demoDeviceData, demoTopQRCodes, demoLocations, demoAdvancedAnalytics } from '@/lib/hardCodeAnalyticsData';
@@ -34,18 +35,22 @@ interface UseAnalyticsDataReturn {
 export const useAnalyticsData = (mode: 'real' | 'demo'): UseAnalyticsDataReturn => {
   const { qrCodes } = useQRCodes();
   const { scans, analytics, loading } = useAnalytics();
+  const { hasFeatureAccess } = usePayment();
   const dispatch = useAppDispatch();
   
   // Get advanced analytics from Redux
   const advancedAnalytics = useAppSelector(selectAdvancedAnalytics);
   const advancedLoading = useAppSelector(selectAdvancedLoading);
+  
+  // Check if user has access to advanced analytics
+  const canViewAdvancedAnalytics = hasFeatureAccess('advancedAnalytics');
 
-  // Fetch combined advanced analytics via Redux only if not already loaded
+  // Fetch combined advanced analytics via Redux only if user has access and data not loaded
   useEffect(() => {
-    if (mode === 'real' && !advancedAnalytics && !advancedLoading) {
+    if (mode === 'real' && canViewAdvancedAnalytics && !advancedAnalytics && !advancedLoading) {
       dispatch(fetchAdvancedAnalytics(undefined));
     }
-  }, [mode, dispatch, advancedAnalytics, advancedLoading]);
+  }, [mode, dispatch, advancedAnalytics, advancedLoading, canViewAdvancedAnalytics]);
 
   const activeQRs = useMemo(() => qrCodes.filter(qr => qr.status === 'active').length, [qrCodes]);
 

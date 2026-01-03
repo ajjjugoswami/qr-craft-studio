@@ -255,6 +255,12 @@ export const adminAPI = {
     return response.data;
   },
 
+  // Get subscriptions and payments data (admin only)
+  getSubscriptionsData: async (params?: { page?: number; limit?: number; search?: string }) => {
+    const response = await api.get('/admin/subscriptions', { params });
+    return response.data;
+  },
+
   // Admin user management
   deleteUser: async (id: string) => {
     const response = await api.delete(`/admin/users/${id}`);

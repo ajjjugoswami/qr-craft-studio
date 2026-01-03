@@ -1,16 +1,24 @@
 import React from 'react';
 import { Typography, Tabs } from 'antd';
-import { User, Palette, Shield, Droplets, Tag } from 'lucide-react';
+import { User, Palette, Shield, Droplets, Tag, CreditCard, Crown } from 'lucide-react';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import ProfileInfo from './settings/ProfileInfo';
 import ThemeSettings from './settings/ThemeSettings';
 import SecuritySettings from './settings/SecuritySettings';
 import WatermarkSettings from '@/components/settings/WatermarkSettings';
 import WhiteLabelSettings from '@/components/settings/WhiteLabelSettings';
+import SubscriptionManagement from '@/components/payment/SubscriptionManagement';
+import { usePayment } from '@/hooks/usePayment';
 
 const { Title, Text } = Typography;
 
 const Profile: React.FC = () => {
+  const { subscription, hasFeatureAccess } = usePayment();
+  
+  // Check if user has premium features
+  const canRemoveWatermark = hasFeatureAccess('removeWatermark');
+  const canUseWhiteLabel = hasFeatureAccess('whiteLabel');
+  
   const tabItems = [
     {
       key: 'profile',
@@ -38,6 +46,7 @@ const Profile: React.FC = () => {
         <span className="flex items-center gap-2">
           <Droplets size={16} />
           Watermark
+          {!canRemoveWatermark && <Crown size={12} className="text-amber-500" />}
         </span>
       ),
       children: <WatermarkSettings />,
@@ -48,9 +57,20 @@ const Profile: React.FC = () => {
         <span className="flex items-center gap-2">
           <Tag size={16} />
           White-Label
+          {!canUseWhiteLabel && <Crown size={12} className="text-amber-500" />}
         </span>
       ),
       children: <WhiteLabelSettings />,
+    },
+    {
+      key: 'subscription',
+      label: (
+        <span className="flex items-center gap-2">
+          <CreditCard size={16} />
+          Subscription
+        </span>
+      ),
+      children: <SubscriptionManagement />,
     },
     {
       key: 'security',
