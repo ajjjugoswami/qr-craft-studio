@@ -248,14 +248,6 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
             {subscription.features.maxScansPerQR === -1 ? 'Unlimited' : subscription.features.maxScansPerQR.toLocaleString()}
           </Descriptions.Item>
 
-          <Descriptions.Item label="Custom Domains">
-            {subscription.features.customDomains ? (
-              <Badge status="success" text="Available" />
-            ) : (
-              <Badge status="default" text="Not Available" />
-            )}
-          </Descriptions.Item>
-
           <Descriptions.Item label="Advanced Analytics">
             {subscription.features.analytics ? (
               <Badge status="success" text="Available" />
@@ -264,16 +256,16 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
             )}
           </Descriptions.Item>
 
-          <Descriptions.Item label="API Access">
-            {subscription.features.apiAccess ? (
+          <Descriptions.Item label="White Label">
+            {subscription.features.whiteLabel ? (
               <Badge status="success" text="Available" />
             ) : (
               <Badge status="default" text="Not Available" />
             )}
           </Descriptions.Item>
 
-          <Descriptions.Item label="Priority Support">
-            {subscription.features.prioritySupport ? (
+          <Descriptions.Item label="Remove Watermark">
+            {subscription.features.removeWatermark ? (
               <Badge status="success" text="Available" />
             ) : (
               <Badge status="default" text="Not Available" />

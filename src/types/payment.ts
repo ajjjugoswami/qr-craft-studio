@@ -4,10 +4,9 @@ export interface Plan {
   features: {
     maxQRCodes: number;
     maxScansPerQR: number;
-    customDomains: boolean;
     analytics: boolean;
-    apiAccess: boolean;
-    prioritySupport: boolean;
+    whiteLabel: boolean;
+    removeWatermark: boolean;
   };
 }
 
@@ -34,10 +33,9 @@ export interface Subscription {
   features: {
     maxQRCodes: number;
     maxScansPerQR: number;
-    customDomains: boolean;
     analytics: boolean;
-    apiAccess: boolean;
-    prioritySupport: boolean;
+    whiteLabel: boolean;
+    removeWatermark: boolean;
   };
   paymentId?: {
     amount: number;

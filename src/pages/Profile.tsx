@@ -8,10 +8,13 @@ import SecuritySettings from './settings/SecuritySettings';
 import WatermarkSettings from '@/components/settings/WatermarkSettings';
 import WhiteLabelSettings from '@/components/settings/WhiteLabelSettings';
 import SubscriptionManagement from '@/components/payment/SubscriptionManagement';
+import { usePayment } from '@/hooks/usePayment';
 
 const { Title, Text } = Typography;
 
 const Profile: React.FC = () => {
+  const { subscription, hasFeatureAccess } = usePayment();
+  
   const tabItems = [
     {
       key: 'profile',

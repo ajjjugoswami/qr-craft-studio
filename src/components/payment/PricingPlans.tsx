@@ -168,7 +168,8 @@ const PricingPlans: React.FC<PricingProps> = ({
                 'Up to 5 QR codes',
                 'Up to 100 scans per QR',
                 'Basic templates',
-                'Standard support'
+                'Standard support',
+                'Watermark included'
               ]}
               renderItem={(item) => (
                 <List.Item>
@@ -245,10 +246,9 @@ const PricingPlans: React.FC<PricingProps> = ({
                   dataSource={[
                     `${formatFeatureValue(plan.features.maxQRCodes)} QR codes`,
                     `${formatFeatureValue(plan.features.maxScansPerQR)} scans per QR`,
-                    `Custom domains: ${formatFeatureValue(plan.features.customDomains)}`,
                     `Advanced analytics: ${formatFeatureValue(plan.features.analytics)}`,
-                    `API access: ${formatFeatureValue(plan.features.apiAccess)}`,
-                    `Priority support: ${formatFeatureValue(plan.features.prioritySupport)}`
+                    `White label: ${formatFeatureValue(plan.features.whiteLabel)}`,
+                    `Remove watermark: ${formatFeatureValue(plan.features.removeWatermark)}`
                   ]}
                   renderItem={(item) => (
                     <List.Item>
@@ -305,10 +305,9 @@ const PricingPlans: React.FC<PricingProps> = ({
               {[
                 { label: 'QR Codes', free: '5', key: 'maxQRCodes' },
                 { label: 'Scans per QR', free: '100', key: 'maxScansPerQR' },
-                { label: 'Custom Domains', free: false, key: 'customDomains' },
                 { label: 'Advanced Analytics', free: false, key: 'analytics' },
-                { label: 'API Access', free: false, key: 'apiAccess' },
-                { label: 'Priority Support', free: false, key: 'prioritySupport' }
+                { label: 'White Label', free: false, key: 'whiteLabel' },
+                { label: 'Remove Watermark', free: false, key: 'removeWatermark' }
               ].map((feature, index) => (
                 <tr key={feature.label} className={index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : ''}>
                   <td className="py-3 px-4 font-medium">{feature.label}</td>

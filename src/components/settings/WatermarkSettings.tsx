@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
-import { Card, Typography, Switch, Input, message, Button, Tooltip } from 'antd';
-import { Droplets, Save, HelpCircle } from 'lucide-react';
+import { Card, Typography, Switch, Input, message, Button, Tooltip, Alert } from 'antd';
+import { Droplets, Save, HelpCircle, Crown, ArrowUpRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { usePayment } from '@/hooks/usePayment';
 import { authAPI } from '@/lib/api';
 
 const { Title, Text } = Typography;
 
 const WatermarkSettings: React.FC = () => {
+  const navigate = useNavigate();
   const { user, updateUser } = useAuth();
+  const { subscription, hasFeatureAccess } = usePayment();
   const [loading, setLoading] = useState(false);
   const [removeWatermark, setRemoveWatermark] = useState(user?.removeWatermark || false);
   const [watermarkText, setWatermarkText] = useState(user?.watermarkText || 'QR Studio');
+
+  // Check if user has access to watermark features
+  const canRemoveWatermark = hasFeatureAccess('removeWatermark');
 
   const handleSave = async () => {
     try {
@@ -40,7 +47,31 @@ const WatermarkSettings: React.FC = () => {
 
   return (
     <Card className="shadow-sm">
-      <div className="flex items-center justify-between mb-6">
+      {/* Premium Feature Alert for Free Users */}
+      {!canRemoveWatermark && (
+        <Alert
+          type="info"
+          showIcon
+          icon={<Crown size={16} />}
+          message="Premium Feature"
+          description={
+            <div className="flex items-center justify-between">
+              <span>Upgrade to Pro to remove watermarks and customize your QR codes</span>
+              <Button 
+                type="primary" 
+                size="small" 
+                icon={<ArrowUpRight size={14} />}
+                onClick={() => navigate('/pricing')}
+              >
+                Upgrade Now
+              </Button>
+            </div>
+          }
+          className="mb-6"
+        />
+      )}
+
+      <div className="flex items-center justify-between mb-6">{' '}
         <Title level={4} className="mb-0 flex items-center gap-2">
           <Droplets size={18} />
           Watermark Settings
@@ -57,6 +88,7 @@ const WatermarkSettings: React.FC = () => {
           icon={<Save size={16} />}
           onClick={handleSave}
           loading={loading}
+          disabled={!canRemoveWatermark}
         >
           Save Changes
         </Button>
@@ -64,23 +96,25 @@ const WatermarkSettings: React.FC = () => {
 
       <div className="space-y-6">
         {/* Remove Watermark Toggle */}
-        <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border">
+        <div className={`flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border ${!canRemoveWatermark ? 'opacity-50' : ''}`}>
           <div>
             <Text strong className="block">Remove Watermark from All QR Codes</Text>
             <Text type="secondary" className="text-sm">
               When enabled, watermarks will not be added to any of your QR codes
+              {!canRemoveWatermark && ' (Premium Feature)'}
             </Text>
           </div>
           <Switch
-            checked={removeWatermark}
+            checked={removeWatermark && canRemoveWatermark}
             onChange={setRemoveWatermark}
             checkedChildren="ON"
             unCheckedChildren="OFF"
+            disabled={!canRemoveWatermark}
           />
         </div>
 
         {/* Custom Watermark Text */}
-        <div className={removeWatermark ? 'opacity-50 pointer-events-none' : ''}>
+        <div className={removeWatermark && canRemoveWatermark ? 'opacity-50 pointer-events-none' : ''}>
           <Text strong className="block mb-2">Custom Watermark Text</Text>
           <Text type="secondary" className="text-sm block mb-3">
             Enter your custom watermark text (e.g., your brand name or website)
@@ -90,7 +124,7 @@ const WatermarkSettings: React.FC = () => {
             onChange={(e) => setWatermarkText(e.target.value)}
             placeholder="Enter watermark text"
             maxLength={30}
-            disabled={removeWatermark}
+            disabled={(removeWatermark && canRemoveWatermark) || !canRemoveWatermark}
             suffix={<Text type="secondary" className="text-xs">{watermarkText.length}/30</Text>}
           />
         </div>
@@ -109,9 +143,11 @@ const WatermarkSettings: React.FC = () => {
             )}
           </div>
           <Text type="secondary" className="block mt-2 text-xs">
-            {removeWatermark 
-              ? 'Watermark is disabled - your QR codes will be clean'
-              : `Watermark "${watermarkText}" will appear on your QR codes`
+            {!canRemoveWatermark 
+              ? 'Upgrade to Pro to remove watermarks and customize your QR codes'
+              : removeWatermark 
+                ? 'Watermark is disabled - your QR codes will be clean'
+                : `Watermark "${watermarkText}" will appear on your QR codes`
             }
           </Text>
         </div>
