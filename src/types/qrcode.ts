@@ -518,7 +518,8 @@ export const designTemplates: DesignTemplate[] = [
       ...defaultStyling, 
       fgColor: '#06b6d4', 
       bgColor: '#0f172a', 
-      dotsType: 'rounded', 
+      dotsType: 'rounded',
+      level: 'H',
       backgroundGradient: {
         type: 'radial',
         colorStops: [
@@ -529,6 +530,18 @@ export const designTemplates: DesignTemplate[] = [
       cornersSquareOptions: { 
         color: '#06b6d4', 
         type: 'extra-rounded',
+        gradient: {
+          type: 'linear',
+          rotation: 135,
+          colorStops: [
+            { offset: 0, color: '#06b6d4' },
+            { offset: 1, color: '#0891b2' }
+          ]
+        }
+      },
+      cornersDotOptions: { 
+        color: '#06b6d4', 
+        type: 'dot',
         gradient: {
           type: 'linear',
           rotation: 135,
