@@ -1,127 +1,53 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Table, Tag, Typography, Spin, Alert, Button, Input, Space, Tooltip, Popconfirm, message, Avatar, Modal } from "antd";
+import React, { useCallback, useState, memo } from "react";
+import { Table, Tag, Typography, Spin, Alert, Button, Input, Space, Tooltip, Popconfirm, Avatar, Modal } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { RefreshCw, User } from 'lucide-react';
-import { adminAPI } from "@/lib/api";
 import { useDateFormatter } from "@/hooks/useDateFormatter";
+import { useAdminData } from "@/hooks/useAdminData";
+import type { AdminUserRow, AdminQRCode } from "@/store/slices/adminSlice";
 
 const { Title, Text } = Typography;
 
-interface User {
-  _id: string;
-  id?: string;
-  name?: string;
-  email?: string;
-  createdAt?: string | null;
-  blocked?: boolean;
-  profilePicture?: string;
-}
-
-interface QRCode {
-  _id: string;
-  name?: string;
-  type?: string;
-  content?: string | null;
-  scanCount?: number;
-  createdAt?: string | null;
-  status?: string;
-}
-
-interface AdminUserRow {
-  user: User;
-  qrcodes: QRCode[];
-}
-
-type FetchOptions = { page?: number; limit?: number; search?: string };
-
 // ----- Component -----
-const AdminData: React.FC = () => {
+const AdminData: React.FC = memo(() => {
   const formatter = useDateFormatter();
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<AdminUserRow[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    users,
+    loading,
+    error,
+    page,
+    limit,
+    total,
+    search,
+    handleTableChange,
+    handleSearch,
+    toggleBlock,
+    deleteUser,
+    refresh,
+  } = useAdminData();
 
-  const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(10);
-  const [total, setTotal] = useState<number>(0);
-  const [search, setSearch] = useState<string>("");
-
+  const [localSearch, setLocalSearch] = useState(search);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState<string>("");
   const [previewTitle, setPreviewTitle] = useState<string>("");
 
-  const isMounted = useRef(true);
-
-  const loadData = useCallback(
-    async (opts: FetchOptions = {}) => {
-      const p = opts.page ?? page;
-      const l = opts.limit ?? limit;
-      const s = opts.search ?? search ?? undefined;
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        const res = await adminAPI.getUsersData({
-          page: p,
-          limit: l,
-          search: s,
-        });
-        if (!isMounted.current) return;
-
-        // Support both paginated responses and raw arrays
-        const payload = (res?.data ?? res) as any;
-        const list: AdminUserRow[] = Array.isArray(payload)
-          ? payload
-          : payload?.data ?? [];
-
-        setData(list);
-        setPage(payload?.page ?? p);
-        setLimit(payload?.limit ?? l);
-        setTotal(
-          payload?.total ??
-            (Array.isArray(payload) ? list.length : payload?.count ?? 0)
-        );
-      } catch (err: any) {
-        setError(
-          err?.response?.data?.message ||
-            err?.message ||
-            "Failed to load admin data"
-        );
-      } finally {
-        if (isMounted.current) setLoading(false);
-      }
-    },
-    [page, limit, search]
-  );
-
-  useEffect(() => {
-    isMounted.current = true;
-    loadData({ page: 1, limit });
-    return () => {
-      isMounted.current = false;
-    };
-  }, [loadData, limit]);
-
-  // Table change (pagination / page size)
-  const handleTableChange = (pagination: TablePaginationConfig) => {
-    const newPage = pagination.current ?? 1;
-    const newLimit = pagination.pageSize ?? limit;
-    loadData({ page: Number(newPage), limit: Number(newLimit), search });
-  };
-
-  const handleSearch = (value: string) => {
-    setSearch(value);
-    loadData({ page: 1, search: value });
-  };
-
-  const handleAvatarClick = (profilePicture: string | undefined, userName: string | undefined) => {
+  const handleAvatarClick = useCallback((profilePicture: string | undefined, userName: string | undefined) => {
     if (profilePicture) {
       setPreviewImage(profilePicture);
       setPreviewTitle(userName || "Profile Picture");
       setPreviewVisible(true);
     }
-  };
+  }, []);
+
+  const onSearch = useCallback(() => {
+    handleSearch(localSearch);
+  }, [handleSearch, localSearch]);
+
+  const onTableChange = useCallback((pagination: TablePaginationConfig) => {
+    const newPage = pagination.current ?? 1;
+    const newLimit = pagination.pageSize ?? limit;
+    handleTableChange(Number(newPage), Number(newLimit));
+  }, [handleTableChange, limit]);
 
   // Columns
   const columns: ColumnsType<AdminUserRow> = [
@@ -168,7 +94,7 @@ const AdminData: React.FC = () => {
       title: "QR Codes",
       dataIndex: "qrcodes",
       key: "qrcodes",
-      render: (qrs: QRCode[] | undefined) => <Tag>{qrs?.length ?? 0}</Tag>,
+      render: (qrs: AdminQRCode[] | undefined) => <Tag>{qrs?.length ?? 0}</Tag>,
     },
     {
       title: "Status",
@@ -187,24 +113,7 @@ const AdminData: React.FC = () => {
             <Button
               type={blocked ? 'default' : 'primary'}
               danger={blocked}
-              onClick={async () => {
-                // Optimistic UI update
-                const original = data;
-                try {
-                  setData((prev) =>
-                    prev.map((r) =>
-                      r.user._id === record.user._id ? { ...r, user: { ...r.user, blocked: !blocked } } : r
-                    )
-                  );
-
-                  await adminAPI.updateUser(record.user._id, { blocked: !blocked });
-                  message.success(`User ${blocked ? 'unblocked' : 'blocked'}`);
-                } catch (err: any) {
-                  // rollback
-                  setData(original);
-                  message.error(err?.response?.data?.message || 'Action failed');
-                }
-              }}
+              onClick={() => toggleBlock(record.user._id, blocked)}
             >
               {blocked ? 'Unblock' : 'Block'}
             </Button>
@@ -212,16 +121,7 @@ const AdminData: React.FC = () => {
             <Popconfirm
               title="Delete user"
               description="Are you sure you want to delete this user? This will delete their QR codes." 
-              onConfirm={async () => {
-                try {
-                  await adminAPI.deleteUser(record.user._id);
-                  setData((prev) => prev.filter((r) => r.user._id !== record.user._id));
-                  setTotal((t) => Math.max(0, t - 1));
-                  message.success('User deleted');
-                } catch (err: any) {
-                  message.error(err?.response?.data?.message || 'Delete failed');
-                }
-              }}
+              onConfirm={() => deleteUser(record.user._id)}
               okText="Delete"
               cancelText="Cancel"
             >
@@ -233,7 +133,7 @@ const AdminData: React.FC = () => {
     },
   ];
 
-  const renderExpandedRow = (record: AdminUserRow) => {
+  const renderExpandedRow = useCallback((record: AdminUserRow) => {
     const qrs = record.qrcodes ?? [];
     if (qrs.length === 0) return <Text type="secondary">No QR codes</Text>;
 
@@ -265,12 +165,12 @@ const AdminData: React.FC = () => {
       <Table
         size="small"
         pagination={false}
-        rowKey={(r: QRCode) => r._id}
+        rowKey={(r: AdminQRCode) => r._id}
         dataSource={qrs}
         columns={qrColumns}
       />
     );
-  };
+  }, [formatter]);
 
   return (
     <div>
@@ -288,10 +188,10 @@ const AdminData: React.FC = () => {
               placeholder="Search by name or email"
               allowClear
               size="small"
-              value={search}
-              onChange={(e) => setSearch((e.target as HTMLInputElement).value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(search); }}
-              style={{ width: 260,borderRadius: 0 }}
+              value={localSearch}
+              onChange={(e) => setLocalSearch((e.target as HTMLInputElement).value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') onSearch(); }}
+              style={{ width: 260, borderRadius: 0 }}
               aria-label="Search users"
             />
 
@@ -300,7 +200,7 @@ const AdminData: React.FC = () => {
                 type="default"
                 shape="circle"
                 icon={<RefreshCw size={14} />}
-                onClick={() => loadData({ page: 1, search })}
+                onClick={refresh}
                 loading={loading}
                 size="small"
                 aria-label="Refresh data"
@@ -321,7 +221,7 @@ const AdminData: React.FC = () => {
           rowKey={(row) =>
             row.user?._id ?? row.user?.id ?? JSON.stringify(row.user)
           }
-          dataSource={data}
+          dataSource={users}
           columns={columns}
           pagination={{
             current: page,
@@ -330,7 +230,7 @@ const AdminData: React.FC = () => {
             showSizeChanger: true,
             pageSizeOptions: ["5", "10", "20", "50"],
           }}
-          onChange={handleTableChange}
+          onChange={onTableChange}
           expandable={{ expandedRowRender: renderExpandedRow }}
         />
       )}
@@ -351,6 +251,8 @@ const AdminData: React.FC = () => {
       </Modal>
     </div>
   );
-};
+});
+
+AdminData.displayName = 'AdminData';
 
 export default AdminData;
