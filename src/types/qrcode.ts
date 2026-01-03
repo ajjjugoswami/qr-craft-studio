@@ -1568,12 +1568,6 @@ export const defaultTemplates: QRTemplate[] = [
     shadowIntensity: 'strong',
     decorativeStyle: 'grid',
     accentColor: '#00ff88',
-    ctaButton: {
-      text: 'Scan to Connect',
-      backgroundColor: '#00ff88',
-      textColor: '#0a1628',
-      borderRadius: 24,
-    },
   },
   // ===== RESTAURANT MENU =====
   {
@@ -1657,12 +1651,6 @@ export const defaultTemplates: QRTemplate[] = [
     shadowIntensity: 'medium',
     decorativeStyle: 'circles',
     accentColor: '#64b5f6',
-    ctaButton: {
-      text: 'Connect Now',
-      backgroundColor: '#64b5f6',
-      textColor: '#1e3a5f',
-      borderRadius: 20,
-    },
   },
   // ===== PAYMENT LINK =====
   {
@@ -2067,12 +2055,6 @@ export const defaultTemplates: QRTemplate[] = [
     shadowIntensity: 'strong',
     decorativeStyle: 'geometric',
     accentColor: '#f97316',
-    ctaButton: {
-      text: 'Explore to Connect',
-      backgroundColor: '#22c55e',
-      textColor: '#000000',
-      borderRadius: 24,
-    },
   },
   // ===== DOWNLOAD APP =====
   {
@@ -2384,12 +2366,6 @@ export const defaultTemplates: QRTemplate[] = [
     shadowIntensity: 'strong',
     decorativeStyle: 'none',
     accentColor: '#ffffff',
-    ctaButton: {
-      text: 'Subscribe',
-      backgroundColor: '#ffffff',
-      textColor: '#ff0000',
-      borderRadius: 20,
-    },
   },
   // ===== TIKTOK DARK =====
   {
@@ -2471,12 +2447,6 @@ export const defaultTemplates: QRTemplate[] = [
     shadowIntensity: 'medium',
     decorativeStyle: 'none',
     accentColor: '#ffffff',
-    ctaButton: {
-      text: 'Message Us',
-      backgroundColor: '#ffffff',
-      textColor: '#25d366',
-      borderRadius: 24,
-    },
   },
   // ===== X/TWITTER DARK =====
   {
@@ -2643,12 +2613,6 @@ export const defaultTemplates: QRTemplate[] = [
     shadowIntensity: 'strong',
     decorativeStyle: 'none',
     accentColor: '#ffd700',
-    ctaButton: {
-      text: 'View Menu',
-      backgroundColor: '#ffd700',
-      textColor: '#c41e3a',
-      borderRadius: 20,
-    },
   },
   // ===== FOOD TRUCK (Restaurant) =====
   {
