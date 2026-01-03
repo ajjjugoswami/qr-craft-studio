@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Layout, Menu, Avatar, Typography, Drawer, Button, Badge, Tooltip } from "antd";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
-import { usePayment } from "@/hooks/usePayment";
+import { useSubscription } from "@/context/SubscriptionContext";
 import {
   BarChart3,
   HelpCircle,
@@ -36,7 +36,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { user, signout } = useAuth();
   const { mode, setMode } = useTheme();
-  const { subscription, subscriptionLoading } = usePayment();
+  const { subscription, subscriptionLoading } = useSubscription();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleThemeMode = () => {

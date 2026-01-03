@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ConfigProvider, theme } from "antd";
 import { store } from "./store";
 import { ThemeProvider } from "./context/ThemeContext";
+import { SubscriptionProvider } from "./context/SubscriptionContext";
 import { useTheme } from "./hooks/useTheme";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
@@ -135,7 +136,9 @@ const App = () => (
   <Provider store={store}>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <AppContent />
+        <SubscriptionProvider>
+          <AppContent />
+        </SubscriptionProvider>
       </ThemeProvider>
     </QueryClientProvider>
   </Provider>
