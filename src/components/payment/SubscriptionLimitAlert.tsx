@@ -28,10 +28,10 @@ const SubscriptionLimitAlert: React.FC<SubscriptionLimitAlertProps> = ({
   // Calculate usage percentage
   const usagePercentage = maxQRCodes === -1 ? 0 : Math.min((currentQRCount / maxQRCodes) * 100, 100);
 
-  // Show warning when usage is above 80% or upgrade is required
-  const showWarning = usagePercentage > 80 || upgradeRequired;
+  // Show warning only when we actually exceed the limit (not just when upgrade is "required")
+  const showWarning = maxQRCodes !== -1 && currentQRCount >= maxQRCodes;
 
-  if (!showWarning && !isFreePlan) return null;
+  if (!showWarning) return null;
 
   const handleUpgrade = () => {
     if (onUpgrade) {
@@ -48,7 +48,7 @@ const SubscriptionLimitAlert: React.FC<SubscriptionLimitAlertProps> = ({
           <Space align="center" className="w-full justify-between">
             <div className="flex-1">
               <Text strong>
-                {upgradeRequired ? 'QR Code Limit Reached!' : 'Approaching QR Code Limit'}
+                QR Code Limit Reached!
               </Text>
               <div className="mt-2">
                 <Text type="secondary" className="text-sm">
@@ -80,7 +80,7 @@ const SubscriptionLimitAlert: React.FC<SubscriptionLimitAlertProps> = ({
           </Space>
         </div>
       }
-      type={upgradeRequired ? 'error' : 'warning'}
+      type="error"
       showIcon
       className="mb-4"
     />
