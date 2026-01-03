@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Tag, Typography, Tooltip, Popconfirm, message, Modal, Dropdown, Spin } from 'antd';
 import {
@@ -46,12 +46,12 @@ const typeColors: Record<string, string> = {
   whatsapp: 'green',
 };
 
-const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onToggleStatus, viewMode = 'list' }) => {
+const QRCodeCard: React.FC<QRCodeCardProps> = React.memo(({ qrCode, onEdit, onDelete, onToggleStatus, viewMode = 'list' }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const previewRef = useRef<HTMLDivElement>(null);
-  const [downloadModalOpen, setDownloadModalOpen] = React.useState(false);
-  const [downloadingFormat, setDownloadingFormat] = React.useState<'png' | 'jpg' | 'webp' | null>(null);
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
+  const [downloadingFormat, setDownloadingFormat] = useState<'png' | 'jpg' | 'webp' | null>(null);
 
   // Support both camelCase and legacy snake/lowercase fields from APIs
   const scanLimitValue = (qrCode.scanLimit ?? (qrCode as any).scanlimit) as number | null | undefined;
@@ -62,7 +62,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
   const showWatermark = !user?.removeWatermark;
   const watermarkText = user?.watermarkText || 'QR Studio';
 
-  const handleDownload = async (format: 'png' | 'jpg' | 'webp') => {
+  const handleDownload = useCallback(async (format: 'png' | 'jpg' | 'webp') => {
     if (!previewRef.current || downloadingFormat) return;
 
     setDownloadingFormat(format);
@@ -119,53 +119,58 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
     } finally {
       setDownloadingFormat(null);
     }
-  };
+  }, [qrCode.name, downloadingFormat]);
 
-  // Helper removed - no longer needed without PDF
+  const handleOpenModal = useCallback(() => setDownloadModalOpen(true), []);
+  const handleCloseModal = useCallback(() => setDownloadModalOpen(false), []);
+  const handleNavigateAnalytics = useCallback(() => navigate(`/analytics/${qrCode.id}`), [navigate, qrCode.id]);
+  const handleEdit = useCallback(() => onEdit(qrCode.id), [onEdit, qrCode.id]);
+  const handleDelete = useCallback(() => onDelete(qrCode.id), [onDelete, qrCode.id]);
+  const handleToggle = useCallback(() => onToggleStatus?.(qrCode.id), [onToggleStatus, qrCode.id]);
 
-  const downloadMenuItems = [
+  const downloadMenuItems = useMemo(() => [
     {
       key: 'png',
       label: 'PNG (High Quality)',
       icon: <FileImage size={16} />,
-      onClick: () => setDownloadModalOpen(true),
+      onClick: handleOpenModal,
     },
     {
       key: 'jpg',
       label: 'JPG (Smaller Size)',
       icon: <Image size={16} />,
-      onClick: () => setDownloadModalOpen(true),
+      onClick: handleOpenModal,
     },
     {
       key: 'webp',
       label: 'WebP (Best Compression)',
       icon: <Image size={16} />,
-      onClick: () => setDownloadModalOpen(true),
+      onClick: handleOpenModal,
     },
-  ];
+  ], [handleOpenModal]);
 
-  const actionsMenuItems = [
+  const actionsMenuItems = useMemo(() => [
     {
       key: 'edit',
       label: 'Edit',
       icon: <Edit size={16} />,
-      onClick: () => onEdit(qrCode.id),
+      onClick: handleEdit,
     },
     ...(onToggleStatus ? [{
       key: 'toggle-status',
       label: qrCode.status === 'active' ? 'Deactivate' : 'Activate',
       icon: qrCode.status === 'active' ? <XCircle size={16} className="text-red-600" /> : <CheckCircle size={16} className="text-green-600" />,
-      onClick: () => onToggleStatus(qrCode.id),
+      onClick: handleToggle,
     }] : []),
-  ];
+  ], [handleEdit, handleToggle, onToggleStatus, qrCode.status]);
 
-  const formatDate = (dateString: string) => {
+  const formatDate = useCallback((dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: '2-digit',
       day: '2-digit',
       year: 'numeric',
     });
-  };
+  }, []);
 
   // Grid View Card
   if (viewMode === 'grid') {
@@ -554,6 +559,8 @@ const QRCodeCard: React.FC<QRCodeCardProps> = ({ qrCode, onEdit, onDelete, onTog
       </Modal>
     </>
   );
-};
+});
+
+QRCodeCard.displayName = 'QRCodeCard';
 
 export default QRCodeCard;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Card } from 'antd';
 import { Skeleton } from '@/components/ui/skeleton';
 import QRCodeCard from '../qr/QRCodeCard';
@@ -12,7 +12,7 @@ interface QRCodesListProps {
   onToggleStatus: (id: string) => void;
 }
 
-const QRCodesList: React.FC<QRCodesListProps> = ({
+const QRCodesList: React.FC<QRCodesListProps> = memo(({
   qrCodes,
   loading,
   viewMode,
@@ -80,6 +80,8 @@ const QRCodesList: React.FC<QRCodesListProps> = ({
       ))}
     </div>
   );
-};
+});
+
+QRCodesList.displayName = 'QRCodesList';
 
 export default QRCodesList;

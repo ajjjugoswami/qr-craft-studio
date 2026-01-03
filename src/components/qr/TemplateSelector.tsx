@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Typography, Segmented, Pagination } from 'antd';
 import { CheckCircleFilled } from '@ant-design/icons';
 import { QrCode } from 'lucide-react';
@@ -55,7 +55,7 @@ const getCategoryForTemplate = (template: QRTemplate): string => {
   return 'professional';
 };
 
-const TemplateSelector: React.FC<TemplateSelectorProps> = ({
+const TemplateSelector: React.FC<TemplateSelectorProps> = React.memo(({
   selectedTemplate,
   onSelect,
 }) => {
@@ -63,24 +63,34 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 11; // 11 templates + 1 "No Template" option = 12 per page
 
-  const filteredTemplates = defaultTemplates.filter((template) => {
-    const matchesCategory = category === 'all' || getCategoryForTemplate(template) === category;
-    return matchesCategory;
-  });
+  const filteredTemplates = useMemo(() => 
+    defaultTemplates.filter((template) => {
+      const matchesCategory = category === 'all' || getCategoryForTemplate(template) === category;
+      return matchesCategory;
+    }),
+    [category]
+  );
 
   const totalTemplates = filteredTemplates.length;
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
-  const currentTemplates = filteredTemplates.slice(startIndex, endIndex);
+  const currentTemplates = useMemo(() => 
+    filteredTemplates.slice(startIndex, endIndex),
+    [filteredTemplates, startIndex, endIndex]
+  );
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
-  };
+  }, []);
 
-  const handleCategoryChange = (value: string) => {
+  const handleCategoryChange = useCallback((value: string) => {
     setCategory(value);
     setCurrentPage(1);
-  };
+  }, []);
+
+  const handleSelectTemplate = useCallback((template: QRTemplate | null) => {
+    onSelect(template);
+  }, [onSelect]);
 
   // Show "No Template" option only on first page of "All" category
   const showNoTemplate = category === 'all' && currentPage === 1;
@@ -116,7 +126,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
               hover:ring-2 hover:ring-primary hover:shadow-lg hover:scale-[1.02]
               ${selectedTemplate === null ? 'ring-2 ring-primary shadow-lg scale-[1.02]' : 'ring-1 ring-border'}
             `}
-            onClick={() => onSelect(null)}
+            onClick={() => handleSelectTemplate(null)}
           >
             <div
               className="h-36 flex flex-col items-center justify-center relative p-4 bg-muted"
@@ -150,7 +160,7 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
               hover:ring-2 hover:ring-primary hover:shadow-lg hover:scale-[1.02]
               ${selectedTemplate?.id === template.id ? 'ring-2 ring-primary shadow-lg scale-[1.02]' : 'ring-1 ring-border'}
             `}
-            onClick={() => onSelect(template)}
+            onClick={() => handleSelectTemplate(template)}
           >
             <div
               className="h-36 flex flex-col items-center justify-center relative p-4"
@@ -218,6 +228,8 @@ const TemplateSelector: React.FC<TemplateSelectorProps> = ({
       )}
     </div>
   );
-};
+});
+
+TemplateSelector.displayName = 'TemplateSelector';
 
 export default TemplateSelector;

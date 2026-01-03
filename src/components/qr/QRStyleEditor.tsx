@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { Typography, Tabs } from 'antd';
 import { QRStyling } from '../../types/qrcode';
 import ColorsTab from './ColorsTab';
@@ -14,11 +14,11 @@ interface QRStyleEditorProps {
   onStyleChange: (styling: QRStyling) => void;
 }
 
-const QRStyleEditor: React.FC<QRStyleEditorProps> = ({
+const QRStyleEditor: React.FC<QRStyleEditorProps> = memo(({
   styling,
   onStyleChange,
 }) => {
-  const tabItems = [
+  const tabItems = useMemo(() => [
     {
       key: 'colors',
       label: 'Colors',
@@ -44,7 +44,7 @@ const QRStyleEditor: React.FC<QRStyleEditorProps> = ({
       label: 'Settings',
       children: <SettingsTab styling={styling} onStyleChange={onStyleChange} />,
     },
-  ];
+  ], [styling, onStyleChange]);
 
   return (
     <div className="animate-fade-in">
@@ -55,6 +55,8 @@ const QRStyleEditor: React.FC<QRStyleEditorProps> = ({
       <Tabs items={tabItems} />
     </div>
   );
-};
+});
+
+QRStyleEditor.displayName = 'QRStyleEditor';
 
 export default QRStyleEditor;

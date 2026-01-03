@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Card } from 'antd';
 import { Skeleton } from '@/components/ui/skeleton';
 import CountUp from 'react-countup';
@@ -14,7 +14,7 @@ interface StatsCardsProps {
   };
 }
 
-const StatsCards: React.FC<StatsCardsProps> = ({ loading, stats }) => {
+const StatsCards: React.FC<StatsCardsProps> = memo(({ loading, stats }) => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
       <Card className="card-compact glass-card stat-card">
@@ -102,6 +102,8 @@ const StatsCards: React.FC<StatsCardsProps> = ({ loading, stats }) => {
       </Card>
     </div>
   );
-};
+});
+
+StatsCards.displayName = 'StatsCards';
 
 export default StatsCards;
