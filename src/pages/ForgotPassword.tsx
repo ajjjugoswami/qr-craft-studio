@@ -1,45 +1,43 @@
-import React, { useState } from 'react';
-import { Card, Input, Button, Typography, message, Divider } from 'antd';
-import { ArrowLeft, Mail } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { authAPI } from '@/lib/api';
-
-const { Title, Text } = Typography;
+import React, { useState } from "react";
+import { Input, Button, Typography, message, Breadcrumb } from "antd";
+import { Home, Mail, KeyRound, Shield, Zap } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { authAPI } from "@/lib/api";
 
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
-      message.error('Please enter your email address');
+      message.error("Please enter your email address");
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      message.error('Please enter a valid email address');
+      message.error("Please enter a valid email address");
       return;
     }
 
     setLoading(true);
     try {
       await authAPI.sendResetOTP(email);
-      message.success('Password reset code sent to your email');
-      
-      // Navigate to OTP verification page for password reset
-      navigate('/otp-verification', {
+      message.success("Password reset code sent to your email");
+
+      navigate("/otp-verification", {
         state: {
           email: email,
-          type: 'reset'
-        }
+          type: "reset",
+        },
       });
     } catch (error: any) {
-      console.error('Send OTP error:', error);
-      const errorMessage = error?.response?.data?.message || 'Failed to send reset code';
+      console.error("Send OTP error:", error);
+      const errorMessage =
+        error?.response?.data?.message || "Failed to send reset code";
       message.error(errorMessage);
     } finally {
       setLoading(false);
@@ -47,60 +45,119 @@ const ForgotPassword: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen    flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-xl">
-        <div className="p-6">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 mx-auto mb-4  rounded-full flex items-center justify-center">
-              <Mail className="w-8 h-8 text-blue-600" />
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* SEO */}
+      <header className="sr-only">
+        <h1>Reset Password - QR Studio</h1>
+      </header>
+
+      {/* Logo Header */}
+      <div className="px-6 sm:px-8 pt-6">
+        <Link to="/" className="flex items-center gap-3 w-fit">
+          <img
+            src="/logo.png"
+            alt="QR Studio logo"
+            className="w-10 h-10 object-contain"
+          />
+          <span className="text-lg font-bold text-foreground">QR Studio</span>
+        </Link>
+      </div>
+
+      <main className="flex-1 flex flex-col justify-center px-4 sm:px-8 lg:px-12 xl:px-16 py-8 lg:py-0">
+        <section className="max-w-[32rem] mx-auto w-full">
+          {/* Breadcrumb */}
+          <Breadcrumb
+            className="mb-6"
+            items={[
+              {
+                title: (
+                  <span
+                    className="flex items-center gap-2 cursor-pointer text-muted-foreground hover:text-foreground"
+                    onClick={() => navigate("/sign-in")}
+                  >
+                    <Home size={16} />
+                    Sign In
+                  </span>
+                ),
+              },
+              {
+                title: (
+                  <span className="flex items-center gap-2 text-foreground">
+                    <KeyRound size={16} />
+                    Reset Password
+                  </span>
+                ),
+              },
+            ]}
+          />
+
+          {/* Header */}
+          <div className="mb-6">
+            <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+              <Mail className="w-8 h-8 text-primary" />
             </div>
-            <Title level={2} className="mb-2">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 text-center">
               Reset Password
-            </Title>
-            <Text className="text-gray-600">
-              Enter your email address and we'll send you a verification code to reset your password.
-            </Text>
+            </h2>
+            <p className="text-muted-foreground text-sm leading-relaxed text-center">
+              Enter your email address and we'll send you a verification code to
+              reset your password.
+            </p>
           </div>
 
-          <form onSubmit={handleSendOTP} className="space-y-4">
+          {/* Features */}
+          <div className="flex gap-4 sm:gap-6 mb-6 justify-center">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Shield className="w-4 h-4" />
+              <span>Secure</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Zap className="w-4 h-4" />
+              <span>Fast</span>
+            </div>
+          </div>
+
+          {/* Form */}
+          <form
+            onSubmit={handleSendOTP}
+            className="space-y-4"
+            aria-label="Reset password form"
+          >
             <div>
-              <Text className="block text-sm font-medium mb-2">Email Address</Text>
+              <label className="text-sm font-medium text-foreground mb-2 block">
+                Email Address
+              </label>
               <Input
                 size="large"
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Example@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 prefix={<Mail size={16} />}
                 disabled={loading}
                 required
+                className="h-11 rounded-lg"
               />
             </div>
 
             <Button
               type="primary"
               htmlType="submit"
-              size="large"
-              className="w-full"
               loading={loading}
+              className="w-full h-11 text-sm font-semibold rounded-lg"
             >
               Send Reset Code
             </Button>
           </form>
+        </section>
+      </main>
 
-          <Divider />
-
-          <div className="text-center">
-            <Button
-              type="link"
-              onClick={() => navigate('/sign-in')}
-              icon={<ArrowLeft size={16} />}
-            >
-              Back to Sign In
-            </Button>
-          </div>
-        </div>
-      </Card>
+      {/* Footer */}
+      <footer className="text-center py-4 lg:py-6">
+        <p className="text-muted-foreground text-xs">
+          © 2026 ALL RIGHTS RESERVED
+        </p>
+      </footer>
     </div>
   );
 };

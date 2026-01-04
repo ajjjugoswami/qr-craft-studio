@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Card, Button, Typography, message, Spin, Input } from 'antd';
-import { ArrowLeft, Mail, Clock, RefreshCw, Lock, Eye, EyeOff, Check, X } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Button, Typography, message, Spin, Input, Breadcrumb } from 'antd';
+import { Home, Mail, Clock, RefreshCw, Lock, Eye, EyeOff, Check, X, Shield, Zap, KeyRound } from 'lucide-react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { authAPI } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import OTPInput from '@/components/common/OTPInput';
@@ -189,28 +189,83 @@ const OTPVerification: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-purple-500/5 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-primary mx-auto flex items-center justify-center mb-4 shadow-lg shadow-primary/30">
-            <Mail className="text-white" size={32} />
-          </div>
-          <Title level={2} className="!mb-1">QR Studio</Title>
-          <Text type="secondary">Email Verification</Text>
-        </div>
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* SEO */}
+      <header className="sr-only">
+        <h1>{getTitle()} - QR Studio</h1>
+      </header>
 
-        <Card className="shadow-xl border-0" styles={{ body: { padding: '32px' } }}>
-          <div className="text-center mb-6">
-            <Title level={3} className="mb-2">
+      {/* Logo Header */}
+      <div className="px-6 sm:px-8 pt-6">
+        <Link to="/" className="flex items-center gap-3 w-fit">
+          <img src="/logo.png" alt="QR Studio logo" className="w-10 h-10 object-contain" />
+          <span className="text-lg font-bold text-foreground">QR Studio</span>
+        </Link>
+      </div>
+
+      <main className="flex-1 flex flex-col justify-center px-4 sm:px-8 lg:px-12 xl:px-16 py-8 lg:py-0">
+        <section className="max-w-[32rem] mx-auto w-full">
+          {/* Breadcrumb */}
+          <Breadcrumb
+            className="mb-6"
+            items={[
+              {
+                title: (
+                  <span 
+                    className="flex items-center gap-2 cursor-pointer text-muted-foreground hover:text-foreground"
+                    onClick={() => {
+                      if (state?.type === 'verification') {
+                        navigate('/signup');
+                      } else {
+                        navigate('/forgot-password');
+                      }
+                    }}
+                  >
+                    <Home size={16} />
+                    {state?.type === 'verification' ? 'Sign Up' : 'Reset Password'}
+                  </span>
+                )
+              },
+              {
+                title: (
+                  <span className="flex items-center gap-2 text-foreground">
+                    {state?.type === 'verification' ? <Mail size={16} /> : <KeyRound size={16} />}
+                    {state?.type === 'verification' ? 'Verify Email' : 'Enter Code'}
+                  </span>
+                )
+              }
+            ]}
+          />
+
+          {/* Header */}
+          <div className="mb-6">
+            <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+              <Mail className="w-8 h-8 text-primary" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 text-center">
               {getTitle()}
-            </Title>
-            <Text className="text-gray-600">
+            </h2>
+            <p className="text-muted-foreground text-sm leading-relaxed text-center">
               {getDescription()}
-            </Text>
+            </p>
           </div>
+
+          {/* Features */}
+          <div className="flex gap-4 sm:gap-6 mb-6 justify-center">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Shield className="w-4 h-4" />
+              <span>Secure</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Zap className="w-4 h-4" />
+              <span>Fast</span>
+            </div>
+          </div>
+
+          {/* OTP Input */}
 
           <div className="mb-6">
+            <label className="text-sm font-medium text-foreground mb-2 block text-center">Enter 6-digit Code</label>
             <OTPInput
               length={6}
               value={otp}
@@ -225,11 +280,11 @@ const OTPVerification: React.FC = () => {
           {state?.type === 'reset' && (
             <div className="mb-6 space-y-4">
               <div>
-                <Text className="block text-sm font-medium mb-2">New Password</Text>
+                <label className="text-sm font-medium text-foreground mb-2 block">New Password</label>
                 <Input
                   size="large"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter new password"
+                  placeholder="At least 8 characters"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   prefix={<Lock size={16} />}
@@ -244,6 +299,7 @@ const OTPVerification: React.FC = () => {
                     </button>
                   }
                   disabled={loading}
+                  className="h-11 rounded-lg"
                 />
 
                 {/* Password strength bar */}
@@ -286,11 +342,11 @@ const OTPVerification: React.FC = () => {
               </div>
 
               <div>
-                <Text className="block text-sm font-medium mb-2">Confirm New Password</Text>
+                <label className="text-sm font-medium text-foreground mb-2 block">Confirm New Password</label>
                 <Input
                   size="large"
                   type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Confirm new password"
+                  placeholder="Confirm your password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   prefix={<Lock size={16} />}
@@ -305,6 +361,7 @@ const OTPVerification: React.FC = () => {
                     </button>
                   }
                   disabled={loading}
+                  className="h-11 rounded-lg"
                 />
                 
                 {/* Password match indicator */}
@@ -327,69 +384,53 @@ const OTPVerification: React.FC = () => {
             </div>
           )}
 
-          <div className="mb-6">
-            <Button
-              type="primary"
-              size="large"
-              onClick={handleVerifyOTP}
-              loading={loading}
-              disabled={state?.type === 'reset' ? 
-                (otp.length !== 6 || !newPassword || !confirmPassword || !allRequirementsMet || newPassword !== confirmPassword) : 
-                (otp.length !== 6)
-              }
-              className="w-full"
-            >
-              {state?.type === 'verification' ? 'Verify OTP' : 'Reset Password'}
-            </Button>
-          </div>
+          <Button
+            type="primary"
+            onClick={handleVerifyOTP}
+            loading={loading}
+            disabled={state?.type === 'reset' ? 
+              (otp.length !== 6 || !newPassword || !confirmPassword || !allRequirementsMet || newPassword !== confirmPassword) : 
+              (otp.length !== 6)
+            }
+            className="w-full h-11 text-sm font-semibold rounded-lg mb-6"
+          >
+            {state?.type === 'verification' ? 'Verify Email' : 'Reset Password'}
+          </Button>
 
-          <div className="text-center space-y-4">
+          {/* Timer and Resend */}
+          <div className="text-center space-y-4 mb-6">
             {timeLeft > 0 ? (
-              <div className="flex items-center justify-center gap-1 text-gray-500">
-                <Clock size={14} />
-                <Text className="text-sm">
+              <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                <Clock size={16} />
+                <span className="text-sm">
                   Code expires in {formatTime(timeLeft)}
-                </Text>
+                </span>
               </div>
             ) : null}
             
             <div>
-              <Text className="text-sm text-gray-600">
+              <span className="text-muted-foreground text-sm">
                 Didn't receive the code?{' '}
-              </Text>
+              </span>
               <Button
                 type="link"
-                size="small"
                 onClick={handleResendOTP}
                 loading={resendLoading}
                 disabled={!canResend}
-                className="p-0 h-auto"
+                className="p-0 h-auto text-primary hover:text-primary/80 text-sm font-semibold transition-colors"
                 icon={<RefreshCw size={14} />}
               >
-                Resend OTP
-              </Button>
-            </div>
-
-            <div>
-              <Button
-                type="link"
-                onClick={handleGoBack}
-                icon={<ArrowLeft size={16} />}
-                className="p-0 h-auto"
-              >
-                Go Back
+                Resend Code
               </Button>
             </div>
           </div>
-        </Card>
+        </section>
+      </main>
 
-        {/* Footer */}
-        <div className="text-center mt-6">
-          <Text type="secondary" className="text-xs">
-            By continuing, you agree to our Terms of Service and Privacy Policy
-          </Text>
-        </div>
-      </div>
+      {/* Footer */}
+      <footer className="text-center py-4 lg:py-6">
+        <p className="text-muted-foreground text-xs">© 2026 ALL RIGHTS RESERVED</p>
+      </footer>
     </div>
   );
 };
