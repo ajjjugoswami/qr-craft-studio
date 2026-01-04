@@ -296,7 +296,7 @@ const LandingPage = () => {
             <AnimatedSection>
               <div className="inline-flex items-center gap-2 bg-muted/80 border border-border text-foreground/80 px-3 py-1 rounded-full text-[10px] font-medium mb-5">
                 <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
-                Trusted by 10,000+ businesses worldwide
+                Trusted by many businesses worldwide
               </div>
             </AnimatedSection>
 
@@ -413,7 +413,7 @@ const LandingPage = () => {
                 step: '03',
                 icon: <Download className="h-5 w-5" />,
                 title: 'Download & Track',
-                description: 'Export in PNG, SVG, or PDF. Track every scan with real-time analytics.'
+                description: 'Export in PNG, WEBP and JPG. Track every scan with real-time analytics.'
               }
             ].map((item, index) => (
               <AnimatedSection key={index} delay={index * 100}>

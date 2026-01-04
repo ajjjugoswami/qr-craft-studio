@@ -164,7 +164,7 @@ const FreeQRGenerator = () => {
           </div>
           <div className="mt-5 space-y-3">
             <div className="grid grid-cols-3 gap-2">
-              {['png', 'svg', 'pdf'].map((format) => (
+              {['png', 'webp', 'jpg'].map((format) => (
                 <Button
                   key={format}
                   variant={format === 'png' ? 'default' : 'outline'}

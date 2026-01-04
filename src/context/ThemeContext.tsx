@@ -11,7 +11,7 @@ const THEME_STORAGE_KEY = 'qc_theme';
 const MODE_STORAGE_KEY = 'qc_theme_mode';
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentTheme, setCurrentTheme] = useState<ThemeName>('purple');
+  const [currentTheme, setCurrentTheme] = useState<ThemeName>('orange');
   const [mode, setModeState] = useState<ThemeMode>('system');
   const [systemPreference, setSystemPreference] = useState<'light' | 'dark'>('light');
   const { user, token } = useAuth();
