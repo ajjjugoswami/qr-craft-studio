@@ -6,25 +6,18 @@ import { useAppDispatch } from "@/store";
 import { googleSignIn } from "@/store/slices/authSlice";
 import { useAuth } from "@/hooks/useAuth";
 import { authAPI } from "@/lib/api";
+import { 
+  passwordRequirements, 
+  getPasswordStrength, 
+  getPasswordStrengthClasses,
+  isPasswordStrong 
+} from "@/utils/passwordValidation";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const GOOGLE_SCRIPT_ID = "google-gsi";
 
-// Password validation requirements
-const passwordRequirements = [
-  { id: "length", label: "At least 8 characters", test: (pwd: string) => pwd.length >= 8 },
-  { id: "number", label: "Contains a number", test: (pwd: string) => /\d/.test(pwd) },
-  { id: "symbol", label: "Contains a symbol", test: (pwd: string) => /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/`~;']/.test(pwd) },
-];
 
-const getPasswordStrength = (password: string): { level: "weak" | "medium" | "strong"; percent: number } => {
-  const passed = passwordRequirements.filter((req) => req.test(password)).length;
-  if (passed === 0) return { level: "weak", percent: 0 };
-  if (passed === 1) return { level: "weak", percent: 33 };
-  if (passed === 2) return { level: "medium", percent: 66 };
-  return { level: "strong", percent: 100 };
-};
 
 const SignUp: React.FC = () => {
   const navigate = useNavigate();
@@ -107,7 +100,7 @@ const SignUp: React.FC = () => {
 
   const passwordStrength = useMemo(() => getPasswordStrength(formData.password), [formData.password]);
   const allRequirementsMet = useMemo(
-    () => passwordRequirements.every((req) => req.test(formData.password)),
+    () => isPasswordStrong(formData.password),
     [formData.password]
   );
 
@@ -256,24 +249,12 @@ const SignUp: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                       <div
-                        className={`h-full transition-all duration-300 ${
-                          passwordStrength.level === "weak"
-                            ? "bg-destructive"
-                            : passwordStrength.level === "medium"
-                            ? "bg-yellow-500"
-                            : "bg-green-500"
-                        }`}
+                        className={`h-full transition-all duration-300 ${getPasswordStrengthClasses(passwordStrength.level).bar}`}
                         style={{ width: `${passwordStrength.percent}%` }}
                       />
                     </div>
                     <span
-                      className={`text-xs font-medium capitalize ${
-                        passwordStrength.level === "weak"
-                          ? "text-destructive"
-                          : passwordStrength.level === "medium"
-                          ? "text-yellow-500"
-                          : "text-green-500"
-                      }`}
+                      className={`text-xs font-medium capitalize ${getPasswordStrengthClasses(passwordStrength.level).text}`}
                     >
                       {passwordStrength.level}
                     </span>

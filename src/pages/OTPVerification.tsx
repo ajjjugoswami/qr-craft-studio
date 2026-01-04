@@ -1,12 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, Button, Typography, message, Spin, Input } from 'antd';
-import { ArrowLeft, Mail, Clock, RefreshCw, Lock, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Mail, Clock, RefreshCw, Lock, Eye, EyeOff, Check, X } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authAPI } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import OTPInput from '@/components/common/OTPInput';
+import { 
+  passwordRequirements, 
+  getPasswordStrength, 
+  getPasswordStrengthClasses,
+  isPasswordStrong 
+} from '@/utils/passwordValidation';
 
 const { Title, Text } = Typography;
+
+
 
 interface LocationState {
   email?: string;
@@ -31,6 +39,15 @@ const OTPVerification: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Password strength calculation
+  const passwordStrength = useMemo(() => getPasswordStrength(newPassword), [newPassword]);
+  
+  // Check if all password requirements are met
+  const allRequirementsMet = useMemo(
+    () => isPasswordStrong(newPassword),
+    [newPassword]
+  );
 
   // Redirect if no email in state
   useEffect(() => {
@@ -76,8 +93,8 @@ const OTPVerification: React.FC = () => {
         message.error('Please enter and confirm your new password');
         return;
       }
-      if (newPassword.length < 6) {
-        message.error('Password must be at least 6 characters long');
+      if (!allRequirementsMet) {
+        message.error('Password does not meet all requirements');
         return;
       }
       if (newPassword !== confirmPassword) {
@@ -209,27 +226,103 @@ const OTPVerification: React.FC = () => {
             <div className="mb-6 space-y-4">
               <div>
                 <Text className="block text-sm font-medium mb-2">New Password</Text>
-                <Input.Password
+                <Input
                   size="large"
+                  type={showPassword ? "text" : "password"}
                   placeholder="Enter new password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   prefix={<Lock size={16} />}
-                  iconRender={(visible) => (visible ? <Eye size={16} /> : <EyeOff size={16} />)}
+                  suffix={
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  }
                   disabled={loading}
                 />
+
+                {/* Password strength bar */}
+                {newPassword && (
+                  <div className="mt-2 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full transition-all duration-300 ${getPasswordStrengthClasses(passwordStrength.level).bar}`}
+                          style={{ width: `${passwordStrength.percent}%` }}
+                        />
+                      </div>
+                      <span
+                        className={`text-xs font-medium capitalize ${getPasswordStrengthClasses(passwordStrength.level).text}`}
+                      >
+                        {passwordStrength.level}
+                      </span>
+                    </div>
+
+                    {/* Requirements checklist */}
+                    <ul className="space-y-1">
+                      {passwordRequirements.map((req) => {
+                        const passed = req.test(newPassword);
+                        return (
+                          <li key={req.id} className="flex items-center gap-2 text-xs">
+                            {passed ? (
+                              <Check className="w-3.5 h-3.5 text-green-500" />
+                            ) : (
+                              <X className="w-3.5 h-3.5 text-gray-400" />
+                            )}
+                            <span className={passed ? "text-green-500" : "text-gray-400"}>
+                              {req.label}
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
               </div>
+
               <div>
                 <Text className="block text-sm font-medium mb-2">Confirm New Password</Text>
-                <Input.Password
+                <Input
                   size="large"
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm new password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   prefix={<Lock size={16} />}
-                  iconRender={(visible) => (visible ? <Eye size={16} /> : <EyeOff size={16} />)}
+                  suffix={
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                    >
+                      {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  }
                   disabled={loading}
                 />
+                
+                {/* Password match indicator */}
+                {confirmPassword && (
+                  <div className="mt-1 flex items-center gap-2 text-xs">
+                    {newPassword === confirmPassword ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-green-500" />
+                        <span className="text-green-500">Passwords match</span>
+                      </>
+                    ) : (
+                      <>
+                        <X className="w-3.5 h-3.5 text-red-500" />
+                        <span className="text-red-500">Passwords do not match</span>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -241,7 +334,7 @@ const OTPVerification: React.FC = () => {
               onClick={handleVerifyOTP}
               loading={loading}
               disabled={state?.type === 'reset' ? 
-                (otp.length !== 6 || !newPassword || !confirmPassword) : 
+                (otp.length !== 6 || !newPassword || !confirmPassword || !allRequirementsMet || newPassword !== confirmPassword) : 
                 (otp.length !== 6)
               }
               className="w-full"
