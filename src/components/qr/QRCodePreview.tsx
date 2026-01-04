@@ -111,6 +111,9 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   const [hovered, setHovered] = useState(false);
   const [showTitleEditor, setShowTitleEditor] = useState(false);
   const [showSubtitleEditor, setShowSubtitleEditor] = useState(false);
+  const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
+  const [showQRLabelEditor, setShowQRLabelEditor] = useState(false);
+  const [showCTAEditor, setShowCTAEditor] = useState(false);
 
   // Use user settings for watermark defaults
   const effectiveShowWatermark = showWatermark !== undefined ? showWatermark : !user?.removeWatermark;
@@ -154,6 +157,30 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
   const handleColorChange = (key: 'backgroundColor' | 'textColor', color: Color) => {
     if (onTemplateChange) {
       onTemplateChange({ ...template, [key]: color.toHexString() });
+    }
+  };
+
+  const handleCustomFieldChange = (fieldId: string, updates: Partial<CustomField>) => {
+    if (onTemplateChange && template) {
+      const updatedFields = template.customFields?.map(field => 
+        field.id === fieldId ? { ...field, ...updates } : field
+      ) || [];
+      onTemplateChange({ ...template, customFields: updatedFields });
+    }
+  };
+
+  const handleQRLabelChange = (value: string) => {
+    if (onTemplateChange) {
+      onTemplateChange({ ...template, qrLabel: value });
+    }
+  };
+
+  const handleCTAButtonChange = (updates: Partial<typeof template.ctaButton>) => {
+    if (onTemplateChange) {
+      onTemplateChange({ 
+        ...template, 
+        ctaButton: { ...template.ctaButton, ...updates } as any 
+      });
     }
   };
 
@@ -285,6 +312,61 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
     }
   };
 
+  const createFieldEditorContent = (field: CustomField) => {
+    const isNumericField = field.type === 'date' || field.type === 'time' || /\d/.test(field.value);
+    
+    return (
+      <div className="w-72 space-y-3 p-1">
+        <div>
+          <label className="text-xs font-medium block mb-1">
+            {field.type === 'date' ? 'Date' : field.type === 'time' ? 'Time' : 'Text'} Content
+          </label>
+          <Input
+            value={field.value}
+            onChange={(e) => handleCustomFieldChange(field.id, { value: e.target.value })}
+            size="small"
+            placeholder={field.type === 'date' ? 'January 1, 2025' : field.type === 'time' ? '12:00 PM' : 'Enter text'}
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium block mb-1">Font Size: {field.style?.fontSize || 14}px</label>
+          <Slider
+            min={8}
+            max={32}
+            value={field.style?.fontSize || 14}
+            onChange={(value) => handleCustomFieldChange(field.id, { 
+              style: { ...field.style, fontSize: value }
+            })}
+          />
+        </div>
+        <div>
+          <label className="text-xs font-medium block mb-1">Text Color</label>
+          <ColorPicker
+            value={field.style?.color || template.textColor}
+            onChange={(color) => handleCustomFieldChange(field.id, {
+              style: { ...field.style, color: color.toHexString() }
+            })}
+            size="small"
+          />
+        </div>
+        {isNumericField && (
+          <div>
+            <label className="text-xs font-medium block mb-1">Letter Spacing: {field.style?.letterSpacing || 0}px</label>
+            <Slider
+              min={-1}
+              max={5}
+              step={0.5}
+              value={field.style?.letterSpacing || 0}
+              onChange={(value) => handleCustomFieldChange(field.id, {
+                style: { ...field.style, letterSpacing: value }
+              })}
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderCustomField = (field: CustomField) => {
     const style: React.CSSProperties = {
       fontSize: field.style?.fontSize || 14,
@@ -309,6 +391,41 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
       );
     }
 
+    // Render editable field
+    if (editable && !compact) {
+      return (
+        <Popover 
+          key={field.id}
+          content={createFieldEditorContent(field)}
+          title={
+            <span className="flex items-center gap-2">
+              <Type size={14} /> 
+              Edit {field.type === 'date' ? 'Date' : field.type === 'time' ? 'Time' : 'Text'}
+            </span>
+          }
+          trigger="click"
+          open={editingFieldId === field.id}
+          onOpenChange={(open) => setEditingFieldId(open ? field.id : null)}
+        >
+          <div 
+            className="group flex items-center gap-1 cursor-pointer hover:opacity-80 relative z-10"
+            style={{ justifyContent: textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start' }}
+          >
+            <span style={style}>{field.value}</span>
+            {hovered && (
+              <div 
+                className="absolute -right-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center opacity-70"
+                style={{ backgroundColor: template.textColor + '30' }}
+              >
+                <Pencil size={10} style={{ color: template.textColor }} />
+              </div>
+            )}
+          </div>
+        </Popover>
+      );
+    }
+
+    // Render non-editable field
     return (
       <div key={field.id} className="z-10">
         <span style={style}>{field.value}</span>
@@ -515,18 +632,127 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
         )}
       </div>
       {!compact && template.qrLabel && (
-        <span 
-          className="mt-2 text-xs opacity-70"
-          style={{ color: template.textColor }}
-        >
-          {template.qrLabel}
-        </span>
+        editable ? (
+          <Popover 
+            content={
+              <div className="w-64 space-y-3 p-1">
+                <div>
+                  <label className="text-xs font-medium block mb-1">QR Label Text</label>
+                  <Input
+                    value={template.qrLabel || ''}
+                    onChange={(e) => handleQRLabelChange(e.target.value)}
+                    size="small"
+                    placeholder="Scan for details"
+                  />
+                </div>
+              </div>
+            }
+            title={<span className="flex items-center gap-2"><Type size={14} /> Edit QR Label</span>}
+            trigger="click"
+            open={showQRLabelEditor}
+            onOpenChange={setShowQRLabelEditor}
+          >
+            <div className="group flex items-center gap-1 cursor-pointer hover:opacity-80 relative mt-2">
+              <span 
+                className="text-xs opacity-70"
+                style={{ color: template.textColor }}
+              >
+                {template.qrLabel}
+              </span>
+              {hovered && (
+                <div 
+                  className="absolute -right-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center opacity-70"
+                  style={{ backgroundColor: template.textColor + '30' }}
+                >
+                  <Pencil size={10} style={{ color: template.textColor }} />
+                </div>
+              )}
+            </div>
+          </Popover>
+        ) : (
+          <span 
+            className="mt-2 text-xs opacity-70"
+            style={{ color: template.textColor }}
+          >
+            {template.qrLabel}
+          </span>
+        )
       )}
     </div>
   );
 
   const renderCTAButton = () => {
     if (!template.ctaButton || compact) return null;
+    
+    if (editable) {
+      return (
+        <Popover 
+          content={
+            <div className="w-72 space-y-3 p-1">
+              <div>
+                <label className="text-xs font-medium block mb-1">Button Text</label>
+                <Input
+                  value={template.ctaButton.text}
+                  onChange={(e) => handleCTAButtonChange({ text: e.target.value })}
+                  size="small"
+                  placeholder="Click Me"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium block mb-1">Background Color</label>
+                <ColorPicker
+                  value={template.ctaButton.backgroundColor}
+                  onChange={(color) => handleCTAButtonChange({ backgroundColor: color.toHexString() })}
+                  size="small"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium block mb-1">Text Color</label>
+                <ColorPicker
+                  value={template.ctaButton.textColor}
+                  onChange={(color) => handleCTAButtonChange({ textColor: color.toHexString() })}
+                  size="small"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium block mb-1">Border Radius: {template.ctaButton.borderRadius || 8}px</label>
+                <Slider
+                  min={0}
+                  max={20}
+                  value={template.ctaButton.borderRadius || 8}
+                  onChange={(value) => handleCTAButtonChange({ borderRadius: value })}
+                />
+              </div>
+            </div>
+          }
+          title={<span className="flex items-center gap-2"><Type size={14} /> Edit Button</span>}
+          trigger="click"
+          open={showCTAEditor}
+          onOpenChange={setShowCTAEditor}
+        >
+          <div className="group relative z-10">
+            <div
+              className="px-6 py-2 font-semibold text-sm cursor-pointer transition-transform hover:scale-105"
+              style={{
+                backgroundColor: template.ctaButton.backgroundColor,
+                color: template.ctaButton.textColor,
+                borderRadius: template.ctaButton.borderRadius || 8,
+              }}
+            >
+              {template.ctaButton.text}
+            </div>
+            {hovered && (
+              <div 
+                className="absolute -right-6 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center opacity-70"
+                style={{ backgroundColor: template.textColor + '30' }}
+              >
+                <Pencil size={10} style={{ color: template.textColor }} />
+              </div>
+            )}
+          </div>
+        </Popover>
+      );
+    }
     
     return (
       <div
