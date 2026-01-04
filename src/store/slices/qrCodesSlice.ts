@@ -4,11 +4,23 @@ import { qrCodeAPI } from '@/lib/api';
 import { QRCodeData, defaultTemplates, defaultStyling } from '@/types/qrcode';
 
 // ============ Types ============
+interface LimitErrorData {
+  success: boolean;
+  message: string;
+  upgradeRequired: boolean;
+  currentPlan: string;
+  currentCount: number;
+  maxAllowed: number;
+}
+
 interface QRCodesState {
   items: QRCodeData[];
   loading: boolean;
   error: string | null;
   lastFetched: number | null;
+  // Limit error handling
+  limitError: LimitErrorData | null;
+  showLimitDialog: boolean;
   // Pagination metadata
   page: number;
   limit: number;
@@ -23,6 +35,8 @@ const initialState: QRCodesState = {
   loading: false,
   error: null,
   lastFetched: null,
+  limitError: null,
+  showLimitDialog: false,
   page: 1,
   limit: 10,
   total: 0,
@@ -137,7 +151,28 @@ export const createQRCode = createAsyncThunk(
 
       return qr;
     } catch (err: any) {
-      return rejectWithValue(err?.response?.data?.message || 'Failed to save QR code');
+      // Check if this is a limit error
+      const errorData = err?.response?.data;
+      if (
+        errorData &&
+        errorData.success === false &&
+        errorData.upgradeRequired === true &&
+        typeof errorData.currentCount === 'number' &&
+        typeof errorData.maxAllowed === 'number'
+      ) {
+        // Return the full error data for limit errors
+        return rejectWithValue({ 
+          isLimitError: true, 
+          limitData: errorData,
+          message: errorData.message || 'QR code limit reached'
+        });
+      }
+      
+      // Regular error
+      return rejectWithValue({ 
+        isLimitError: false, 
+        message: errorData?.message || 'Failed to save QR code' 
+      });
     }
   }
 );
@@ -198,9 +233,22 @@ const qrCodesSlice = createSlice({
       state.items = [];
       state.lastFetched = null;
       state.error = null;
+      state.limitError = null;
+      state.showLimitDialog = false;
+      state.page = 1;
+      state.total = 0;
+      state.totalPages = 1;
     },
     invalidateCache: (state) => {
       state.lastFetched = null;
+    },
+    showLimitDialog: (state, action: PayloadAction<LimitErrorData>) => {
+      state.limitError = action.payload;
+      state.showLimitDialog = true;
+    },
+    hideLimitDialog: (state) => {
+      state.limitError = null;
+      state.showLimitDialog = false;
     },
   },
   extraReducers: (builder) => {
@@ -245,7 +293,17 @@ const qrCodesSlice = createSlice({
       })
       .addCase(createQRCode.rejected, (state, action) => {
         state.loading = false;
-        message.error(action.payload as string);
+        const payload = action.payload as any;
+        
+        if (payload?.isLimitError && payload?.limitData) {
+          // Handle limit error - store the data and show dialog
+          state.limitError = payload.limitData;
+          state.showLimitDialog = true;
+        } else {
+          // Handle regular error - show message
+          const errorMessage = payload?.message || action.payload as string;
+          message.error(errorMessage);
+        }
       })
       // Update
       .addCase(updateQRCode.fulfilled, (state, action) => {
@@ -270,7 +328,7 @@ const qrCodesSlice = createSlice({
   },
 });
 
-export const { clearQRCodes, invalidateCache } = qrCodesSlice.actions;
+export const { clearQRCodes, invalidateCache, showLimitDialog, hideLimitDialog } = qrCodesSlice.actions;
 
 // ============ Selectors ============
 export const selectQRCodes = (state: { qrCodes: QRCodesState }) => state.qrCodes.items;
@@ -279,6 +337,8 @@ export const selectQRCodesPage = (state: { qrCodes: QRCodesState }) => state.qrC
 export const selectQRCodesLimit = (state: { qrCodes: QRCodesState }) => state.qrCodes.limit;
 export const selectQRCodesTotal = (state: { qrCodes: QRCodesState }) => state.qrCodes.total;
 export const selectQRCodesTotalPages = (state: { qrCodes: QRCodesState }) => state.qrCodes.totalPages;
+export const selectLimitError = (state: { qrCodes: QRCodesState }) => state.qrCodes.limitError;
+export const selectShowLimitDialog = (state: { qrCodes: QRCodesState }) => state.qrCodes.showLimitDialog;
 // Deprecated: Use stats slice selectors instead
 export const selectQRCodesTotalScans = (state: { qrCodes: QRCodesState }) => 0;
 export const selectQRCodesTotalActive = (state: { qrCodes: QRCodesState }) => 0;

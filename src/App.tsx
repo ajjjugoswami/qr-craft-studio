@@ -12,6 +12,7 @@ import { useTheme } from "./hooks/useTheme";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import RouteChangeListener from "./components/RouteChangeListener";
+import GlobalDialogs from "./components/layout/GlobalDialogs";
 import { hslToRgb } from "./utils/colorUtils";
 
 // Import all page components directly (no lazy loading)
@@ -68,8 +69,6 @@ const AppContent = () => {
   return (
     <ConfigProvider theme={antTheme}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
         <BrowserRouter>
           <RouteChangeListener />
           <Routes>
@@ -126,7 +125,14 @@ const AppContent = () => {
 
             <Route path="*" element={<NotFound />}/>
           </Routes>
+          
+          {/* Global Dialogs - Inside Router context */}
+          <GlobalDialogs />
         </BrowserRouter>
+        
+        {/* Global Toasters */}
+        <Toaster />
+        <Sonner />
       </TooltipProvider>
     </ConfigProvider>
   );
