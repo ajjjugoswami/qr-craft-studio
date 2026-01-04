@@ -54,5 +54,11 @@ export const paymentAPI = {
   cancelSubscription: async (): Promise<{ success: boolean; message: string; subscription: Subscription }> => {
     const response = await api.post('/payments/cancel');
     return response.data;
+  },
+
+  // Refresh subscription features
+  refreshSubscription: async (): Promise<{ success: boolean; message: string; subscription: Subscription }> => {
+    const response = await api.post('/payments/refresh');
+    return response.data;
   }
 };

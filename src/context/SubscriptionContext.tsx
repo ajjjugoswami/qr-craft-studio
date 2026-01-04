@@ -48,6 +48,7 @@ interface SubscriptionContextType {
   processPayment: (planType: string, duration?: number) => Promise<boolean>;
   cancelSubscription: () => Promise<boolean>;
   refreshSubscription: () => Promise<void>;
+  refreshSubscriptionFeatures: () => Promise<void>;
   fetchPaymentHistory: (page?: number, limit?: number) => Promise<void>;
   hasFeatureAccess: (feature: keyof Subscription['features']) => boolean;
   getRemainingQRCodes: (currentCount: number) => number;
@@ -187,6 +188,28 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error('Error refreshing subscription:', error);
     } finally {
       setSubscriptionLoading(false);
+    }
+  }, [userId]);
+
+  // Refresh subscription features (updates database features)
+  const refreshSubscriptionFeatures = useCallback(async () => {
+    if (!userId) return;
+
+    try {
+      setLoading(true);
+      const response = await paymentAPI.refreshSubscription();
+      if (response.success) {
+        setSubscription(response.subscription);
+        subscriptionFetchedForUserRef.current = userId;
+        message.success('Subscription features updated successfully');
+      } else {
+        message.error('Failed to update subscription features');
+      }
+    } catch (error: any) {
+      console.error('Error refreshing subscription features:', error);
+      message.error('Failed to update subscription features');
+    } finally {
+      setLoading(false);
     }
   }, [userId]);
 
@@ -424,6 +447,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
       processPayment,
       cancelSubscription,
       refreshSubscription,
+      refreshSubscriptionFeatures,
       fetchPaymentHistory,
       hasFeatureAccess,
       getRemainingQRCodes,
@@ -441,6 +465,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
       processPayment,
       cancelSubscription,
       refreshSubscription,
+      refreshSubscriptionFeatures,
       fetchPaymentHistory,
       hasFeatureAccess,
       getRemainingQRCodes,

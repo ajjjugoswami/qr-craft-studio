@@ -38,7 +38,8 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
     loading,
     subscriptionLoading,
     cancelSubscription,
-    fetchPaymentHistory
+    fetchPaymentHistory,
+    refreshSubscriptionFeatures
   } = usePayment();
 
   // Fetch payment history on mount if needed
@@ -46,7 +47,7 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
     if (showPaymentHistory) {
       fetchPaymentHistory();
     }
-  }, [showPaymentHistory]);
+  }, [fetchPaymentHistory, showPaymentHistory]);
 
   const handleCancelSubscription = () => {
     Modal.confirm({
@@ -237,7 +238,18 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
 
         <Divider />
 
-        <Title level={4}>Plan Features</Title>
+        <div className="flex justify-between items-center mb-4">
+          <Title level={4}>Plan Features</Title>
+          {!isFreePlan && (
+            <Button 
+              size="middle" 
+              loading={loading}
+              onClick={refreshSubscriptionFeatures}
+            >
+              Refresh Features
+            </Button>
+          )}
+        </div>
         <Descriptions bordered column={2} size="small">
           <Descriptions.Item label="QR Codes Limit">
             {subscription.features.maxQRCodes === -1 ? 'Unlimited' : subscription.features.maxQRCodes.toLocaleString()}
@@ -248,7 +260,7 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
           </Descriptions.Item>
 
           <Descriptions.Item label="Advanced Analytics">
-            {subscription.features.analytics ? (
+            {subscription.features.advancedAnalytics ? (
               <Badge status="success" text="Available" />
             ) : (
               <Badge status="default" text="Not Available" />

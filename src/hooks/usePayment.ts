@@ -19,6 +19,7 @@ export const usePayment = () => {
     processPayment: context.processPayment,
     cancelSubscription: context.cancelSubscription,
     fetchSubscription: context.refreshSubscription,
+    refreshSubscriptionFeatures: context.refreshSubscriptionFeatures,
     fetchPaymentHistory: context.fetchPaymentHistory,
     
     // Utilities
