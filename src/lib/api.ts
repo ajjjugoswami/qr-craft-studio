@@ -51,7 +51,7 @@ api.interceptors.response.use(
 
 // Auth API
 export const authAPI = {
-  signup: async (data: { name: string; email: string; password: string }) => {
+  signup: async (data: { name: string; email: string; password: string; verificationToken?: string }) => {
     const response = await api.post('/auth/signup', data);
     return response.data;
   },
@@ -95,6 +95,27 @@ export const authAPI = {
   // Change password
   changePassword: async (data: { currentPassword: string; newPassword: string }) => {
     const response = await api.put('/auth/password', data);
+    return response.data;
+  },
+
+  // OTP-related methods
+  sendVerificationOTP: async (email: string) => {
+    const response = await api.post('/auth/send-verification-otp', { email });
+    return response.data;
+  },
+
+  sendResetOTP: async (email: string) => {
+    const response = await api.post('/auth/send-reset-otp', { email });
+    return response.data;
+  },
+
+  verifyEmailOTP: async (email: string, otp: string) => {
+    const response = await api.post('/auth/verify-email-otp', { email, otp });
+    return response.data;
+  },
+
+  verifyResetOTP: async (email: string, otp: string, newPassword: string) => {
+    const response = await api.post('/auth/verify-reset-otp', { email, otp, newPassword });
     return response.data;
   },
 

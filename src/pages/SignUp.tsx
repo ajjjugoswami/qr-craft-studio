@@ -5,6 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAppDispatch } from "@/store";
 import { googleSignIn } from "@/store/slices/authSlice";
 import { useAuth } from "@/hooks/useAuth";
+import { authAPI } from "@/lib/api";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -130,10 +131,24 @@ const SignUp: React.FC = () => {
 
     setLoading(true);
     try {
-      await signup(formData.name, formData.email, formData.password);
-      navigate("/dashboard");
-    } catch {
-      // errors shown in hook
+      // Step 1: Send OTP for email verification
+      await authAPI.sendVerificationOTP(formData.email);
+      
+      message.success('Verification code sent to your email');
+      
+      // Navigate to OTP verification page with signup data
+      navigate('/otp-verification', {
+        state: {
+          email: formData.email,
+          name: formData.name,
+          password: formData.password,
+          type: 'verification'
+        }
+      });
+    } catch (error: any) {
+      console.error('Send OTP error:', error);
+      const errorMessage = error?.response?.data?.message || 'Failed to send verification code';
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }

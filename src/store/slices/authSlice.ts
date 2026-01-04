@@ -155,9 +155,9 @@ export const signIn = createAsyncThunk(
 // Sign up
 export const signUp = createAsyncThunk(
   'auth/signUp',
-  async ({ name, email, password }: { name: string; email: string; password: string }, { rejectWithValue }) => {
+  async ({ name, email, password, verificationToken }: { name: string; email: string; password: string; verificationToken?: string }, { rejectWithValue }) => {
     try {
-      const data = await authAPI.signup({ name, email, password });
+      const data = await authAPI.signup({ name, email, password, verificationToken });
       const { token } = data;
 
       if (!token) {
@@ -209,6 +209,17 @@ export const signUp = createAsyncThunk(
       return { user, token };
     } catch (error: any) {
       const serverMessage = error?.response?.data?.message || error?.message;
+      const errorCode = error?.response?.data?.code;
+      
+      // Handle specific error cases
+      if (errorCode === 'EMAIL_VERIFICATION_REQUIRED' || errorCode === 'INVALID_VERIFICATION_TOKEN') {
+        return rejectWithValue({
+          message: serverMessage,
+          requiresVerification: true,
+          code: errorCode
+        });
+      }
+      
       return rejectWithValue(serverMessage || 'Sign up failed');
     }
   }

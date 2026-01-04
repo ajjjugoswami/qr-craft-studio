@@ -195,6 +195,7 @@ const SignIn: React.FC = () => {
             <div className="text-right">
               <button
                 type="button"
+                onClick={() => navigate('/forgot-password')}
                 className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
               >
                 Forgot Password?

@@ -19,6 +19,8 @@ import { hslToRgb } from "./utils/colorUtils";
 import LandingPage from "./pages/landing/LandingPage";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import ForgotPassword from "./pages/ForgotPassword";
+import OTPVerification from "./pages/OTPVerification";
 import Dashboard from "./pages/Dashboard";
 import CreateQR from "./pages/CreateQR";
 import Analytics from "./pages/Analytics";
@@ -75,6 +77,8 @@ const AppContent = () => {
             <Route path="/" element={<LandingPage />} />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/otp-verification" element={<OTPVerification />} />
             <Route
               path="/dashboard"
               element={<ProtectedRoute><Dashboard /></ProtectedRoute>}

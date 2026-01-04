@@ -40,8 +40,8 @@ export const useAuth = () => {
   );
 
   const signup = useCallback(
-    async (name: string, email: string, password: string) => {
-      await dispatch(signUp({ name, email, password })).unwrap();
+    async (name: string, email: string, password: string, verificationToken?: string) => {
+      await dispatch(signUp({ name, email, password, verificationToken })).unwrap();
     },
     [dispatch]
   );
