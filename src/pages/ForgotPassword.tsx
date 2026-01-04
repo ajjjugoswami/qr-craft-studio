@@ -47,11 +47,11 @@ const ForgotPassword: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen    flex items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-xl">
         <div className="p-6">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4  rounded-full flex items-center justify-center">
               <Mail className="w-8 h-8 text-blue-600" />
             </div>
             <Title level={2} className="mb-2">
