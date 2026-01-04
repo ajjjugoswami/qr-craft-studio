@@ -22,6 +22,9 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ styling, onStyleChange }) => 
           value={styling.size}
           onChange={(value) => onStyleChange({ ...styling, size: value })}
         />
+        <Text type="secondary" className="block mt-2 text-xs">
+          Changes are reflected in the live preview. Larger sizes provide better scannability.
+        </Text>
       </div>
 
       <div className="mb-6">
@@ -46,7 +49,7 @@ const SettingsTab: React.FC<SettingsTabProps> = ({ styling, onStyleChange }) => 
         <div>
           <Text strong>Include Margin</Text>
           <Text type="secondary" className="block text-xs">
-            Add white space around the QR code
+            Add white space around the QR code for better scanning
           </Text>
         </div>
         <Switch

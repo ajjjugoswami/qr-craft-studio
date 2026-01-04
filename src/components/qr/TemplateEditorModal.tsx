@@ -1062,8 +1062,71 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
                     ? 'border-primary ring-2 ring-primary/30' 
                     : 'border-border hover:border-primary/50'
                 }`}
-                style={{ background: 'linear-gradient(180deg, #8e6a3e, #5c4033)' }}
               />
+            </div>
+          </Card>
+
+          {/* Custom Colors */}
+          <Card size="small" title="Custom Colors" className="border-border">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium block mb-2">Background</label>
+                <ColorPicker
+                  value={template.backgroundColor}
+                  onChange={(c) => onTemplateChange({ ...template, backgroundColor: c.toHexString() })}
+                  size="small"
+                  showText
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium block mb-2">Text Color</label>
+                <ColorPicker
+                  value={template.textColor}
+                  onChange={(c) => onTemplateChange({ ...template, textColor: c.toHexString() })}
+                  size="small"
+                  showText
+                />
+              </div>
+            </div>
+            
+            <div className="mt-4">
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-xs font-medium">Gradient Background</label>
+                <Switch
+                  checked={template.showGradient || false}
+                  onChange={(v) => onTemplateChange({ ...template, showGradient: v })}
+                  size="small"
+                />
+              </div>
+              
+              {template.showGradient && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-2 block">Gradient End</label>
+                    <ColorPicker
+                      value={template.gradientColor || "#000000"}
+                      onChange={(c) => onTemplateChange({ ...template, gradientColor: c.toHexString() })}
+                      size="small"
+                      showText
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-2 block">Direction</label>
+                    <Select
+                      value={template.gradientDirection || "to-bottom"}
+                      onChange={(v) => onTemplateChange({ ...template, gradientDirection: v })}
+                      options={[
+                        { value: "to-bottom", label: "Top to Bottom" },
+                        { value: "to-right", label: "Left to Right" },
+                        { value: "to-bottom-right", label: "Diagonal ↘" },
+                        { value: "to-top-right", label: "Diagonal ↗" },
+                      ]}
+                      className="w-full"
+                      size="small"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
         </div>
@@ -1097,8 +1160,8 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
               <QrCode size={14} />
               Live Preview
             </div>
-            <div className="flex justify-center items-start p-4 bg-muted/30 rounded-lg min-h-[550px]">
-              <div className="transform scale-[0.82] origin-top">
+            <div className="relative flex justify-center items-start p-4 bg-muted/30 rounded-lg min-h-[550px]">
+              <div className="transform scale-[0.85] origin-top">
                 <QRCodePreview
                   content={content}
                   template={template}
@@ -1107,6 +1170,10 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
                   qrId={qrId}
                   qrType={qrType}
                 />
+              </div>
+              {/* Size indicator */}
+              <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                {styling.size}px {styling.includeMargin ? '• Margin' : ''}
               </div>
             </div>
           </div>

@@ -46,18 +46,19 @@ const Contact: React.FC = () => {
       icon: <Mail size={24} />,
       title: "Email Support",
       description: "Send us an email and we'll respond within 24 hours",
-      contact: "support@qrcraftstudio.com",
+      contact: "winning11.in@gmail.com",
       color: "#6366f1",
-      action: "mailto:support@qrcraftstudio.com",
+      action: "mailto:winning11.in@gmail.com",
     },
-    {
-      icon: <HeadphonesIcon size={24} />,
-      title: "Phone Support",
-      description: "Speak directly with our customer service team",
-      contact: "+1 (555) 123-4567",
-      color: "#f59e0b",
-      action: "tel:+15551234567",
-    },
+    // Phone support temporarily hidden
+    // {
+    //   icon: <HeadphonesIcon size={24} />,
+    //   title: "Phone Support",
+    //   description: "Speak directly with our customer service team",
+    //   contact: "+1 (555) 123-4567",
+    //   color: "#f59e0b",
+    //   action: "tel:+15551234567",
+    // },
   ];
 
   return (

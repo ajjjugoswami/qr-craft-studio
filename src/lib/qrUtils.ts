@@ -76,7 +76,7 @@ export const createQRCodeOptions = (
     height: size,
     data: getQRData(content, qrId),
     type: 'svg' as const,
-    margin: safeStyling.includeMargin ? 4 : 0,
+    margin: safeStyling.includeMargin ? 8 : 0, // Increased margin for better visibility
     qrOptions: {
       errorCorrectionLevel: errorLevel,
     },

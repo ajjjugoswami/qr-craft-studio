@@ -51,7 +51,7 @@ const QROnlyPreview = React.memo(forwardRef<HTMLDivElement, {
     const { user } = useAuth();
     const qrRef = useRef<HTMLDivElement>(null);
     const qrCode = useRef<QRCodeStyling | null>(null);
-    const qrOnlySize = compact ? 48 : styling.size > 200 ? 200 : styling.size;
+    const qrOnlySize = compact ? 48 : Math.min(styling.size, 220); // Increased cap for better visibility
 
     // Use user settings for watermark defaults
     const effectiveShowWatermark = showWatermark !== undefined ? showWatermark : !user?.removeWatermark;
@@ -139,8 +139,8 @@ const QRCodePreview = forwardRef<HTMLDivElement, QRCodePreviewProps>(({
     },
   }), [styling]);
 
-  // Calculate qrSize early since it's needed in useEffect
-  const qrSize = compact ? 48 : styling.size > 140 ? 140 : styling.size;
+  // Calculate qrSize - for preview context, allow larger sizes to be visible
+  const qrSize = compact ? 48 : Math.min(styling.size, 180); // Increased cap from 140 to 180
 
   const handleTitleChange = (value: string) => {
     if (onTemplateChange) {
