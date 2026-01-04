@@ -155,7 +155,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               {subscription?.planType === 'enterprise' ? (
-                <Sparkles size={16} className="text-purple-500" />
+                <CreditCard size={16} className="text-purple-500" />
               ) : subscription?.planType === 'pro' ? (
                 <CreditCard size={16} className="text-blue-500" />
               ) : (
