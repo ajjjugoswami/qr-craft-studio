@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useTheme } from '@/hooks/useTheme';
 import { 
   QrCode, 
   ArrowRight, 
@@ -43,7 +44,9 @@ import {
   Download,
   RefreshCw,
   Building2,
-  Stamp
+  Stamp,
+  Sun,
+  Moon
 } from 'lucide-react';
 import FreeQRGenerator from './components/FreeQRGenerator';
 
@@ -101,6 +104,14 @@ const AnimatedSection = ({
 
 const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { mode, setMode } = useTheme();
+
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const effectiveMode = mode === 'system' ? (systemPrefersDark ? 'dark' : 'light') : mode;
+
+  const toggleTheme = () => {
+    setMode(effectiveMode === 'dark' ? 'light' : 'dark');
+  };
 
   const stats = [
     { value: '5K+', label: 'QR Codes Created' },
@@ -209,6 +220,14 @@ const LandingPage = () => {
 
             {/* CTA Buttons */}
             <div className="hidden md:flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs h-8 w-8 p-0"
+                onClick={toggleTheme}
+              >
+                {effectiveMode === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
               <Link to="/sign-in">
                 <Button variant="ghost" size="sm" className="text-xs h-8">
                   Sign In
@@ -248,6 +267,14 @@ const LandingPage = () => {
                   Analytics
                 </a>
                 <div className="flex gap-2 px-3 pt-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-10 h-8 p-0"
+                    onClick={toggleTheme}
+                  >
+                    {effectiveMode === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                  </Button>
                   <Link to="/sign-in" className="flex-1">
                     <Button variant="outline" size="sm" className="w-full text-xs">Sign In</Button>
                   </Link>
