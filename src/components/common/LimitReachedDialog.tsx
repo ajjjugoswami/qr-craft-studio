@@ -1,6 +1,6 @@
 import React from 'react';
-import { Modal, Button, Typography, Space } from 'antd';
-import { Crown, Zap, ArrowUpRight, Lock, BarChart3, Palette, Star, Check } from 'lucide-react';
+import { Modal, Button, Typography } from 'antd';
+import { ArrowRight, BarChart3, Check, ShieldCheck } from 'lucide-react';
 import './LimitReachedDialog.css';
 
 const { Title, Text } = Typography;
@@ -27,9 +27,8 @@ const LimitReachedDialog: React.FC<LimitReachedDialogProps> = ({
 }) => {
   if (!limitData || !limitData.upgradeRequired) return null;
 
-  const { currentPlan, currentCount, maxAllowed, message } = limitData;
+  const { currentPlan, currentCount, maxAllowed } = limitData;
   const usagePercentage = Math.min((currentCount / maxAllowed) * 100, 100);
-  const isFreePlan = currentPlan === 'free';
 
   const handleUpgrade = () => {
     onClose();
@@ -44,148 +43,106 @@ const LimitReachedDialog: React.FC<LimitReachedDialogProps> = ({
       onCancel={onClose}
       footer={null}
       centered
-      width={480}
+      width={420}
       className="limit-reached-modal"
       maskClosable={false}
     >
-      <div className="p-4">
+      <div className="p-5">
         {/* Header */}
-        <div className="text-center mb-5">
-          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform duration-300">
-            <Lock className="w-6 h-6 text-white animate-pulse" />
+        <div className="text-center mb-6">
+          <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-muted border border-border flex items-center justify-center">
+            <ShieldCheck className="w-7 h-7 text-muted-foreground" />
           </div>
-          <Title level={4} className="!mb-2 !text-gray-800 dark:!text-gray-100">
-            QR Code Limit Reached! 🚫
+          <Title level={4} className="!mb-2 !text-foreground !font-semibold">
+            QR Code Limit Reached
           </Title>
-          <Text className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-            You've hit the limit on your <span className="font-semibold text-gray-800 dark:text-gray-200 capitalize">{currentPlan}</span> plan. 
-            Time to unlock more possibilities!
+          <Text className="text-muted-foreground text-sm">
+            You've reached the limit on your <span className="font-medium text-foreground capitalize">{currentPlan}</span> plan.
           </Text>
         </div>
 
-        {/* Usage Visualization */}
-        <div className="mb-4">
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+        {/* Usage Card */}
+        <div className="mb-6">
+          <div className="bg-muted/50 rounded-lg p-4 border border-border">
             <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                  <BarChart3 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-background border border-border flex items-center justify-center">
+                  <BarChart3 className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <div>
-                  <Text strong className="text-gray-800 dark:text-gray-200 text-sm">Current Usage</Text>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">QR Codes Created</div>
+                  <Text className="text-foreground text-sm font-medium block">Usage</Text>
+                  <Text className="text-muted-foreground text-xs">QR Codes Created</Text>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-lg font-bold text-red-500">
+                <Text className="text-lg font-semibold text-foreground">
                   {currentCount}/{maxAllowed}
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">100% Full</div>
+                </Text>
               </div>
             </div>
             
             {/* Progress Bar */}
-            <div className="relative w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mb-2 overflow-hidden">
+            <div className="w-full bg-border rounded-full h-2 overflow-hidden">
               <div 
-                className="bg-gradient-to-r from-orange-400 via-red-400 to-red-500 h-2 rounded-full transition-all duration-1000 ease-out shadow-sm"
+                className="bg-foreground/60 h-2 rounded-full transition-all duration-500"
                 style={{ width: `${usagePercentage}%` }}
-              >
-                <div className="h-full w-full bg-gradient-to-r from-transparent to-white opacity-30 rounded-full"></div>
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse"></div>
+              />
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-              All {maxAllowed} slots used in your {currentPlan} plan
-            </div>
+            <Text className="text-muted-foreground text-xs mt-2 block text-center">
+              All slots used in your {currentPlan} plan
+            </Text>
           </div>
         </div>
 
-        {/* Premium Features */}
-        <div className="mb-5">
-          <div className="text-center mb-3">
-            <Text strong className="text-base text-gray-800 dark:text-gray-200">
-              🚀 Unlock Premium Features
-            </Text>
-          </div>
+        {/* Features List */}
+        <div className="mb-6">
+          <Text className="text-foreground text-sm font-medium block mb-3">
+            Upgrade to unlock:
+          </Text>
           
-          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                  <Check className="w-3 h-3 text-white" />
+          <div className="space-y-2.5">
+            {[
+              'Create up to 200 QR codes',
+              'Advanced analytics & tracking',
+              'Remove watermarks',
+              'Premium templates',
+              'Password protection'
+            ].map((feature, index) => (
+              <div key={index} className="flex items-center gap-2.5">
+                <div className="w-4 h-4 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Check className="w-2.5 h-2.5 text-primary" />
                 </div>
-                <Text className="text-gray-700 dark:text-gray-300 text-sm">
-                  Create up to 200 QR codes
-                </Text>
+                <Text className="text-muted-foreground text-sm">{feature}</Text>
               </div>
-
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                  <Check className="w-3 h-3 text-white" />
-                </div>
-                <Text className="text-gray-700 dark:text-gray-300 text-sm">
-                  Advanced analytics & tracking
-                </Text>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                  <Check className="w-3 h-3 text-white" />
-                </div>
-                <Text className="text-gray-700 dark:text-gray-300 text-sm">
-                  Remove watermarks
-                </Text>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                  <Check className="w-3 h-3 text-white" />
-                </div>
-                <Text className="text-gray-700 dark:text-gray-300 text-sm">
-                  50+ premium templates
-                </Text>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                  <Check className="w-3 h-3 text-white" />
-                </div>
-                <Text className="text-gray-700 dark:text-gray-300 text-sm">
-                  Password protection
-                </Text>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           <Button
             type="primary"
-            size="middle"
+            size="large"
             onClick={handleUpgrade}
-            className="w-full h-10 bg-gradient-to-r from-orange-500 to-red-500 border-none hover:from-orange-600 hover:to-red-600 shadow-lg font-medium text-sm"
+            className="w-full h-11 !bg-foreground hover:!bg-foreground/90 !border-none !text-background font-medium"
           >
-            <div className="flex items-center justify-center gap-2">
-               Upgrade Now - Starting ₹12/month
-            </div>
+            <span className="flex items-center justify-center gap-2">
+              View Plans
+              <ArrowRight className="w-4 h-4" />
+            </span>
           </Button>
           
           <Button
-            size="middle"
+            size="large"
             onClick={onClose}
-            className="w-full h-10 border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 font-medium text-gray-700 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700"
+            className="w-full h-11 !border-border hover:!border-muted-foreground !text-muted-foreground hover:!text-foreground !bg-transparent"
           >
             Maybe Later
           </Button>
         </div>
-
-      
       </div>
     </Modal>
   );
 };
 
 export default LimitReachedDialog;
-
- 
