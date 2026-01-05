@@ -1,78 +1,111 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Layers, ArrowRight } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
 import AnimatedSection from "./AnimatedSection";
-import MobileCarousel from "./MobileCarousel";
+import Marquee from "./Marquee";
 import LandingQRCode from "./LandingQRCode";
+import { LANDING_LOGOS } from "./LandingLogos";
 
-const categories = [
+const templates = [
   {
     name: "Business",
-    bgColor: "from-slate-800 to-slate-900",
-    qrColor: "#94a3b8",
+    qrColor: "#1e293b",
     dotType: "classy-rounded" as const,
+    logo: LANDING_LOGOS.business,
   },
   {
     name: "Restaurant",
-    bgColor: "from-amber-700 to-amber-900",
-    qrColor: "#fbbf24",
+    qrColor: "#d97706",
     dotType: "rounded" as const,
+    logo: LANDING_LOGOS.restaurant,
   },
   {
     name: "Events",
-    bgColor: "from-purple-600 to-fuchsia-700",
-    qrColor: "#e879f9",
+    qrColor: "#9333ea",
     dotType: "dots" as const,
+    logo: LANDING_LOGOS.events,
   },
   {
     name: "Social",
-    bgColor: "from-pink-500 to-rose-600",
-    qrColor: "#fda4af",
+    qrColor: "#25D366",
     dotType: "extra-rounded" as const,
+    logo: LANDING_LOGOS.social,
   },
   {
     name: "Luxury",
-    bgColor: "from-amber-500 to-yellow-600",
-    qrColor: "#fef3c7",
+    qrColor: "#b45309",
     dotType: "classy" as const,
+    logo: LANDING_LOGOS.luxury,
   },
   {
     name: "Tech",
-    bgColor: "from-cyan-500 to-blue-600",
-    qrColor: "#a5f3fc",
+    qrColor: "#0891b2",
     dotType: "square" as const,
+    logo: LANDING_LOGOS.tech,
+  },
+  {
+    name: "Instagram",
+    qrColor: "#E1306C",
+    dotType: "rounded" as const,
+    logo: LANDING_LOGOS.instagram,
+  },
+  {
+    name: "YouTube",
+    qrColor: "#FF0000",
+    dotType: "extra-rounded" as const,
+    logo: LANDING_LOGOS.youtube,
+  },
+  {
+    name: "LinkedIn",
+    qrColor: "#0A66C2",
+    dotType: "classy-rounded" as const,
+    logo: LANDING_LOGOS.linkedin,
+  },
+  {
+    name: "X (Twitter)",
+    qrColor: "#000000",
+    dotType: "rounded" as const,
+    logo: LANDING_LOGOS.twitter,
+  },
+  {
+    name: "Facebook",
+    qrColor: "#1877F2",
+    dotType: "dots" as const,
+    logo: LANDING_LOGOS.facebook,
+  },
+  {
+    name: "Spotify",
+    qrColor: "#1DB954",
+    dotType: "extra-rounded" as const,
+    logo: LANDING_LOGOS.spotify,
   },
 ];
 
-const TemplateCard = ({ category }: { category: typeof categories[0] }) => (
-  <div
-    className={`bg-gradient-to-br ${category.bgColor} rounded-xl p-5 text-center aspect-[4/3] flex flex-col items-center justify-center h-full shadow-lg hover:shadow-xl transition-shadow duration-300`}
-  >
-    <div className="mb-3">
+const TemplateCard = ({ template }: { template: typeof templates[0] }) => (
+  <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-card border border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300 min-w-[120px]">
+    <div className="rounded-lg overflow-hidden shadow-md">
       <LandingQRCode
         data="https://qrstudio.app"
-        color={category.qrColor}
-        size={70}
-        dotType={category.dotType}
+        color={template.qrColor}
+        size={90}
+        dotType={template.dotType}
         cornerSquareType="extra-rounded"
         cornerDotType="dot"
+        logo={template.logo}
       />
     </div>
-    <span className="text-xs font-semibold text-white/90">
-      {category.name}
+    <span className="text-xs font-medium text-muted-foreground">
+      {template.name}
     </span>
   </div>
 );
 
 const TemplatesShowcase = () => {
-  const isMobile = useIsMobile();
-
   return (
-    <section className="py-10 md:py-12 lg:py-16">
+    <section className="py-10 md:py-12 lg:py-16 overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8">
         <AnimatedSection>
-          <div className="text-center mb-6 md:mb-8">
+          <div className="text-center mb-8 md:mb-10">
             <div className="inline-flex items-center gap-1.5 bg-muted text-foreground/70 px-2.5 py-1 rounded-full text-[10px] font-medium mb-3">
               <Layers className="h-3 w-3" />
               <span>100+ Templates</span>
@@ -82,31 +115,24 @@ const TemplatesShowcase = () => {
               <span className="text-primary"> Every Industry</span>
             </h2>
             <p className="text-xs text-muted-foreground max-w-lg mx-auto">
-              Choose from our curated collection of stunning QR code card
-              templates designed for restaurants, events, business cards, and
-              more.
+              Choose from our curated collection of stunning QR code templates
+              designed for restaurants, events, business cards, and more.
             </p>
           </div>
         </AnimatedSection>
+      </div>
 
-        <AnimatedSection delay={150}>
-          {isMobile ? (
-            <MobileCarousel itemClassName="basis-1/2 min-w-[140px]">
-              {categories.map((category, index) => (
-                <TemplateCard key={index} category={category} />
-              ))}
-            </MobileCarousel>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 max-w-4xl mx-auto mb-6">
-              {categories.map((category, index) => (
-                <TemplateCard key={index} category={category} />
-              ))}
-            </div>
-          )}
-        </AnimatedSection>
+      <AnimatedSection delay={150}>
+        <Marquee speed={30} pauseOnHover>
+          {templates.map((template, index) => (
+            <TemplateCard key={index} template={template} />
+          ))}
+        </Marquee>
+      </AnimatedSection>
 
+      <div className="container mx-auto px-4 lg:px-8">
         <AnimatedSection delay={300}>
-          <div className="text-center mt-6">
+          <div className="text-center mt-8">
             <Link to="/signup">
               <Button size="sm" variant="outline" className="gap-1.5 text-xs">
                 Browse All Templates
