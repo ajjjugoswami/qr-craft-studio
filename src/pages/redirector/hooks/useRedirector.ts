@@ -187,6 +187,22 @@ export const useRedirector = () => {
         
         if (!targetContent) throw new Error('Destination not found');
 
+        // Check expiration date BEFORE anything else (including password prompt)
+        const expirationDate = qr?.expirationDate || qr?.expirationdate;
+        if (expirationDate) {
+          const expDate = new Date(expirationDate);
+          if (expDate < new Date()) {
+            window.location.href = `/qr/unavailable/${id}?reason=expired`;
+            return;
+          }
+        }
+
+        // Check if QR is inactive
+        if (qr?.status === 'inactive' || qr?.isActive === false) {
+          window.location.href = `/qr/unavailable/${id}?reason=inactive`;
+          return;
+        }
+
         setContent(targetContent);
         setQrType(type);
 
