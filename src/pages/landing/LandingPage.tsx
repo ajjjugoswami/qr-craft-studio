@@ -947,45 +947,46 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Dynamic QR Section */}
+      {/* Multi-Format Download Section */}
       <section className="py-12 lg:py-16 bg-muted/20 border-y border-border/50">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
             {/* Left: Visual */}
             <AnimatedSection>
-              <Card className="p-5 bg-background">
-                <div className="space-y-3">
-                  {/* URL Change animation mock */}
-                  <div className="bg-muted/50 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <RefreshCw className="h-4 w-4 text-primary" />
-                      <span className="text-xs font-semibold">Dynamic URL</span>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <div className="bg-background rounded-lg p-2 border border-border flex items-center gap-2">
-                        <div className="h-6 w-6 rounded bg-red-500/20 flex items-center justify-center">
-                          <X className="h-3 w-3 text-red-500" />
+              <Card className="p-5 bg-background overflow-hidden">
+                <div className="space-y-4">
+                  {/* Download format cards with hover animations */}
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { format: 'PNG', desc: 'High Quality', color: 'bg-blue-500' },
+                      { format: 'JPG', desc: 'Compressed', color: 'bg-green-500' },
+                      { format: 'WEBP', desc: 'Web Optimized', color: 'bg-purple-500' }
+                    ].map((item, i) => (
+                      <div 
+                        key={i} 
+                        className="group bg-muted/50 rounded-lg p-4 text-center border border-border hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-lg"
+                      >
+                        <div className={`w-10 h-10 ${item.color} rounded-lg mx-auto mb-2 flex items-center justify-center transition-transform group-hover:scale-110`}>
+                          <Download className="h-5 w-5 text-white" />
                         </div>
-                        <span className="text-[10px] text-muted-foreground line-through">old-website.com/promo</span>
+                        <div className="text-xs font-bold">{item.format}</div>
+                        <div className="text-[9px] text-muted-foreground">{item.desc}</div>
                       </div>
-                      <div className="bg-primary/10 rounded-lg p-2 border border-primary/30 flex items-center gap-2">
-                        <div className="h-6 w-6 rounded bg-primary/20 flex items-center justify-center">
-                          <Check className="h-3 w-3 text-primary" />
-                        </div>
-                        <span className="text-[10px] text-primary font-medium">new-website.com/summer-sale</span>
-                      </div>
-                    </div>
+                    ))}
                   </div>
 
-                  {/* Same QR code indicator */}
-                  <div className="flex items-center justify-center gap-3 py-3">
-                    <div className="bg-muted rounded-lg p-3">
-                      <QrCode className="h-10 w-10 text-foreground/50" />
-                    </div>
-                    <div className="text-center">
-                      <div className="text-xs font-semibold text-primary">Same QR Code</div>
-                      <div className="text-[10px] text-muted-foreground">No reprinting needed</div>
+                  {/* Size selector */}
+                  <div className="bg-muted/30 rounded-lg p-3 border border-border">
+                    <div className="text-[10px] text-muted-foreground mb-2">Select Size</div>
+                    <div className="flex gap-2">
+                      {['512px', '1024px', '2048px'].map((size, i) => (
+                        <div 
+                          key={i}
+                          className={`flex-1 py-2 rounded-md text-center text-[10px] font-medium transition-all cursor-pointer ${i === 1 ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
+                        >
+                          {size}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -996,38 +997,37 @@ const LandingPage = () => {
             <AnimatedSection delay={200}>
               <div>
                 <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-2.5 py-1 rounded-full text-[10px] font-medium mb-3">
-                  <Zap className="h-3 w-3" />
-                  <span>Dynamic QR Codes</span>
+                  <Download className="h-3 w-3" />
+                  <span>Multiple Formats</span>
                 </div>
                 <h2 className="text-xl md:text-2xl font-semibold mb-3 tracking-tight">
-                  Update Content
-                  <span className="text-primary"> Without Reprinting</span>
+                  Download in Any Format
+                  <span className="text-primary"> You Need</span>
                 </h2>
                 <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
-                  Change the destination URL anytime without creating a new QR code. Perfect for campaigns, menus, and promotions that need regular updates.
+                  Export your QR codes in high-resolution PNG, compressed JPG, or web-optimized WEBP. Choose the perfect size for print or digital use.
                 </p>
 
                 <ul className="space-y-2 mb-5">
                   {[
-                    'Change destination URL instantly',
-                    'Track performance over time',
-                    'A/B test different landing pages',
-                    'Update menus & catalogs live',
-                    'Fix typos without reprinting'
+                    'High-resolution exports up to 2048px',
+                    'Print-ready quality for any size',
+                    'Optimized files for fast web loading',
+                    'Transparent background support'
                   ].map((feature, index) => (
-                    <li key={index} className="flex items-center gap-2 text-xs">
-                      <div className="h-4 w-4 rounded-full bg-primary/10 flex items-center justify-center">
+                    <li key={index} className="flex items-center gap-2 text-xs group">
+                      <div className="h-4 w-4 rounded-full bg-primary/10 flex items-center justify-center transition-transform group-hover:scale-110">
                         <Check className="h-2.5 w-2.5 text-primary" />
                       </div>
-                      {feature}
+                      <span className="transition-colors group-hover:text-foreground">{feature}</span>
                     </li>
                   ))}
                 </ul>
 
                 <Link to="/signup">
-                  <Button size="sm" className="gap-1.5 text-xs">
-                    Create Dynamic QR Code
-                    <ArrowRight className="h-3 w-3" />
+                  <Button size="sm" className="gap-1.5 text-xs group">
+                    Start Creating
+                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
                   </Button>
                 </Link>
               </div>
@@ -1083,11 +1083,11 @@ const LandingPage = () => {
               }
             ].map((useCase, index) => (
               <AnimatedSection key={index} delay={index * 100}>
-                <Card className="p-4 h-full hover:shadow-md transition-shadow">
-                  <div className={`h-10 w-10 rounded-xl ${useCase.color} flex items-center justify-center mb-3`}>
+                <Card className="p-4 h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-pointer">
+                  <div className={`h-10 w-10 rounded-xl ${useCase.color} flex items-center justify-center mb-3 transition-transform group-hover:scale-110`}>
                     {useCase.icon}
                   </div>
-                  <h3 className="font-semibold text-sm mb-1">{useCase.title}</h3>
+                  <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">{useCase.title}</h3>
                   <p className="text-[11px] text-muted-foreground leading-relaxed">{useCase.description}</p>
                 </Card>
               </AnimatedSection>
@@ -1096,140 +1096,131 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Pricing Preview Section */}
+      {/* Customization Section */}
       <section className="py-12 lg:py-16 bg-muted/20 border-y border-border/50">
         <div className="container mx-auto px-4 lg:px-8">
-          <AnimatedSection>
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-2.5 py-1 rounded-full text-[10px] font-medium mb-3">
-                <CreditCard className="h-3 w-3" />
-                <span>Simple Pricing</span>
+          <div className="grid lg:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+            {/* Left: Content */}
+            <AnimatedSection className="order-2 lg:order-1">
+              <div>
+                <div className="inline-flex items-center gap-1.5 bg-muted text-foreground/70 px-2.5 py-1 rounded-full text-[10px] font-medium mb-3">
+                  <Palette className="h-3 w-3" />
+                  <span>Full Customization</span>
+                </div>
+                <h2 className="text-xl md:text-2xl font-semibold mb-3 tracking-tight">
+                  Make It Uniquely
+                  <span className="text-primary"> Yours</span>
+                </h2>
+                <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
+                  Customize every aspect of your QR codes with colors, patterns, logos, and frames. Match your brand perfectly.
+                </p>
+
+                <div className="grid grid-cols-2 gap-3 mb-5">
+                  {[
+                    { icon: <Palette className="h-4 w-4" />, label: 'Custom Colors' },
+                    { icon: <Image className="h-4 w-4" />, label: 'Logo Upload' },
+                    { icon: <Layers className="h-4 w-4" />, label: 'Pattern Styles' },
+                    { icon: <Sparkles className="h-4 w-4" />, label: 'Frame Options' }
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-2 text-xs group cursor-pointer">
+                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-105">
+                        {item.icon}
+                      </div>
+                      <span className="group-hover:text-foreground transition-colors">{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <Link to="/signup">
+                  <Button size="sm" className="gap-1.5 text-xs group">
+                    Start Customizing
+                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                  </Button>
+                </Link>
               </div>
-              <h2 className="text-xl md:text-2xl font-semibold mb-2 tracking-tight">
-                Choose the Right Plan
-                <span className="text-primary"> For You</span>
-              </h2>
-              <p className="text-xs text-muted-foreground max-w-lg mx-auto">
-                Start free, upgrade when you need more. No hidden fees.
-              </p>
-            </div>
-          </AnimatedSection>
+            </AnimatedSection>
 
-          <AnimatedSection delay={150}>
-            <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-              {/* Free Plan */}
-              <Card className="p-5 relative">
-                <div className="mb-4">
-                  <h3 className="text-sm font-semibold mb-1">Free</h3>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-2xl font-bold">₹0</span>
-                    <span className="text-xs text-muted-foreground">/forever</span>
+            {/* Right: Visual */}
+            <AnimatedSection delay={200} className="order-1 lg:order-2">
+              <Card className="p-5 bg-background">
+                <div className="space-y-4">
+                  {/* Color palette */}
+                  <div className="bg-muted/30 rounded-lg p-4">
+                    <div className="text-[10px] text-muted-foreground mb-3">Color Palette</div>
+                    <div className="flex gap-2 flex-wrap">
+                      {['#000000', '#3b82f6', '#10b981', '#f97316', '#ec4899', '#8b5cf6', '#06b6d4', '#ef4444'].map((color, i) => (
+                        <div 
+                          key={i}
+                          className={`w-8 h-8 rounded-full cursor-pointer transition-all hover:scale-110 hover:ring-2 hover:ring-offset-2 hover:ring-primary ${i === 1 ? 'ring-2 ring-offset-2 ring-primary' : ''}`}
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Pattern preview */}
+                  <div className="grid grid-cols-4 gap-2">
+                    {['Square', 'Dots', 'Rounded', 'Classy'].map((pattern, i) => (
+                      <div 
+                        key={i}
+                        className={`p-2 rounded-lg text-center cursor-pointer transition-all hover:scale-105 ${i === 2 ? 'bg-primary/10 border border-primary' : 'bg-muted/50 border border-transparent hover:border-border'}`}
+                      >
+                        <div className="w-8 h-8 mx-auto mb-1 bg-foreground/20 rounded" />
+                        <span className="text-[9px]">{pattern}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Logo preview */}
+                  <div className="flex items-center gap-3 bg-muted/30 rounded-lg p-3">
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center border-2 border-dashed border-primary/30 transition-all hover:border-primary cursor-pointer">
+                      <Image className="h-5 w-5 text-primary/50" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-xs font-medium">Add Your Logo</div>
+                      <div className="text-[10px] text-muted-foreground">Upload PNG, JPG, or SVG</div>
+                    </div>
                   </div>
                 </div>
-                <ul className="space-y-2 mb-5">
-                  {[
-                    '5 QR Codes',
-                    'Basic QR Types',
-                    'Standard Templates',
-                    'PNG Download',
-                    'Basic Analytics'
-                  ].map((feature, i) => (
-                    <li key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Check className="h-3 w-3 text-primary" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Link to="/signup" className="block">
-                  <Button variant="outline" size="sm" className="w-full text-xs">
-                    Get Started
-                  </Button>
-                </Link>
               </Card>
+            </AnimatedSection>
+          </div>
+        </div>
+      </section>
 
-              {/* Pro Plan - Popular */}
-              <Card className="p-5 relative border-primary bg-primary/5">
-                <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
-                  <span className="bg-primary text-primary-foreground text-[9px] font-semibold px-2.5 py-1 rounded-full">
-                    MOST POPULAR
-                  </span>
-                </div>
-                <div className="mb-4">
-                  <h3 className="text-sm font-semibold mb-1">Pro</h3>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-2xl font-bold">₹499</span>
-                    <span className="text-xs text-muted-foreground">/month</span>
+      {/* Stats Counter Section */}
+      <section className="py-12 lg:py-16">
+        <div className="container mx-auto px-4 lg:px-8">
+          <AnimatedSection>
+            <div className="max-w-4xl mx-auto">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {[
+                  { value: '100+', label: 'Card Templates', icon: <Layers className="h-5 w-5" /> },
+                  { value: '12', label: 'QR Code Types', icon: <QrCode className="h-5 w-5" /> },
+                  { value: '3', label: 'Export Formats', icon: <Download className="h-5 w-5" /> },
+                  { value: '∞', label: 'Customization', icon: <Palette className="h-5 w-5" /> }
+                ].map((stat, index) => (
+                  <div 
+                    key={index} 
+                    className="text-center p-4 rounded-xl bg-muted/30 border border-border hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group cursor-pointer"
+                  >
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mx-auto mb-3 transition-transform group-hover:scale-110">
+                      {stat.icon}
+                    </div>
+                    <div className="text-2xl font-bold text-foreground mb-1 group-hover:text-primary transition-colors">
+                      {stat.value}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground">
+                      {stat.label}
+                    </div>
                   </div>
-                </div>
-                <ul className="space-y-2 mb-5">
-                  {[
-                    '50 QR Codes',
-                    'All QR Types',
-                    'Premium Templates',
-                    'Logo Upload',
-                    'Advanced Analytics',
-                    'Password Protection',
-                    'Expiration Control'
-                  ].map((feature, i) => (
-                    <li key={i} className="flex items-center gap-2 text-xs">
-                      <Check className="h-3 w-3 text-primary" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Link to="/signup" className="block">
-                  <Button size="sm" className="w-full text-xs">
-                    Start Free Trial
-                  </Button>
-                </Link>
-              </Card>
-
-              {/* Business Plan */}
-              <Card className="p-5 relative">
-                <div className="mb-4">
-                  <h3 className="text-sm font-semibold mb-1">Business</h3>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-2xl font-bold">₹1,499</span>
-                    <span className="text-xs text-muted-foreground">/month</span>
-                  </div>
-                </div>
-                <ul className="space-y-2 mb-5">
-                  {[
-                    'Unlimited QR Codes',
-                    'Everything in Pro',
-                    'White Label',
-                    'Custom Domain',
-                    'Remove Branding',
-                    'Priority Support',
-                    'Team Management'
-                  ].map((feature, i) => (
-                    <li key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Check className="h-3 w-3 text-primary" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Link to="/signup" className="block">
-                  <Button variant="outline" size="sm" className="w-full text-xs">
-                    Contact Sales
-                  </Button>
-                </Link>
-              </Card>
-            </div>
-          </AnimatedSection>
-
-          <AnimatedSection delay={300}>
-            <div className="text-center mt-6">
-              <Link to="/pricing">
-                <Button variant="link" size="sm" className="gap-1.5 text-xs text-muted-foreground">
-                  View Full Pricing Details
-                  <ArrowRight className="h-3 w-3" />
-                </Button>
-              </Link>
+                ))}
+              </div>
             </div>
           </AnimatedSection>
         </div>
       </section>
+
 
 
 
