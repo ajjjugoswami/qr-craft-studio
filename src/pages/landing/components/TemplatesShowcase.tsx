@@ -1,49 +1,65 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Layers, QrCode, ArrowRight } from "lucide-react";
+import { Layers, ArrowRight } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import AnimatedSection from "./AnimatedSection";
 import MobileCarousel from "./MobileCarousel";
+import LandingQRCode from "./LandingQRCode";
 
 const categories = [
   {
     name: "Business",
-    color: "from-slate-800 to-slate-900",
-    textColor: "text-white",
+    bgColor: "from-slate-800 to-slate-900",
+    qrColor: "#94a3b8",
+    dotType: "classy-rounded" as const,
   },
   {
     name: "Restaurant",
-    color: "from-amber-800 to-amber-900",
-    textColor: "text-amber-100",
+    bgColor: "from-amber-700 to-amber-900",
+    qrColor: "#fbbf24",
+    dotType: "rounded" as const,
   },
   {
     name: "Events",
-    color: "from-purple-600 to-purple-800",
-    textColor: "text-white",
+    bgColor: "from-purple-600 to-fuchsia-700",
+    qrColor: "#e879f9",
+    dotType: "dots" as const,
   },
   {
     name: "Social",
-    color: "from-pink-500 to-rose-600",
-    textColor: "text-white",
+    bgColor: "from-pink-500 to-rose-600",
+    qrColor: "#fda4af",
+    dotType: "extra-rounded" as const,
   },
   {
     name: "Luxury",
-    color: "from-yellow-600 to-yellow-800",
-    textColor: "text-yellow-100",
+    bgColor: "from-amber-500 to-yellow-600",
+    qrColor: "#fef3c7",
+    dotType: "classy" as const,
   },
   {
     name: "Tech",
-    color: "from-cyan-500 to-blue-600",
-    textColor: "text-white",
+    bgColor: "from-cyan-500 to-blue-600",
+    qrColor: "#a5f3fc",
+    dotType: "square" as const,
   },
 ];
 
 const TemplateCard = ({ category }: { category: typeof categories[0] }) => (
   <div
-    className={`bg-gradient-to-br ${category.color} rounded-lg p-4 text-center aspect-[4/3] flex flex-col items-center justify-center h-full`}
+    className={`bg-gradient-to-br ${category.bgColor} rounded-xl p-5 text-center aspect-[4/3] flex flex-col items-center justify-center h-full shadow-lg hover:shadow-xl transition-shadow duration-300`}
   >
-    <QrCode className={`h-8 w-8 ${category.textColor} opacity-50 mb-2`} />
-    <span className={`text-xs font-semibold ${category.textColor}`}>
+    <div className="mb-3">
+      <LandingQRCode
+        data="https://qrstudio.app"
+        color={category.qrColor}
+        size={70}
+        dotType={category.dotType}
+        cornerSquareType="extra-rounded"
+        cornerDotType="dot"
+      />
+    </div>
+    <span className="text-xs font-semibold text-white/90">
       {category.name}
     </span>
   </div>
