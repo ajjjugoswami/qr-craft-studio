@@ -28,7 +28,7 @@ const getCategoryForTemplate = (template: QRTemplate): string => {
   
   // Social media templates
   if (id.includes('instagram') || id.includes('facebook') || id.includes('youtube') || 
-      id.includes('tiktok') || id.includes('linkedin') || id.includes('whatsapp') ||
+      id.includes('linkedin') || id.includes('whatsapp') ||
       id.includes('twitter') || id.includes('pinterest') || id.includes('social-follow')) return 'social';
   
   // Restaurant templates

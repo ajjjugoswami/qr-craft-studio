@@ -30,8 +30,6 @@ const getTypeConfig = (qrType: string) => {
       return { icon: Youtube, title: 'YouTube', color: 'bg-red-600', defaultHex: '#dc2626', iconBg: 'bg-red-100', iconColor: 'text-red-600', action: { label: 'Watch', prefix: '' } };
     case 'whatsapp':
       return { icon: MessageCircle, title: 'WhatsApp', color: 'bg-green-500', defaultHex: '#22c55e', iconBg: 'bg-green-100', iconColor: 'text-green-600', action: { label: 'Open WhatsApp', prefix: '' } };
-    case 'tiktok':
-      return { icon: Video, title: 'TikTok', color: 'bg-stone-900', defaultHex: '#1c1917', iconBg: 'bg-stone-100', iconColor: 'text-stone-800', action: { label: 'Open TikTok', prefix: '' } };
     case 'twitter':
       return { icon: Twitter, title: 'X', color: 'bg-stone-800', defaultHex: '#292524', iconBg: 'bg-stone-100', iconColor: 'text-stone-800', action: { label: 'Open X', prefix: '' } };
     case 'linkedin':

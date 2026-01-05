@@ -50,12 +50,6 @@ export const getSmartRedirectUrl = (url: string): SmartRedirect => {
       return { appUrl, webUrl: url, platform: 'Instagram', androidIntent };
     }
 
-    // TikTok
-    if (hostname.includes('tiktok.com')) {
-      const androidIntent = `intent://www.tiktok.com${pathname}${search}#Intent;package=com.zhiliaoapp.musically;scheme=https;end`;
-      return { appUrl: `snssdk1233://`, webUrl: url, platform: 'TikTok', androidIntent };
-    }
-
     // X / Twitter
     if (hostname.includes('twitter.com') || hostname.includes('x.com')) {
       const username = pathname.split('/')[1];

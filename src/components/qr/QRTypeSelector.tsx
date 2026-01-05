@@ -43,7 +43,6 @@ const qrTypeCategories: QRTypeCategory[] = [
       { value: 'instagram', label: 'Instagram', icon: <Instagram className="w-5 h-5" /> },
       { value: 'facebook', label: 'Facebook', icon: <Facebook className="w-5 h-5" /> },
       { value: 'youtube', label: 'YouTube', icon: <Youtube className="w-5 h-5" /> },
-      { value: 'tiktok', label: 'TikTok', icon: <Video className="w-5 h-5" /> },
       { value: 'twitter', label: 'X / Twitter', icon: <Twitter className="w-5 h-5" /> },
       { value: 'linkedin', label: 'LinkedIn', icon: <Linkedin className="w-5 h-5" /> },
       { value: 'spotify', label: 'Spotify', icon: <Music className="w-5 h-5" /> },

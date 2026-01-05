@@ -15,7 +15,6 @@ export type QRType =
   | 'instagram' 
   | 'facebook' 
   | 'youtube' 
-  | 'tiktok'
   | 'twitter'
   | 'linkedin'
   | 'spotify'
@@ -1193,40 +1192,6 @@ export const designTemplates: DesignTemplate[] = [
       }
     } 
   },
-  // ===== TIKTOK STYLE =====
-  { 
-    id: 'tiktok-style-qr', 
-    name: 'TikTok Style', 
-    category: 'vibrant', 
-    icon: 'sparkles', 
-    styling: { 
-      ...defaultStyling, 
-      fgColor: '#000000', 
-      bgColor: '#ffffff', 
-      dotsType: 'rounded', 
-      dotsGradient: {
-        type: 'linear',
-        rotation: 45,
-        colorStops: [
-          { offset: 0, color: '#69c9d0' },
-          { offset: 0.5, color: '#000000' },
-          { offset: 1, color: '#ee1d52' }
-        ]
-      },
-      cornersSquareOptions: { 
-        color: '#000000', 
-        type: 'rounded',
-        gradient: {
-          type: 'linear',
-          rotation: 135,
-          colorStops: [
-            { offset: 0, color: '#69c9d0' },
-            { offset: 1, color: '#ee1d52' }
-          ]
-        }
-      }
-    } 
-  },
   // ===== SPOTIFY GREEN =====
   { 
     id: 'spotify-green-qr', 
@@ -2366,32 +2331,6 @@ export const defaultTemplates: QRTemplate[] = [
     shadowIntensity: 'strong',
     decorativeStyle: 'none',
     accentColor: '#ffffff',
-  },
-  // ===== TIKTOK DARK =====
-  {
-    id: 'tiktok-dark',
-    name: 'TikTok',
-    backgroundColor: '#000000',
-    textColor: '#ffffff',
-    title: '@username',
-    subtitle: 'Follow for trending content',
-    customFields: [
-      { id: 'label1', type: 'label', value: 'TIKTOK', style: { fontSize: 10, letterSpacing: 3, color: '#69c9d0', fontWeight: 'bold' } },
-    ],
-    titleFontSize: 26,
-    subtitleFontSize: 13,
-    titleFontWeight: 'bold',
-    fontFamily: 'Inter',
-    textAlign: 'center',
-    qrPosition: 'bottom',
-    borderRadius: 20,
-    showGradient: true,
-    gradientColor: '#1a1a1a',
-    gradientDirection: 'to-bottom',
-    padding: 28,
-    shadowIntensity: 'strong',
-    decorativeStyle: 'none',
-    accentColor: '#ee1d52',
   },
   // ===== LINKEDIN PROFESSIONAL =====
   {

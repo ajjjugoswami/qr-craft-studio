@@ -9,11 +9,8 @@ import {
   FaTwitter,
   FaTelegram,
   FaSpotify,
-  FaSnapchatGhost,
   FaPinterestP,
   FaDiscord,
-  FaTiktok,
-  FaGoogle,
   FaApple,
   FaAmazon,
   FaPaypal,
@@ -42,13 +39,10 @@ const BRAND_LOGOS = [
   { id: 'youtube', type: 'brand', color: '#FF0000', label: 'YouTube' },
   { id: 'linkedin', type: 'brand', color: '#0A66C2', label: 'LinkedIn' },
   { id: 'twitter', type: 'brand', color: '#000000', label: 'X (Twitter)' },
-  { id: 'tiktok', type: 'brand', color: '#000000', label: 'TikTok' },
   { id: 'telegram', type: 'brand', color: '#229ED9', label: 'Telegram' },
   { id: 'spotify', type: 'brand', color: '#1DB954', label: 'Spotify' },
-  { id: 'snapchat', type: 'brand', color: '#FFFC00', label: 'Snapchat' },
   { id: 'pinterest', type: 'brand', color: '#E60023', label: 'Pinterest' },
   { id: 'discord', type: 'brand', color: '#5865F2', label: 'Discord' },
-  { id: 'google', type: 'brand', color: '#4285F4', label: 'Google' },
   { id: 'apple', type: 'brand', color: '#000000', label: 'Apple' },
   { id: 'amazon', type: 'brand', color: '#FF9900', label: 'Amazon' },
   { id: 'paypal', type: 'brand', color: '#003087', label: 'PayPal' },
@@ -66,13 +60,10 @@ const getBrandIcon = (id: string) => {
     case 'youtube': return FaYoutube;
     case 'linkedin': return FaLinkedinIn;
     case 'twitter': return FaTwitter;
-    case 'tiktok': return FaTiktok;
     case 'telegram': return FaTelegram;
     case 'spotify': return FaSpotify;
-    case 'snapchat': return FaSnapchatGhost;
     case 'pinterest': return FaPinterestP;
     case 'discord': return FaDiscord;
-    case 'google': return FaGoogle;
     case 'apple': return FaApple;
     case 'amazon': return FaAmazon;
     case 'paypal': return FaPaypal;
@@ -199,7 +190,6 @@ const LogoTab: React.FC<LogoTabProps> = ({ styling, onStyleChange }) => {
   };
 
   const getIconColor = (preset: typeof BRAND_LOGOS[0]) => {
-    if (preset.id === 'snapchat') return '#FFFC00';
     if (preset.id === 'instagram') return '#E4405F';
     return preset.color || '#000';
   };
