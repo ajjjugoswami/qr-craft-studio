@@ -44,9 +44,9 @@ const SubscriptionLimitAlert: React.FC<SubscriptionLimitAlertProps> = ({
           <p className="text-xs text-muted-foreground mb-2">
             {currentQRCount} of {maxQRCodes} QR codes used
           </p>
-          <div className="w-full bg-border rounded-full h-1.5 overflow-hidden">
+          <div className="w-full bg-border rounded-full h-1 overflow-hidden">
             <div 
-              className="bg-destructive h-1.5 rounded-full transition-all duration-300 animate-pulse"
+              className="bg-destructive h-1 rounded-full transition-all duration-300"
               style={{ width: `${usagePercentage}%` }}
             />
           </div>
