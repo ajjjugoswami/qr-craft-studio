@@ -7,7 +7,6 @@ import {
   FaYoutube, 
   FaLinkedinIn, 
   FaTwitter,
-  FaTiktok,
   FaTelegram,
   FaSpotify,
   FaSnapchatGhost,
@@ -36,7 +35,6 @@ const BRAND_LOGOS = [
   { id: 'youtube', type: 'brand', color: '#FF0000', label: 'YouTube' },
   { id: 'linkedin', type: 'brand', color: '#0A66C2', label: 'LinkedIn' },
   { id: 'twitter', type: 'brand', color: '#000000', label: 'X (Twitter)' },
-  { id: 'tiktok', type: 'brand', color: '#000000', label: 'TikTok' },
   { id: 'telegram', type: 'brand', color: '#26A5E4', label: 'Telegram' },
   { id: 'spotify', type: 'brand', color: '#1DB954', label: 'Spotify' },
   { id: 'snapchat', type: 'brand', color: '#FFFC00', label: 'Snapchat' },
@@ -55,7 +53,6 @@ const getBrandIcon = (id: string) => {
     case 'youtube': return FaYoutube;
     case 'linkedin': return FaLinkedinIn;
     case 'twitter': return FaTwitter;
-    case 'tiktok': return FaTiktok;
     case 'telegram': return FaTelegram;
     case 'spotify': return FaSpotify;
     case 'snapchat': return FaSnapchatGhost;
@@ -198,19 +195,6 @@ const LogoTab: React.FC<LogoTabProps> = ({ styling, onStyleChange }) => {
           <rect width="24" height="24" fill="white"/>
           <circle cx="12" cy="12" r="11" fill="black"/>
           <path fill="white" d="M13.3 10.7L18.5 4.5h-1.2l-4.5 5.4L9 4.5H4.5l5.5 8L4.5 19.5h1.2l4.8-5.6 3.9 5.6h4.5l-5.6-8.8zm-1.7 2l-.6-.8-4.3-6.2h1.9l3.6 5.2.6.8 4.6 6.5h-1.9l-3.9-5.5z"/>
-        </svg>
-      `;
-    } else if (preset.type === 'brand' && preset.id === 'tiktok') {
-      svgContent = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24">
-          <rect width="24" height="24" fill="white"/>
-          <path fill="#25F4EE" d="M9.37 10.4v-.9a6.07 6.07 0 0 0-.87-.07 5.63 5.63 0 0 0-3.22 10.24 5.63 5.63 0 0 1 4.09-9.27z"/>
-          <path fill="#25F4EE" d="M9.57 17.97a2.85 2.85 0 0 0 2.82-2.53V2.24h2.47a4.65 4.65 0 0 1-.07-.86H11.4v13.18a2.85 2.85 0 0 1-2.82 2.54 2.82 2.82 0 0 1-1.33-.33 2.85 2.85 0 0 0 2.32 1.2z"/>
-          <path fill="#25F4EE" d="M18.77 6.41v-.84a4.6 4.6 0 0 1-2.53-.75 4.67 4.67 0 0 0 2.53 1.59z"/>
-          <path fill="#FE2C55" d="M16.24 4.82a4.63 4.63 0 0 1-1.13-3.04h-.88a4.68 4.68 0 0 0 2.01 3.04z"/>
-          <path fill="#FE2C55" d="M8.5 12.6a2.85 2.85 0 0 0-1.25 5.37 2.83 2.83 0 0 1 2.32-4.5c.29 0 .57.05.84.13v-3.13a6.07 6.07 0 0 0-.87-.07h-.07v2.35a2.83 2.83 0 0 0-.97-.15z"/>
-          <path fill="#FE2C55" d="M18.77 6.41v2.26a7.42 7.42 0 0 1-4.34-1.4v6.36a5.63 5.63 0 0 1-8.85 4.63 5.63 5.63 0 0 0 9.92-3.63V8.27a7.42 7.42 0 0 0 4.34 1.4V6.54a4.67 4.67 0 0 1-1.07-.13z"/>
-          <path fill="black" d="M14.43 13.63V7.27a7.42 7.42 0 0 0 4.34 1.4V6.41a4.67 4.67 0 0 1-2.53-1.59 4.68 4.68 0 0 1-2.01-3.04h-2.47v13.2a2.85 2.85 0 0 1-5.14 1.65 2.85 2.85 0 0 1 1.25-5.37c.29 0 .57.05.84.13V9.03A5.63 5.63 0 0 0 4.62 19a5.63 5.63 0 0 0 9.81-5.37z"/>
         </svg>
       `;
     } else if (preset.type === 'brand' && preset.id === 'telegram') {
