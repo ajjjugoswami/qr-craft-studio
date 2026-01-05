@@ -46,7 +46,7 @@ const SubscriptionLimitAlert: React.FC<SubscriptionLimitAlertProps> = ({
           </p>
           <div className="w-full bg-border rounded-full h-1.5 overflow-hidden">
             <div 
-              className="bg-foreground/50 h-1.5 rounded-full transition-all duration-300"
+              className="bg-destructive h-1.5 rounded-full transition-all duration-300"
               style={{ width: `${usagePercentage}%` }}
             />
           </div>
