@@ -19,6 +19,7 @@ export type QRType =
   | 'linkedin'
   | 'spotify'
   | 'telegram'
+  | 'tiktok'
   // Media & Files
   | 'pdf'
   | 'video'
