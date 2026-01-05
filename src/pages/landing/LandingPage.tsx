@@ -1,14 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { useTheme } from '@/hooks/useTheme';
-import { 
-  QrCode, 
-  ArrowRight, 
-  Link as LinkIcon, 
-  Phone, 
-  Mail, 
+import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useTheme } from "@/hooks/useTheme";
+import {
+  QrCode,
+  ArrowRight,
+  Link as LinkIcon,
+  Phone,
+  Mail,
   MessageSquare,
   Wifi,
   MapPin,
@@ -46,9 +46,9 @@ import {
   Building2,
   Stamp,
   Sun,
-  Moon
-} from 'lucide-react';
-import FreeQRGenerator from './components/FreeQRGenerator';
+  Moon,
+} from "lucide-react";
+import FreeQRGenerator from "./components/FreeQRGenerator";
 
 // Custom hook for scroll animations
 const useScrollAnimation = () => {
@@ -62,7 +62,7 @@ const useScrollAnimation = () => {
           setIsVisible(true);
         }
       },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
     );
 
     if (ref.current) {
@@ -76,25 +76,25 @@ const useScrollAnimation = () => {
 };
 
 // Animated section wrapper
-const AnimatedSection = ({ 
-  children, 
-  className = '',
-  delay = 0 
-}: { 
-  children: React.ReactNode; 
+const AnimatedSection = ({
+  children,
+  className = "",
+  delay = 0,
+}: {
+  children: React.ReactNode;
   className?: string;
   delay?: number;
 }) => {
   const { ref, isVisible } = useScrollAnimation();
-  
+
   return (
     <div
       ref={ref}
       className={`transition-all duration-700 ease-out ${className}`}
       style={{
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
-        transitionDelay: `${delay}ms`
+        transform: isVisible ? "translateY(0)" : "translateY(30px)",
+        transitionDelay: `${delay}ms`,
       }}
     >
       {children}
@@ -106,80 +106,91 @@ const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { mode, setMode } = useTheme();
 
-  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const effectiveMode = mode === 'system' ? (systemPrefersDark ? 'dark' : 'light') : mode;
+  const systemPrefersDark = window.matchMedia(
+    "(prefers-color-scheme: dark)"
+  ).matches;
+  const effectiveMode =
+    mode === "system" ? (systemPrefersDark ? "dark" : "light") : mode;
 
   const toggleTheme = () => {
-    setMode(effectiveMode === 'dark' ? 'light' : 'dark');
+    setMode(effectiveMode === "dark" ? "light" : "dark");
   };
 
   const stats = [
-    { value: '5K+', label: 'QR Codes Created' },
-    { value: '2K+', label: 'Happy Users' },
-    { value: '99.9%', label: 'Uptime' },
-    { value: '24/7', label: 'Support' }
+    { value: "5K+", label: "QR Codes Created" },
+    { value: "2K+", label: "Happy Users" },
+    { value: "99.9%", label: "Uptime" },
+    { value: "24/7", label: "Support" },
   ];
 
   const qrTypes = [
-    { icon: <LinkIcon className="h-4 w-4" />, label: 'URL', free: true },
-    { icon: <Phone className="h-4 w-4" />, label: 'Phone', free: true },
-    { icon: <Mail className="h-4 w-4" />, label: 'Email', free: true },
-    { icon: <MessageSquare className="h-4 w-4" />, label: 'SMS', free: true },
-    { icon: <Wifi className="h-4 w-4" />, label: 'WiFi', free: false },
-    { icon: <MapPin className="h-4 w-4" />, label: 'Location', free: false },
-    { icon: <Instagram className="h-4 w-4" />, label: 'Instagram', free: false },
-    { icon: <Facebook className="h-4 w-4" />, label: 'Facebook', free: false },
-    { icon: <Youtube className="h-4 w-4" />, label: 'YouTube', free: false },
-    { icon: <MessageCircle className="h-4 w-4" />, label: 'WhatsApp', free: false },
-    { icon: <CreditCard className="h-4 w-4" />, label: 'vCard', free: false },
-    { icon: <FileText className="h-4 w-4" />, label: 'Text', free: false }
+    { icon: <LinkIcon className="h-4 w-4" />, label: "URL", free: true },
+    { icon: <Phone className="h-4 w-4" />, label: "Phone", free: true },
+    { icon: <Mail className="h-4 w-4" />, label: "Email", free: true },
+    { icon: <MessageSquare className="h-4 w-4" />, label: "SMS", free: true },
+    { icon: <Wifi className="h-4 w-4" />, label: "WiFi", free: false },
+    { icon: <MapPin className="h-4 w-4" />, label: "Location", free: false },
+    {
+      icon: <Instagram className="h-4 w-4" />,
+      label: "Instagram",
+      free: false,
+    },
+    { icon: <Facebook className="h-4 w-4" />, label: "Facebook", free: false },
+    { icon: <Youtube className="h-4 w-4" />, label: "YouTube", free: false },
+    {
+      icon: <MessageCircle className="h-4 w-4" />,
+      label: "WhatsApp",
+      free: false,
+    },
+    { icon: <CreditCard className="h-4 w-4" />, label: "vCard", free: false },
+    { icon: <FileText className="h-4 w-4" />, label: "Text", free: false },
   ];
 
   const premiumFeatures = [
     {
       icon: <Image className="h-6 w-6" />,
-      title: 'Logo Upload',
-      description: 'Brand your QR codes with custom logos'
+      title: "Logo Upload",
+      description: "Brand your QR codes with custom logos",
     },
     {
       icon: <Palette className="h-6 w-6" />,
-      title: '50+ Templates',
-      description: 'Professional designs for every use case'
+      title: "50+ Templates",
+      description: "Professional designs for every use case",
     },
     {
       icon: <BarChart3 className="h-6 w-6" />,
-      title: 'Advanced Analytics',
-      description: 'Track scans, locations & devices'
+      title: "Advanced Analytics",
+      description: "Track scans, locations & devices",
     },
     {
       icon: <Zap className="h-6 w-6" />,
-      title: 'Dynamic QR Codes',
-      description: 'Update destination anytime'
+      title: "Dynamic QR Codes",
+      description: "Update destination anytime",
     },
     {
       icon: <Shield className="h-6 w-6" />,
-      title: 'Password Protection',
-      description: 'Secure access to your content'
+      title: "Password Protection",
+      description: "Secure access to your content",
     },
     {
       icon: <Clock className="h-6 w-6" />,
-      title: 'Expiration Control',
-      description: 'Set dates and scan limits'
-    }
+      title: "Expiration Control",
+      description: "Set dates and scan limits",
+    },
   ];
 
   // Analytics mock data for visualization
   const analyticsData = [
-    { day: 'Mon', scans: 120 },
-    { day: 'Tue', scans: 180 },
-    { day: 'Wed', scans: 150 },
-    { day: 'Thu', scans: 220 },
-    { day: 'Fri', scans: 280 },
-    { day: 'Sat', scans: 190 },
-    { day: 'Sun', scans: 140 }
+    { day: "Mon", scans: 120 },
+    { day: "Tue", scans: 180 },
+    { day: "Wed", scans: 150 },
+    { day: "Thu", scans: 220 },
+    { day: "Fri", scans: 280 },
+    { day: "Sat", scans: 190 },
+    { day: "Sun", scans: 140 },
   ];
 
-  const maxScans = Math.max(...analyticsData.map(d => d.scans));
+  const maxScans = Math.max(...analyticsData.map((d) => d.scans));
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
@@ -195,9 +206,9 @@ const LandingPage = () => {
           <div className="h-14 flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
-              <img 
-                src="/logo.png" 
-                alt="QR Studio" 
+              <img
+                src="/logo.png"
+                alt="QR Studio"
                 className="h-8 w-auto object-contain"
               />
               <span className="font-semibold text-base tracking-tight">
@@ -207,13 +218,22 @@ const LandingPage = () => {
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex items-center gap-6">
-              <a href="#generator" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="#generator"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Generator
               </a>
-              <a href="#features" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="#features"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Features
               </a>
-              <a href="#analytics" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="#analytics"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Analytics
               </a>
             </nav>
@@ -226,7 +246,11 @@ const LandingPage = () => {
                 className="text-xs h-8 w-8 p-0"
                 onClick={toggleTheme}
               >
-                {effectiveMode === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {effectiveMode === "dark" ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
               </Button>
               <Link to="/sign-in">
                 <Button variant="ghost" size="sm" className="text-xs h-8">
@@ -241,11 +265,15 @@ const LandingPage = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <button 
+            <button
               className="md:hidden p-2 hover:bg-muted rounded-lg transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {mobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
             </button>
           </div>
 
@@ -253,17 +281,23 @@ const LandingPage = () => {
           {mobileMenuOpen && (
             <div className="md:hidden py-4 border-t border-border/50 animate-fade-in">
               <nav className="flex flex-col gap-1">
-                <a 
+                <a
                   href="#generator"
                   onClick={() => setMobileMenuOpen(false)}
                   className="px-3 py-2 hover:bg-muted rounded-lg transition-colors text-xs"
                 >
                   Generator
                 </a>
-                <a href="#features" className="px-3 py-2 hover:bg-muted rounded-lg transition-colors text-xs">
+                <a
+                  href="#features"
+                  className="px-3 py-2 hover:bg-muted rounded-lg transition-colors text-xs"
+                >
                   Features
                 </a>
-                <a href="#analytics" className="px-3 py-2 hover:bg-muted rounded-lg transition-colors text-xs">
+                <a
+                  href="#analytics"
+                  className="px-3 py-2 hover:bg-muted rounded-lg transition-colors text-xs"
+                >
                   Analytics
                 </a>
                 <div className="flex gap-2 px-3 pt-3">
@@ -273,13 +307,25 @@ const LandingPage = () => {
                     className="w-10 h-8 p-0"
                     onClick={toggleTheme}
                   >
-                    {effectiveMode === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                    {effectiveMode === "dark" ? (
+                      <Sun className="h-4 w-4" />
+                    ) : (
+                      <Moon className="h-4 w-4" />
+                    )}
                   </Button>
                   <Link to="/sign-in" className="flex-1">
-                    <Button variant="outline" size="sm" className="w-full text-xs">Sign In</Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full text-xs"
+                    >
+                      Sign In
+                    </Button>
                   </Link>
                   <Link to="/signup" className="flex-1">
-                    <Button size="sm" className="w-full text-xs">Get Started</Button>
+                    <Button size="sm" className="w-full text-xs">
+                      Get Started
+                    </Button>
                   </Link>
                 </div>
               </nav>
@@ -304,17 +350,15 @@ const LandingPage = () => {
             <AnimatedSection delay={100}>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-4 leading-[1.15]">
                 Create Stunning
-                <span className="block text-primary">
-                  QR Codes in Seconds
-                </span>
+                <span className="block text-primary">QR Codes in Seconds</span>
               </h1>
             </AnimatedSection>
 
             {/* Subheadline */}
             <AnimatedSection delay={200}>
               <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-8 leading-relaxed">
-                Design beautiful, trackable QR codes with custom colors, logos, and templates. 
-                Perfect for marketing, events, and business.
+                Design beautiful, trackable QR codes with custom colors, logos,
+                and templates. Perfect for marketing, events, and business.
               </p>
             </AnimatedSection>
 
@@ -322,8 +366,8 @@ const LandingPage = () => {
             <AnimatedSection delay={300}>
               <div className="flex flex-col sm:flex-row gap-2 justify-center mb-10">
                 <a href="#generator">
-                  <Button 
-                    size="default" 
+                  <Button
+                    size="default"
                     className="px-6 gap-2 group w-full sm:w-auto text-sm"
                   >
                     Create Free QR Code
@@ -331,7 +375,11 @@ const LandingPage = () => {
                   </Button>
                 </a>
                 <Link to="/signup">
-                  <Button size="default" variant="outline" className="px-6 gap-2 w-full sm:w-auto text-sm">
+                  <Button
+                    size="default"
+                    variant="outline"
+                    className="px-6 gap-2 w-full sm:w-auto text-sm"
+                  >
                     <Play className="h-3.5 w-3.5" />
                     See How It Works
                   </Button>
@@ -359,7 +407,10 @@ const LandingPage = () => {
       </section>
 
       {/* Generator Section */}
-      <section id="generator" className="py-12 lg:py-16 bg-muted/20 border-y border-border/50">
+      <section
+        id="generator"
+        className="py-12 lg:py-16 bg-muted/20 border-y border-border/50"
+      >
         <div className="container mx-auto px-4 lg:px-8">
           <AnimatedSection>
             <div className="text-center mb-8">
@@ -367,7 +418,8 @@ const LandingPage = () => {
                 Create Your QR Code
               </h2>
               <p className="text-xs text-muted-foreground max-w-md mx-auto">
-                No signup required. Generate and download your QR code instantly.
+                No signup required. Generate and download your QR code
+                instantly.
               </p>
             </div>
           </AnimatedSection>
@@ -398,23 +450,26 @@ const LandingPage = () => {
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
               {
-                step: '01',
+                step: "01",
                 icon: <Target className="h-5 w-5" />,
-                title: 'Choose Your Type',
-                description: 'Select from 12 QR code types including URL, vCard, WiFi, social media, and more.'
+                title: "Choose Your Type",
+                description:
+                  "Select from 12 QR code types including URL, vCard, WiFi, social media, and more.",
               },
               {
-                step: '02',
+                step: "02",
                 icon: <Palette className="h-5 w-5" />,
-                title: 'Customize Design',
-                description: 'Add your logo, pick colors, choose patterns, and apply professional templates.'
+                title: "Customize Design",
+                description:
+                  "Add your logo, pick colors, choose patterns, and apply professional templates.",
               },
               {
-                step: '03',
+                step: "03",
                 icon: <Download className="h-5 w-5" />,
-                title: 'Download & Track',
-                description: 'Export in PNG, WEBP and JPG. Track every scan with real-time analytics.'
-              }
+                title: "Download & Track",
+                description:
+                  "Export in PNG, WEBP and JPG. Track every scan with real-time analytics.",
+              },
             ].map((item, index) => (
               <AnimatedSection key={index} delay={index * 100}>
                 <Card className="p-5 text-center relative group hover:shadow-md transition-all duration-200 h-full">
@@ -425,7 +480,9 @@ const LandingPage = () => {
                     {item.icon}
                   </div>
                   <h3 className="font-semibold text-sm mb-1.5">{item.title}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {item.description}
+                  </p>
                 </Card>
               </AnimatedSection>
             ))}
@@ -434,7 +491,10 @@ const LandingPage = () => {
       </section>
 
       {/* Analytics Showcase Section */}
-      <section id="analytics" className="py-12 lg:py-16 bg-muted/20 border-y border-border/50">
+      <section
+        id="analytics"
+        className="py-12 lg:py-16 bg-muted/20 border-y border-border/50"
+      >
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
             {/* Left: Content */}
@@ -449,17 +509,37 @@ const LandingPage = () => {
                   <span className="text-primary"> Powerful Insights</span>
                 </h2>
                 <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
-                  Understand your audience better with comprehensive analytics. See who scans your QR codes, when, and from where.
+                  Understand your audience better with comprehensive analytics.
+                  See who scans your QR codes, when, and from where.
                 </p>
 
                 <div className="grid grid-cols-2 gap-3 mb-5">
                   {[
-                    { icon: <Eye className="h-3.5 w-3.5" />, label: 'Total Scans', value: '24,892' },
-                    { icon: <TrendingUp className="h-3.5 w-3.5" />, label: 'Growth Rate', value: '+34%' },
-                    { icon: <Globe className="h-3.5 w-3.5" />, label: 'Countries', value: '45+' },
-                    { icon: <Smartphone className="h-3.5 w-3.5" />, label: 'Mobile Scans', value: '89%' }
+                    {
+                      icon: <Eye className="h-3.5 w-3.5" />,
+                      label: "Total Scans",
+                      value: "24,892",
+                    },
+                    {
+                      icon: <TrendingUp className="h-3.5 w-3.5" />,
+                      label: "Growth Rate",
+                      value: "+34%",
+                    },
+                    {
+                      icon: <Globe className="h-3.5 w-3.5" />,
+                      label: "Countries",
+                      value: "45+",
+                    },
+                    {
+                      icon: <Smartphone className="h-3.5 w-3.5" />,
+                      label: "Mobile Scans",
+                      value: "89%",
+                    },
                   ].map((stat, index) => (
-                    <div key={index} className="bg-background border border-border rounded-lg p-3">
+                    <div
+                      key={index}
+                      className="bg-background border border-border rounded-lg p-3"
+                    >
                       <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
                         {stat.icon}
                         <span className="text-[10px]">{stat.label}</span>
@@ -483,8 +563,12 @@ const LandingPage = () => {
               <Card className="p-5 bg-background">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h4 className="text-sm font-semibold">Weekly Scan Activity</h4>
-                    <p className="text-[10px] text-muted-foreground">Last 7 days performance</p>
+                    <h4 className="text-sm font-semibold">
+                      Weekly Scan Activity
+                    </h4>
+                    <p className="text-[10px] text-muted-foreground">
+                      Last 7 days performance
+                    </p>
                   </div>
                   <div className="flex items-center gap-1 text-primary text-xs font-medium">
                     <TrendingUp className="h-3.5 w-3.5" />
@@ -495,20 +579,25 @@ const LandingPage = () => {
                 {/* Chart visualization */}
                 <div className="flex items-end gap-2 h-32 mb-3">
                   {analyticsData.map((data, index) => (
-                    <div key={index} className="flex-1 flex flex-col items-center gap-1">
-                      <div 
+                    <div
+                      key={index}
+                      className="flex-1 flex flex-col items-center gap-1"
+                    >
+                      <div
                         className="w-full bg-primary/20 rounded-t-sm relative overflow-hidden transition-all duration-500"
-                        style={{ 
+                        style={{
                           height: `${(data.scans / maxScans) * 100}%`,
-                          minHeight: '8px'
+                          minHeight: "8px",
                         }}
                       >
-                        <div 
+                        <div
                           className="absolute bottom-0 left-0 right-0 bg-primary rounded-t-sm transition-all duration-700"
-                          style={{ height: '100%' }}
+                          style={{ height: "100%" }}
                         />
                       </div>
-                      <span className="text-[9px] text-muted-foreground">{data.day}</span>
+                      <span className="text-[9px] text-muted-foreground">
+                        {data.day}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -517,11 +606,15 @@ const LandingPage = () => {
                 <div className="flex items-center justify-center gap-4 pt-2 border-t border-border">
                   <div className="flex items-center gap-1.5">
                     <div className="w-2 h-2 rounded-full bg-primary" />
-                    <span className="text-[10px] text-muted-foreground">Scans</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      Scans
+                    </span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <div className="w-2 h-2 rounded-full bg-primary/30" />
-                    <span className="text-[10px] text-muted-foreground">Unique Visitors</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      Unique Visitors
+                    </span>
                   </div>
                 </div>
               </Card>
@@ -545,8 +638,12 @@ const LandingPage = () => {
                         <Building2 className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <div className="text-xs font-semibold">Your Brand Name</div>
-                        <div className="text-[10px] text-muted-foreground">yourcompany.com</div>
+                        <div className="text-xs font-semibold">
+                          Your Brand Name
+                        </div>
+                        <div className="text-[10px] text-muted-foreground">
+                          yourcompany.com
+                        </div>
                       </div>
                     </div>
                     <div className="grid grid-cols-3 gap-2">
@@ -582,15 +679,16 @@ const LandingPage = () => {
                   <span className="text-primary"> Your Platform</span>
                 </h2>
                 <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                  Remove all QR Studio branding and make it completely yours. Perfect for agencies and enterprises.
+                  Remove all QR Studio branding and make it completely yours.
+                  Perfect for agencies and enterprises.
                 </p>
 
                 <ul className="space-y-2 mb-5">
                   {[
-                    'Custom domain support',
-                    'Remove QR Studio branding',
-                    'Your logo everywhere',
-                    'Branded scan pages'
+                    "Custom domain support",
+                    "Remove QR Studio branding",
+                    "Your logo everywhere",
+                    "Branded scan pages",
                   ].map((feature, index) => (
                     <li key={index} className="flex items-center gap-2 text-xs">
                       <div className="h-4 w-4 rounded-full bg-primary/10 flex items-center justify-center">
@@ -602,7 +700,11 @@ const LandingPage = () => {
                 </ul>
 
                 <Link to="/signup">
-                  <Button size="sm" variant="outline" className="gap-1.5 text-xs">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1.5 text-xs"
+                  >
                     Explore White Label
                     <ArrowRight className="h-3 w-3" />
                   </Button>
@@ -629,15 +731,16 @@ const LandingPage = () => {
                   <span className="text-primary"> To Every QR Code</span>
                 </h2>
                 <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                  Customize or remove the watermark on your QR codes. Add your company name, tagline, or remove it entirely.
+                  Customize or remove the watermark on your QR codes. Add your
+                  company name, tagline, or remove it entirely.
                 </p>
 
                 <ul className="space-y-2 mb-5">
                   {[
-                    'Custom text watermark',
-                    'Upload your own logo watermark',
-                    'Remove watermark completely',
-                    'Position & style control'
+                    "Custom text watermark",
+                    "Upload your own logo watermark",
+                    "Remove watermark completely",
+                    "Position & style control",
                   ].map((feature, index) => (
                     <li key={index} className="flex items-center gap-2 text-xs">
                       <div className="h-4 w-4 rounded-full bg-primary/10 flex items-center justify-center">
@@ -672,7 +775,9 @@ const LandingPage = () => {
                           </span>
                         </div>
                       </div>
-                      <span className="text-[10px] text-muted-foreground">Default</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        Default
+                      </span>
                     </div>
                     <div className="text-center">
                       <div className="bg-primary/5 rounded-lg p-4 mb-2 border border-primary/30 relative">
@@ -683,15 +788,23 @@ const LandingPage = () => {
                           </span>
                         </div>
                       </div>
-                      <span className="text-[10px] text-primary font-medium">Custom</span>
+                      <span className="text-[10px] text-primary font-medium">
+                        Custom
+                      </span>
                     </div>
                   </div>
 
                   {/* Options preview */}
                   <div className="flex items-center justify-center gap-2 pt-2 border-t border-border">
-                    <div className="bg-muted rounded px-2 py-1 text-[9px]">Text</div>
-                    <div className="bg-muted rounded px-2 py-1 text-[9px]">Logo</div>
-                    <div className="bg-primary/10 text-primary rounded px-2 py-1 text-[9px] font-medium">None</div>
+                    <div className="bg-muted rounded px-2 py-1 text-[9px]">
+                      Text
+                    </div>
+                    <div className="bg-muted rounded px-2 py-1 text-[9px]">
+                      Logo
+                    </div>
+                    <div className="bg-primary/10 text-primary rounded px-2 py-1 text-[9px] font-medium">
+                      None
+                    </div>
                   </div>
                 </div>
               </Card>
@@ -713,7 +826,8 @@ const LandingPage = () => {
                 One Tool, Endless Possibilities
               </h2>
               <p className="text-xs text-muted-foreground max-w-lg mx-auto">
-                Create QR codes for websites, contact cards, WiFi networks, social media, and more.
+                Create QR codes for websites, contact cards, WiFi networks,
+                social media, and more.
               </p>
             </div>
           </AnimatedSection>
@@ -721,12 +835,12 @@ const LandingPage = () => {
           <AnimatedSection delay={150}>
             <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2 max-w-3xl mx-auto">
               {qrTypes.map((type, index) => (
-                <Card 
-                  key={index} 
+                <Card
+                  key={index}
                   className={`p-3 text-center relative transition-all duration-200 ${
-                    type.free 
-                      ? 'hover:border-primary/50 hover:shadow-sm cursor-pointer' 
-                      : 'bg-muted/30 opacity-75'
+                    type.free
+                      ? "hover:border-primary/50 hover:shadow-sm cursor-pointer"
+                      : "bg-muted/30 opacity-75"
                   }`}
                 >
                   {!type.free && (
@@ -734,11 +848,13 @@ const LandingPage = () => {
                       <Crown className="h-2 w-2" />
                     </div>
                   )}
-                  <div className={`h-8 w-8 rounded-lg flex items-center justify-center mx-auto mb-1.5 ${
-                    type.free 
-                      ? 'bg-primary/10 text-primary' 
-                      : 'bg-muted text-muted-foreground'
-                  }`}>
+                  <div
+                    className={`h-8 w-8 rounded-lg flex items-center justify-center mx-auto mb-1.5 ${
+                      type.free
+                        ? "bg-primary/10 text-primary"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
                     {type.icon}
                   </div>
                   <span className="text-[10px] font-medium">{type.label}</span>
@@ -763,7 +879,8 @@ const LandingPage = () => {
                 <span className="text-primary"> Better Results</span>
               </h2>
               <p className="text-xs text-muted-foreground max-w-lg mx-auto">
-                Unlock advanced tools to create, track, and optimize your QR code campaigns.
+                Unlock advanced tools to create, track, and optimize your QR
+                code campaigns.
               </p>
             </div>
           </AnimatedSection>
@@ -771,9 +888,7 @@ const LandingPage = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 max-w-4xl mx-auto">
             {premiumFeatures.map((feature, index) => (
               <AnimatedSection key={index} delay={index * 50}>
-                <Card 
-                  className="p-4 relative group hover:shadow-md transition-shadow duration-200 border-border/80 h-full"
-                >
+                <Card className="p-4 relative group hover:shadow-md transition-shadow duration-200 border-border/80 h-full">
                   <div className="absolute top-3 right-3 bg-muted text-muted-foreground text-[9px] font-medium px-1.5 py-0.5 rounded flex items-center gap-0.5">
                     <Lock className="h-2 w-2" />
                     Pro
@@ -783,8 +898,12 @@ const LandingPage = () => {
                     {feature.icon}
                   </div>
 
-                  <h3 className="font-semibold text-xs mb-1">{feature.title}</h3>
-                  <p className="text-muted-foreground text-[11px] leading-relaxed">{feature.description}</p>
+                  <h3 className="font-semibold text-xs mb-1">
+                    {feature.title}
+                  </h3>
+                  <p className="text-muted-foreground text-[11px] leading-relaxed">
+                    {feature.description}
+                  </p>
                 </Card>
               </AnimatedSection>
             ))}
@@ -816,26 +935,53 @@ const LandingPage = () => {
                 </div>
                 <h2 className="text-xl md:text-2xl font-semibold mb-3 tracking-tight">
                   Secure Your QR Codes
-                  <span className="text-primary"> With Advanced Protection</span>
+                  <span className="text-primary">
+                    {" "}
+                    With Advanced Protection
+                  </span>
                 </h2>
                 <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
-                  Control who can access your content with password protection, expiration dates, and scan limits.
+                  Control who can access your content with password protection,
+                  expiration dates, and scan limits.
                 </p>
 
                 <div className="space-y-3 mb-5">
                   {[
-                    { icon: <Lock className="h-3.5 w-3.5" />, title: 'Password Protection', desc: 'Require password to view content' },
-                    { icon: <Clock className="h-3.5 w-3.5" />, title: 'Expiration Dates', desc: 'Auto-disable after specific date' },
-                    { icon: <Users className="h-3.5 w-3.5" />, title: 'Scan Limits', desc: 'Control maximum number of scans' },
-                    { icon: <RefreshCw className="h-3.5 w-3.5" />, title: 'Instant Deactivation', desc: 'Disable QR codes anytime' }
+                    {
+                      icon: <Lock className="h-3.5 w-3.5" />,
+                      title: "Password Protection",
+                      desc: "Require password to view content",
+                    },
+                    {
+                      icon: <Clock className="h-3.5 w-3.5" />,
+                      title: "Expiration Dates",
+                      desc: "Auto-disable after specific date",
+                    },
+                    {
+                      icon: <Users className="h-3.5 w-3.5" />,
+                      title: "Scan Limits",
+                      desc: "Control maximum number of scans",
+                    },
+                    {
+                      icon: <RefreshCw className="h-3.5 w-3.5" />,
+                      title: "Instant Deactivation",
+                      desc: "Disable QR codes anytime",
+                    },
                   ].map((item, index) => (
-                    <div key={index} className="flex items-start gap-3 bg-background border border-border rounded-lg p-3">
+                    <div
+                      key={index}
+                      className="flex items-start gap-3 bg-background border border-border rounded-lg p-3"
+                    >
                       <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
                         {item.icon}
                       </div>
                       <div>
-                        <div className="text-xs font-semibold">{item.title}</div>
-                        <div className="text-[10px] text-muted-foreground">{item.desc}</div>
+                        <div className="text-xs font-semibold">
+                          {item.title}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground">
+                          {item.desc}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -858,14 +1004,20 @@ const LandingPage = () => {
                   <div className="bg-muted/50 rounded-lg p-4 border border-border">
                     <div className="flex items-center gap-2 mb-3">
                       <Lock className="h-4 w-4 text-primary" />
-                      <span className="text-xs font-semibold">Password Protected</span>
+                      <span className="text-xs font-semibold">
+                        Password Protected
+                      </span>
                     </div>
                     <div className="bg-background rounded-lg p-3 border border-border">
-                      <div className="text-[10px] text-muted-foreground mb-2">Enter password to continue</div>
+                      <div className="text-[10px] text-muted-foreground mb-2">
+                        Enter password to continue
+                      </div>
                       <div className="flex gap-2">
                         <div className="flex-1 h-8 bg-muted rounded-md border border-border" />
                         <div className="h-8 px-3 bg-primary rounded-md flex items-center">
-                          <span className="text-[10px] text-primary-foreground font-medium">Unlock</span>
+                          <span className="text-[10px] text-primary-foreground font-medium">
+                            Unlock
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -877,7 +1029,9 @@ const LandingPage = () => {
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       <span className="text-xs">Expires in</span>
                     </div>
-                    <span className="text-xs font-semibold text-primary">7 days</span>
+                    <span className="text-xs font-semibold text-primary">
+                      7 days
+                    </span>
                   </div>
 
                   {/* Scan limit */}
@@ -911,7 +1065,9 @@ const LandingPage = () => {
                 <span className="text-primary"> Every Industry</span>
               </h2>
               <p className="text-xs text-muted-foreground max-w-lg mx-auto">
-                Choose from our curated collection of stunning QR code card templates designed for restaurants, events, business cards, and more.
+                Choose from our curated collection of stunning QR code card
+                templates designed for restaurants, events, business cards, and
+                more.
               </p>
             </div>
           </AnimatedSection>
@@ -919,16 +1075,49 @@ const LandingPage = () => {
           <AnimatedSection delay={150}>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 max-w-4xl mx-auto mb-6">
               {[
-                { name: 'Business', color: 'from-slate-800 to-slate-900', textColor: 'text-white' },
-                { name: 'Restaurant', color: 'from-amber-800 to-amber-900', textColor: 'text-amber-100' },
-                { name: 'Events', color: 'from-purple-600 to-purple-800', textColor: 'text-white' },
-                { name: 'Social', color: 'from-pink-500 to-rose-600', textColor: 'text-white' },
-                { name: 'Luxury', color: 'from-yellow-600 to-yellow-800', textColor: 'text-yellow-100' },
-                { name: 'Tech', color: 'from-cyan-500 to-blue-600', textColor: 'text-white' }
+                {
+                  name: "Business",
+                  color: "from-slate-800 to-slate-900",
+                  textColor: "text-white",
+                },
+                {
+                  name: "Restaurant",
+                  color: "from-amber-800 to-amber-900",
+                  textColor: "text-amber-100",
+                },
+                {
+                  name: "Events",
+                  color: "from-purple-600 to-purple-800",
+                  textColor: "text-white",
+                },
+                {
+                  name: "Social",
+                  color: "from-pink-500 to-rose-600",
+                  textColor: "text-white",
+                },
+                {
+                  name: "Luxury",
+                  color: "from-yellow-600 to-yellow-800",
+                  textColor: "text-yellow-100",
+                },
+                {
+                  name: "Tech",
+                  color: "from-cyan-500 to-blue-600",
+                  textColor: "text-white",
+                },
               ].map((category, index) => (
-                <div key={index} className={`bg-gradient-to-br ${category.color} rounded-lg p-4 text-center aspect-[4/3] flex flex-col items-center justify-center`}>
-                  <QrCode className={`h-8 w-8 ${category.textColor} opacity-50 mb-2`} />
-                  <span className={`text-xs font-semibold ${category.textColor}`}>{category.name}</span>
+                <div
+                  key={index}
+                  className={`bg-gradient-to-br ${category.color} rounded-lg p-4 text-center aspect-[4/3] flex flex-col items-center justify-center`}
+                >
+                  <QrCode
+                    className={`h-8 w-8 ${category.textColor} opacity-50 mb-2`}
+                  />
+                  <span
+                    className={`text-xs font-semibold ${category.textColor}`}
+                  >
+                    {category.name}
+                  </span>
                 </div>
               ))}
             </div>
@@ -947,8 +1136,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-
-
       {/* Use Cases Section */}
       <section className="py-12 lg:py-16">
         <div className="container mx-auto px-4 lg:px-8">
@@ -963,7 +1150,8 @@ const LandingPage = () => {
                 <span className="text-primary"> Business Need</span>
               </h2>
               <p className="text-xs text-muted-foreground max-w-lg mx-auto">
-                See how businesses across industries use QR Studio to connect with their customers.
+                See how businesses across industries use QR Studio to connect
+                with their customers.
               </p>
             </div>
           </AnimatedSection>
@@ -972,36 +1160,45 @@ const LandingPage = () => {
             {[
               {
                 icon: <Building2 className="h-5 w-5" />,
-                title: 'Restaurants',
-                description: 'Digital menus, table ordering, WiFi access, and reviews',
-                color: 'bg-orange-500/10 text-orange-500'
+                title: "Restaurants",
+                description:
+                  "Digital menus, table ordering, WiFi access, and reviews",
+                color: "bg-orange-500/10 text-orange-500",
               },
               {
                 icon: <Users className="h-5 w-5" />,
-                title: 'Events',
-                description: 'Ticketing, check-ins, schedules, and networking',
-                color: 'bg-purple-500/10 text-purple-500'
+                title: "Events",
+                description: "Ticketing, check-ins, schedules, and networking",
+                color: "bg-purple-500/10 text-purple-500",
               },
               {
                 icon: <CreditCard className="h-5 w-5" />,
-                title: 'Retail',
-                description: 'Product info, promotions, loyalty programs, and payments',
-                color: 'bg-blue-500/10 text-blue-500'
+                title: "Retail",
+                description:
+                  "Product info, promotions, loyalty programs, and payments",
+                color: "bg-blue-500/10 text-blue-500",
               },
               {
                 icon: <FileText className="h-5 w-5" />,
-                title: 'Marketing',
-                description: 'Campaigns, lead capture, social media, and analytics',
-                color: 'bg-green-500/10 text-green-500'
-              }
+                title: "Marketing",
+                description:
+                  "Campaigns, lead capture, social media, and analytics",
+                color: "bg-green-500/10 text-green-500",
+              },
             ].map((useCase, index) => (
               <AnimatedSection key={index} delay={index * 100}>
                 <Card className="p-4 h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group cursor-pointer">
-                  <div className={`h-10 w-10 rounded-xl ${useCase.color} flex items-center justify-center mb-3 transition-transform group-hover:scale-110`}>
+                  <div
+                    className={`h-10 w-10 rounded-xl ${useCase.color} flex items-center justify-center mb-3 transition-transform group-hover:scale-110`}
+                  >
                     {useCase.icon}
                   </div>
-                  <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">{useCase.title}</h3>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">{useCase.description}</p>
+                  <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">
+                    {useCase.title}
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    {useCase.description}
+                  </p>
                 </Card>
               </AnimatedSection>
             ))}
@@ -1025,21 +1222,39 @@ const LandingPage = () => {
                   <span className="text-primary"> Yours</span>
                 </h2>
                 <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
-                  Customize every aspect of your QR codes with colors, patterns, logos, and frames. Match your brand perfectly.
+                  Customize every aspect of your QR codes with colors, patterns,
+                  logos, and frames. Match your brand perfectly.
                 </p>
 
                 <div className="grid grid-cols-2 gap-3 mb-5">
                   {[
-                    { icon: <Palette className="h-4 w-4" />, label: 'Custom Colors' },
-                    { icon: <Image className="h-4 w-4" />, label: 'Logo Upload' },
-                    { icon: <Layers className="h-4 w-4" />, label: 'Pattern Styles' },
-                    { icon: <Sparkles className="h-4 w-4" />, label: 'Frame Options' }
+                    {
+                      icon: <Palette className="h-4 w-4" />,
+                      label: "Custom Colors",
+                    },
+                    {
+                      icon: <Image className="h-4 w-4" />,
+                      label: "Logo Upload",
+                    },
+                    {
+                      icon: <Layers className="h-4 w-4" />,
+                      label: "Pattern Styles",
+                    },
+                    {
+                      icon: <Sparkles className="h-4 w-4" />,
+                      label: "Frame Options",
+                    },
                   ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs group cursor-pointer">
+                    <div
+                      key={i}
+                      className="flex items-center gap-2 text-xs group cursor-pointer"
+                    >
                       <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-105">
                         {item.icon}
                       </div>
-                      <span className="group-hover:text-foreground transition-colors">{item.label}</span>
+                      <span className="group-hover:text-foreground transition-colors">
+                        {item.label}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -1059,12 +1274,25 @@ const LandingPage = () => {
                 <div className="space-y-4">
                   {/* Color palette */}
                   <div className="bg-muted/30 rounded-lg p-4">
-                    <div className="text-[10px] text-muted-foreground mb-3">Color Palette</div>
+                    <div className="text-[10px] text-muted-foreground mb-3">
+                      Color Palette
+                    </div>
                     <div className="flex gap-2 flex-wrap">
-                      {['#000000', '#3b82f6', '#10b981', '#f97316', '#ec4899', '#8b5cf6', '#06b6d4', '#ef4444'].map((color, i) => (
-                        <div 
+                      {[
+                        "#000000",
+                        "#3b82f6",
+                        "#10b981",
+                        "#f97316",
+                        "#ec4899",
+                        "#8b5cf6",
+                        "#06b6d4",
+                        "#ef4444",
+                      ].map((color, i) => (
+                        <div
                           key={i}
-                          className={`w-8 h-8 rounded-full cursor-pointer transition-all hover:scale-110 hover:ring-2 hover:ring-offset-2 hover:ring-primary ${i === 1 ? 'ring-2 ring-offset-2 ring-primary' : ''}`}
+                          className={`w-8 h-8 rounded-full cursor-pointer transition-all hover:scale-110 hover:ring-2 hover:ring-offset-2 hover:ring-primary ${
+                            i === 1 ? "ring-2 ring-offset-2 ring-primary" : ""
+                          }`}
                           style={{ backgroundColor: color }}
                         />
                       ))}
@@ -1073,15 +1301,21 @@ const LandingPage = () => {
 
                   {/* Pattern preview */}
                   <div className="grid grid-cols-4 gap-2">
-                    {['Square', 'Dots', 'Rounded', 'Classy'].map((pattern, i) => (
-                      <div 
-                        key={i}
-                        className={`p-2 rounded-lg text-center cursor-pointer transition-all hover:scale-105 ${i === 2 ? 'bg-primary/10 border border-primary' : 'bg-muted/50 border border-transparent hover:border-border'}`}
-                      >
-                        <div className="w-8 h-8 mx-auto mb-1 bg-foreground/20 rounded" />
-                        <span className="text-[9px]">{pattern}</span>
-                      </div>
-                    ))}
+                    {["Square", "Dots", "Rounded", "Classy"].map(
+                      (pattern, i) => (
+                        <div
+                          key={i}
+                          className={`p-2 rounded-lg text-center cursor-pointer transition-all hover:scale-105 ${
+                            i === 2
+                              ? "bg-primary/10 border border-primary"
+                              : "bg-muted/50 border border-transparent hover:border-border"
+                          }`}
+                        >
+                          <div className="w-8 h-8 mx-auto mb-1 bg-foreground/20 rounded" />
+                          <span className="text-[9px]">{pattern}</span>
+                        </div>
+                      )
+                    )}
                   </div>
 
                   {/* Logo preview */}
@@ -1091,7 +1325,9 @@ const LandingPage = () => {
                     </div>
                     <div className="flex-1">
                       <div className="text-xs font-medium">Add Your Logo</div>
-                      <div className="text-[10px] text-muted-foreground">Upload PNG, JPG, or SVG</div>
+                      <div className="text-[10px] text-muted-foreground">
+                        Upload PNG, JPG, or SVG
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1100,43 +1336,6 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
-
-      {/* Stats Counter Section */}
-      <section className="py-12 lg:py-16">
-        <div className="container mx-auto px-4 lg:px-8">
-          <AnimatedSection>
-            <div className="max-w-4xl mx-auto">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {[
-                  { value: '100+', label: 'Card Templates', icon: <Layers className="h-5 w-5" /> },
-                  { value: '12', label: 'QR Code Types', icon: <QrCode className="h-5 w-5" /> },
-                  { value: '3', label: 'Export Formats', icon: <Download className="h-5 w-5" /> },
-                  { value: '∞', label: 'Customization', icon: <Palette className="h-5 w-5" /> }
-                ].map((stat, index) => (
-                  <div 
-                    key={index} 
-                    className="text-center p-4 rounded-xl bg-muted/30 border border-border hover:border-primary/30 hover:bg-primary/5 transition-all duration-300 group cursor-pointer"
-                  >
-                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary mx-auto mb-3 transition-transform group-hover:scale-110">
-                      {stat.icon}
-                    </div>
-                    <div className="text-2xl font-bold text-foreground mb-1 group-hover:text-primary transition-colors">
-                      {stat.value}
-                    </div>
-                    <div className="text-[10px] text-muted-foreground">
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </AnimatedSection>
-        </div>
-      </section>
-
-
-
-
 
       <section className="py-12 lg:py-16">
         <div className="container mx-auto px-4 lg:px-8">
@@ -1150,13 +1349,20 @@ const LandingPage = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-2 justify-center">
                 <Link to="/signup">
-                  <Button size="sm" className="gap-1.5 text-xs w-full sm:w-auto">
+                  <Button
+                    size="sm"
+                    className="gap-1.5 text-xs w-full sm:w-auto"
+                  >
                     Get Started Free
                     <ArrowRight className="h-3 w-3" />
                   </Button>
                 </Link>
                 <a href="#generator">
-                  <Button size="sm" variant="outline" className="text-xs w-full sm:w-auto">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-xs w-full sm:w-auto"
+                  >
                     Try Generator First
                   </Button>
                 </a>
@@ -1172,7 +1378,11 @@ const LandingPage = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="QR Studio" className="h-6 w-6 object-contain" />
+              <img
+                src="/logo.png"
+                alt="QR Studio"
+                className="h-6 w-6 object-contain"
+              />
               <span className="font-semibold text-xs">
                 QR<span className="text-primary">Studio</span>
               </span>
@@ -1180,28 +1390,52 @@ const LandingPage = () => {
 
             {/* Links */}
             <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[10px]">
-              <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="#features"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Features
               </a>
-              <a href="#analytics" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="#analytics"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Analytics
               </a>
-              <Link to="/faqs" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                to="/faqs"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
                 FAQs
               </Link>
-              <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                to="/contact"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Contact
               </Link>
-              <Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                to="/privacy"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Privacy Policy
               </Link>
-              <Link to="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                to="/terms"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Terms & Conditions
               </Link>
-              <Link to="/refunds" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                to="/refunds"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Refunds
               </Link>
-              <Link to="/shipping-policy" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                to="/shipping-policy"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Shipping
               </Link>
             </nav>
