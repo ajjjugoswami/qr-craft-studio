@@ -803,8 +803,363 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Security Features Section */}
+      <section className="py-12 lg:py-16 bg-muted/20 border-y border-border/50">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+            {/* Left: Content */}
+            <AnimatedSection>
+              <div>
+                <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-2.5 py-1 rounded-full text-[10px] font-medium mb-3">
+                  <Shield className="h-3 w-3" />
+                  <span>Enterprise Security</span>
+                </div>
+                <h2 className="text-xl md:text-2xl font-semibold mb-3 tracking-tight">
+                  Secure Your QR Codes
+                  <span className="text-primary"> With Advanced Protection</span>
+                </h2>
+                <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
+                  Control who can access your content with password protection, expiration dates, and scan limits.
+                </p>
 
-      {/* CTA Section */}
+                <div className="space-y-3 mb-5">
+                  {[
+                    { icon: <Lock className="h-3.5 w-3.5" />, title: 'Password Protection', desc: 'Require password to view content' },
+                    { icon: <Clock className="h-3.5 w-3.5" />, title: 'Expiration Dates', desc: 'Auto-disable after specific date' },
+                    { icon: <Users className="h-3.5 w-3.5" />, title: 'Scan Limits', desc: 'Control maximum number of scans' },
+                    { icon: <RefreshCw className="h-3.5 w-3.5" />, title: 'Instant Deactivation', desc: 'Disable QR codes anytime' }
+                  ].map((item, index) => (
+                    <div key={index} className="flex items-start gap-3 bg-background border border-border rounded-lg p-3">
+                      <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                        {item.icon}
+                      </div>
+                      <div>
+                        <div className="text-xs font-semibold">{item.title}</div>
+                        <div className="text-[10px] text-muted-foreground">{item.desc}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <Link to="/signup">
+                  <Button size="sm" className="gap-1.5 text-xs">
+                    Enable Security Features
+                    <ArrowRight className="h-3 w-3" />
+                  </Button>
+                </Link>
+              </div>
+            </AnimatedSection>
+
+            {/* Right: Visual */}
+            <AnimatedSection delay={200}>
+              <Card className="p-5 bg-background">
+                <div className="space-y-4">
+                  {/* Password protection mock */}
+                  <div className="bg-muted/50 rounded-lg p-4 border border-border">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Lock className="h-4 w-4 text-primary" />
+                      <span className="text-xs font-semibold">Password Protected</span>
+                    </div>
+                    <div className="bg-background rounded-lg p-3 border border-border">
+                      <div className="text-[10px] text-muted-foreground mb-2">Enter password to continue</div>
+                      <div className="flex gap-2">
+                        <div className="flex-1 h-8 bg-muted rounded-md border border-border" />
+                        <div className="h-8 px-3 bg-primary rounded-md flex items-center">
+                          <span className="text-[10px] text-primary-foreground font-medium">Unlock</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expiration indicator */}
+                  <div className="flex items-center justify-between bg-background rounded-lg p-3 border border-border">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-xs">Expires in</span>
+                    </div>
+                    <span className="text-xs font-semibold text-primary">7 days</span>
+                  </div>
+
+                  {/* Scan limit */}
+                  <div className="bg-background rounded-lg p-3 border border-border">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs">Scan Limit</span>
+                      <span className="text-xs font-semibold">45/100</span>
+                    </div>
+                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div className="h-full w-[45%] bg-primary rounded-full" />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </AnimatedSection>
+          </div>
+        </div>
+      </section>
+
+      {/* Templates Showcase Section */}
+      <section className="py-12 lg:py-16">
+        <div className="container mx-auto px-4 lg:px-8">
+          <AnimatedSection>
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-1.5 bg-muted text-foreground/70 px-2.5 py-1 rounded-full text-[10px] font-medium mb-3">
+                <Layers className="h-3 w-3" />
+                <span>100+ Templates</span>
+              </div>
+              <h2 className="text-xl md:text-2xl font-semibold mb-2 tracking-tight">
+                Professional Templates for
+                <span className="text-primary"> Every Industry</span>
+              </h2>
+              <p className="text-xs text-muted-foreground max-w-lg mx-auto">
+                Choose from our curated collection of stunning QR code card templates designed for restaurants, events, business cards, and more.
+              </p>
+            </div>
+          </AnimatedSection>
+
+          <AnimatedSection delay={150}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 max-w-4xl mx-auto mb-6">
+              {[
+                { name: 'Business', color: 'from-slate-800 to-slate-900', textColor: 'text-white' },
+                { name: 'Restaurant', color: 'from-amber-800 to-amber-900', textColor: 'text-amber-100' },
+                { name: 'Events', color: 'from-purple-600 to-purple-800', textColor: 'text-white' },
+                { name: 'Social', color: 'from-pink-500 to-rose-600', textColor: 'text-white' },
+                { name: 'Luxury', color: 'from-yellow-600 to-yellow-800', textColor: 'text-yellow-100' },
+                { name: 'Tech', color: 'from-cyan-500 to-blue-600', textColor: 'text-white' }
+              ].map((category, index) => (
+                <div key={index} className={`bg-gradient-to-br ${category.color} rounded-lg p-4 text-center aspect-[4/3] flex flex-col items-center justify-center`}>
+                  <QrCode className={`h-8 w-8 ${category.textColor} opacity-50 mb-2`} />
+                  <span className={`text-xs font-semibold ${category.textColor}`}>{category.name}</span>
+                </div>
+              ))}
+            </div>
+          </AnimatedSection>
+
+          <AnimatedSection delay={300}>
+            <div className="text-center">
+              <Link to="/signup">
+                <Button size="sm" variant="outline" className="gap-1.5 text-xs">
+                  Browse All Templates
+                  <ArrowRight className="h-3 w-3" />
+                </Button>
+              </Link>
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* Dynamic QR Section */}
+      <section className="py-12 lg:py-16 bg-muted/20 border-y border-border/50">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+            {/* Left: Visual */}
+            <AnimatedSection>
+              <Card className="p-5 bg-background">
+                <div className="space-y-3">
+                  {/* URL Change animation mock */}
+                  <div className="bg-muted/50 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <RefreshCw className="h-4 w-4 text-primary" />
+                      <span className="text-xs font-semibold">Dynamic URL</span>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="bg-background rounded-lg p-2 border border-border flex items-center gap-2">
+                        <div className="h-6 w-6 rounded bg-red-500/20 flex items-center justify-center">
+                          <X className="h-3 w-3 text-red-500" />
+                        </div>
+                        <span className="text-[10px] text-muted-foreground line-through">old-website.com/promo</span>
+                      </div>
+                      <div className="bg-primary/10 rounded-lg p-2 border border-primary/30 flex items-center gap-2">
+                        <div className="h-6 w-6 rounded bg-primary/20 flex items-center justify-center">
+                          <Check className="h-3 w-3 text-primary" />
+                        </div>
+                        <span className="text-[10px] text-primary font-medium">new-website.com/summer-sale</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Same QR code indicator */}
+                  <div className="flex items-center justify-center gap-3 py-3">
+                    <div className="bg-muted rounded-lg p-3">
+                      <QrCode className="h-10 w-10 text-foreground/50" />
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs font-semibold text-primary">Same QR Code</div>
+                      <div className="text-[10px] text-muted-foreground">No reprinting needed</div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </AnimatedSection>
+
+            {/* Right: Content */}
+            <AnimatedSection delay={200}>
+              <div>
+                <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-2.5 py-1 rounded-full text-[10px] font-medium mb-3">
+                  <Zap className="h-3 w-3" />
+                  <span>Dynamic QR Codes</span>
+                </div>
+                <h2 className="text-xl md:text-2xl font-semibold mb-3 tracking-tight">
+                  Update Content
+                  <span className="text-primary"> Without Reprinting</span>
+                </h2>
+                <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
+                  Change the destination URL anytime without creating a new QR code. Perfect for campaigns, menus, and promotions that need regular updates.
+                </p>
+
+                <ul className="space-y-2 mb-5">
+                  {[
+                    'Change destination URL instantly',
+                    'Track performance over time',
+                    'A/B test different landing pages',
+                    'Update menus & catalogs live',
+                    'Fix typos without reprinting'
+                  ].map((feature, index) => (
+                    <li key={index} className="flex items-center gap-2 text-xs">
+                      <div className="h-4 w-4 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Check className="h-2.5 w-2.5 text-primary" />
+                      </div>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link to="/signup">
+                  <Button size="sm" className="gap-1.5 text-xs">
+                    Create Dynamic QR Code
+                    <ArrowRight className="h-3 w-3" />
+                  </Button>
+                </Link>
+              </div>
+            </AnimatedSection>
+          </div>
+        </div>
+      </section>
+
+      {/* Use Cases Section */}
+      <section className="py-12 lg:py-16">
+        <div className="container mx-auto px-4 lg:px-8">
+          <AnimatedSection>
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-1.5 bg-muted text-foreground/70 px-2.5 py-1 rounded-full text-[10px] font-medium mb-3">
+                <Target className="h-3 w-3" />
+                <span>Use Cases</span>
+              </div>
+              <h2 className="text-xl md:text-2xl font-semibold mb-2 tracking-tight">
+                Perfect for Every
+                <span className="text-primary"> Business Need</span>
+              </h2>
+              <p className="text-xs text-muted-foreground max-w-lg mx-auto">
+                See how businesses across industries use QR Studio to connect with their customers.
+              </p>
+            </div>
+          </AnimatedSection>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+            {[
+              {
+                icon: <Building2 className="h-5 w-5" />,
+                title: 'Restaurants',
+                description: 'Digital menus, table ordering, WiFi access, and reviews',
+                color: 'bg-orange-500/10 text-orange-500'
+              },
+              {
+                icon: <Users className="h-5 w-5" />,
+                title: 'Events',
+                description: 'Ticketing, check-ins, schedules, and networking',
+                color: 'bg-purple-500/10 text-purple-500'
+              },
+              {
+                icon: <CreditCard className="h-5 w-5" />,
+                title: 'Retail',
+                description: 'Product info, promotions, loyalty programs, and payments',
+                color: 'bg-blue-500/10 text-blue-500'
+              },
+              {
+                icon: <FileText className="h-5 w-5" />,
+                title: 'Marketing',
+                description: 'Campaigns, lead capture, social media, and analytics',
+                color: 'bg-green-500/10 text-green-500'
+              }
+            ].map((useCase, index) => (
+              <AnimatedSection key={index} delay={index * 100}>
+                <Card className="p-4 h-full hover:shadow-md transition-shadow">
+                  <div className={`h-10 w-10 rounded-xl ${useCase.color} flex items-center justify-center mb-3`}>
+                    {useCase.icon}
+                  </div>
+                  <h3 className="font-semibold text-sm mb-1">{useCase.title}</h3>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">{useCase.description}</p>
+                </Card>
+              </AnimatedSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-12 lg:py-16 bg-muted/20 border-y border-border/50">
+        <div className="container mx-auto px-4 lg:px-8">
+          <AnimatedSection>
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-1.5 bg-muted text-foreground/70 px-2.5 py-1 rounded-full text-[10px] font-medium mb-3">
+                <Star className="h-3 w-3" />
+                <span>Testimonials</span>
+              </div>
+              <h2 className="text-xl md:text-2xl font-semibold mb-2 tracking-tight">
+                Loved by Businesses
+                <span className="text-primary"> Worldwide</span>
+              </h2>
+            </div>
+          </AnimatedSection>
+
+          <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            {[
+              {
+                quote: "QR Studio transformed how we handle our restaurant menus. Updating is instant and the analytics are invaluable.",
+                author: "Sarah M.",
+                role: "Restaurant Owner",
+                rating: 5
+              },
+              {
+                quote: "The templates are beautiful and professional. Our event QR codes look amazing and scan perfectly every time.",
+                author: "James K.",
+                role: "Event Planner",
+                rating: 5
+              },
+              {
+                quote: "Finally a QR generator that's both powerful and easy to use. The white-label feature is perfect for our agency.",
+                author: "Emily R.",
+                role: "Marketing Director",
+                rating: 5
+              }
+            ].map((testimonial, index) => (
+              <AnimatedSection key={index} delay={index * 100}>
+                <Card className="p-4 h-full">
+                  <div className="flex gap-0.5 mb-3">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="h-3 w-3 fill-primary text-primary" />
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-4 leading-relaxed italic">
+                    "{testimonial.quote}"
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <span className="text-xs font-semibold text-primary">{testimonial.author[0]}</span>
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold">{testimonial.author}</div>
+                      <div className="text-[10px] text-muted-foreground">{testimonial.role}</div>
+                    </div>
+                  </div>
+                </Card>
+              </AnimatedSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
       <section className="py-12 lg:py-16">
         <div className="container mx-auto px-4 lg:px-8">
           <AnimatedSection>
