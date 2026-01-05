@@ -1096,180 +1096,141 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Interactive Demo Section */}
+      {/* Pricing Preview Section */}
       <section className="py-12 lg:py-16 bg-muted/20 border-y border-border/50">
         <div className="container mx-auto px-4 lg:px-8">
           <AnimatedSection>
             <div className="text-center mb-8">
               <div className="inline-flex items-center gap-1.5 bg-primary/10 text-primary px-2.5 py-1 rounded-full text-[10px] font-medium mb-3">
-                <Play className="h-3 w-3" />
-                <span>See It In Action</span>
+                <CreditCard className="h-3 w-3" />
+                <span>Simple Pricing</span>
               </div>
               <h2 className="text-xl md:text-2xl font-semibold mb-2 tracking-tight">
-                Create Beautiful QR Codes
-                <span className="text-primary"> In Seconds</span>
+                Choose the Right Plan
+                <span className="text-primary"> For You</span>
               </h2>
               <p className="text-xs text-muted-foreground max-w-lg mx-auto">
-                Watch how easy it is to create, customize, and download your QR code.
+                Start free, upgrade when you need more. No hidden fees.
               </p>
             </div>
           </AnimatedSection>
 
           <AnimatedSection delay={150}>
-            <div className="max-w-4xl mx-auto">
-              <Card className="p-4 md:p-6 bg-background overflow-hidden">
-                {/* Demo Animation Container */}
-                <div className="relative rounded-lg bg-muted/30 border border-border overflow-hidden">
-                  {/* Browser Chrome */}
-                  <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 border-b border-border">
-                    <div className="flex gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
-                    </div>
-                    <div className="flex-1 mx-4">
-                      <div className="bg-background rounded-md px-3 py-1 text-[10px] text-muted-foreground max-w-xs mx-auto border border-border">
-                        qrstudio.app/create
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Demo Content - Animated Steps */}
-                  <div className="p-4 md:p-6 min-h-[300px] md:min-h-[350px]">
-                    <div className="grid md:grid-cols-2 gap-4 md:gap-6 h-full">
-                      {/* Left Side - Form Steps */}
-                      <div className="space-y-3">
-                        {/* Step 1: Type Selection */}
-                        <div className="bg-background rounded-lg p-3 border border-border animate-fade-in">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="h-5 w-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold">1</div>
-                            <span className="text-xs font-semibold">Choose Type</span>
-                          </div>
-                          <div className="grid grid-cols-4 gap-1.5">
-                            {['URL', 'WiFi', 'vCard', 'Social'].map((type, i) => (
-                              <div key={i} className={`text-[9px] py-1.5 px-2 rounded text-center transition-all ${i === 0 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
-                                {type}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Step 2: Content Input */}
-                        <div className="bg-background rounded-lg p-3 border border-border animate-fade-in" style={{ animationDelay: '0.3s' }}>
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="h-5 w-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold">2</div>
-                            <span className="text-xs font-semibold">Enter Content</span>
-                          </div>
-                          <div className="bg-muted rounded-md px-3 py-2 text-xs font-mono text-muted-foreground border border-border">
-                            https://mywebsite.com
-                            <span className="animate-pulse">|</span>
-                          </div>
-                        </div>
-
-                        {/* Step 3: Customize */}
-                        <div className="bg-background rounded-lg p-3 border border-border animate-fade-in" style={{ animationDelay: '0.6s' }}>
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="h-5 w-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold">3</div>
-                            <span className="text-xs font-semibold">Customize Style</span>
-                          </div>
-                          <div className="flex gap-2">
-                            <div className="flex gap-1">
-                              {['#000000', '#3b82f6', '#10b981', '#f97316'].map((color, i) => (
-                                <div 
-                                  key={i} 
-                                  className={`w-5 h-5 rounded-full border-2 ${i === 1 ? 'border-primary ring-2 ring-primary/30' : 'border-transparent'}`}
-                                  style={{ backgroundColor: color }}
-                                />
-                              ))}
-                            </div>
-                            <div className="flex-1" />
-                            <div className="bg-muted rounded px-2 py-0.5 text-[9px]">+ Logo</div>
-                          </div>
-                        </div>
-
-                        {/* Download Button */}
-                        <div className="animate-fade-in" style={{ animationDelay: '0.9s' }}>
-                          <div className="bg-primary text-primary-foreground rounded-lg py-2.5 text-center text-xs font-semibold flex items-center justify-center gap-1.5">
-                            <Download className="h-3.5 w-3.5" />
-                            Download QR Code
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right Side - QR Preview */}
-                      <div className="flex items-center justify-center">
-                        <div className="relative">
-                          {/* Glow effect */}
-                          <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full scale-75" />
-                          
-                          {/* QR Code Preview */}
-                          <div className="relative bg-white rounded-xl p-4 shadow-lg border border-border animate-scale-in" style={{ animationDelay: '0.5s' }}>
-                            <div className="w-32 h-32 md:w-40 md:h-40 relative">
-                              {/* Animated QR Pattern */}
-                              <div className="absolute inset-0 grid grid-cols-8 gap-0.5 p-2">
-                                {[...Array(64)].map((_, i) => (
-                                  <div 
-                                    key={i} 
-                                    className="rounded-sm transition-all duration-300"
-                                    style={{
-                                      backgroundColor: [0,1,2,7,8,9,14,15,16,48,49,55,56,57,62,63].includes(i) || Math.random() > 0.5 ? '#3b82f6' : 'transparent',
-                                      animationDelay: `${i * 20}ms`
-                                    }}
-                                  />
-                                ))}
-                              </div>
-                              {/* Center logo placeholder */}
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-8 h-8 bg-white rounded-lg shadow-sm flex items-center justify-center">
-                                  <QrCode className="h-5 w-5 text-primary" />
-                                </div>
-                              </div>
-                            </div>
-                            {/* Watermark */}
-                            <div className="text-center mt-2 text-[8px] text-muted-foreground">
-                              Powered by QR Studio
-                            </div>
-                          </div>
-
-                          {/* Floating badges */}
-                          <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[8px] px-2 py-0.5 rounded-full font-medium animate-bounce" style={{ animationDuration: '2s' }}>
-                            Scannable!
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+            <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+              {/* Free Plan */}
+              <Card className="p-5 relative">
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold mb-1">Free</h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-bold">₹0</span>
+                    <span className="text-xs text-muted-foreground">/forever</span>
                   </div>
                 </div>
-
-                {/* Feature highlights below demo */}
-                <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-border">
+                <ul className="space-y-2 mb-5">
                   {[
-                    { icon: <Zap className="h-3.5 w-3.5" />, label: 'Instant Generation' },
-                    { icon: <Palette className="h-3.5 w-3.5" />, label: 'Full Customization' },
-                    { icon: <Download className="h-3.5 w-3.5" />, label: 'Multiple Formats' }
-                  ].map((feature, index) => (
-                    <div key={index} className="flex items-center justify-center gap-1.5 text-muted-foreground">
-                      {feature.icon}
-                      <span className="text-[10px] font-medium">{feature.label}</span>
-                    </div>
+                    '5 QR Codes',
+                    'Basic QR Types',
+                    'Standard Templates',
+                    'PNG Download',
+                    'Basic Analytics'
+                  ].map((feature, i) => (
+                    <li key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Check className="h-3 w-3 text-primary" />
+                      {feature}
+                    </li>
                   ))}
+                </ul>
+                <Link to="/signup" className="block">
+                  <Button variant="outline" size="sm" className="w-full text-xs">
+                    Get Started
+                  </Button>
+                </Link>
+              </Card>
+
+              {/* Pro Plan - Popular */}
+              <Card className="p-5 relative border-primary bg-primary/5">
+                <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
+                  <span className="bg-primary text-primary-foreground text-[9px] font-semibold px-2.5 py-1 rounded-full">
+                    MOST POPULAR
+                  </span>
                 </div>
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold mb-1">Pro</h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-bold">₹499</span>
+                    <span className="text-xs text-muted-foreground">/month</span>
+                  </div>
+                </div>
+                <ul className="space-y-2 mb-5">
+                  {[
+                    '50 QR Codes',
+                    'All QR Types',
+                    'Premium Templates',
+                    'Logo Upload',
+                    'Advanced Analytics',
+                    'Password Protection',
+                    'Expiration Control'
+                  ].map((feature, i) => (
+                    <li key={i} className="flex items-center gap-2 text-xs">
+                      <Check className="h-3 w-3 text-primary" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/signup" className="block">
+                  <Button size="sm" className="w-full text-xs">
+                    Start Free Trial
+                  </Button>
+                </Link>
+              </Card>
+
+              {/* Business Plan */}
+              <Card className="p-5 relative">
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold mb-1">Business</h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-bold">₹1,499</span>
+                    <span className="text-xs text-muted-foreground">/month</span>
+                  </div>
+                </div>
+                <ul className="space-y-2 mb-5">
+                  {[
+                    'Unlimited QR Codes',
+                    'Everything in Pro',
+                    'White Label',
+                    'Custom Domain',
+                    'Remove Branding',
+                    'Priority Support',
+                    'Team Management'
+                  ].map((feature, i) => (
+                    <li key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Check className="h-3 w-3 text-primary" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/signup" className="block">
+                  <Button variant="outline" size="sm" className="w-full text-xs">
+                    Contact Sales
+                  </Button>
+                </Link>
               </Card>
             </div>
           </AnimatedSection>
 
           <AnimatedSection delay={300}>
             <div className="text-center mt-6">
-              <a href="#generator">
-                <Button size="sm" className="gap-1.5 text-xs">
-                  Try It Yourself
+              <Link to="/pricing">
+                <Button variant="link" size="sm" className="gap-1.5 text-xs text-muted-foreground">
+                  View Full Pricing Details
                   <ArrowRight className="h-3 w-3" />
                 </Button>
-              </a>
+              </Link>
             </div>
           </AnimatedSection>
         </div>
       </section>
+
 
 
 
