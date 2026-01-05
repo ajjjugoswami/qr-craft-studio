@@ -47,7 +47,7 @@ const AdminData: React.FC = memo(() => {
   const onTableChange = useCallback((pagination: TablePaginationConfig) => {
     const newPage = pagination.current ?? 1;
     const newLimit = pagination.pageSize ?? limit;
-    handleTableChange(Number(newPage), Number(newLimit));
+    handleTableChange(newPage, newLimit);
   }, [handleTableChange, limit]);
 
   // Columns

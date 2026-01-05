@@ -130,7 +130,14 @@ export const fetchAdminUsers = createAsyncThunk(
   'admin/fetchUsers',
   async (params: { page?: number; limit?: number; search?: string } = {}, { rejectWithValue }) => {
     try {
-      const res = await adminAPI.getUsersData(params);
+      const requestedPage = params.page ?? 1;
+      const requestedLimit = params.limit ?? 10;
+      
+      const res = await adminAPI.getUsersData({ 
+        page: requestedPage, 
+        limit: requestedLimit, 
+        search: params.search 
+      });
       const payload = (res?.data ?? res) as any;
       const list: AdminUserRow[] = Array.isArray(payload)
         ? payload
@@ -138,9 +145,9 @@ export const fetchAdminUsers = createAsyncThunk(
 
       return {
         items: list,
-        page: payload?.page ?? params.page ?? 1,
-        limit: payload?.limit ?? params.limit ?? 10,
-        total: payload?.total ?? (Array.isArray(payload) ? list.length : payload?.count ?? 0),
+        page: requestedPage,
+        limit: requestedLimit,
+        total: payload?.total ?? payload?.count ?? list.length,
         search: params.search ?? '',
       };
     } catch (err: any) {
