@@ -82,9 +82,9 @@ const LimitReachedDialog: React.FC<LimitReachedDialogProps> = ({
             </div>
             
             {/* Progress Bar */}
-            <div className="w-full bg-border rounded-full h-2 overflow-hidden">
+            <div className="w-full bg-border rounded-full h-1.5 overflow-hidden">
               <div 
-                className="bg-destructive h-2 rounded-full transition-all duration-500 animate-pulse"
+                className="bg-destructive h-1.5 rounded-full transition-all duration-500"
                 style={{ width: `${usagePercentage}%` }}
               />
             </div>
