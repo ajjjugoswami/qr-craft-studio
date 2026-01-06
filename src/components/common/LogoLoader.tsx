@@ -12,9 +12,15 @@ const LogoLoader: React.FC<LogoLoaderProps> = ({
   fullScreen = false 
 }) => {
   const sizeClasses = {
-    sm: 'w-10 h-10',
-    md: 'w-14 h-14',
-    lg: 'w-20 h-20',
+    sm: 'w-14 h-14',
+    md: 'w-20 h-20',
+    lg: 'w-28 h-28',
+  };
+
+  const dotSizes = {
+    sm: 'w-2 h-2',
+    md: 'w-3 h-3',
+    lg: 'w-4 h-4',
   };
 
   const content = (
@@ -26,10 +32,10 @@ const LogoLoader: React.FC<LogoLoaderProps> = ({
           className={`${sizeClasses[size]} object-contain`}
         />
       </div>
-      <div className="flex items-center gap-1">
-        <span className="w-2 h-2 rounded-full bg-primary animate-[bounce_1s_ease-in-out_infinite]" />
-        <span className="w-2 h-2 rounded-full bg-primary animate-[bounce_1s_ease-in-out_infinite_0.15s]" style={{ animationDelay: '0.15s' }} />
-        <span className="w-2 h-2 rounded-full bg-primary animate-[bounce_1s_ease-in-out_infinite_0.3s]" style={{ animationDelay: '0.3s' }} />
+      <div className="flex items-center gap-1.5">
+        <span className={`${dotSizes[size]} rounded-full bg-primary animate-[bounce_1s_ease-in-out_infinite]`} />
+        <span className={`${dotSizes[size]} rounded-full bg-primary animate-[bounce_1s_ease-in-out_infinite]`} style={{ animationDelay: '0.15s' }} />
+        <span className={`${dotSizes[size]} rounded-full bg-primary animate-[bounce_1s_ease-in-out_infinite]`} style={{ animationDelay: '0.3s' }} />
       </div>
       {message && (
         <p className="text-muted-foreground text-sm">{message}</p>
