@@ -146,13 +146,31 @@ export const fetchAdminUsers = createAsyncThunk(
       const payload = (res?.data ?? res) as any;
       const list: AdminUserRow[] = Array.isArray(payload)
         ? payload
-        : payload?.data ?? [];
+        : payload?.data ?? payload?.users ?? [];
+
+      // Extract total from various possible response structures
+      const extractTotal = (): number => {
+        if (typeof payload?.total === 'number') return payload.total;
+        if (typeof payload?.count === 'number') return payload.count;
+        if (typeof payload?.pagination?.total === 'number') return payload.pagination.total;
+        if (typeof payload?.pagination?.count === 'number') return payload.pagination.count;
+        if (typeof payload?.meta?.total === 'number') return payload.meta.total;
+        if (typeof payload?.totalCount === 'number') return payload.totalCount;
+        if (typeof payload?.totalUsers === 'number') return payload.totalUsers;
+        // If API returns totalPages instead of total, calculate it
+        if (typeof payload?.totalPages === 'number') {
+          return payload.totalPages * requestedLimit;
+        }
+        // Fallback: if current page is full, assume there might be more
+        // Otherwise use list length
+        return list.length;
+      };
 
       return {
         items: list,
         page: requestedPage,
         limit: requestedLimit,
-        total: payload?.total ?? payload?.count ?? list.length,
+        total: extractTotal(),
         search: params.search ?? '',
       };
     } catch (err: any) {
@@ -194,17 +212,45 @@ export const fetchAdminSubscriptions = createAsyncThunk(
   'admin/fetchSubscriptions',
   async (params: { page?: number; limit?: number; search?: string } = {}, { rejectWithValue }) => {
     try {
-      const res = await adminAPI.getSubscriptionsData(params);
+      const requestedPage = params.page ?? 1;
+      const requestedLimit = params.limit ?? 20;
+      
+      const res = await adminAPI.getSubscriptionsData({ 
+        page: requestedPage, 
+        limit: requestedLimit, 
+        search: params.search 
+      });
       const payload = res?.data ?? res;
+
+      // Extract subscriptions data
+      const subsData = payload.subscriptions?.data ?? payload.subscriptions ?? [];
+      const paymentsData = payload.payments?.data ?? payload.payments ?? [];
+
+      // Extract totals with fallbacks
+      const extractSubsTotal = (): number => {
+        if (typeof payload.subscriptions?.total === 'number') return payload.subscriptions.total;
+        if (typeof payload.subscriptions?.count === 'number') return payload.subscriptions.count;
+        if (typeof payload.subscriptions?.pagination?.total === 'number') return payload.subscriptions.pagination.total;
+        if (typeof payload.totalSubscriptions === 'number') return payload.totalSubscriptions;
+        return Array.isArray(subsData) ? subsData.length : 0;
+      };
+
+      const extractPaymentsTotal = (): number => {
+        if (typeof payload.payments?.total === 'number') return payload.payments.total;
+        if (typeof payload.payments?.count === 'number') return payload.payments.count;
+        if (typeof payload.payments?.pagination?.total === 'number') return payload.payments.pagination.total;
+        if (typeof payload.totalPayments === 'number') return payload.totalPayments;
+        return Array.isArray(paymentsData) ? paymentsData.length : 0;
+      };
 
       return {
         stats: payload.stats,
-        subscriptions: payload.subscriptions?.data ?? [],
-        payments: payload.payments?.data ?? [],
-        page: payload.subscriptions?.page ?? params.page ?? 1,
-        limit: payload.subscriptions?.limit ?? params.limit ?? 20,
-        totalSubs: payload.subscriptions?.total ?? 0,
-        totalPayments: payload.payments?.total ?? 0,
+        subscriptions: Array.isArray(subsData) ? subsData : [],
+        payments: Array.isArray(paymentsData) ? paymentsData : [],
+        page: requestedPage,
+        limit: requestedLimit,
+        totalSubs: extractSubsTotal(),
+        totalPayments: extractPaymentsTotal(),
         search: params.search ?? '',
       };
     } catch (err: any) {
