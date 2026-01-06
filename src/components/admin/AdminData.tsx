@@ -117,8 +117,14 @@ const AdminData: React.FC = memo(() => {
           free: 'default',
           basic: 'blue',
           pro: 'gold',
-          enterprise: 'purple'
+          enterprise: 'purple',
+          trial: 'orange'
         };
+        
+        // If planType is 'trial', only show Trial tag
+        if (plan === 'trial') {
+          return <Tag color="orange">Trial</Tag>;
+        }
         
         return (
           <Space direction="vertical" size={0}>
