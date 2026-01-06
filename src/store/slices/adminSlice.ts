@@ -11,6 +11,11 @@ export interface AdminUser {
   createdAt?: string | null;
   blocked?: boolean;
   profilePicture?: string;
+  subscriptionPlan?: 'free' | 'basic' | 'pro' | 'enterprise';
+  subscriptionStatus?: 'active' | 'inactive' | 'expired' | 'cancelled';
+  isOnTrial?: boolean;
+  trialStartDate?: string;
+  trialEndDate?: string;
 }
 
 export interface AdminQRCode {

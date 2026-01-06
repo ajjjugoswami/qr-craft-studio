@@ -34,6 +34,9 @@ export interface Subscription {
   status: 'active' | 'inactive' | 'expired' | 'cancelled';
   startDate?: string;
   endDate?: string;
+  isTrialSubscription?: boolean;
+  trialStartDate?: string;
+  trialEndDate?: string;
   features: {
     maxQRCodes: number;
     maxScansPerQR: number;

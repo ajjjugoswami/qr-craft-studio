@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Layout, Menu, Avatar, Typography, Drawer, Button, Badge, Tooltip } from "antd";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
@@ -21,6 +21,7 @@ import {
   CreditCard,
   Crown,
   Sparkles,
+  Clock,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -36,85 +37,129 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const location = useLocation();
   const { user, signout } = useAuth();
   const { mode, setMode } = useTheme();
-  const { subscription, subscriptionLoading } = useSubscription();
+  const { subscription, subscriptionLoading, isOnTrial, getTrialDaysRemaining, getPlanDisplayName } = useSubscription();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [trialTimeLeft, setTrialTimeLeft] = useState<string>('');
 
-  const toggleThemeMode = () => {
+  // Timer for trial countdown
+  const updateTimer = useCallback(() => {
+    if (!isOnTrial()) {
+      setTrialTimeLeft('');
+      return;
+    }
+
+    const daysLeft = getTrialDaysRemaining();
+    if (daysLeft === null || daysLeft <= 0) {
+      setTrialTimeLeft('Expired');
+      return;
+    }
+
+    if (daysLeft === 1) {
+      // Show hours and minutes for last day
+      const trialEndDate = subscription?.trialEndDate;
+      if (trialEndDate) {
+        const now = new Date();
+        const end = new Date(trialEndDate);
+        const diffInMs = end.getTime() - now.getTime();
+        if (diffInMs > 0) {
+          const hours = Math.floor(diffInMs / (1000 * 60 * 60));
+          const minutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
+          setTrialTimeLeft(`${hours}h ${minutes}m`);
+        } else {
+          setTrialTimeLeft('Expired');
+        }
+      }
+    } else {
+      setTrialTimeLeft(`${daysLeft} days`);
+    }
+  }, [isOnTrial, getTrialDaysRemaining, subscription?.trialEndDate]);
+
+  useEffect(() => {
+    updateTimer();
+    const interval = setInterval(updateTimer, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, [updateTimer]);
+
+  const toggleThemeMode = useCallback(() => {
     setMode(mode === 'light' ? 'dark' : 'light');
-  };
+  }, [mode, setMode]);
 
-  const getThemeIcon = () => {
+  const themeIcon = useMemo(() => {
     return mode === 'dark' ? <Moon size={18} /> : <Sun size={18} />;
-  };
+  }, [mode]);
 
-  const getThemeTooltip = () => {
+  const themeTooltip = useMemo(() => {
     return mode === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
-  };
+  }, [mode]);
 
-  const menuItems = [
-    {
-      key: "/dashboard",
-      icon: <QrCode size={18} />,
-      label: "My QR codes",
-    },
-    {
-      key: "/analytics",
-      icon: <BarChart3 size={18} />,
-      label: "Analytics",
-    },
-    {
-      key: "/compare",
-      icon: <GitCompare size={18} />,
-      label: "Compare QR Codes",
-    },
-    {
-      key: "/pricing",
-      icon: <CreditCard size={18} />,
-      label: "Pricing",
-    },
-    {
-      key: "/faqs",
-      icon: <HelpCircle size={18} />,
-      label: "FAQs",
-    },
-    {
-      key: "/contact",
-      icon: <Mail size={18} />,
-      label: "Contact",
-    },
-    {
-      key: "/settings",
-      icon: <Settings size={18} />,
-      label: "Settings",
-    },
-  ];
+  const menuItems = useMemo(() => {
+    const items = [
+      {
+        key: "/dashboard",
+        icon: <QrCode size={18} />,
+        label: "My QR codes",
+      },
+      {
+        key: "/analytics",
+        icon: <BarChart3 size={18} />,
+        label: "Analytics",
+      },
+      {
+        key: "/compare",
+        icon: <GitCompare size={18} />,
+        label: "Compare QR Codes",
+      },
+      {
+        key: "/pricing",
+        icon: <CreditCard size={18} />,
+        label: "Pricing",
+      },
+      {
+        key: "/faqs",
+        icon: <HelpCircle size={18} />,
+        label: "FAQs",
+      },
+      {
+        key: "/contact",
+        icon: <Mail size={18} />,
+        label: "Contact",
+      },
+      {
+        key: "/settings",
+        icon: <Settings size={18} />,
+        label: "Settings",
+      },
+    ];
 
-  // Show admin-only items
-  if (user?.isAdmin) {
-    menuItems.push({
-      key: "/submissions",
-      icon: <MessageSquare size={18} />,
-      label: "Submissions",
-    });
-    menuItems.push({
-      key: "/admin/users",
-      icon: <Users size={18} />,
-      label: "Admin Data",
-    });
-  }
+    // Show admin-only items
+    if (user?.isAdmin) {
+      items.push({
+        key: "/submissions",
+        icon: <MessageSquare size={18} />,
+        label: "Submissions",
+      });
+      items.push({
+        key: "/admin/users",
+        icon: <Users size={18} />,
+        label: "Admin Data",
+      });
+    }
 
-  const handleMenuClick = (key: string) => {
+    return items;
+  }, [user?.isAdmin]);
+
+  const handleMenuClick = useCallback((key: string) => {
     navigate(key);
     setMobileMenuOpen(false);
-  };
+  }, [navigate]);
 
-  const bottomNavItems = [
+  const bottomNavItems = useMemo(() => [
     { key: "/dashboard", icon: <QrCode size={20} />, label: "My QR" },
     { key: "/analytics", icon: <BarChart3 size={20} />, label: "Analytics" },
     { key: "/create", icon: <Plus size={20} />, label: "Create", isCreate: true },
     { key: "/faqs", icon: <HelpCircle size={20} />, label: "Help" },
     { key: "/settings", icon: <Settings size={20} />, label: "Settings" },
-  ];
+  ], []);
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -154,7 +199,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         >
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              {subscription?.planType === 'enterprise' ? (
+              {isOnTrial() ? (
+                <Crown size={16} className="text-orange-500" />
+              ) : subscription?.planType === 'enterprise' ? (
                 <CreditCard size={16} className="text-purple-500" />
               ) : subscription?.planType === 'pro' ? (
                 <CreditCard size={16} className="text-blue-500" />
@@ -162,21 +209,32 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 <CreditCard size={16} className="text-gray-500 dark:text-gray-400" />
               )}
               <Text strong className="text-sm capitalize">
-                {subscription?.planType || 'Free'} Plan
+                {isOnTrial() ? 'Trial Plan' : (subscription?.planType || 'Free') + ' Plan'}
               </Text>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className={`w-2 h-2 rounded-full ${
-                subscription?.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
-              }`} />
-              <Text className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                {subscription?.status || 'active'}
-              </Text>
+              {isOnTrial() ? (
+                <>
+                  <Clock size={12} className="text-orange-500" />
+                  <Text className="text-xs text-orange-500 font-medium">
+                    {trialTimeLeft}
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <span className={`w-2 h-2 rounded-full ${
+                    subscription?.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
+                  }`} />
+                  <Text className="text-xs text-gray-500 dark:text-gray-400 capitalize">
+                    {subscription?.status || 'active'}
+                  </Text>
+                </>
+              )}
             </div>
           </div>
           {subscription?.planType !== 'enterprise' && (
             <Text className="text-xs text-primary cursor-pointer hover:underline">
-              {subscription?.planType === 'free' || !subscription ? 'Upgrade Plan →' : 'Manage Plan →'}
+              {isOnTrial() ? 'Upgrade to Keep Features →' : subscription?.planType === 'free' || !subscription ? 'Upgrade Plan →' : 'Manage Plan →'}
             </Text>
           )}
         </div>
@@ -218,12 +276,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             <LogOut size={18} />
             <span className="font-medium">Logout</span>
           </button>
-          <Tooltip title={getThemeTooltip()} placement="top">
+          <Tooltip title={themeTooltip} placement="top">
             <button
               onClick={toggleThemeMode}
               className="flex items-center justify-center p-3 rounded-xl cursor-pointer border border-border hover:bg-muted transition-colors"
             >
-              {getThemeIcon()}
+              {themeIcon}
             </button>
           </Tooltip>
         </div>
@@ -246,10 +304,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           <Text strong className="text-base">QR Studio</Text>
         </div>
         <div className="flex items-center gap-2">
-          <Tooltip title={getThemeTooltip()}>
+          <Tooltip title={themeTooltip}>
             <Button
               type="text"
-              icon={getThemeIcon()}
+              icon={themeIcon}
               onClick={toggleThemeMode}
               className="flex items-center justify-center"
             />
@@ -339,4 +397,4 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   );
 };
 
-export default DashboardLayout;
+export default React.memo(DashboardLayout);

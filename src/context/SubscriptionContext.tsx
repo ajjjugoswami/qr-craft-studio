@@ -55,6 +55,9 @@ interface SubscriptionContextType {
   isUpgradeRequired: (currentQRCount: number) => boolean;
   getPlanDisplayName: () => string;
   getPlanStatus: () => string;
+  isOnTrial: () => boolean;
+  getTrialDaysRemaining: () => number | null;
+  getTrialEndDate: () => Date | null;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(
@@ -422,18 +425,54 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const getPlanDisplayName = useCallback((): string => {
     if (!subscription) return 'Free';
+    
     const planNames: Record<string, string> = {
       free: 'Free',
       basic: 'Basic',
       pro: 'Pro',
       enterprise: 'Enterprise',
     };
-    return planNames[subscription.planType] || 'Free';
+    
+    const baseName = planNames[subscription.planType] || 'Free';
+    
+    // Check if it's a trial subscription
+    if (subscription.isTrialSubscription && subscription.trialEndDate) {
+      const trialEnd = new Date(subscription.trialEndDate);
+      const now = new Date();
+      if (now <= trialEnd) {
+        return `${baseName} Trial`;
+      }
+    }
+    
+    return baseName;
   }, [subscription]);
 
   const getPlanStatus = useCallback((): string => {
     if (!subscription) return 'active';
     return subscription.status || 'active';
+  }, [subscription]);
+
+  const isOnTrial = useCallback((): boolean => {
+    if (!subscription || !subscription.isTrialSubscription || !subscription.trialEndDate) return false;
+    const trialEnd = new Date(subscription.trialEndDate);
+    const now = new Date();
+    return now <= trialEnd;
+  }, [subscription]);
+
+  const getTrialDaysRemaining = useCallback((): number | null => {
+    if (!subscription || !subscription.isTrialSubscription || !subscription.trialEndDate) return null;
+    const trialEnd = new Date(subscription.trialEndDate);
+    const now = new Date();
+    if (now > trialEnd) return 0;
+    
+    const diffInTime = trialEnd.getTime() - now.getTime();
+    const diffInDays = Math.ceil(diffInTime / (1000 * 3600 * 24));
+    return Math.max(0, diffInDays);
+  }, [subscription]);
+
+  const getTrialEndDate = useCallback((): Date | null => {
+    if (!subscription || !subscription.isTrialSubscription || !subscription.trialEndDate) return null;
+    return new Date(subscription.trialEndDate);
   }, [subscription]);
 
   const value = useMemo<SubscriptionContextType>(
@@ -454,6 +493,9 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
       isUpgradeRequired,
       getPlanDisplayName,
       getPlanStatus,
+      isOnTrial,
+      getTrialDaysRemaining,
+      getTrialEndDate,
     }),
     [
       plans,
@@ -472,6 +514,9 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
       isUpgradeRequired,
       getPlanDisplayName,
       getPlanStatus,
+      isOnTrial,
+      getTrialDaysRemaining,
+      getTrialEndDate,
     ]
   );
 

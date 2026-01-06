@@ -6,6 +6,7 @@ import { useDateFormatter } from "@/hooks/useDateFormatter";
 import { useAdminData } from "@/hooks/useAdminData";
 import type { AdminUserRow, AdminQRCode } from "@/store/slices/adminSlice";
 import AdminSubscriptions from "./AdminSubscriptions";
+import UserSubscriptionModal from "./UserSubscriptionModal";
 
 const { Title, Text } = Typography;
 
@@ -31,6 +32,14 @@ const AdminData: React.FC = memo(() => {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState<string>("");
   const [previewTitle, setPreviewTitle] = useState<string>("");
+  
+  // Subscription modal state
+  const [subscriptionModalVisible, setSubscriptionModalVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<{
+    id: string;
+    name: string;
+    email: string;
+  } | null>(null);
 
   const handleAvatarClick = useCallback((profilePicture: string | undefined, userName: string | undefined) => {
     if (profilePicture) {
@@ -98,6 +107,30 @@ const AdminData: React.FC = memo(() => {
       render: (qrs: AdminQRCode[] | undefined) => <Tag>{qrs?.length ?? 0}</Tag>,
     },
     {
+      title: "Plan",
+      key: "subscriptionPlan",
+      render: (_: any, record: AdminUserRow) => {
+        const plan = record.user?.subscriptionPlan || 'free';
+        const isOnTrial = record.user?.isOnTrial;
+        
+        const planColors = {
+          free: 'default',
+          basic: 'blue',
+          pro: 'gold',
+          enterprise: 'purple'
+        };
+        
+        return (
+          <Space direction="vertical" size={0}>
+            <Tag color={planColors[plan as keyof typeof planColors]}>
+              {plan.charAt(0).toUpperCase() + plan.slice(1)}
+            </Tag>
+            {isOnTrial && <Tag color="orange" >Trial</Tag>}
+          </Space>
+        );
+      },
+    },
+    {
       title: "Status",
       key: "status",
       render: (_: any, record: AdminUserRow) => (
@@ -111,6 +144,23 @@ const AdminData: React.FC = memo(() => {
         const blocked = record.user?.blocked ?? false;
         return (
           <Space>
+            <Tooltip title="Manage Subscription">
+              <Button
+                type="default"
+                icon={<CreditCard size={14} />}
+                onClick={() => {
+                  setSelectedUser({
+                    id: record.user._id,
+                    name: record.user?.name || '',
+                    email: record.user?.email || ''
+                  });
+                  setSubscriptionModalVisible(true);
+                }}
+              >
+                Plan
+              </Button>
+            </Tooltip>
+            
             <Button
               type={blocked ? 'default' : 'primary'}
               danger={blocked}
@@ -288,6 +338,20 @@ const AdminData: React.FC = memo(() => {
           src={previewImage}
         />
       </Modal>
+
+      <UserSubscriptionModal
+        visible={subscriptionModalVisible}
+        onCancel={() => {
+          setSubscriptionModalVisible(false);
+          setSelectedUser(null);
+        }}
+        userId={selectedUser?.id || null}
+        userName={selectedUser?.name || ''}
+        userEmail={selectedUser?.email || ''}
+        onSuccess={() => {
+          refresh(); // Refresh the user data after successful update
+        }}
+      />
     </div>
   );
 });
