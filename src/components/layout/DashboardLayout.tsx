@@ -19,7 +19,6 @@ import {
   Sun,
   Moon,
   CreditCard,
-  Crown,
   Sparkles,
   Clock,
 } from "lucide-react";
@@ -199,36 +198,63 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         >
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              {isOnTrial() ? (
-                <Crown size={16} className="text-gold-500" />
-              ) : subscription?.planType === 'enterprise' ? (
-                <CreditCard size={16} className="text-purple-500" />
-              ) : subscription?.planType === 'pro' ? (
-                <CreditCard size={16} className="text-blue-500" />
-              ) : (
-                <CreditCard size={16} className="text-gray-500 dark:text-gray-400" />
-              )}
+              {(() => {
+                const planType = isOnTrial() ? 'trial' : (subscription?.planType || 'free');
+                const planConfig: Record<string, { icon: React.ReactNode; color: string; bgColor: string }> = {
+                  trial: { 
+                    icon: <Clock size={14} />, 
+                    color: 'text-orange-500', 
+                    bgColor: 'bg-orange-500/10' 
+                  },
+                  enterprise: { 
+                    icon: <Sparkles size={14} />, 
+                    color: 'text-purple-500', 
+                    bgColor: 'bg-purple-500/10' 
+                  },
+                  pro: { 
+                    icon: <CreditCard size={14} />, 
+                    color: 'text-amber-500', 
+                    bgColor: 'bg-amber-500/10' 
+                  },
+                  basic: { 
+                    icon: <CreditCard size={14} />, 
+                    color: 'text-blue-500', 
+                    bgColor: 'bg-blue-500/10' 
+                  },
+                  free: { 
+                    icon: <CreditCard size={14} />, 
+                    color: 'text-gray-500', 
+                    bgColor: 'bg-gray-500/10' 
+                  },
+                };
+                const config = planConfig[planType] || planConfig.free;
+                return (
+                  <span className={`p-1.5 rounded-md ${config.bgColor} ${config.color}`}>
+                    {config.icon}
+                  </span>
+                );
+              })()}
               <Text strong className="text-sm capitalize">
-                {isOnTrial() ? 'Trial' : (subscription?.planType || 'Free') + ' Plan'}
+                {isOnTrial() ? 'Trial' : (subscription?.planType || 'Free')} Plan
               </Text>
             </div>
             <div className="flex items-center gap-1.5">
               {isOnTrial() ? (
-                <>
-                  <Clock size={12} className="text-gold-500" />
-                  <Text className="text-xs text-gold-500 font-medium">
-                    {trialTimeLeft}
-                  </Text>
-                </>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-500 text-xs font-medium">
+                  <Clock size={10} />
+                  {trialTimeLeft}
+                </span>
               ) : (
-                <>
-                  <span className={`w-2 h-2 rounded-full ${
+                <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${
+                  subscription?.status === 'active' 
+                    ? 'bg-green-500/10 text-green-600 dark:text-green-400' 
+                    : 'bg-gray-500/10 text-gray-500'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${
                     subscription?.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
                   }`} />
-                  <Text className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                    {subscription?.status || 'active'}
-                  </Text>
-                </>
+                  {subscription?.status === 'active' ? 'Active' : (subscription?.status || 'Active')}
+                </span>
               )}
             </div>
           </div>
