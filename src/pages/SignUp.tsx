@@ -6,6 +6,7 @@ import { useAppDispatch } from "@/store";
 import { googleSignIn } from "@/store/slices/authSlice";
 import { useAuth } from "@/hooks/useAuth";
 import { authAPI } from "@/lib/api";
+import LogoLoader from "@/components/common/LogoLoader";
 import { 
   passwordRequirements, 
   getPasswordStrength, 
@@ -151,12 +152,7 @@ const SignUp: React.FC = () => {
 
 
   if (googleLoading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
-        <img src="/logo.png" alt="QR Studio" className="w-16 h-16 object-contain animate-pulse" />
-        <p className="text-muted-foreground text-sm">Signing up with Google...</p>
-      </div>
-    );
+    return <LogoLoader fullScreen message="Signing up with Google..." />;
   }
 
   return (
