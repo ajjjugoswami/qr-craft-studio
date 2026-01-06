@@ -4,6 +4,7 @@ import { useAnalytics } from './useAnalytics';
 import { usePayment } from './usePayment';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { fetchAdvancedAnalytics, selectAdvancedAnalytics, selectAdvancedLoading } from '@/store/slices/analyticsSlice';
+import { selectStatsTotalActive, selectStatsTotal } from '@/store/slices/statsSlice';
 import { getDemoScansOverTime, demoDeviceData, demoTopQRCodes, demoLocations, demoAdvancedAnalytics } from '@/lib/hardCodeAnalyticsData';
 import { 
   ScanData, 
@@ -19,6 +20,7 @@ interface UseAnalyticsDataReturn {
   loading: boolean;
   scans: any[];
   qrCodes: any[];
+  totalQRCodes: number;
   activeQRs: number;
   scansOverTime: ScanData[];
   weeklyData: WeeklyData[];
@@ -42,6 +44,10 @@ export const useAnalyticsData = (mode: 'real' | 'demo'): UseAnalyticsDataReturn 
   const advancedAnalytics = useAppSelector(selectAdvancedAnalytics);
   const advancedLoading = useAppSelector(selectAdvancedLoading);
   
+  // Get stats from Redux (same as Dashboard)
+  const statsActiveQRs = useAppSelector(selectStatsTotalActive);
+  const statsTotal = useAppSelector(selectStatsTotal);
+  
   // Check if user has access to advanced analytics
   const canViewAdvancedAnalytics = hasFeatureAccess('advancedAnalytics');
 
@@ -52,7 +58,10 @@ export const useAnalyticsData = (mode: 'real' | 'demo'): UseAnalyticsDataReturn 
     }
   }, [mode, dispatch, advancedAnalytics, advancedLoading, canViewAdvancedAnalytics]);
 
-  const activeQRs = useMemo(() => qrCodes.filter(qr => qr.status === 'active').length, [qrCodes]);
+  // Use stats data for consistency with Dashboard (don't rely on paginated qrCodes)
+  const activeQRs = mode === 'demo' 
+    ? Math.floor(Math.random() * 15) + 8 // Demo value
+    : statsActiveQRs; // Use same data source as Dashboard
 
   // Scans timeline (last 30 days)
   const scansOverTime = useMemo(() => {
@@ -137,8 +146,11 @@ export const useAnalyticsData = (mode: 'real' | 'demo'): UseAnalyticsDataReturn 
 
   const demoScans = useMemo(() => getDemoScansOverTime(), []);
   const demoTotalScans = useMemo(() => demoScans.reduce((acc, d) => acc + (d?.scans || 0), 0), [demoScans]);
+  // Use analytics.totalScans first (from scan aggregation), fallback to scans array length
   const displayedTotalScans = mode === 'real' ? (analytics?.totalScans ?? (scans || []).length) : demoTotalScans;
-  const avgScansPerQR = (qrCodes || []).length ? Math.round(displayedTotalScans / (qrCodes || []).length) : 0;
+  // Use total QR codes from stats for correct calculation
+  const totalQRCodesForCalc = mode === 'real' ? (statsTotal || qrCodes.length) : qrCodes.length;
+  const avgScansPerQR = totalQRCodesForCalc ? Math.round(displayedTotalScans / totalQRCodesForCalc) : 0;
 
   // Use demo data for advanced analytics when in demo mode
   const finalAdvancedAnalytics = mode === 'demo' ? demoAdvancedAnalytics : advancedAnalytics;
@@ -148,6 +160,7 @@ export const useAnalyticsData = (mode: 'real' | 'demo'): UseAnalyticsDataReturn 
     loading,
     scans,
     qrCodes,
+    totalQRCodes: mode === 'real' ? statsTotal : qrCodes.length,
     activeQRs,
     scansOverTime,
     weeklyData,

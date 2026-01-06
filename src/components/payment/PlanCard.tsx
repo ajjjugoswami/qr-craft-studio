@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Button, Typography, List } from 'antd';
 import { Check, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 
@@ -39,6 +40,11 @@ const PlanCard: React.FC<PlanCardProps> = ({
   canUpgrade,
   subscription
 }) => {
+  const navigate = useNavigate();
+
+  const handleContactSupport = () => {
+    navigate('/contact');
+  };
   const getDiscountedPrice = (price: number, duration: number) => {
     if (duration === 12) {
       return Math.round(price * 12 * 0.8);
@@ -165,7 +171,18 @@ const PlanCard: React.FC<PlanCardProps> = ({
       </div>
 
       <div className="mt-6">
-        {isCurrentPlan ? (
+        {/* Show Contact Support for all cards if user is on Enterprise plan */}
+        {subscription?.planType === 'enterprise' ? (
+          <Button 
+            block 
+            size="large" 
+            type="primary"
+            onClick={handleContactSupport}
+            className="!bg-purple-600 hover:!bg-purple-700 !border-purple-600 hover:!border-purple-700"
+          >
+            Contact Support
+          </Button>
+        ) : isCurrentPlan ? (
           <Button 
             block 
             size="large" 

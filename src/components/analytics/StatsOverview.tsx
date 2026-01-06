@@ -32,7 +32,7 @@ const StatsOverview: React.FC<StatsOverviewProps> = ({
         <Card className="hover:shadow-md transition-shadow border-l-4 border-l-green-500">
           <Statistic 
             title="Active QR Codes" 
-            value={activeQRs || totalQRCodes} 
+            value={activeQRs || 0} 
             prefix={<QrCode size={20} className="text-green-500 mr-2" />} 
             valueStyle={{ color: '#22c55e', fontSize: '28px' }} 
           />

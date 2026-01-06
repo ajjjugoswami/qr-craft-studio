@@ -18,6 +18,7 @@ const Analytics: React.FC = () => {
     loading,
     scans,
     qrCodes,
+    totalQRCodes,
     activeQRs,
     scansOverTime,
     weeklyData,
@@ -87,7 +88,8 @@ const Analytics: React.FC = () => {
     lines.push('=== SUMMARY STATISTICS ===');
     lines.push('Metric,Value');
     lines.push(`"Total Scans",${displayedTotalScans}`);
-    lines.push(`"Active QR Codes",${activeQRs || qrCodes.length}`);
+    lines.push(`"Total QR Codes",${totalQRCodes}`);
+    lines.push(`"Active QR Codes",${activeQRs}`);
     lines.push(`"Average Scans per QR",${avgScansPerQR}`);
     lines.push(`"Unique Visitors (est.)",${Math.round((displayedTotalScans || 0) * 0.7)}`);
     lines.push(`"Data Mode","${mode}"`);
@@ -174,7 +176,7 @@ const Analytics: React.FC = () => {
         <StatsOverview 
           displayedTotalScans={displayedTotalScans}
           activeQRs={activeQRs}
-          totalQRCodes={qrCodes.length}
+          totalQRCodes={totalQRCodes}
           avgScansPerQR={avgScansPerQR}
         />
 
