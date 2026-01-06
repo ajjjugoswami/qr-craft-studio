@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useMemo, useRef, useState } from "react";
-import { Input, Button, message, Spin } from "antd";
+import { Input, Button, message } from "antd";
 import { Eye, EyeOff, Shield, Zap, Check, X } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAppDispatch } from "@/store";
@@ -153,7 +153,7 @@ const SignUp: React.FC = () => {
   if (googleLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
-        <Spin size="large" />
+        <img src="/logo.png" alt="QR Studio" className="w-16 h-16 object-contain animate-pulse" />
         <p className="text-muted-foreground text-sm">Signing up with Google...</p>
       </div>
     );
