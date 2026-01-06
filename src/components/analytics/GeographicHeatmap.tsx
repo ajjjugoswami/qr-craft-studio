@@ -1,7 +1,8 @@
 import React from 'react';
-import { Card, Spin, Empty, Typography, Statistic, Row, Col } from 'antd';
+import { Card, Empty, Typography, Statistic, Row, Col } from 'antd';
 import { MapPin } from 'lucide-react';
 import { GeographicHeatmapData, CityData } from '@/types/analytics';
+import LogoLoader from '@/components/common/LogoLoader';
 
 const { Title, Text } = Typography;
 
@@ -16,7 +17,7 @@ const GeographicHeatmap: React.FC<HeatmapProps> = ({ data, loading }) => {
     return (
       <Card>
         <div className="flex items-center justify-center h-64">
-          <Spin size="large" />
+          <LogoLoader size="sm" />
         </div>
       </Card>
     );

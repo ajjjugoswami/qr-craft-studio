@@ -1,8 +1,9 @@
 import React from 'react';
-import { Card, Spin, Empty, Typography, Statistic, Row, Col, Progress } from 'antd';
+import { Card, Empty, Typography, Statistic, Row, Col, Progress } from 'antd';
 import { Users, UserCheck, UserPlus, Repeat } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { RetentionData } from '@/types/analytics';
+import LogoLoader from '@/components/common/LogoLoader';
 
 const { Title, Text } = Typography;
 
@@ -17,7 +18,7 @@ const RetentionAnalysis: React.FC<RetentionProps> = ({ data, loading }) => {
     return (
       <Card>
         <div className="flex items-center justify-center h-64">
-          <Spin size="large" />
+          <LogoLoader size="sm" />
         </div>
       </Card>
     );

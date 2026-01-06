@@ -1,11 +1,12 @@
 import React from 'react';
-import { Typography, Card, Table, Tag, Button, Popconfirm, Spin } from 'antd';
+import { Typography, Card, Table, Tag, Button, Popconfirm } from 'antd';
 import { Trash2 } from 'lucide-react';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { useContacts } from '@/hooks/useContacts';
 import { useAuth } from '@/hooks/useAuth';
 import { useDateFormatter } from '@/hooks/useDateFormatter';
 import type { ContactSubmission } from '@/store/slices/contactsSlice';
+import LogoLoader from '@/components/common/LogoLoader';
 
 const { Title } = Typography;
 
@@ -56,7 +57,7 @@ const Submissions: React.FC = () => {
         <Title level={2} className="mb-8">Contact Submissions</Title>
         <Card>
           {loading ? (
-            <div className="flex items-center justify-center py-12"><Spin /></div>
+            <div className="flex items-center justify-center py-12"><LogoLoader size="sm" /></div>
           ) : (
             <Table columns={columns} dataSource={contacts} rowKey={(r: ContactSubmission) => r._id} />
           )}
