@@ -51,8 +51,9 @@ const PricingPlans: React.FC<PricingProps> = ({
 
   const canUpgrade = (planType: string) => {
     if (!subscription) return true;
-    const planOrder = { free: 0, basic: 1, pro: 2, enterprise: 3 };
-    return planOrder[subscription.planType as keyof typeof planOrder] < planOrder[planType as keyof typeof planOrder];
+    const planOrder = { free: 0, basic: 1, pro: 2, enterprise: 3, trial: 4 };
+    const currentPlan = subscription.planType;
+    return planOrder[currentPlan as keyof typeof planOrder] < planOrder[planType as keyof typeof planOrder];
   };
 
   if (plansLoading || subscriptionLoading) {
@@ -98,26 +99,28 @@ const PricingPlans: React.FC<PricingProps> = ({
           />
         </Col>
 
-        {/* Paid Plans */}
-        {Object.entries(plans).map(([planType, plan]) => {
-          const isPopular = planType === 'pro';
-          
-          return (
-            <Col xs={24} md={12} lg={6} key={planType}>
-              <PlanCard
-                planType={planType}
-                plan={plan}
-                selectedDuration={selectedDuration}
-                isCurrentPlan={isCurrentPlan(planType)}
-                isPopular={isPopular}
-                processingPlan={processingPlan}
-                onSelectPlan={handleSelectPlan}
-                canUpgrade={canUpgrade(planType)}
-                subscription={subscription}
-              />
-            </Col>
-          );
-        })}
+        {/* Paid Plans - exclude trial since it's auto-granted */}
+        {Object.entries(plans)
+          .filter(([planType]) => planType !== 'trial')
+          .map(([planType, plan]) => {
+            const isPopular = planType === 'pro';
+            
+            return (
+              <Col xs={24} md={12} lg={6} key={planType}>
+                <PlanCard
+                  planType={planType}
+                  plan={plan}
+                  selectedDuration={selectedDuration}
+                  isCurrentPlan={isCurrentPlan(planType)}
+                  isPopular={isPopular}
+                  processingPlan={processingPlan}
+                  onSelectPlan={handleSelectPlan}
+                  canUpgrade={canUpgrade(planType)}
+                  subscription={subscription}
+                />
+              </Col>
+            );
+          })}
       </Row>
 
       <FeatureComparison plans={plans} />

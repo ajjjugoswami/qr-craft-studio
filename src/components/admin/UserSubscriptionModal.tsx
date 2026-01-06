@@ -50,6 +50,7 @@ const planOptions = [
   { value: 'basic', label: 'Basic Plan', color: 'blue' },
   { value: 'pro', label: 'Pro Plan', color: 'gold' },
   { value: 'enterprise', label: 'Enterprise Plan', color: 'purple' },
+  { value: 'trial', label: 'Trial Plan (Premium)', color: 'orange' },
 ] as const;
 
 const planFeatures = {
@@ -57,6 +58,7 @@ const planFeatures = {
   basic: { maxQRCodes: 50, maxScansPerQR: 1000 },
   pro: { maxQRCodes: 200, maxScansPerQR: 10000 },
   enterprise: { maxQRCodes: -1, maxScansPerQR: -1 },
+  trial: { maxQRCodes: -1, maxScansPerQR: -1 }, // Premium unlimited
 };
 
 const UserSubscriptionModal: React.FC<UserSubscriptionModalProps> = ({

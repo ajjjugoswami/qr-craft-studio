@@ -22,7 +22,7 @@ export type User = {
   removeWatermark?: boolean;
   watermarkText?: string;
   whiteLabel?: WhiteLabelConfig;
-  subscriptionPlan?: 'free' | 'basic' | 'pro' | 'enterprise';
+  subscriptionPlan?: 'free' | 'basic' | 'pro' | 'enterprise' | 'trial';
   subscriptionStatus?: 'active' | 'inactive' | 'expired' | 'cancelled';
   isOnTrial?: boolean;
   trialStartDate?: string;

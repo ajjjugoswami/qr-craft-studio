@@ -37,6 +37,7 @@ const PaymentTable: React.FC<PaymentTableProps> = ({
       basic: 'blue',
       pro: 'purple',
       enterprise: 'gold',
+      trial: 'orange', // Premium level
     };
     return colors[planType] || 'default';
   };

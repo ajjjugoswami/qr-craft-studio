@@ -171,8 +171,8 @@ const PlanCard: React.FC<PlanCardProps> = ({
       </div>
 
       <div className="mt-6">
-        {/* Show Contact Support for all cards if user is on Enterprise plan */}
-        {subscription?.planType === 'enterprise' ? (
+        {/* Show Contact Support for all cards if user is on Enterprise or Trial plan (premium levels) */}
+        {(subscription?.planType === 'enterprise' || subscription?.planType === 'trial') ? (
           <Button 
             block 
             size="large" 

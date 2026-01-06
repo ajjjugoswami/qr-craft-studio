@@ -395,10 +395,15 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [userId]);
 
-  // Utilities
   const hasFeatureAccess = useCallback(
     (feature: keyof Subscription['features']): boolean => {
       if (!subscription) return false;
+      
+      // Trial plan users are premium level - get unlimited access to ALL features
+      if (subscription.planType === 'trial') {
+        return true; // Trial is above Enterprise - unlimited everything
+      }
+      
       const value = subscription.features[feature];
       return value === true || value === -1;
     },
@@ -408,6 +413,12 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
   const getRemainingQRCodes = useCallback(
     (currentCount: number): number => {
       if (!subscription) return Math.max(0, 5 - currentCount);
+      
+      // Trial users get unlimited QR codes
+      if (subscription.planType === 'trial') {
+        return -1; // Unlimited
+      }
+      
       if (subscription.features.maxQRCodes === -1) return -1;
       return Math.max(0, subscription.features.maxQRCodes - currentCount);
     },
@@ -417,6 +428,12 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
   const isUpgradeRequired = useCallback(
     (currentQRCount: number): boolean => {
       if (!subscription) return currentQRCount >= 5;
+      
+      // Trial users never need to upgrade
+      if (subscription.planType === 'trial') {
+        return false;
+      }
+      
       if (subscription.features.maxQRCodes === -1) return false;
       return currentQRCount >= subscription.features.maxQRCodes;
     },
@@ -431,20 +448,10 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
       basic: 'Basic',
       pro: 'Pro',
       enterprise: 'Enterprise',
+      trial: 'Trial',
     };
     
-    const baseName = planNames[subscription.planType] || 'Free';
-    
-    // Check if it's a trial subscription
-    if (subscription.isTrialSubscription && subscription.trialEndDate) {
-      const trialEnd = new Date(subscription.trialEndDate);
-      const now = new Date();
-      if (now <= trialEnd) {
-        return `${baseName} Trial`;
-      }
-    }
-    
-    return baseName;
+    return planNames[subscription.planType] || 'Free';
   }, [subscription]);
 
   const getPlanStatus = useCallback((): string => {
@@ -453,10 +460,8 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [subscription]);
 
   const isOnTrial = useCallback((): boolean => {
-    if (!subscription || !subscription.isTrialSubscription || !subscription.trialEndDate) return false;
-    const trialEnd = new Date(subscription.trialEndDate);
-    const now = new Date();
-    return now <= trialEnd;
+    if (!subscription) return false;
+    return subscription.planType === 'trial';
   }, [subscription]);
 
   const getTrialDaysRemaining = useCallback((): number | null => {

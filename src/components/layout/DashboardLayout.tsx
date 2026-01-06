@@ -200,7 +200,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               {isOnTrial() ? (
-                <Crown size={16} className="text-orange-500" />
+                <Crown size={16} className="text-gold-500" />
               ) : subscription?.planType === 'enterprise' ? (
                 <CreditCard size={16} className="text-purple-500" />
               ) : subscription?.planType === 'pro' ? (
@@ -209,14 +209,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 <CreditCard size={16} className="text-gray-500 dark:text-gray-400" />
               )}
               <Text strong className="text-sm capitalize">
-                {isOnTrial() ? 'Trial Plan' : (subscription?.planType || 'Free') + ' Plan'}
+                {isOnTrial() ? 'Trial' : (subscription?.planType || 'Free') + ' Plan'}
               </Text>
             </div>
             <div className="flex items-center gap-1.5">
               {isOnTrial() ? (
                 <>
-                  <Clock size={12} className="text-orange-500" />
-                  <Text className="text-xs text-orange-500 font-medium">
+                  <Clock size={12} className="text-gold-500" />
+                  <Text className="text-xs text-gold-500 font-medium">
                     {trialTimeLeft}
                   </Text>
                 </>

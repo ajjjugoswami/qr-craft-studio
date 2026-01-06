@@ -11,7 +11,7 @@ export interface AdminUser {
   createdAt?: string | null;
   blocked?: boolean;
   profilePicture?: string;
-  subscriptionPlan?: 'free' | 'basic' | 'pro' | 'enterprise';
+  subscriptionPlan?: 'free' | 'basic' | 'pro' | 'enterprise' | 'trial';
   subscriptionStatus?: 'active' | 'inactive' | 'expired' | 'cancelled';
   isOnTrial?: boolean;
   trialStartDate?: string;
@@ -36,7 +36,7 @@ export interface AdminUserRow {
 export interface AdminSubscription {
   _id: string;
   userId: AdminUser;
-  planType: 'free' | 'basic' | 'pro' | 'enterprise';
+  planType: 'free' | 'basic' | 'pro' | 'enterprise' | 'trial';
   status: 'active' | 'inactive' | 'expired' | 'cancelled';
   startDate: string;
   endDate?: string;
@@ -62,7 +62,7 @@ export interface AdminPayment {
   amount: number;
   currency: string;
   status: 'created' | 'paid' | 'failed' | 'refunded';
-  planType: 'basic' | 'pro' | 'enterprise';
+  planType: 'basic' | 'pro' | 'enterprise' | 'trial';
   planDuration: number;
   receipt: string;
   createdAt: string;

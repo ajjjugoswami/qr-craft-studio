@@ -18,6 +18,7 @@ export interface Plans {
   basic: Plan;
   pro: Plan;
   enterprise: Plan;
+  trial: Plan;
 }
 
 export interface PaymentOrder {
@@ -30,7 +31,7 @@ export interface PaymentOrder {
 }
 
 export interface Subscription {
-  planType: 'free' | 'basic' | 'pro' | 'enterprise';
+  planType: 'free' | 'basic' | 'pro' | 'enterprise' | 'trial';
   status: 'active' | 'inactive' | 'expired' | 'cancelled';
   startDate?: string;
   endDate?: string;

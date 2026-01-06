@@ -29,6 +29,7 @@ const SubscriptionTable: React.FC<SubscriptionTableProps> = ({
       basic: 'blue',
       pro: 'purple',
       enterprise: 'gold',
+      trial: 'orange', // Premium level above all
     };
     return colors[planType] || 'default';
   };
