@@ -5,6 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAppDispatch } from "@/store";
 import { googleSignIn } from "@/store/slices/authSlice";
 import { useAuth } from "@/hooks/useAuth";
+import LogoLoader from "@/components/common/LogoLoader";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -109,12 +110,7 @@ const SignIn: React.FC = () => {
 
 
   if (googleLoading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
-        <img src="/logo.png" alt="QR Studio" className="w-16 h-16 object-contain animate-pulse" />
-        <p className="text-muted-foreground text-sm">Signing in with Google...</p>
-      </div>
-    );
+    return <LogoLoader fullScreen message="Signing in with Google..." />;
   }
 
   return (
