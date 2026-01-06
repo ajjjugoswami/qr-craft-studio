@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Row, Col, Spin, Typography } from 'antd';
+import { Row, Col, Typography } from 'antd';
 import { usePayment } from '@/hooks/usePayment';
 import type { Plans } from '@/types/payment';
 import DurationToggle from './DurationToggle';
 import CurrentPlanDisplay from './CurrentPlanDisplay';
 import PlanCard from './PlanCard';
 import FeatureComparison from './FeatureComparison';
+import LogoLoader from '@/components/common/LogoLoader';
 
 const { Text } = Typography;
 
@@ -63,7 +64,7 @@ const PricingPlans: React.FC<PricingProps> = ({
   if (plansLoading || subscriptionLoading) {
     return (
       <div className="flex justify-center items-center py-16">
-        <Spin size="large" />
+        <LogoLoader />
       </div>
     );
   }

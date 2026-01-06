@@ -1,5 +1,5 @@
 import React, { useCallback, useState, memo } from "react";
-import { Table, Tag, Typography, Spin, Alert, Button, Input, Space, Tooltip, Popconfirm, Avatar, Modal, Tabs } from "antd";
+import { Table, Tag, Typography, Alert, Button, Input, Space, Tooltip, Popconfirm, Avatar, Modal, Tabs } from "antd";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import { RefreshCw, User, Users, CreditCard } from 'lucide-react';
 import { useDateFormatter } from "@/hooks/useDateFormatter";
@@ -7,6 +7,7 @@ import { useAdminData } from "@/hooks/useAdminData";
 import type { AdminUserRow, AdminQRCode } from "@/store/slices/adminSlice";
 import AdminSubscriptions from "./AdminSubscriptions";
 import UserSubscriptionModal from "./UserSubscriptionModal";
+import LogoLoader from "@/components/common/LogoLoader";
 
 const { Title, Text } = Typography;
 
@@ -270,7 +271,7 @@ const AdminData: React.FC = memo(() => {
 
       {loading ? (
         <div className="py-12 flex items-center justify-center">
-          <Spin size="large" />
+          <LogoLoader />
         </div>
       ) : (
         <Table<AdminUserRow>

@@ -6,7 +6,6 @@ import {
   Button, 
   Table, 
   Typography, 
-  Spin, 
   Alert,
   Modal,
   Divider
@@ -22,6 +21,7 @@ import {
 } from 'lucide-react';
 import { usePayment } from '@/hooks/usePayment';
 import type { PaymentHistory } from '@/types/payment';
+import LogoLoader from '@/components/common/LogoLoader';
 
 const { Title, Text } = Typography;
 
@@ -165,7 +165,7 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
   if (subscriptionLoading) {
     return (
       <div className="flex justify-center items-center py-16">
-        <Spin size="large" />
+        <LogoLoader />
       </div>
     );
   }
