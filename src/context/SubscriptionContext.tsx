@@ -465,7 +465,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [subscription]);
 
   const getTrialDaysRemaining = useCallback((): number | null => {
-    if (!subscription || !subscription.isTrialSubscription || !subscription.trialEndDate) return null;
+    if (!subscription || subscription.planType !== 'trial' || !subscription.trialEndDate) return null;
     const trialEnd = new Date(subscription.trialEndDate);
     const now = new Date();
     if (now > trialEnd) return 0;
@@ -476,7 +476,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [subscription]);
 
   const getTrialEndDate = useCallback((): Date | null => {
-    if (!subscription || !subscription.isTrialSubscription || !subscription.trialEndDate) return null;
+    if (!subscription || subscription.planType !== 'trial' || !subscription.trialEndDate) return null;
     return new Date(subscription.trialEndDate);
   }, [subscription]);
 

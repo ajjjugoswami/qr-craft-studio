@@ -8,6 +8,8 @@ interface CurrentPlanDisplayProps {
     planType: string;
     status: string;
     endDate?: string;
+    trialEndDate?: string;
+    isTrialSubscription?: boolean;
   };
   showCurrentPlan: boolean;
 }
@@ -38,11 +40,16 @@ const CurrentPlanDisplay: React.FC<CurrentPlanDisplayProps> = ({
               </Text>
             </div>
           </div>
-          {subscription.endDate && (
+          {/* Show trial end date for trial plans, regular end date for others */}
+          {subscription.planType === 'trial' && subscription.trialEndDate ? (
+            <Text className="text-gray-500 dark:text-gray-400 text-sm">
+              Trial ends: {new Date(subscription.trialEndDate).toLocaleDateString()}
+            </Text>
+          ) : subscription.endDate ? (
             <Text className="text-gray-500 dark:text-gray-400 text-sm">
               Valid until: {new Date(subscription.endDate).toLocaleDateString()}
             </Text>
-          )}
+          ) : null}
         </div>
         <span className="border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 px-3 py-1 rounded-full text-sm font-medium">
           Current Plan

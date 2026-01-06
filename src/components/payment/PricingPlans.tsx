@@ -51,8 +51,12 @@ const PricingPlans: React.FC<PricingProps> = ({
 
   const canUpgrade = (planType: string) => {
     if (!subscription) return true;
-    const planOrder = { free: 0, basic: 1, pro: 2, enterprise: 3, trial: 4 };
     const currentPlan = subscription.planType;
+    
+    // Trial users can upgrade to any paid plan to secure their subscription
+    if (currentPlan === 'trial') return true;
+    
+    const planOrder = { free: 0, basic: 1, pro: 2, enterprise: 3, trial: 4 };
     return planOrder[currentPlan as keyof typeof planOrder] < planOrder[planType as keyof typeof planOrder];
   };
 

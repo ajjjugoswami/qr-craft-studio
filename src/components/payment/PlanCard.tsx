@@ -171,8 +171,8 @@ const PlanCard: React.FC<PlanCardProps> = ({
       </div>
 
       <div className="mt-6">
-        {/* Show Contact Support for all cards if user is on Enterprise or Trial plan (premium levels) */}
-        {(subscription?.planType === 'enterprise' || subscription?.planType === 'trial') ? (
+        {/* Show Contact Support only for Enterprise users */}
+        {subscription?.planType === 'enterprise' ? (
           <Button 
             block 
             size="large" 
@@ -198,7 +198,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
             disabled
             className="!bg-gray-100 dark:!bg-gray-800 !border-gray-200 dark:!border-gray-700 !text-gray-500 dark:!text-gray-400"
           >
-            Downgrade Not Available
+            {subscription?.planType === 'trial' ? 'Included in Trial' : 'Downgrade Not Available'}
           </Button>
         ) : (
           <Button
