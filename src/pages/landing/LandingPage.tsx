@@ -1,4 +1,5 @@
 import Header from "./components/Header";
+import TrialBanner from "./components/TrialBanner";
 import HeroSection from "./components/HeroSection";
 import GeneratorSection from "./components/GeneratorSection";
 import HowItWorks from "./components/HowItWorks";
@@ -24,6 +25,7 @@ const LandingPage = () => {
       </div>
 
       <Header />
+      <TrialBanner />
       <HeroSection />
       <GeneratorSection />
       <HowItWorks />

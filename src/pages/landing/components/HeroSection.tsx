@@ -16,40 +16,40 @@ const HeroSection = () => {
   const isMobile = useIsMobile();
 
   return (
-    <section className="relative pt-20 pb-8 md:pt-24 md:pb-12 lg:pt-28 lg:pb-16">
+    <section className="relative pt-40 pb-6 md:pt-36 md:pb-12 lg:pt-40 lg:pb-16">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
-          {/* Badge */}
+          {/* Badge - Hide on mobile to save space */}
           <AnimatedSection>
-            <div className="inline-flex items-center gap-2 bg-muted/80 border border-border text-foreground/80 px-3 py-1.5 rounded-full text-xs font-medium mb-4 md:mb-5">
+            <div className="hidden sm:inline-flex items-center gap-2 bg-muted/80 border border-border text-foreground/80 px-3 py-1.5 rounded-full text-xs font-medium mb-4 md:mb-5">
               <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
               Trusted by many businesses worldwide
             </div>
           </AnimatedSection>
 
-          {/* Main Headline */}
+          {/* Main Headline - Smaller on mobile */}
           <AnimatedSection delay={100}>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-3 md:mb-4 leading-[1.15]">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-2 sm:mb-3 md:mb-4 leading-[1.15]">
               Create Stunning
               <span className="block text-primary">QR Codes in Seconds</span>
             </h1>
           </AnimatedSection>
 
-          {/* Subheadline */}
+          {/* Subheadline - Shorter on mobile */}
           <AnimatedSection delay={200}>
-            <p className="text-sm md:text-sm text-muted-foreground max-w-xl mx-auto mb-6 md:mb-8 leading-relaxed px-2">
-              Design beautiful, trackable QR codes with custom colors, logos,
-              and templates. Perfect for marketing, events, and business.
+            <p className="text-sm md:text-sm text-muted-foreground max-w-xl mx-auto mb-4 sm:mb-6 md:mb-8 leading-relaxed px-2">
+              <span className="sm:hidden">Create beautiful, trackable QR codes with custom designs.</span>
+              <span className="hidden sm:inline">Design beautiful, trackable QR codes with custom colors, logos, and templates. Perfect for marketing, events, and business.</span>
             </p>
           </AnimatedSection>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons - Compact on mobile */}
           <AnimatedSection delay={300}>
-            <div className="flex flex-col gap-3 px-4 sm:px-0 sm:flex-row sm:gap-2 justify-center mb-8 md:mb-10">
+            <div className="flex flex-col gap-2 px-4 sm:px-0 sm:flex-row sm:gap-2 justify-center mb-6 sm:mb-8 md:mb-10">
               <a href="#generator" className="w-full sm:w-auto">
                 <Button
                   size="lg"
-                  className="px-6 gap-2 group w-full sm:w-auto text-sm h-12 sm:h-10"
+                  className="px-6 gap-2 group w-full sm:w-auto text-sm h-10 sm:h-10"
                 >
                   Create Free QR Code
                   <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
@@ -59,7 +59,7 @@ const HeroSection = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="px-6 gap-2 w-full sm:w-auto text-sm h-12 sm:h-10"
+                  className="px-6 gap-2 w-full sm:w-auto text-sm h-10 sm:h-10"
                 >
                   <Play className="h-4 w-4" />
                   See How It Works
