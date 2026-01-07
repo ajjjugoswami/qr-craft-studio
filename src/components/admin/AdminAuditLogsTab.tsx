@@ -1,12 +1,12 @@
 import React, { useCallback, memo, useState } from "react";
-import { Table, Tag, Typography, Alert, Button, Input, Space, Modal, message } from "antd";
+import { Table, Tag, Typography, Alert, Button, Input, Space, Modal, message, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { RefreshCw, Eye, Copy } from "lucide-react";
 import { useDateFormatter } from "@/hooks/useDateFormatter";
 import { useAuditLogs } from "@/hooks/useAuditLogs";
 import type { AuditLog } from "@/store/slices/adminSlice";
 
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 const AdminAuditLogsTab: React.FC = memo(() => {
   const formatter = useDateFormatter();
@@ -93,14 +93,22 @@ const AdminAuditLogsTab: React.FC = memo(() => {
       key: "details",
       render: (details: any) => {
         if (!details) return "—";
-        const detailsStr =
-          typeof details === "object"
-            ? JSON.stringify(details)
-            : String(details);
+        // compact single-line preview for the table cell
+        const compactStr =
+          typeof details === "object" ? JSON.stringify(details) : String(details);
+        // pretty JSON for tooltip/preview/modal
+        const prettyStr =
+          typeof details === "object" ? JSON.stringify(details, null, 2) : String(details);
         return (
-          <Text type="secondary" ellipsis={{ tooltip: detailsStr }}>
-            {detailsStr}
-          </Text>
+          <div style={{ maxWidth: 420 }}>
+            <Paragraph
+              type="secondary"
+              ellipsis={{ rows: 1, tooltip: prettyStr }}
+              style={{ margin: 0 }}
+            >
+              {compactStr}
+            </Paragraph>
+          </div>
         );
       },
     },
@@ -173,14 +181,24 @@ const AdminAuditLogsTab: React.FC = memo(() => {
         }}
         onChange={handleAuditLogsTableChange}
         size="large"
-        scroll={{ x: 800 }}
+        scroll={{ x: 'max-content' }}
       />
 
       <Modal
         title={
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingRight: 48,marginTop: -4,marginBottom: 4 }}>
             <span>Audit Log Details</span>
-           
+            <div>
+              <Tooltip title="Copy JSON">
+                <Button
+                  type="text"
+                  icon={<Copy size={14} />}
+                  onClick={handleCopyJson}
+                  size="small"
+                  aria-label="Copy JSON"
+                />
+              </Tooltip>
+            </div>
           </div>
         }
         open={detailModalVisible}
