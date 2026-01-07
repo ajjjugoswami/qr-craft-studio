@@ -345,8 +345,8 @@ export const selectQRCodesTotalActive = (state: { qrCodes: QRCodesState }) => 0;
 export const selectQRCodeById = (id: string) => (state: { qrCodes: QRCodesState }) =>
   state.qrCodes.items.find((q) => q.id === id);
 export const selectShouldFetchQRCodes = (state: { qrCodes: QRCodesState }) => {
-  const { lastFetched, loading } = state.qrCodes;
-  if (loading) return false;
+  const { lastFetched, loading, error } = state.qrCodes;
+  if (loading || error) return false;
   if (!lastFetched) return true;
   return Date.now() - lastFetched > CACHE_DURATION;
 };

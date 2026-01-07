@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Typography, Tabs } from 'antd';
 import { User, Palette, Shield, Droplets, Tag, CreditCard, Crown } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import ProfileInfo from './settings/ProfileInfo';
 import ThemeSettings from './settings/ThemeSettings';
@@ -14,10 +15,35 @@ const { Title, Text } = Typography;
 
 const Profile: React.FC = () => {
   const { subscription, hasFeatureAccess } = usePayment();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [activeKey, setActiveKey] = useState('profile');
   
   // Check if user has premium features
   const canRemoveWatermark = hasFeatureAccess('removeWatermark');
   const canUseWhiteLabel = hasFeatureAccess('whiteLabel');
+
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === '/settings' || path === '/settings/profile') {
+      setActiveKey('profile');
+    } else if (path === '/settings/theme') {
+      setActiveKey('theme');
+    } else if (path === '/settings/watermark') {
+      setActiveKey('watermark');
+    } else if (path === '/settings/whitelabel') {
+      setActiveKey('whitelabel');
+    } else if (path === '/settings/subscription') {
+      setActiveKey('subscription');
+    } else if (path === '/settings/security') {
+      setActiveKey('security');
+    }
+  }, [location.pathname]);
+
+  const handleTabChange = (key: string) => {
+    setActiveKey(key);
+    navigate(`/settings/${key}`);
+  };
   
   const tabItems = [
     {
@@ -94,7 +120,8 @@ const Profile: React.FC = () => {
         </div>
 
         <Tabs
-          defaultActiveKey="profile"
+          activeKey={activeKey}
+          onChange={handleTabChange}
           items={tabItems}
           size="large"
           className="profile-tabs"

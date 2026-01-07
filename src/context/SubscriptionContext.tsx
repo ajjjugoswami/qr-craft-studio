@@ -50,6 +50,7 @@ interface SubscriptionContextType {
   refreshSubscription: () => Promise<void>;
   refreshSubscriptionFeatures: () => Promise<void>;
   fetchPaymentHistory: (page?: number, limit?: number) => Promise<void>;
+  downloadInvoice: (paymentId: string) => Promise<void>;
   hasFeatureAccess: (feature: keyof Subscription['features']) => boolean;
   getRemainingQRCodes: (currentCount: number) => number;
   isUpgradeRequired: (currentQRCount: number) => boolean;
@@ -226,6 +227,20 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     } catch (error: any) {
       console.error('Error fetching payment history:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Download invoice
+  const downloadInvoice = useCallback(async (paymentId: string) => {
+    try {
+      setLoading(true);
+      await paymentAPI.downloadInvoice(paymentId);
+      message.success('Invoice downloaded successfully');
+    } catch (error: any) {
+      console.error('Error downloading invoice:', error);
+      message.error(error?.response?.data?.message || 'Failed to download invoice');
     } finally {
       setLoading(false);
     }
@@ -493,6 +508,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
       refreshSubscription,
       refreshSubscriptionFeatures,
       fetchPaymentHistory,
+      downloadInvoice,
       hasFeatureAccess,
       getRemainingQRCodes,
       isUpgradeRequired,
@@ -514,6 +530,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
       refreshSubscription,
       refreshSubscriptionFeatures,
       fetchPaymentHistory,
+      downloadInvoice,
       hasFeatureAccess,
       getRemainingQRCodes,
       isUpgradeRequired,

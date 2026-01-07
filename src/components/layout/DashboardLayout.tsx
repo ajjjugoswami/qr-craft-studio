@@ -122,7 +122,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         label: "Contact",
       },
       {
-        key: "/settings",
+        key: "/settings/profile",
         icon: <Settings size={18} />,
         label: "Settings",
       },
@@ -155,7 +155,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     { key: "/analytics", icon: <BarChart3 size={20} />, label: "Analytics" },
     { key: "/create", icon: <Plus size={20} />, label: "Create", isCreate: true },
     { key: "/faqs", icon: <HelpCircle size={20} />, label: "Help" },
-    { key: "/settings", icon: <Settings size={20} />, label: "Settings" },
+    { key: "/settings/profile", icon: <Settings size={20} />, label: "Settings" },
   ], []);
 
   const SidebarContent = () => (
@@ -227,7 +227,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       <div className="p-3 border-t border-border">
         <div
           className="flex items-center gap-3 p-2 rounded-xl hover:bg-muted transition-colors cursor-pointer"
-          onClick={() => handleMenuClick("/settings")}
+          onClick={() => handleMenuClick("/settings/profile")}
         >
           <Badge dot status="success" offset={[-5, 30]}>
             <Avatar
@@ -300,7 +300,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               className="avatar-primary cursor-pointer"
               size={48}
               src={user?.profilePicture}
-              onClick={() => handleMenuClick("/settings")}
+              onClick={() => handleMenuClick("/settings/profile")}
             >
               {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
             </Avatar>

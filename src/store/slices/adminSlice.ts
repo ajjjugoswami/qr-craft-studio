@@ -69,6 +69,19 @@ export interface AdminPayment {
   updatedAt: string;
 }
 
+export interface AuditLog {
+  _id: string;
+  adminId: AdminUser;
+  adminEmail: string;
+  action: 'USER_BLOCKED' | 'USER_UNBLOCKED' | 'USER_DELETED' | 'SUBSCRIPTION_UPDATED' | 'USER_SUBSCRIPTION_REFRESHED' | 'SYSTEM_CLEANUP' | 'LIMITS_ENFORCED';
+  targetUserId?: AdminUser;
+  targetUserEmail?: string;
+  details: any;
+  ipAddress?: string;
+  userAgent?: string;
+  createdAt: string;
+}
+
 export interface SubscriptionStats {
   totalRevenue: number;
   activeSubscriptions: number;
@@ -100,6 +113,20 @@ interface AdminState {
     totalPayments: number;
     search: string;
   };
+  // Audit logs state
+  auditLogs: {
+    logs: AuditLog[];
+    loading: boolean;
+    error: string | null;
+    lastFetched: number | null;
+    page: number;
+    limit: number;
+    total: number;
+    search: string;
+    action?: string;
+    adminId?: string;
+    targetUserId?: string;
+  };
 }
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -124,6 +151,16 @@ const initialState: AdminState = {
     limit: 20,
     totalSubs: 0,
     totalPayments: 0,
+    search: '',
+  },
+  auditLogs: {
+    logs: [],
+    loading: false,
+    error: null,
+    lastFetched: null,
+    page: 1,
+    limit: 20,
+    total: 0,
     search: '',
   },
 };
@@ -207,6 +244,58 @@ export const deleteAdminUser = createAsyncThunk(
     }
   }
 );
+
+// Fetch audit logs
+export const fetchAuditLogs = createAsyncThunk(
+  'admin/fetchAuditLogs',
+  async (params: { page?: number; limit?: number; search?: string; action?: string; adminId?: string; targetUserId?: string } = {}, { rejectWithValue }) => {
+    try {
+      const requestedPage = params.page ?? 1;
+      const requestedLimit = params.limit ?? 20;
+      
+      const res = await adminAPI.getAuditLogs({ 
+        page: requestedPage, 
+        limit: requestedLimit, 
+        search: params.search,
+        action: params.action,
+        adminId: params.adminId,
+        targetUserId: params.targetUserId
+      });
+      const payload = (res?.data ?? res) as any;
+      const list: AuditLog[] = Array.isArray(payload)
+        ? payload
+        : payload?.data ?? payload?.logs ?? [];
+      
+      const extractTotal = () => {
+        if (payload?.total !== undefined) return payload.total;
+        if (payload?.totalCount !== undefined) return payload.totalCount;
+        if (payload?.count !== undefined && payload?.totalPages !== undefined) {
+          return payload.count * payload.totalPages;
+        }
+        // Fallback: if current page is full, assume there might be more
+        // Otherwise use list length
+        return list.length;
+      };
+
+      return {
+        logs: list,
+        page: requestedPage,
+        limit: requestedLimit,
+        total: extractTotal(),
+        search: params.search ?? '',
+        action: params.action,
+        adminId: params.adminId,
+        targetUserId: params.targetUserId,
+      };
+    } catch (err: any) {
+      if (err?.response?.status === 401) {
+        return rejectWithValue('unauthorized');
+      }
+      return rejectWithValue(err?.response?.data?.message || 'Failed to load audit logs');
+    }
+  }
+);
+
 // Fetch subscription and payment data
 export const fetchAdminSubscriptions = createAsyncThunk(
   'admin/fetchSubscriptions',
@@ -371,6 +460,30 @@ const adminSlice = createSlice({
         if (action.payload !== 'unauthorized') {
           message.error(action.payload as string);
         }
+      })
+      // Audit logs
+      .addCase(fetchAuditLogs.pending, (state) => {
+        state.auditLogs.loading = true;
+        state.auditLogs.error = null;
+      })
+      .addCase(fetchAuditLogs.fulfilled, (state, action) => {
+        state.auditLogs.loading = false;
+        state.auditLogs.logs = action.payload.logs;
+        state.auditLogs.page = action.payload.page;
+        state.auditLogs.limit = action.payload.limit;
+        state.auditLogs.total = action.payload.total;
+        state.auditLogs.search = action.payload.search;
+        state.auditLogs.action = action.payload.action;
+        state.auditLogs.adminId = action.payload.adminId;
+        state.auditLogs.targetUserId = action.payload.targetUserId;
+        state.auditLogs.lastFetched = Date.now();
+      })
+      .addCase(fetchAuditLogs.rejected, (state, action) => {
+        state.auditLogs.loading = false;
+        state.auditLogs.error = action.payload as string;
+        if (action.payload !== 'unauthorized') {
+          message.error(action.payload as string);
+        }
       });
   },
 });
@@ -393,8 +506,8 @@ export const selectAdminLimit = (state: { admin: AdminState }) => state.admin.li
 export const selectAdminTotal = (state: { admin: AdminState }) => state.admin.total;
 export const selectAdminSearch = (state: { admin: AdminState }) => state.admin.search;
 export const selectShouldFetchAdmin = (state: { admin: AdminState }) => {
-  const { lastFetched, loading } = state.admin;
-  if (loading) return false;
+  const { lastFetched, loading, error } = state.admin;
+  if (loading || error) return false;
   if (!lastFetched) return true;
   return Date.now() - lastFetched > CACHE_DURATION;
 };
@@ -410,5 +523,14 @@ export const selectSubscriptionLimit = (state: { admin: AdminState }) => state.a
 export const selectSubscriptionTotalSubs = (state: { admin: AdminState }) => state.admin.subscriptions.totalSubs;
 export const selectSubscriptionTotalPayments = (state: { admin: AdminState }) => state.admin.subscriptions.totalPayments;
 export const selectSubscriptionSearch = (state: { admin: AdminState }) => state.admin.subscriptions.search;
+
+// Audit logs selectors
+export const selectAuditLogs = (state: { admin: AdminState }) => state.admin.auditLogs.logs;
+export const selectAuditLogsLoading = (state: { admin: AdminState }) => state.admin.auditLogs.loading;
+export const selectAuditLogsError = (state: { admin: AdminState }) => state.admin.auditLogs.error;
+export const selectAuditLogsPage = (state: { admin: AdminState }) => state.admin.auditLogs.page;
+export const selectAuditLogsLimit = (state: { admin: AdminState }) => state.admin.auditLogs.limit;
+export const selectAuditLogsTotal = (state: { admin: AdminState }) => state.admin.auditLogs.total;
+export const selectAuditLogsSearch = (state: { admin: AdminState }) => state.admin.auditLogs.search;
 
 export default adminSlice.reducer;

@@ -21,6 +21,7 @@ export const usePayment = () => {
     fetchSubscription: context.refreshSubscription,
     refreshSubscriptionFeatures: context.refreshSubscriptionFeatures,
     fetchPaymentHistory: context.fetchPaymentHistory,
+    downloadInvoice: context.downloadInvoice,
     
     // Utilities
     hasFeatureAccess: context.hasFeatureAccess,

@@ -86,8 +86,8 @@ export const selectStatsTotalActive = (state: { stats: StatsState }) => state.st
 export const selectStatsLoading = (state: { stats: StatsState }) => state.stats.loading;
 export const selectStatsError = (state: { stats: StatsState }) => state.stats.error;
 export const selectShouldFetchStats = (state: { stats: StatsState }) => {
-  const { lastFetched, loading } = state.stats;
-  if (loading) return false;
+  const { lastFetched, loading, error } = state.stats;
+  if (loading || error) return false;
   if (!lastFetched) return true;
   return Date.now() - lastFetched > CACHE_DURATION;
 };

@@ -120,6 +120,7 @@ const analyticsSlice = createSlice({
       .addCase(fetchAnalytics.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+        state.lastFetched = Date.now(); // Prevent immediate retries on failure
         if (action.payload !== 'unauthorized') {
           message.error(action.payload as string);
         }
@@ -149,8 +150,8 @@ export const selectAnalyticsLoading = (state: { analytics: AnalyticsState }) => 
 export const selectAdvancedAnalytics = (state: { analytics: AnalyticsState }) => state.analytics.advancedAnalytics;
 export const selectAdvancedLoading = (state: { analytics: AnalyticsState }) => state.analytics.advancedLoading;
 export const selectShouldFetchAnalytics = (state: { analytics: AnalyticsState }) => {
-  const { lastFetched, loading } = state.analytics;
-  if (loading) return false;
+  const { lastFetched, loading, error } = state.analytics;
+  if (loading || error) return false;
   if (!lastFetched) return true;
   return Date.now() - lastFetched > CACHE_DURATION;
 };

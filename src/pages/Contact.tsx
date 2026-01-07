@@ -114,10 +114,9 @@ const Contact: React.FC = () => {
               {/* Additional Info */}
               <Card className="bg-gradient-to-r from-primary/5 to-purple-500/5 border-primary/20">
                 <div className="flex items-center gap-3 mb-3">
-                  <Clock size={20} className="text-primary" />
                   <Title level={5} className="mb-0">Business Hours</Title>
                 </div>
-                <div className="space-y-1 text-sm text-gray-600">
+                <div className="space-y-1 text-sm ">
                   <div>Monday - Friday: 9:00 AM - 6:00 PM EST</div>
                   <div>Saturday: 10:00 AM - 4:00 PM EST</div>
                   <div>Sunday: Closed</div>

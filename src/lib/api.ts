@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// export const API_URL = 'http://localhost:3000/api';
-export const API_URL = 'https://be-link-generator.vercel.app/api';
+export const API_URL = 'http://localhost:3000/api';
+// export const API_URL = 'https://be-link-generator.vercel.app/api';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -280,6 +280,12 @@ export const adminAPI = {
   // Get subscriptions and payments data (admin only)
   getSubscriptionsData: async (params?: { page?: number; limit?: number; search?: string }) => {
     const response = await api.get('/admin/subscriptions', { params });
+    return response.data;
+  },
+
+  // Get audit logs (admin only)
+  getAuditLogs: async (params?: { page?: number; limit?: number; search?: string; action?: string; adminId?: string; targetUserId?: string }) => {
+    const response = await api.get('/admin/audit-logs', { params });
     return response.data;
   },
 

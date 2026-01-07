@@ -64,7 +64,7 @@ const PricingPlans: React.FC<PricingProps> = ({
   if (plansLoading || subscriptionLoading) {
     return (
       <div className="flex justify-center items-center py-16">
-        <LogoLoader />
+        <LogoLoader size="sm" />
       </div>
     );
   }

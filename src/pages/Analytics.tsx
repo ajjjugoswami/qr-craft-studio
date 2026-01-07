@@ -11,7 +11,7 @@ import SecondaryCharts from '@/components/analytics/SecondaryCharts';
 import AdvancedAnalyticsSection from '@/components/analytics/AdvancedAnalyticsSection';
 import EmptyAnalyticsState from '@/components/analytics/EmptyAnalyticsState';
 
-const Analytics: React.FC = () => {
+const MainAnalytics: React.FC = () => {
   const [mode, setMode] = useState<'real' | 'demo'>('real');
   
   const {
@@ -206,4 +206,4 @@ const Analytics: React.FC = () => {
   );
 };
 
-export default Analytics;
+export default MainAnalytics;

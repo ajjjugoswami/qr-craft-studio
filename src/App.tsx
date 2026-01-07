@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider } from "react-redux";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ConfigProvider, theme } from "antd";
+import { Analytics } from "@vercel/analytics/react";
 import { store } from "./store";
 import { ThemeProvider } from "./context/ThemeContext";
 import { SubscriptionProvider } from "./context/SubscriptionContext";
@@ -23,7 +24,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import OTPVerification from "./pages/OTPVerification";
 import Dashboard from "./pages/Dashboard";
 import CreateQR from "./pages/CreateQR";
-import Analytics from "./pages/Analytics";
+import MainAnalytics from "./pages/Analytics";
 import QRAnalytics from "./pages/QRAnalytics";
 import CompareQRCodesPage from "./pages/CompareQRCodes";
 import Redirector from "./pages/Redirector";
@@ -93,7 +94,7 @@ const AppContent = () => {
             />
             <Route
               path="/analytics"
-              element={<ProtectedRoute><Analytics /></ProtectedRoute>}
+              element={<ProtectedRoute><MainAnalytics /></ProtectedRoute>}
             />
             <Route
               path="/analytics/:id"
@@ -108,17 +109,43 @@ const AppContent = () => {
               element={<ProtectedRoute><Profile /></ProtectedRoute>}
             />
             <Route
+              path="/settings/profile"
+              element={<ProtectedRoute><Profile /></ProtectedRoute>}
+            />
+            <Route
+              path="/settings/theme"
+              element={<ProtectedRoute><Profile /></ProtectedRoute>}
+            />
+            <Route
+              path="/settings/watermark"
+              element={<ProtectedRoute><Profile /></ProtectedRoute>}
+            />
+            <Route
+              path="/settings/whitelabel"
+              element={<ProtectedRoute><Profile /></ProtectedRoute>}
+            />
+            <Route
+              path="/settings/subscription"
+              element={<ProtectedRoute><Profile /></ProtectedRoute>}
+            />
+            <Route
+              path="/settings/security"
+              element={<ProtectedRoute><Profile /></ProtectedRoute>}
+            />
+            <Route
               path="/pricing"
               element={<ProtectedRoute><PricingPage /></ProtectedRoute>}
             />
             <Route path="/faqs" element={<FAQs />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/shipping-policy" element={<ShippingPolicy />} />
-            <Route path="/terms" element={<TermsAndConditions />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             <Route path="/refunds" element={<CancellationsAndRefunds />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/submissions" element={<AdminRoute><Submissions /></AdminRoute>} />
             <Route path="/admin/users" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
+            <Route path="/admin/subscriptions" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
+            <Route path="/admin/audit-logs" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
 
             {/* Public redirect route for scanned QR codes (no auth required) */}
             <Route path="/r/:id" element={<Redirector />} />
@@ -137,6 +164,9 @@ const AppContent = () => {
         {/* Global Toasters */}
         <Toaster />
         <Sonner />
+        
+        {/* Vercel Analytics */}
+        <Analytics />
       </TooltipProvider>
     </ConfigProvider>
   );

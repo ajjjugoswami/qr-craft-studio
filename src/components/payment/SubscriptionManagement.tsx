@@ -39,7 +39,8 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
     subscriptionLoading,
     cancelSubscription,
     fetchPaymentHistory,
-    refreshSubscriptionFeatures
+    refreshSubscriptionFeatures,
+    downloadInvoice
   } = usePayment();
 
   useEffect(() => {
@@ -150,9 +151,7 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
             size="small" 
             type="text"
             icon={<Download className="w-4 h-4" />}
-            onClick={() => {
-              console.log('Download invoice for:', record._id);
-            }}
+            onClick={() => downloadInvoice(record._id)}
             className="!text-muted-foreground hover:!text-foreground"
           >
             Invoice
@@ -165,7 +164,7 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
   if (subscriptionLoading) {
     return (
       <div className="flex justify-center items-center py-16">
-        <LogoLoader />
+        <LogoLoader size="sm" />
       </div>
     );
   }
@@ -343,7 +342,8 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
           </Descriptions.Item>
         </Descriptions>
 
-        {!isFreePlan && subscription.status === 'active' && (
+        {/* Temporarily hidden - Cancel Subscription button */}
+        {/* {!isFreePlan && subscription.status === 'active' && (
           <div className="mt-6 pt-4 border-t border-border">
             <Button 
               danger 
@@ -355,7 +355,7 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
               Cancel Subscription
             </Button>
           </div>
-        )}
+        )} */}
       </Card>
 
       {/* Payment History */}
