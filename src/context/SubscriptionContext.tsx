@@ -8,6 +8,7 @@ import React, {
   useMemo,
 } from 'react';
 import { message } from 'antd';
+import confetti from 'canvas-confetti';
 import { paymentAPI } from '@/lib/paymentApi';
 import { useAuth } from '@/hooks/useAuth';
 import type {
@@ -300,9 +301,18 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
                     content: 'Payment successful! Your subscription has been activated.',
                     duration: 5,
                   });
+                  // Show confetti animation
+                  confetti({
+                    particleCount: 200,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#a855f7', '#8b5cf6', '#7c3aed', '#6366f1', '#4f46e5']
+                  });
                   setSubscription(verifyResponse.subscription);
                   // Mark as fetched for this user
                   if (userId) subscriptionFetchedForUserRef.current = userId;
+                  // Call subscription API again to ensure latest data
+                  await refreshSubscription();
                   resolveOnce(true);
                 } else {
                   message.error({
@@ -383,7 +393,7 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     },
     // depend on the actual primitive fields used in prefill
-    [user?.name, user?.email, user?.mobile, userId]
+    [user?.name, user?.email, user?.mobile, userId, refreshSubscription]
   );
 
   // Cancel subscription
