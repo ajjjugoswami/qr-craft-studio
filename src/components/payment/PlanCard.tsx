@@ -2,22 +2,13 @@ import React from 'react';
 import { Card, Button, Typography, List } from 'antd';
 import { Check, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import type { Plan } from '@/types/payment';
 
 const { Title, Text } = Typography;
 
 interface PlanCardProps {
   planType: string;
-  plan?: {
-    name: string;
-    price: number;
-    features: {
-      maxQRCodes: number;
-      maxScansPerQR: number;
-      analytics: boolean;
-      whiteLabel: boolean;
-      removeWatermark: boolean;
-    };
-  };
+  plan?: Plan;
   selectedDuration: 1 | 12;
   isCurrentPlan: boolean;
   isPopular?: boolean;
@@ -45,11 +36,12 @@ const PlanCard: React.FC<PlanCardProps> = ({
   const handleContactSupport = () => {
     navigate('/contact');
   };
-  const getDiscountedPrice = (price: number, duration: number) => {
+  const getPrice = (plan: Plan, duration: number) => {
     if (duration === 12) {
-      return Math.round(price * 12 * 0.8);
+      return plan.yearlyPrice;
+    } else {
+      return plan.monthlyPrice;
     }
-    return price;
   };
 
   const formatFeatureValue = (value: any) => {
@@ -119,7 +111,61 @@ const PlanCard: React.FC<PlanCardProps> = ({
   // Paid Plans
   if (!plan) return null;
 
-  const price = getDiscountedPrice(plan.price, selectedDuration);
+  // Special case for Enterprise plan
+  if (planType === 'enterprise') {
+    return (
+      <Card
+        className={`h-full relative transition-all duration-200 ${
+          isCurrentPlan 
+            ? 'border-2 border-gray-500 dark:border-gray-400' 
+            : isPopular 
+              ? 'border-2 border-gray-400 dark:border-gray-500' 
+              : 'border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+        }`}
+        styles={{ body: { padding: '28px 24px' } }}
+      >
+        {isPopular && (
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+            <span className="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-1 rounded-full text-xs font-medium">
+              Most Popular
+            </span>
+          </div>
+        )}
+        
+        <div className={`text-center mb-6 ${isPopular ? 'pt-2' : ''}`}>
+          <Title level={4} className="!mb-4 !text-gray-800 dark:!text-gray-100">{plan.name}</Title>
+          
+          <div className="mb-3">
+            <Text className="text-gray-500 dark:text-gray-400 text-sm">
+              Unlimited power for enterprises
+            </Text>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-100 dark:border-gray-700 pt-4">
+          <FeatureItem text={`${formatFeatureValue(plan.features.maxQRCodes)} QR codes`} />
+          <FeatureItem text={`${formatFeatureValue(plan.features.maxScansPerQR)} scans per QR`} />
+          <FeatureItem text="Advanced analytics" included={plan.features.analytics} />
+          <FeatureItem text="White label" included={plan.features.whiteLabel} />
+          <FeatureItem text="Remove watermark" included={plan.features.removeWatermark} />
+        </div>
+
+        <div className="mt-6">
+          <Button 
+            block 
+            size="large" 
+            type="primary"
+            onClick={handleContactSupport}
+            className="!bg-purple-600 hover:!bg-purple-700 !border-purple-600 hover:!border-purple-700"
+          >
+            Contact Support
+          </Button>
+        </div>
+      </Card>
+    );
+  }
+
+  const price = getPrice(plan, selectedDuration);
   const monthlyPrice = selectedDuration === 12 ? Math.round(price / 12) : price;
 
   return (
@@ -149,8 +195,12 @@ const PlanCard: React.FC<PlanCardProps> = ({
           <Text className="text-gray-500 dark:text-gray-400">/month</Text>
           {selectedDuration === 12 && (
             <div className="mt-1">
-              <Text delete className="text-gray-400 dark:text-gray-500 text-sm">₹{plan.price}/month</Text>
-              <Text className="text-green-600 dark:text-green-500 text-sm ml-2 font-medium">Save 20%</Text>
+              <Text className="text-gray-500 dark:text-gray-400 text-sm">Billed ₹{price} annually</Text>
+              {price < plan.monthlyPrice * 12 && (
+                <Text className="text-green-600 dark:text-green-500 text-sm ml-2 font-medium">
+                  Save ₹{plan.monthlyPrice * 12 - price}
+                </Text>
+              )}
             </div>
           )}
         </div>
@@ -171,8 +221,18 @@ const PlanCard: React.FC<PlanCardProps> = ({
       </div>
 
       <div className="mt-6">
-        {/* Show Contact Support only for Enterprise users */}
-        {subscription?.planType === 'enterprise' ? (
+        {/* Show Contact Support for Enterprise plans */}
+        {planType === 'enterprise' ? (
+          <Button 
+            block 
+            size="large" 
+            type="primary"
+            onClick={handleContactSupport}
+            className="!bg-purple-600 hover:!bg-purple-700 !border-purple-600 hover:!border-purple-700"
+          >
+            Contact Support
+          </Button>
+        ) : subscription?.planType === 'enterprise' ? (
           <Button 
             block 
             size="large" 

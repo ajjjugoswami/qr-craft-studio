@@ -1,6 +1,7 @@
 export interface Plan {
   name: string;
-  price: number;
+  monthlyPrice: number;
+  yearlyPrice: number;
   features: {
     maxQRCodes: number;
     maxScansPerQR: number;
