@@ -66,6 +66,7 @@ const AdminAuditLogsTab: React.FC = memo(() => {
           USER_SUBSCRIPTION_REFRESHED: "orange",
           SYSTEM_CLEANUP: "purple",
           LIMITS_ENFORCED: "geekblue",
+          UPDATE_PLAN_PRICES: "cyan",
         };
         return (
           <Tag

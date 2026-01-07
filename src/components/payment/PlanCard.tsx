@@ -190,20 +190,22 @@ const PlanCard: React.FC<PlanCardProps> = ({
       <div className={`text-center mb-6 ${isPopular ? 'pt-2' : ''}`}>
         <Title level={4} className="!mb-4 !text-gray-800 dark:!text-gray-100">{plan.name}</Title>
         
-        <div className="mb-3">
-          <span className="text-4xl font-bold text-gray-900 dark:text-white">₹{monthlyPrice}</span>
-          <Text className="text-gray-500 dark:text-gray-400">/month</Text>
-          {selectedDuration === 12 && (
-            <div className="mt-1">
-              <Text className="text-gray-500 dark:text-gray-400 text-sm">Billed ₹{price} annually</Text>
-              {price < plan.monthlyPrice * 12 && (
-                <Text className="text-green-600 dark:text-green-500 text-sm ml-2 font-medium">
-                  Save ₹{plan.monthlyPrice * 12 - price}
-                </Text>
-              )}
-            </div>
-          )}
-        </div>
+        {planType !== 'enterprise' && (
+          <div className="mb-3">
+            <span className="text-4xl font-bold text-gray-900 dark:text-white">₹{monthlyPrice}</span>
+            <Text className="text-gray-500 dark:text-gray-400">/month</Text>
+            {selectedDuration === 12 && (
+              <div className="mt-1">
+                <Text className="text-gray-500 dark:text-gray-400 text-sm">Billed ₹{price} annually</Text>
+                {price < plan.monthlyPrice * 12 && (
+                  <Text className="text-green-600 dark:text-green-500 text-sm ml-2 font-medium">
+                    Save ₹{plan.monthlyPrice * 12 - price}
+                  </Text>
+                )}
+              </div>
+            )}
+          </div>
+        )}
         
         <Text className="text-gray-500 dark:text-gray-400 text-sm">
           {planType === 'basic' && 'Great for small businesses'}

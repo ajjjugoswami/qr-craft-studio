@@ -146,6 +146,7 @@ const AppContent = () => {
             <Route path="/admin/users" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
             <Route path="/admin/subscriptions" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
             <Route path="/admin/audit-logs" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
+            <Route path="/admin/plan-pricing" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
 
             {/* Public redirect route for scanned QR codes (no auth required) */}
             <Route path="/r/:id" element={<Redirector />} />

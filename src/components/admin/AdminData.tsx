@@ -1,10 +1,11 @@
 import React, { memo, useEffect, useState } from "react";
 import { Typography, Tabs } from "antd";
-import { Users, CreditCard, RefreshCw } from 'lucide-react';
+import { Users, CreditCard, RefreshCw, DollarSign } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AdminUsersTab from "./AdminUsersTab";
 import AdminSubscriptions from "./AdminSubscriptions";
 import AdminAuditLogsTab from "./AdminAuditLogsTab";
+import AdminPlanPricingTab from "./AdminPlanPricingTab";
 
 const { Title } = Typography;
 
@@ -22,6 +23,8 @@ const AdminData: React.FC = memo(() => {
       setActiveKey('2');
     } else if (path === '/admin/audit-logs') {
       setActiveKey('3');
+    } else if (path === '/admin/plan-pricing') {
+      setActiveKey('4');
     }
   }, [location.pathname]);
 
@@ -33,6 +36,8 @@ const AdminData: React.FC = memo(() => {
       navigate('/admin/subscriptions');
     } else if (key === '3') {
       navigate('/admin/audit-logs');
+    } else if (key === '4') {
+      navigate('/admin/plan-pricing');
     }
   };
   const tabItems = [
@@ -65,6 +70,16 @@ const AdminData: React.FC = memo(() => {
         </span>
       ),
       children: <AdminAuditLogsTab />,
+    },
+    {
+      key: '4',
+      label: (
+        <span className="flex items-center gap-2">
+          <DollarSign size={16} />
+          Plan Pricing
+        </span>
+      ),
+      children: <AdminPlanPricingTab />,
     },
   ];
 

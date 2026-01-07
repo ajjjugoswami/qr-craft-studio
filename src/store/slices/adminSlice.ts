@@ -73,7 +73,7 @@ export interface AuditLog {
   _id: string;
   adminId: AdminUser;
   adminEmail: string;
-  action: 'USER_BLOCKED' | 'USER_UNBLOCKED' | 'USER_DELETED' | 'SUBSCRIPTION_UPDATED' | 'USER_SUBSCRIPTION_REFRESHED' | 'SYSTEM_CLEANUP' | 'LIMITS_ENFORCED';
+  action: 'USER_BLOCKED' | 'USER_UNBLOCKED' | 'USER_DELETED' | 'SUBSCRIPTION_UPDATED' | 'USER_SUBSCRIPTION_REFRESHED' | 'SYSTEM_CLEANUP' | 'LIMITS_ENFORCED' | 'UPDATE_PLAN_PRICES';
   targetUserId?: AdminUser;
   targetUserEmail?: string;
   details: any;

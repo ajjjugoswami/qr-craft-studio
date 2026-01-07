@@ -289,6 +289,18 @@ export const adminAPI = {
     return response.data;
   },
 
+  // Get plan prices (admin only)
+  getPlanPrices: async () => {
+    const response = await api.get('/admin/plan-prices');
+    return response.data;
+  },
+
+  // Update plan prices (admin only)
+  updatePlanPrices: async (data: { basic: { monthlyPrice: number; yearlyPrice: number }; pro: { monthlyPrice: number; yearlyPrice: number } }) => {
+    const response = await api.put('/admin/plan-prices', data);
+    return response.data;
+  },
+
   // Admin user management
   deleteUser: async (id: string) => {
     const response = await api.delete(`/admin/users/${id}`);
