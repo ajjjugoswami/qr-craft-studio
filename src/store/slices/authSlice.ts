@@ -131,7 +131,7 @@ export const signIn = createAsyncThunk(
         name: profile.name, 
         email: profile.email, 
         isAdmin: profile.isAdmin, 
-        theme: profile.theme,
+        theme: profile.theme ?? 'orange',
         mobile: profile.mobile,
         country: profile.country,
         city: profile.city,
@@ -142,8 +142,9 @@ export const signIn = createAsyncThunk(
 
       // Persist user and token
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ user }));
+      try { localStorage.setItem('qc_theme', user.theme); } catch (e) { /* noop */ }
 
-      return { user, token };
+      return { user, token }; 
     } catch (error: any) {
       // Prefer server-provided message when available
       const serverMessage = error?.response?.data?.message || error?.response?.data || error?.message;
@@ -194,7 +195,7 @@ export const signUp = createAsyncThunk(
         name: profile.name, 
         email: profile.email, 
         isAdmin: profile.isAdmin, 
-        theme: profile.theme,
+        theme: profile.theme ?? 'orange',
         mobile: profile.mobile,
         country: profile.country,
         city: profile.city,
@@ -205,8 +206,9 @@ export const signUp = createAsyncThunk(
 
       // Persist user and token
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ user }));
+      try { localStorage.setItem('qc_theme', user.theme); } catch (e) { /* noop */ }
 
-      return { user, token };
+      return { user, token }; 
     } catch (error: any) {
       const serverMessage = error?.response?.data?.message || error?.message;
       const errorCode = error?.response?.data?.code;
@@ -267,7 +269,7 @@ export const googleSignIn = createAsyncThunk(
         name: profile.name, 
         email: profile.email, 
         isAdmin: profile.isAdmin, 
-        theme: profile.theme,
+        theme: profile.theme ?? 'orange',
         mobile: profile.mobile,
         country: profile.country,
         city: profile.city,
@@ -278,6 +280,7 @@ export const googleSignIn = createAsyncThunk(
 
       // Persist user and token
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ user }));
+      try { localStorage.setItem('qc_theme', user.theme); } catch (e) { /* noop */ }
 
       return { user, token };
     } catch (error: any) {
