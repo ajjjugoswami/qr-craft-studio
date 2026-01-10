@@ -1498,7 +1498,7 @@ h5.ant-typography {
   }
   
   .admin-tabs .ant-tabs-content-holder {
-    padding: 12px !important;
+    padding: 0px !important;
   }
 }
 

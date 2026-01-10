@@ -305,11 +305,11 @@ const QRAnalytics: React.FC = () => {
           </Card>
         </div>
 
-        {/* More Charts */}
-        <Row gutter={[16, 16]}>
-          <Col xs={24} lg={12}>
-            <Card title="Top Browsers" className="h-full">
-              <ResponsiveContainer width="100%" height={250}>
+        {/* More Charts - Mobile Optimized */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <Card title={<span className="text-base sm:text-lg">Top Browsers</span>} className="h-full">
+            <div className="h-64 sm:h-80">
+              <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={browserData} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} />
@@ -318,11 +318,11 @@ const QRAnalytics: React.FC = () => {
                   <Bar dataKey="value" fill="#6366f1" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
-            </Card>
-          </Col>
-          <Col xs={24} lg={12}>
-            <Card title="Top Locations" className="h-full">
-              <ResponsiveContainer width="100%" height={250}>
+            </div>
+          </Card>
+          <Card title={<span className="text-base sm:text-lg">Top Locations</span>} className="h-full">
+            <div className="h-64 sm:h-80">
+              <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={locationData} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} />
@@ -331,32 +331,45 @@ const QRAnalytics: React.FC = () => {
                   <Bar dataKey="value" fill="#22c55e" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
-            </Card>
-          </Col>
-        </Row>
+            </div>
+          </Card>
+        </div>
 
-        {/* Scan Details Table */}
-        <Card title={<div className="flex items-center gap-2"><Eye size={18} className="text-primary" /> Scan Details</div>} className="overflow-hidden">
-          <Table 
-            columns={columns} 
-            dataSource={scanData} 
-            rowKey="id" 
-            scroll={{ x: 1400 }} 
-            pagination={{ 
-              current: currentPage,
-              pageSize: pageSize, 
-              showSizeChanger: true, 
-              pageSizeOptions: ['5', '10', '20', '50'],
-              showTotal: (total) => `Total ${total} scans`,
-              size: 'default',
-              onChange: (page, pageSize) => {
-                setCurrentPage(page);
-                setPageSize(pageSize);
-              },
-            }} 
-            size="middle"
-          />
-        </Card>
+        {/* Scan Details Table - No Card Wrapper */}
+        <div className="mt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg sm:text-xl font-semibold flex items-center gap-2">
+              <Eye size={18} className="text-primary" />
+              Scan Details
+            </h3>
+          </div>
+          <div className="overflow-x-auto">
+            <Table
+              columns={columns}
+              dataSource={scanData}
+              rowKey="id"
+              scroll={{ x: 1400 }}
+              pagination={{
+                current: currentPage,
+                pageSize: pageSize,
+                showSizeChanger: true,
+                pageSizeOptions: ['5', '10', '20', '50'],
+                showTotal: (total) => (
+                  <span className="text-xs sm:text-sm text-muted-foreground">
+                    Total {total} scans
+                  </span>
+                ),
+                size: 'default',
+                onChange: (page, pageSize) => {
+                  setCurrentPage(page);
+                  setPageSize(pageSize);
+                },
+              }}
+              size="middle"
+              className="text-xs sm:text-sm"
+            />
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );

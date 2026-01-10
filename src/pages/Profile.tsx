@@ -176,7 +176,7 @@ const Profile: React.FC = () => {
 
     return (
       <DashboardLayout>
-        <div className="max-w-2xl mx-auto px-4 pb-24">
+        <div className="max-w-2xl mx-auto  pb-24">
           {/* Header */}
           <div className="text-center mb-4 sm:mb-6">
             <Title level={window.innerWidth < 640 ? 3 : 2} className="mb-1 sm:mb-2">Settings</Title>
