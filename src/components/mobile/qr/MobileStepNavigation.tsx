@@ -93,6 +93,10 @@ const MobileStepNavigation: React.FC<MobileStepNavigationProps> = ({
           </button>
         ))}
       </div>
+
+      <Text type="secondary" className="text-[11px] mt-2 block">
+        Use <span className="font-medium text-foreground">Preview</span> and <span className="font-medium text-foreground">Next</span> in the bottom bar.
+      </Text>
     </div>
   );
 };

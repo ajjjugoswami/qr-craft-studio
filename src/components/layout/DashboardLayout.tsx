@@ -12,7 +12,6 @@ import {
   Settings,
   Menu as MenuIcon,
   X,
-  Plus,
   QrCode,
   Users,
   GitCompare,
@@ -149,14 +148,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     navigate(key);
     setMobileMenuOpen(false);
   }, [navigate]);
-
-  const bottomNavItems = useMemo(() => [
-    { key: "/dashboard", icon: <QrCode size={20} />, label: "My QR" },
-    { key: "/analytics", icon: <BarChart3 size={20} />, label: "Analytics" },
-    { key: "/create", icon: <Plus size={20} />, label: "Create", isCreate: true },
-    { key: "/faqs", icon: <HelpCircle size={20} />, label: "Help" },
-    { key: "/settings/profile", icon: <Settings size={20} />, label: "Settings" },
-  ], []);
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
@@ -335,47 +326,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
       {/* Main Content */}
       <Layout className="lg:ml-56 xl:ml-60 bg-background">
-        <Content className="px-3 sm:px-4 md:px-6 py-4 min-h-screen pt-16 lg:pt-6 pb-20 lg:pb-6">
+        <Content className="px-3 sm:px-4 md:px-6 py-4 min-h-screen pt-16 lg:pt-6 pb-6">
           {children}
         </Content>
       </Layout>
 
-      {/* Mobile Bottom Navigation */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t border-border z-50 safe-area-inset-bottom">
-        <div className="flex items-center justify-around h-16">
-          {bottomNavItems.map((item) => {
-            const isActive = location.pathname === item.key || 
-              (item.key === "/dashboard" && location.pathname === "/");
-            
-            if (item.isCreate) {
-              return (
-                <button
-                  key={item.key}
-                  onClick={() => navigate(item.key)}
-                  className="flex items-center justify-center w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg -mt-4"
-                >
-                  {item.icon}
-                </button>
-              );
-            }
-            
-            return (
-              <button
-                key={item.key}
-                onClick={() => navigate(item.key)}
-                className={`flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-colors ${
-                  isActive 
-                    ? "text-primary" 
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {item.icon}
-                <span className="text-[10px] font-medium">{item.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </nav>
     </Layout>
   );
 };
