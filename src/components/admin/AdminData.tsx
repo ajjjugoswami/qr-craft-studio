@@ -2,6 +2,7 @@ import React, { memo, useEffect, useState } from "react";
 import { Typography, Tabs } from "antd";
 import { Users, CreditCard, RefreshCw, DollarSign } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useIsMobile } from '@/hooks/use-mobile';
 import AdminUsersTab from "./AdminUsersTab";
 import AdminSubscriptions from "./AdminSubscriptions";
 import AdminAuditLogsTab from "./AdminAuditLogsTab";
@@ -13,6 +14,7 @@ const { Title } = Typography;
 const AdminData: React.FC = memo(() => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [activeKey, setActiveKey] = useState('1');
 
   useEffect(() => {
@@ -93,7 +95,8 @@ const AdminData: React.FC = memo(() => {
         activeKey={activeKey}
         onChange={handleTabChange}
         items={tabItems}
-        size="large"
+        size={isMobile ? 'small' : 'large'}
+        tabBarGutter={isMobile ? 8 : 24}
         className="admin-tabs"
       />
     </div>

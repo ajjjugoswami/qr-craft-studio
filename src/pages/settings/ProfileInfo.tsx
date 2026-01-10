@@ -303,14 +303,14 @@ const ProfileInfo: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-6 settings-compact">
       {/* Profile Information Card */}
-      <Card className="shadow-sm !p-3 sm:!p-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+      <Card className="shadow-sm !p-2 sm:!p-4">
+        <div className="flex items-center justify-between gap-2 mb-3 sm:mb-6">
           <Title level={5} className="!mb-0 flex items-center gap-2 text-sm sm:text-base">
             <User size={16} />
             Profile Information
-            <Tooltip 
+            <Tooltip
               title="Manage your personal information, profile picture, and preferences."
               color="white"
               overlayInnerStyle={{ color: '#333' }}
@@ -324,58 +324,53 @@ const ProfileInfo: React.FC = () => {
             icon={<Check size={14} />}
             onClick={handleSaveProfile}
             loading={loading}
+            className="settings-save-btn"
           >
             Save
           </Button>
         </div>
 
-        <div className="flex items-start sm:items-center gap-4 sm:gap-6 mb-4 sm:mb-6">
-          <div className="relative group flex-shrink-0">
+        <div className="flex items-start gap-3 sm:gap-6 mb-4 sm:mb-6">
+          <div className="relative flex-shrink-0">
             <Avatar
-              size={60}
+              size={56}
               src={user?.profilePicture}
-              className="bg-primary text-primary-foreground text-lg font-semibold"
-              icon={<User size={24} />}
+              className="bg-primary text-primary-foreground text-base font-semibold overflow-hidden [&_img]:object-cover [&_img]:object-center"
+              icon={<User size={22} />}
+              onClick={handleAvatarClick}
             >
               {user?.name && !user.profilePicture ? getInitials(user.name) : ''}
             </Avatar>
-            {user?.profilePicture && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-full">
-                <Button
-                  size="small"
-                  shape="circle"
-                  icon={<Eye size={14} />}
-                  onClick={handleAvatarClick}
-                  className="opacity-0 group-hover:opacity-100 bg-white text-gray-700 border-white hover:bg-gray-100 transition-opacity duration-200 !w-7 !h-7 !min-h-0"
-                  title="View full size"
-                />
-              </div>
-            )}
+
             <div className="absolute -bottom-1 -right-1 flex gap-1">
               {user?.profilePicture && (
                 <Button
+                  type="primary"
+                  danger
                   size="small"
                   shape="circle"
                   icon={<X size={12} />}
                   onClick={handleRemoveProfilePicture}
                   loading={loading}
-                  className="bg-red-500 text-white border-red-500 hover:bg-red-600 !w-6 !h-6 !min-h-0"
+                  className="settings-icon-btn"
                   title="Remove"
                 />
               )}
               <Upload {...uploadProps}>
                 <Button
+                  type="primary"
                   size="small"
                   shape="circle"
                   icon={<UploadIcon size={12} />}
-                  className="bg-primary text-primary-foreground border-primary hover:bg-primary/90 !w-6 !h-6 !min-h-0"
+                  className="settings-icon-btn"
                   title="Upload"
                 />
               </Upload>
             </div>
           </div>
+
           <div className="flex-1 min-w-0">
-            <div className="text-xs sm:text-sm text-gray-500 mb-1">
+            <div className="text-xs text-muted-foreground mb-1">
               Member since {new Date().toLocaleDateString('en-US', {
                 month: 'long',
                 year: 'numeric'
@@ -385,14 +380,15 @@ const ProfileInfo: React.FC = () => {
               {user?.isAdmin ? 'Admin' : 'User'}
             </div>
             {profilePictureFile && (
-              <div className="mt-1.5 flex items-center gap-1.5 text-xs text-blue-600">
-                <span className="truncate max-w-[120px]">{profilePictureFile.name}</span>
+              <div className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <span className="truncate max-w-[160px]">{profilePictureFile.name}</span>
                 <Button
                   size="small"
                   type="text"
                   icon={<X size={10} />}
                   onClick={() => setProfilePictureFile(null)}
-                  className="text-red-500 hover:text-red-700 !w-4 !h-4 !min-h-0 !p-0"
+                  className="!w-5 !h-5 !min-h-0 !p-0"
+                  aria-label="Clear selected image"
                 />
               </div>
             )}
@@ -400,69 +396,57 @@ const ProfileInfo: React.FC = () => {
         </div>
 
         <Form form={form} layout="vertical">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <Form.Item
               label="Full Name"
               name="name"
               rules={[{ required: true, message: 'Please enter your name' }]}
             >
-              <Input placeholder="Enter your full name" />
+              <Input placeholder="Enter your full name" size="small" className="text-xs" />
             </Form.Item>
 
             <Form.Item label="Email">
-              <Input value={user?.email} disabled />
+              <Input value={user?.email} disabled size="small" className="text-xs" />
             </Form.Item>
 
-            <Form.Item
-              label="Mobile Number"
-              name="mobile"
-            >
-              <Input placeholder="Enter your mobile number" />
+            <Form.Item label="Mobile Number" name="mobile">
+              <Input placeholder="Enter your mobile number" size="small" className="text-xs" />
             </Form.Item>
 
-            <Form.Item
-              label="Country"
-              name="country"
-            >
-              <Input placeholder="Enter your country" />
+            <Form.Item label="Country" name="country">
+              <Input placeholder="Enter your country" size="small" className="text-xs" />
             </Form.Item>
 
-            <Form.Item
-              label="City"
-              name="city"
-            >
-              <Input placeholder="Enter your city" />
+            <Form.Item label="City" name="city">
+              <Input placeholder="Enter your city" size="small" className="text-xs" />
             </Form.Item>
 
-            <Form.Item
-              label="Language"
-              name="language"
-            >
-              <Select placeholder="Select your language">
-                {languages.map(lang => (
-                  <Option key={lang.value} value={lang.value}>{lang.label}</Option>
+            <Form.Item label="Language" name="language">
+              <Select placeholder="Select your language" size="small" className="text-xs">
+                {languages.map((lang) => (
+                  <Option key={lang.value} value={lang.value}>
+                    {lang.label}
+                  </Option>
                 ))}
               </Select>
             </Form.Item>
 
-            <Form.Item
-              label="Timezone"
-              name="timezone"
-            >
-              <Select placeholder="Select your timezone" showSearch optionFilterProp="label">
-                {timezones.map(tz => (
-                  <Option key={tz.value} value={tz.value}>{tz.label}</Option>
+            <Form.Item label="Timezone" name="timezone">
+              <Select placeholder="Select your timezone" showSearch optionFilterProp="label" size="small" className="text-xs">
+                {timezones.map((tz) => (
+                  <Option key={tz.value} value={tz.value}>
+                    {tz.label}
+                  </Option>
                 ))}
               </Select>
             </Form.Item>
 
-            <Form.Item
-              label="Time Format"
-              name="timeFormat"
-            >
-              <Select placeholder="Select time format">
-                {timeFormats.map(tf => (
-                  <Option key={tf.value} value={tf.value}>{tf.label}</Option>
+            <Form.Item label="Time Format" name="timeFormat">
+              <Select placeholder="Select time format" size="small" className="text-xs">
+                {timeFormats.map((tf) => (
+                  <Option key={tf.value} value={tf.value}>
+                    {tf.label}
+                  </Option>
                 ))}
               </Select>
             </Form.Item>
@@ -499,8 +483,10 @@ const ProfileInfo: React.FC = () => {
         width={500}
         footer={
           <div className="flex justify-end gap-2 mt-2">
-            <Button onClick={handleCropCancel}>Cancel</Button>
-            <Button type="primary" onClick={handleCropSave}>
+            <Button onClick={handleCropCancel} size="small">
+              Cancel
+            </Button>
+            <Button type="primary" onClick={handleCropSave} size="small">
               Crop & Save
             </Button>
           </div>

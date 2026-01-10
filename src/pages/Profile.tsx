@@ -125,7 +125,8 @@ const Profile: React.FC = () => {
           activeKey={activeKey}
           onChange={handleTabChange}
           items={tabItems}
-          size={isMobile ? 'middle' : 'large'}
+          size={isMobile ? 'small' : 'large'}
+          tabBarGutter={isMobile ? 8 : 24}
           className="profile-tabs"
         />
       </div>
