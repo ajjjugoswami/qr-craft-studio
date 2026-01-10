@@ -305,6 +305,39 @@
   color: hsl(var(--foreground)) !important;
   min-height: 32px !important;
   height: 32px !important;
+  font-size: 13px !important;
+}
+
+/* Compact mode (used in Settings / Admin on mobile) */
+.settings-compact .ant-form-item {
+  margin-bottom: 10px !important;
+}
+
+.settings-compact .ant-form-item-label > label {
+  height: auto !important;
+  font-size: 12px !important;
+  padding-bottom: 4px !important;
+}
+
+.settings-save-btn {
+  height: 32px !important;
+  padding: 0 14px !important;
+  font-size: 12px !important;
+}
+
+.settings-icon-btn {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  padding: 0 !important;
+}
+
+@media (max-width: 640px) {
+  .settings-save-btn {
+    height: 30px !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+  }
 }
 
 /* Textarea specific styles - more specific selectors */

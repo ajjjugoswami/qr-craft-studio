@@ -22,27 +22,27 @@ const SearchBar: React.FC<SearchBarProps> = ({
         prefix={<Search size={14} className="text-muted-foreground" />}
         value={searchTerm}
         onChange={(e) => onSearchChange(e.target.value)}
-        className="flex-1 sm:w-40 md:w-56 !text-sm"
+        className="flex-1 min-w-0 sm:w-40 md:w-56 !text-xs"
         allowClear
-        size="middle"
+        size="small"
       />
       <Segmented
         value={viewMode}
         onChange={(value) => onViewModeChange(value as 'list' | 'grid')}
-        size="middle"
+        size="small"
         options={[
           {
             label: (
-              <div className="flex items-center justify-center px-1">
-                <List size={15} />
+              <div className="flex items-center justify-center px-0.5">
+                <List size={14} />
               </div>
             ),
             value: 'list',
           },
           {
             label: (
-              <div className="flex items-center justify-center px-1">
-                <LayoutGrid size={15} />
+              <div className="flex items-center justify-center px-0.5">
+                <LayoutGrid size={14} />
               </div>
             ),
             value: 'grid',
