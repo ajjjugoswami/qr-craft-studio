@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { 
   Card, 
-  Descriptions, 
   Badge, 
   Button, 
   Table, 
@@ -22,6 +21,7 @@ import {
 import { usePayment } from '@/hooks/usePayment';
 import type { PaymentHistory } from '@/types/payment';
 import LogoLoader from '@/components/common/LogoLoader';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const { Title, Text } = Typography;
 
@@ -32,6 +32,7 @@ interface SubscriptionManagementProps {
 const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
   showPaymentHistory = true
 }) => {
+  const isMobile = useIsMobile();
   const {
     subscription,
     paymentHistory,
@@ -185,20 +186,20 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
     new Date(subscription.endDate).getTime() - new Date().getTime() < 7 * 24 * 60 * 60 * 1000;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Current Subscription */}
       <Card 
         title={
-          <span className="text-base font-semibold text-foreground">Current Subscription</span>
+          <span className="text-sm sm:text-base font-semibold text-foreground">Current Subscription</span>
         }
         extra={
-          <span className="flex items-center gap-2 text-muted-foreground text-sm">
-            <CreditCard className="w-4 h-4" />
-            Subscription Details
+          <span className="flex items-center gap-1.5 text-muted-foreground text-xs sm:text-sm">
+            <CreditCard className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Subscription Details</span>
           </span>
         }
         className="!bg-card !border-border"
-        styles={{ header: { borderBottom: '1px solid hsl(var(--border))' }, body: { padding: '24px' } }}
+        styles={{ header: { borderBottom: '1px solid hsl(var(--border))' }, body: { padding: isMobile ? '12px' : '20px' } }}
       >
         {isExpiredSoon && subscription.status === 'active' && (
           <Alert
@@ -206,141 +207,109 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
             description={`Your subscription will expire on ${formatDate(subscription.endDate!)}`}
             type="warning"
             showIcon
-            className="mb-6"
+            className="mb-4"
           />
         )}
 
-        <Descriptions 
-          bordered 
-          column={2}
-          className="subscription-descriptions"
-          labelStyle={{ 
-            backgroundColor: 'hsl(var(--muted))', 
-            color: 'hsl(var(--muted-foreground))',
-            fontWeight: 500,
-            fontSize: '13px'
-          }}
-          contentStyle={{ 
-            backgroundColor: 'hsl(var(--card))',
-            color: 'hsl(var(--foreground))',
-            fontSize: '13px'
-          }}
-        >
-          <Descriptions.Item label="Plan Type">
-            <span className="capitalize font-medium">{subscription.planType}</span>
-          </Descriptions.Item>
-          
-          <Descriptions.Item label="Status">
-            {getStatusBadge(subscription.status)}
-          </Descriptions.Item>
-
+        {/* Mobile-friendly subscription details */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="bg-muted/50 rounded-lg p-2.5 sm:p-3">
+            <Text type="secondary" className="text-[10px] sm:text-xs block mb-0.5">Plan Type</Text>
+            <Text className="font-medium capitalize text-sm sm:text-base">{subscription.planType}</Text>
+          </div>
+          <div className="bg-muted/50 rounded-lg p-2.5 sm:p-3">
+            <Text type="secondary" className="text-[10px] sm:text-xs block mb-0.5">Status</Text>
+            <div className="text-sm sm:text-base">{getStatusBadge(subscription.status)}</div>
+          </div>
           {subscription.startDate && (
-            <Descriptions.Item label="Start Date">
-              <span className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-muted-foreground" />
-                {formatDate(subscription.startDate)}
-              </span>
-            </Descriptions.Item>
+            <div className="bg-muted/50 rounded-lg p-2.5 sm:p-3">
+              <Text type="secondary" className="text-[10px] sm:text-xs block mb-0.5">Start Date</Text>
+              <Text className="font-medium text-xs sm:text-sm">{formatDate(subscription.startDate)}</Text>
+            </div>
           )}
-
           {subscription.endDate && (
-            <Descriptions.Item label="End Date">
-              <span className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-muted-foreground" />
-                {formatDate(subscription.endDate)}
-              </span>
-            </Descriptions.Item>
+            <div className="bg-muted/50 rounded-lg p-2.5 sm:p-3">
+              <Text type="secondary" className="text-[10px] sm:text-xs block mb-0.5">End Date</Text>
+              <Text className="font-medium text-xs sm:text-sm">{formatDate(subscription.endDate)}</Text>
+            </div>
           )}
-        </Descriptions>
+        </div>
 
-        <Divider className="!border-border" />
+        <Divider className="!border-border !my-3 sm:!my-4" />
 
-        <div className="flex justify-between items-center mb-4">
-          <Title level={5} className="!mb-0 !text-foreground !font-semibold">Plan Features</Title>
+        <div className="flex justify-between items-center mb-3">
+          <Title level={5} className="!mb-0 !text-foreground !font-semibold !text-sm sm:!text-base">Plan Features</Title>
           {!isFreePlan && (
             <Button 
               size="small"
               type="text"
               loading={loading}
               onClick={refreshSubscriptionFeatures}
-              icon={<RefreshCw className="w-3.5 h-3.5" />}
-              className="!text-muted-foreground hover:!text-foreground"
+              icon={<RefreshCw className="w-3 h-3" />}
+              className="!text-muted-foreground hover:!text-foreground !text-xs"
             >
               Refresh
             </Button>
           )}
         </div>
 
-        <Descriptions 
-          bordered 
-          column={2} 
-          size="small"
-          labelStyle={{ 
-            backgroundColor: 'hsl(var(--muted))', 
-            color: 'hsl(var(--muted-foreground))',
-            fontWeight: 500,
-            fontSize: '13px'
-          }}
-          contentStyle={{ 
-            backgroundColor: 'hsl(var(--card))',
-            color: 'hsl(var(--foreground))',
-            fontSize: '13px'
-          }}
-        >
-          <Descriptions.Item label="QR Codes Limit">
-            <span className="font-medium text-primary">
+        {/* Mobile-friendly features grid */}
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
+          <div className="bg-muted/50 rounded-lg p-2.5 sm:p-3">
+            <Text type="secondary" className="text-[10px] sm:text-xs block mb-0.5">QR Codes Limit</Text>
+            <Text className="font-medium text-primary text-sm sm:text-base">
               {subscription.features.maxQRCodes === -1 ? 'Unlimited' : subscription.features.maxQRCodes.toLocaleString()}
-            </span>
-          </Descriptions.Item>
-          
-          <Descriptions.Item label="Scans per QR">
-            <span className="font-medium text-primary">
+            </Text>
+          </div>
+          <div className="bg-muted/50 rounded-lg p-2.5 sm:p-3">
+            <Text type="secondary" className="text-[10px] sm:text-xs block mb-0.5">Scans per QR</Text>
+            <Text className="font-medium text-primary text-sm sm:text-base">
               {subscription.features.maxScansPerQR === -1 ? 'Unlimited' : subscription.features.maxScansPerQR.toLocaleString()}
-            </span>
-          </Descriptions.Item>
-
-          <Descriptions.Item label="Advanced Analytics">
+            </Text>
+          </div>
+          <div className="bg-muted/50 rounded-lg p-2.5 sm:p-3">
+            <Text type="secondary" className="text-[10px] sm:text-xs block mb-0.5">Advanced Analytics</Text>
             {subscription.features.advancedAnalytics ? (
-              <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
+              <span className="flex items-center gap-1 text-green-600 dark:text-green-400 text-xs sm:text-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
                 Available
               </span>
             ) : (
-              <span className="flex items-center gap-1.5 text-muted-foreground">
+              <span className="flex items-center gap-1 text-muted-foreground text-xs sm:text-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
                 Not Available
               </span>
             )}
-          </Descriptions.Item>
-
-          <Descriptions.Item label="White Label">
+          </div>
+          <div className="bg-muted/50 rounded-lg p-2.5 sm:p-3">
+            <Text type="secondary" className="text-[10px] sm:text-xs block mb-0.5">White Label</Text>
             {subscription.features.whiteLabel ? (
-              <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
+              <span className="flex items-center gap-1 text-green-600 dark:text-green-400 text-xs sm:text-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
                 Available
               </span>
             ) : (
-              <span className="flex items-center gap-1.5 text-muted-foreground">
+              <span className="flex items-center gap-1 text-muted-foreground text-xs sm:text-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
                 Not Available
               </span>
             )}
-          </Descriptions.Item>
-
-          <Descriptions.Item label="Remove Watermark">
+          </div>
+          <div className="bg-muted/50 rounded-lg p-2.5 sm:p-3 col-span-2 sm:col-span-1">
+            <Text type="secondary" className="text-[10px] sm:text-xs block mb-0.5">Remove Watermark</Text>
             {subscription.features.removeWatermark ? (
-              <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
+              <span className="flex items-center gap-1 text-green-600 dark:text-green-400 text-xs sm:text-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
                 Available
               </span>
             ) : (
-              <span className="flex items-center gap-1.5 text-muted-foreground">
+              <span className="flex items-center gap-1 text-muted-foreground text-xs sm:text-sm">
                 <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50" />
                 Not Available
               </span>
             )}
-          </Descriptions.Item>
-        </Descriptions>
+          </div>
+        </div>
 
         {/* Temporarily hidden - Cancel Subscription button */}
         {/* {!isFreePlan && subscription.status === 'active' && (
@@ -362,27 +331,49 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
       {showPaymentHistory && (
         <Card 
           title={
-            <span className="text-base font-semibold text-foreground">Payment History</span>
+            <span className="text-sm sm:text-base font-semibold text-foreground">Payment History</span>
           }
           className="!bg-card !border-border"
-          styles={{ header: { borderBottom: '1px solid hsl(var(--border))' }, body: { padding: '0' } }}
+          styles={{ header: { borderBottom: '1px solid hsl(var(--border))' }, body: { padding: isMobile ? '8px' : '0' } }}
         >
-          <Table
-            columns={paymentColumns}
-            dataSource={paymentHistory}
-            rowKey="_id"
-            loading={loading}
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: true,
-              showTotal: (total, range) =>
-                `${range[0]}-${range[1]} of ${total} payments`
-            }}
-            locale={{
-              emptyText: <span className="text-muted-foreground py-8 block">No payment history found</span>
-            }}
-            className="subscription-table"
-          />
+          {isMobile ? (
+            <div className="space-y-2">
+              {paymentHistory.length === 0 ? (
+                <div className="text-center py-6 text-muted-foreground text-sm">No payment history found</div>
+              ) : (
+                paymentHistory.map((payment) => (
+                  <div key={payment._id} className="bg-muted/30 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <Text className="font-medium capitalize text-sm">{payment.planType}</Text>
+                      <Badge status={payment.status === 'paid' ? 'success' : 'processing'} text={<span className="text-xs capitalize">{payment.status}</span>} />
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>{formatPrice(payment.amount)}</span>
+                      <span>{formatDate(payment.createdAt)}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          ) : (
+            <Table
+              columns={paymentColumns}
+              dataSource={paymentHistory}
+              rowKey="_id"
+              loading={loading}
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: false,
+                showTotal: (total, range) =>
+                  `${range[0]}-${range[1]} of ${total} payments`
+              }}
+              locale={{
+                emptyText: <span className="text-muted-foreground py-8 block">No payment history found</span>
+              }}
+              className="subscription-table text-xs"
+              size="small"
+            />
+          )}
         </Card>
       )}
     </div>
