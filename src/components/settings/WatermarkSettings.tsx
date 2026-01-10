@@ -85,21 +85,23 @@ const WatermarkSettings: React.FC = () => {
         </Title>
         <Button
           type="primary"
-          icon={<Save size={16} />}
+          icon={<Save size={window.innerWidth < 640 ? 14 : 16} />}
           onClick={handleSave}
           loading={loading}
           disabled={!canRemoveWatermark}
+          size={window.innerWidth < 640 ? "small" : "middle"}
+          className="text-xs sm:text-sm"
         >
-          Save Changes
+          {window.innerWidth < 640 ? "Save" : "Save Changes"}
         </Button>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* Remove Watermark Toggle */}
-        <div className={`flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border ${!canRemoveWatermark ? 'opacity-50' : ''}`}>
-          <div>
-            <Text strong className="block">Remove Watermark from All QR Codes</Text>
-            <Text type="secondary" className="text-sm">
+        <div className={`flex items-center justify-between p-3 sm:p-4 bg-muted/30 rounded-lg border border-border ${!canRemoveWatermark ? 'opacity-50' : ''}`}>
+          <div className="flex-1 min-w-0">
+            <Text strong className="block text-sm sm:text-base">Remove Watermark from All QR Codes</Text>
+            <Text type="secondary" className="text-xs sm:text-sm">
               When enabled, watermarks will not be added to any of your QR codes
               {!canRemoveWatermark && ' (Premium Feature)'}
             </Text>
@@ -110,13 +112,14 @@ const WatermarkSettings: React.FC = () => {
             checkedChildren="ON"
             unCheckedChildren="OFF"
             disabled={!canRemoveWatermark}
+            size={window.innerWidth < 640 ? "small" : "default"}
           />
         </div>
 
         {/* Custom Watermark Text */}
         <div className={removeWatermark && canRemoveWatermark ? 'opacity-50 pointer-events-none' : ''}>
-          <Text strong className="block mb-2">Custom Watermark Text</Text>
-          <Text type="secondary" className="text-sm block mb-3">
+          <Text strong className="block mb-2 text-sm sm:text-base">Custom Watermark Text</Text>
+          <Text type="secondary" className="text-xs sm:text-sm block mb-3">
             Enter your custom watermark text (e.g., your brand name or website)
           </Text>
           <Input
@@ -126,6 +129,7 @@ const WatermarkSettings: React.FC = () => {
             maxLength={30}
             disabled={(removeWatermark && canRemoveWatermark) || !canRemoveWatermark}
             suffix={<Text type="secondary" className="text-xs">{watermarkText.length}/30</Text>}
+            size={window.innerWidth < 640 ? "small" : "middle"}
           />
         </div>
 

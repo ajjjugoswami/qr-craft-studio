@@ -9,7 +9,7 @@ import SecuritySettings from './settings/SecuritySettings';
 import WatermarkSettings from '@/components/settings/WatermarkSettings';
 import WhiteLabelSettings from '@/components/settings/WhiteLabelSettings';
 import SubscriptionManagement from '@/components/payment/SubscriptionManagement';
-import MobileSettingsWizard from './settings/MobileSettingsWizard';
+import { MobileSettingsNavigation, MobileSettingsActionBar } from '@/components/mobile/settings';
 import { usePayment } from '@/hooks/usePayment';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -113,7 +113,101 @@ const Profile: React.FC = () => {
     },
   ];
 
- 
+  const mobileSettingsItems = [
+    {
+      key: 'profile',
+      title: 'Account',
+      description: 'Manage your personal information.',
+      icon: <User size={20} />,
+    },
+    {
+      key: 'theme',
+      title: 'Theme',
+      description: 'Customize your app appearance',
+      icon: <Palette size={20} />,
+    },
+    {
+      key: 'watermark',
+      title: 'Watermark',
+      description: 'Configure QR code branding',
+      icon: <Droplets size={20} />,
+      premium: !canRemoveWatermark,
+    },
+    {
+      key: 'whitelabel',
+      title: 'White-Label',
+      description: 'Custom branding options',
+      icon: <Tag size={20} />,
+      premium: !canUseWhiteLabel,
+    },
+    {
+      key: 'subscription',
+      title: 'Subscription',
+      description: 'Manage your plan and billing',
+      icon: <CreditCard size={20} />,
+    },
+    {
+      key: 'security',
+      title: 'Security',
+      description: 'Password and authentication settings',
+      icon: <Shield size={20} />,
+    },
+  ];
+
+  // Mobile: Show navigation and content
+  if (isMobile) {
+    const activeIndex = mobileSettingsItems.findIndex(item => item.key === activeKey);
+
+    const handlePrevious = () => {
+      if (activeIndex > 0) {
+        const prevItem = mobileSettingsItems[activeIndex - 1];
+        handleTabChange(prevItem.key);
+      }
+    };
+
+    const handleNext = () => {
+      if (activeIndex < mobileSettingsItems.length - 1) {
+        const nextItem = mobileSettingsItems[activeIndex + 1];
+        handleTabChange(nextItem.key);
+      }
+    };
+
+    const activeItem = tabItems.find(item => item.key === activeKey);
+
+    return (
+      <DashboardLayout>
+        <div className="max-w-2xl mx-auto px-4 pb-24">
+          {/* Header */}
+          <div className="text-center mb-4 sm:mb-6">
+            <Title level={window.innerWidth < 640 ? 3 : 2} className="mb-1 sm:mb-2">Settings</Title>
+          </div>
+
+          {/* Settings Navigation */}
+          <MobileSettingsNavigation
+            items={mobileSettingsItems}
+            activeKey={activeKey}
+            onItemClick={handleTabChange}
+          />
+
+          {/* Active Settings Content */}
+          <div className="mt-6">
+            {activeItem?.children}
+          </div>
+        </div>
+
+        {/* Mobile Action Bar */}
+        <MobileSettingsActionBar
+          currentIndex={activeIndex}
+          totalItems={mobileSettingsItems.length}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          canGoPrevious={activeIndex > 0}
+          canGoNext={activeIndex < mobileSettingsItems.length - 1}
+        />
+      </DashboardLayout>
+    );
+  }
+
   // Desktop: Use tabs
   return (
     <DashboardLayout>

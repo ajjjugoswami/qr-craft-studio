@@ -29,19 +29,19 @@ const SecuritySettings: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Change Password */}
       <Card className="shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <Title level={4} className="mb-0 flex items-center gap-2">
-            <Key size={18} />
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <Title level={4} className="mb-0 flex items-center gap-2 text-base sm:text-lg">
+            <Key size={window.innerWidth < 640 ? 16 : 18} />
             Change Password
           <Tooltip 
             title="Update your account password. Use a strong password with at least 8 characters including letters, numbers, and symbols for better security."
             color="white"
             overlayInnerStyle={{ color: '#333' }}
           >
-            <HelpCircle size={16} className="text-muted-foreground hover:text-foreground transition-colors cursor-help" />
+            <HelpCircle size={14} className="text-muted-foreground hover:text-foreground transition-colors cursor-help" />
             </Tooltip>
           </Title>
         </div>
@@ -85,11 +85,13 @@ const SecuritySettings: React.FC = () => {
           </Form.Item>
           <Button
             type="primary"
-            icon={<Shield size={16} />}
+            icon={<Shield size={window.innerWidth < 640 ? 14 : 16} />}
             onClick={handleChangePassword}
             loading={loading}
+            size={window.innerWidth < 640 ? "small" : "middle"}
+            className="text-xs sm:text-sm"
           >
-            Update Password
+            {window.innerWidth < 640 ? "Update" : "Update Password"}
           </Button>
         </Form>
       </Card>

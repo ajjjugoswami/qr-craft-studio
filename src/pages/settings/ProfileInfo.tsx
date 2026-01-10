@@ -320,70 +320,96 @@ const ProfileInfo: React.FC = () => {
           </Title>
           <Button
             type="primary"
-            icon={<Check size={16} />}
+            icon={<Check size={window.innerWidth < 640 ? 14 : 16} />}
             onClick={handleSaveProfile}
             loading={loading}
+            size={window.innerWidth < 640 ? "small" : "middle"}
+            className="text-xs sm:text-sm"
           >
-            Save
+            {window.innerWidth < 640 ? "Save" : "Save"}
           </Button>
         </div>
 
         <div className="flex items-start gap-4 sm:gap-6 mb-4 sm:mb-6">
           <div className="relative flex-shrink-0">
-            <Avatar
-              size={64}
-              src={user?.profilePicture}
-              className="bg-primary text-primary-foreground text-lg font-semibold overflow-hidden [&_img]:object-cover [&_img]:object-center"
-              icon={<User size={28} />}
-              onClick={handleAvatarClick}
-              style={{ cursor: user?.profilePicture ? 'pointer' : 'default' }}
-            >
-              {user?.name && !user.profilePicture ? getInitials(user.name) : ''}
-            </Avatar>
+            {user?.profilePicture ? (
+              <div
+                className="bg-primary text-primary-foreground font-semibold overflow-hidden rounded-full flex items-center justify-center cursor-pointer"
+                onClick={handleAvatarClick}
+                style={{
+                  width: window.innerWidth < 640 ? '80px' : '64px',
+                  height: window.innerWidth < 640 ? '80px' : '64px',
+                  minWidth: window.innerWidth < 640 ? '80px' : '64px',
+                  minHeight: window.innerWidth < 640 ? '80px' : '64px',
+                  backgroundImage: `url(${user.profilePicture})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center'
+                }}
+              />
+            ) : (
+              <Avatar
+                src={user?.profilePicture}
+                className="bg-primary text-primary-foreground font-semibold overflow-hidden [&_img]:object-cover [&_img]:object-center"
+                icon={<User size={window.innerWidth < 640 ? 32 : 28} />}
+                onClick={handleAvatarClick}
+                style={{
+                  cursor: user?.profilePicture ? 'pointer' : 'default',
+                  fontSize: window.innerWidth < 640 ? '20px' : '16px',
+                  width: window.innerWidth < 640 ? '80px !important' : '64px !important',
+                  height: window.innerWidth < 640 ? '80px !important' : '64px !important',
+                  minWidth: window.innerWidth < 640 ? '80px !important' : '64px !important',
+                  minHeight: window.innerWidth < 640 ? '80px !important' : '64px !important'
+                }}
+              >
+                {user?.name && !user.profilePicture ? getInitials(user.name) : ''}
+              </Avatar>
+            )}
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="text-sm text-muted-foreground mb-1">
+            <div className="text-xs sm:text-sm text-muted-foreground mb-1">
               Member since {new Date().toLocaleDateString('en-US', {
-                month: 'long',
+                month: 'short',
                 year: 'numeric'
               })}
             </div>
-            <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-success/10 text-success text-xs font-medium mb-3">
+            <div className="inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-success/10 text-success text-xs font-medium mb-2 sm:mb-3">
               {user?.isAdmin ? 'Admin' : 'User'}
             </div>
-            
-            <div className="flex items-center gap-2">
+
+            <div className="flex flex-row sm:flex-row sm:items-center gap-2">
               {user?.profilePicture && (
                 <Button
                   type="default"
                   danger
-                  size="small"
-                  icon={<X size={14} />}
+                  size={window.innerWidth < 640 ? "small" : "small"}
+                  icon={<X size={12} />}
                   onClick={handleRemoveProfilePicture}
                   loading={loading}
+                  className="text-xs"
                 >
-                  Remove
+                 Remove
                 </Button>
               )}
               <Upload {...uploadProps}>
                 <Button
                   type="primary"
-                  size="small"
-                  icon={<UploadIcon size={14} />}
+                  size={window.innerWidth < 640 ? "small" : "small"}
+                  icon={<UploadIcon size={12} />}
+                  className="text-xs"
                 >
-                  Upload Photo
+                  {window.innerWidth < 640 ? "Upload" : "Upload Photo"}
                 </Button>
               </Upload>
             </div>
-            
+
             {profilePictureFile && (
-              <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-                <span className="truncate max-w-[200px]">{profilePictureFile.name}</span>
+              <div className="mt-2 flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                <span className="truncate max-w-[150px] sm:max-w-[200px]">{profilePictureFile.name}</span>
                 <Button
                   size="small"
                   type="text"
-                  icon={<X size={12} />}
+                  icon={<X size={10} />}
                   onClick={() => setProfilePictureFile(null)}
                   className="!p-1"
                   aria-label="Clear selected image"
@@ -393,7 +419,7 @@ const ProfileInfo: React.FC = () => {
           </div>
         </div>
         <Form form={form} layout="vertical">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <Form.Item
               label="Full Name"
               name="name"
