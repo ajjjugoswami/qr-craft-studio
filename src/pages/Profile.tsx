@@ -10,6 +10,7 @@ import WatermarkSettings from '@/components/settings/WatermarkSettings';
 import WhiteLabelSettings from '@/components/settings/WhiteLabelSettings';
 import SubscriptionManagement from '@/components/payment/SubscriptionManagement';
 import { usePayment } from '@/hooks/usePayment';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const { Title, Text } = Typography;
 
@@ -17,6 +18,7 @@ const Profile: React.FC = () => {
   const { subscription, hasFeatureAccess } = usePayment();
   const location = useLocation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [activeKey, setActiveKey] = useState('profile');
   
   // Check if user has premium features
@@ -112,7 +114,7 @@ const Profile: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-5xl mx-auto p-4 sm:p-6">
+      <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
           <Title level={2} className="mb-2">Settings</Title>
@@ -123,7 +125,7 @@ const Profile: React.FC = () => {
           activeKey={activeKey}
           onChange={handleTabChange}
           items={tabItems}
-          size="large"
+          size={isMobile ? 'middle' : 'large'}
           className="profile-tabs"
         />
       </div>

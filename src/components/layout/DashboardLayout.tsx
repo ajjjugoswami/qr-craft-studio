@@ -335,7 +335,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
       {/* Main Content */}
       <Layout className="lg:ml-56 xl:ml-60 bg-background">
-        <Content className="p-4 md:p-6 min-h-screen pt-16 lg:pt-6 pb-20 lg:pb-6">
+        <Content className="px-3 sm:px-4 md:px-6 py-4 min-h-screen pt-16 lg:pt-6 pb-20 lg:pb-6">
           {children}
         </Content>
       </Layout>
