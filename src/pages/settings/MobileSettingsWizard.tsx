@@ -1,11 +1,31 @@
-import React, { useState } from 'react';
-import { Button, Card, Form, Input, Select, Avatar, Upload, message, Tooltip, Switch, Segmented } from 'antd';
-import { User, Palette, Shield, Droplets, Tag, ChevronLeft, ChevronRight, Check, Upload as UploadIcon, X, Sun, Moon, Monitor, Save, HelpCircle } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Alert, Button, Card, Form, Input, Select, Avatar, Upload, message, Segmented, Switch } from 'antd';
+import {
+  User,
+  Palette,
+  Shield,
+  Droplets,
+  Tag,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  Upload as UploadIcon,
+  X,
+  Sun,
+  Moon,
+  Monitor,
+  Save,
+  Crown,
+  ArrowUpRight,
+  CreditCard,
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { authAPI } from '@/lib/api';
 import { useTheme } from '@/hooks/useTheme';
 import { themes, ThemeName, ThemeMode } from '@/context/themeTypes';
 import { usePayment } from '@/hooks/usePayment';
+import SubscriptionManagement from '@/components/payment/SubscriptionManagement';
 
 const { Option } = Select;
 
@@ -29,23 +49,47 @@ interface Step {
   key: string;
   title: string;
   icon: React.ReactNode;
+  canSave?: boolean;
 }
 
-const steps: Step[] = [
-  { key: 'profile', title: 'Profile', icon: <User size={16} /> },
-  { key: 'theme', title: 'Theme', icon: <Palette size={16} /> },
-  { key: 'security', title: 'Security', icon: <Shield size={16} /> },
-];
-
 const MobileSettingsWizard: React.FC = () => {
+  const navigate = useNavigate();
   const { user, updateUser } = useAuth();
   const { currentTheme, mode, setTheme, setMode } = useTheme();
+  const { hasFeatureAccess } = usePayment();
+
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
+
   const [profileForm] = Form.useForm();
   const [securityForm] = Form.useForm();
+
   const [selectedTheme, setSelectedTheme] = useState<ThemeName>(currentTheme);
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
+
+  // Watermark state
+  const [removeWatermark, setRemoveWatermark] = useState<boolean>(user?.removeWatermark || false);
+  const [watermarkText, setWatermarkText] = useState<string>(user?.watermarkText || 'QR Studio');
+
+  // White-label state (keep shape compatible with existing user.whiteLabel)
+  const [whiteLabelEnabled, setWhiteLabelEnabled] = useState<boolean>(user?.whiteLabel?.enabled || false);
+  const [whiteLabelBrandName, setWhiteLabelBrandName] = useState<string>(user?.whiteLabel?.brandName || '');
+
+  // Feature access
+  const canRemoveWatermark = hasFeatureAccess('removeWatermark');
+  const canUseWhiteLabel = hasFeatureAccess('whiteLabel');
+
+  const steps: Step[] = useMemo(
+    () => [
+      { key: 'profile', title: 'Profile', icon: <User size={16} /> },
+      { key: 'theme', title: 'Theme', icon: <Palette size={16} /> },
+      { key: 'watermark', title: 'Watermark', icon: <Droplets size={16} /> },
+      { key: 'whitelabel', title: 'White-Label', icon: <Tag size={16} /> },
+      { key: 'subscription', title: 'Subscription', icon: <CreditCard size={16} />, canSave: false },
+      { key: 'security', title: 'Security', icon: <Shield size={16} /> },
+    ],
+    []
+  );
 
   // Detect system preference for effective mode calculation
   const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -62,23 +106,28 @@ const MobileSettingsWizard: React.FC = () => {
         language: user.language || 'en',
         timezone: user.timezone || 'UTC',
       });
+
+      // keep local states in sync when user changes
+      setRemoveWatermark(user.removeWatermark || false);
+      setWatermarkText(user.watermarkText || 'QR Studio');
+      setWhiteLabelEnabled(user.whiteLabel?.enabled || false);
+      setWhiteLabelBrandName(user.whiteLabel?.brandName || '');
     }
   }, [user, profileForm]);
 
-  const getInitials = (name: string) => {
-    return name
+  const getInitials = (name: string) =>
+    name
       .split(' ')
       .map((word) => word[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
-  };
 
   const handleSaveProfile = async () => {
     try {
       setLoading(true);
       const values = await profileForm.validateFields();
-      
+
       const formData = new FormData();
       formData.append('name', values.name);
       if (values.mobile) formData.append('mobile', values.mobile);
@@ -86,7 +135,7 @@ const MobileSettingsWizard: React.FC = () => {
       if (values.city) formData.append('city', values.city);
       if (values.language) formData.append('language', values.language);
       if (values.timezone) formData.append('timezone', values.timezone);
-      
+
       if (profilePictureFile) {
         formData.append('profilePicture', profilePictureFile);
       }
@@ -117,6 +166,60 @@ const MobileSettingsWizard: React.FC = () => {
     }
   };
 
+  const handleSaveWatermark = async () => {
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append('name', user?.name || '');
+      formData.append('removeWatermark', String(removeWatermark));
+      formData.append('watermarkText', watermarkText);
+
+      const response = await authAPI.updateProfile(formData);
+      if (response.success) {
+        updateUser({
+          ...response.user,
+          removeWatermark,
+          watermarkText,
+        });
+        message.success('Watermark saved');
+      }
+    } catch (error: any) {
+      message.error(error.response?.data?.message || 'Failed to save');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveWhiteLabel = async () => {
+    try {
+      setLoading(true);
+
+      const config = {
+        ...(user?.whiteLabel || {}),
+        enabled: whiteLabelEnabled,
+        brandName: whiteLabelBrandName,
+      };
+
+      const formData = new FormData();
+      formData.append('name', user?.name || '');
+      formData.append('whiteLabel', JSON.stringify(config));
+
+      const response = await authAPI.updateProfile(formData);
+      if (response.success) {
+        updateUser({
+          ...response.user,
+          whiteLabel: config,
+        });
+        message.success('White-label saved');
+      }
+    } catch (error: any) {
+      message.error(error.response?.data?.message || 'Failed to save');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleChangePassword = async () => {
     try {
       setLoading(true);
@@ -141,27 +244,26 @@ const MobileSettingsWizard: React.FC = () => {
   };
 
   const handleNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    }
+    if (currentStep < steps.length - 1) setCurrentStep((s) => s + 1);
   };
 
   const handlePrev = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
+    if (currentStep > 0) setCurrentStep((s) => s - 1);
   };
 
   const handleSaveCurrentStep = () => {
-    if (currentStep === 0) handleSaveProfile();
-    else if (currentStep === 1) handleSaveTheme();
-    else if (currentStep === 2) handleChangePassword();
+    const key = steps[currentStep]?.key;
+    if (key === 'profile') handleSaveProfile();
+    else if (key === 'theme') handleSaveTheme();
+    else if (key === 'watermark') handleSaveWatermark();
+    else if (key === 'whitelabel') handleSaveWhiteLabel();
+    else if (key === 'security') handleChangePassword();
   };
 
   // Profile Step
   const ProfileStep = () => (
-    <div className="mobile-wizard-step space-y-4">
-      <div className="flex items-center gap-3 mb-4">
+    <div className="mobile-wizard-step space-y-4 settings-compact">
+      <div className="flex items-center gap-3 mb-1">
         <div className="relative">
           <Avatar
             size={48}
@@ -214,7 +316,7 @@ const MobileSettingsWizard: React.FC = () => {
         <Form.Item label="Full Name" name="name" rules={[{ required: true }]}>
           <Input placeholder="Your name" />
         </Form.Item>
-        
+
         <div className="grid grid-cols-2 gap-3">
           <Form.Item label="Mobile" name="mobile">
             <Input placeholder="Phone" />
@@ -231,7 +333,9 @@ const MobileSettingsWizard: React.FC = () => {
           <Form.Item label="Language" name="language">
             <Select>
               {languages.map((l) => (
-                <Option key={l.value} value={l.value}>{l.label}</Option>
+                <Option key={l.value} value={l.value}>
+                  {l.label}
+                </Option>
               ))}
             </Select>
           </Form.Item>
@@ -240,7 +344,9 @@ const MobileSettingsWizard: React.FC = () => {
         <Form.Item label="Timezone" name="timezone">
           <Select showSearch optionFilterProp="label">
             {timezones.map((tz) => (
-              <Option key={tz.value} value={tz.value}>{tz.label}</Option>
+              <Option key={tz.value} value={tz.value}>
+                {tz.label}
+              </Option>
             ))}
           </Select>
         </Form.Item>
@@ -258,74 +364,176 @@ const MobileSettingsWizard: React.FC = () => {
         block
         size="middle"
         options={[
-          { label: <div className="flex items-center gap-1.5 py-1"><Sun size={14} /><span className="text-xs">Light</span></div>, value: 'light' },
-          { label: <div className="flex items-center gap-1.5 py-1"><Moon size={14} /><span className="text-xs">Dark</span></div>, value: 'dark' },
-          { label: <div className="flex items-center gap-1.5 py-1"><Monitor size={14} /><span className="text-xs">System</span></div>, value: 'system' },
+          {
+            label: (
+              <div className="flex items-center gap-1.5 py-1">
+                <Sun size={14} />
+                <span className="text-xs">Light</span>
+              </div>
+            ),
+            value: 'light',
+          },
+          {
+            label: (
+              <div className="flex items-center gap-1.5 py-1">
+                <Moon size={14} />
+                <span className="text-xs">Dark</span>
+              </div>
+            ),
+            value: 'dark',
+          },
+          {
+            label: (
+              <div className="flex items-center gap-1.5 py-1">
+                <Monitor size={14} />
+                <span className="text-xs">System</span>
+              </div>
+            ),
+            value: 'system',
+          },
         ]}
       />
 
       <div className="text-sm font-medium mb-2 mt-4">Color Theme</div>
       <div className="grid grid-cols-4 gap-2">
-        {Object.entries(themes).slice(0, 12).map(([key, theme]) => {
-          const isGradient = key.startsWith('gradient_');
-          const isSelected = selectedTheme === key;
-          
-          let backgroundColor;
-          if (isGradient) {
-            backgroundColor = `linear-gradient(135deg, hsl(${theme.colors.primary}) 0%, hsl(${theme.colors.accent}) 100%)`;
-          } else {
-            backgroundColor = isDarkMode 
-              ? `hsl(${theme.colors.primary} / 0.15)` 
-              : `hsl(${theme.colors.primaryLight})`;
-          }
+        {Object.entries(themes)
+          .slice(0, 12)
+          .map(([key, theme]) => {
+            const isGradient = key.startsWith('gradient_');
+            const isSelected = selectedTheme === key;
 
-          return (
-            <div
-              key={key}
-              className={`relative p-2 rounded-lg border-2 cursor-pointer transition-all ${
-                isSelected
-                  ? 'border-primary ring-2 ring-primary/20'
-                  : 'border-border hover:border-primary/50'
-              }`}
-              style={{ background: backgroundColor }}
-              onClick={() => setSelectedTheme(key as ThemeName)}
-            >
-              {isSelected && (
-                <div className="absolute top-1 right-1 w-3 h-3 bg-primary rounded-full flex items-center justify-center">
-                  <Check size={8} className="text-primary-foreground" />
+            const background = isGradient
+              ? `linear-gradient(135deg, hsl(${theme.colors.primary}) 0%, hsl(${theme.colors.accent}) 100%)`
+              : isDarkMode
+                ? `hsl(${theme.colors.primary} / 0.15)`
+                : `hsl(${theme.colors.primaryLight})`;
+
+            return (
+              <div
+                key={key}
+                className={`relative p-2 rounded-lg border-2 cursor-pointer transition-all ${
+                  isSelected ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'
+                }`}
+                style={{ background }}
+                onClick={() => setSelectedTheme(key as ThemeName)}
+              >
+                {isSelected && (
+                  <div className="absolute top-1 right-1 w-3 h-3 bg-primary rounded-full flex items-center justify-center">
+                    <Check size={8} className="text-primary-foreground" />
+                  </div>
+                )}
+                <div className="text-center">
+                  <div className="flex justify-center gap-0.5 mb-1">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: `hsl(${theme.colors.primary})` }} />
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: `hsl(${theme.colors.accent})` }} />
+                  </div>
+                  <span className="text-[10px] font-medium">{theme.label}</span>
                 </div>
-              )}
-              <div className="text-center">
-                <div className="flex justify-center gap-0.5 mb-1">
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: `hsl(${theme.colors.primary})` }} />
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: `hsl(${theme.colors.accent})` }} />
-                </div>
-                <span className="text-[10px] font-medium">{theme.label}</span>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
+    </div>
+  );
+
+  const WatermarkStep = () => (
+    <div className="mobile-wizard-step space-y-4 settings-compact">
+      {!canRemoveWatermark && (
+        <Alert
+          type="info"
+          showIcon
+          icon={<Crown size={16} />}
+          message="Premium Feature"
+          description={
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs">Upgrade to Pro to remove watermarks</span>
+              <Button type="primary" size="small" icon={<ArrowUpRight size={14} />} onClick={() => navigate('/pricing')}>
+                Upgrade
+              </Button>
+            </div>
+          }
+        />
+      )}
+
+      <div className={`rounded-lg border border-border p-3 bg-muted/30 ${!canRemoveWatermark ? 'opacity-60' : ''}`}>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="text-sm font-medium">Remove watermark</div>
+            <div className="text-xs text-muted-foreground">Turn off watermark for all QR codes</div>
+          </div>
+          <Switch checked={removeWatermark && canRemoveWatermark} onChange={setRemoveWatermark} disabled={!canRemoveWatermark} />
+        </div>
+      </div>
+
+      <div className={removeWatermark && canRemoveWatermark ? 'opacity-50 pointer-events-none' : ''}>
+        <div className="text-sm font-medium mb-1">Watermark text</div>
+        <Input
+          value={watermarkText}
+          onChange={(e) => setWatermarkText(e.target.value)}
+          maxLength={30}
+          disabled={(removeWatermark && canRemoveWatermark) || !canRemoveWatermark}
+          placeholder="e.g., Your Brand"
+        />
+        <div className="text-[11px] text-muted-foreground mt-1">{watermarkText.length}/30</div>
+      </div>
+    </div>
+  );
+
+  const WhiteLabelStep = () => (
+    <div className="mobile-wizard-step space-y-4 settings-compact">
+      {!canUseWhiteLabel && (
+        <Alert
+          type="info"
+          showIcon
+          icon={<Crown size={16} />}
+          message="Premium Feature"
+          description={
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs">Upgrade to Pro to enable white-label</span>
+              <Button type="primary" size="small" icon={<ArrowUpRight size={14} />} onClick={() => navigate('/pricing')}>
+                Upgrade
+              </Button>
+            </div>
+          }
+        />
+      )}
+
+      <div className={`rounded-lg border border-border p-3 bg-muted/30 ${!canUseWhiteLabel ? 'opacity-60' : ''}`}>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="text-sm font-medium">Enable white-label</div>
+            <div className="text-xs text-muted-foreground">Remove branding on redirect pages</div>
+          </div>
+          <Switch checked={whiteLabelEnabled && canUseWhiteLabel} onChange={setWhiteLabelEnabled} disabled={!canUseWhiteLabel} />
+        </div>
+      </div>
+
+      <div className={!whiteLabelEnabled || !canUseWhiteLabel ? 'opacity-50 pointer-events-none' : ''}>
+        <div className="text-sm font-medium mb-1">Brand name</div>
+        <Input value={whiteLabelBrandName} onChange={(e) => setWhiteLabelBrandName(e.target.value)} maxLength={50} placeholder="Your brand" />
+      </div>
+    </div>
+  );
+
+  const SubscriptionStep = () => (
+    <div className="mobile-wizard-step space-y-3">
+      <SubscriptionManagement showPaymentHistory={false} />
     </div>
   );
 
   // Security Step
   const SecurityStep = () => (
-    <div className="mobile-wizard-step space-y-4">
+    <div className="mobile-wizard-step space-y-4 settings-compact">
       <div className="text-sm font-medium mb-2 flex items-center gap-2">
         <Shield size={16} />
         Change Password
       </div>
-      
+
       <Form form={securityForm} layout="vertical" size="small">
-        <Form.Item
-          name="currentPassword"
-          label="Current Password"
-          rules={[{ required: true, message: 'Required' }]}
-        >
+        <Form.Item name="currentPassword" label="Current Password" rules={[{ required: true, message: 'Required' }]}>
           <Input.Password placeholder="Current password" />
         </Form.Item>
-        
+
         <Form.Item
           name="newPassword"
           label="New Password"
@@ -336,7 +544,7 @@ const MobileSettingsWizard: React.FC = () => {
         >
           <Input.Password placeholder="New password" />
         </Form.Item>
-        
+
         <Form.Item
           name="confirmPassword"
           label="Confirm Password"
@@ -345,9 +553,7 @@ const MobileSettingsWizard: React.FC = () => {
             { required: true, message: 'Required' },
             ({ getFieldValue }) => ({
               validator(_, value) {
-                if (!value || getFieldValue('newPassword') === value) {
-                  return Promise.resolve();
-                }
+                if (!value || getFieldValue('newPassword') === value) return Promise.resolve();
                 return Promise.reject(new Error('Passwords must match'));
               },
             }),
@@ -360,13 +566,17 @@ const MobileSettingsWizard: React.FC = () => {
   );
 
   const renderStep = () => {
-    switch (currentStep) {
-      case 0: return <ProfileStep />;
-      case 1: return <ThemeStep />;
-      case 2: return <SecurityStep />;
-      default: return null;
-    }
+    const key = steps[currentStep]?.key;
+    if (key === 'profile') return <ProfileStep />;
+    if (key === 'theme') return <ThemeStep />;
+    if (key === 'watermark') return <WatermarkStep />;
+    if (key === 'whitelabel') return <WhiteLabelStep />;
+    if (key === 'subscription') return <SubscriptionStep />;
+    if (key === 'security') return <SecurityStep />;
+    return null;
   };
+
+  const canSave = steps[currentStep]?.canSave !== false;
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-120px)]">
@@ -406,17 +616,18 @@ const MobileSettingsWizard: React.FC = () => {
         >
           Back
         </Button>
-        
+
         <Button
           type="primary"
           onClick={handleSaveCurrentStep}
           loading={loading}
           icon={<Save size={14} />}
           className="flex-1"
+          disabled={!canSave}
         >
           Save
         </Button>
-        
+
         <Button
           type={currentStep === steps.length - 1 ? 'default' : 'primary'}
           onClick={handleNext}
@@ -432,3 +643,4 @@ const MobileSettingsWizard: React.FC = () => {
 };
 
 export default MobileSettingsWizard;
+

@@ -342,7 +342,35 @@ const ProfileInfo: React.FC = () => {
               {user?.name && !user.profilePicture ? getInitials(user.name) : ''}
             </Avatar>
 
-            <div className="absolute -bottom-1 -right-1 flex gap-1">
+            {/* Desktop: move action buttons OUTSIDE the avatar so they don't overlap */}
+            <div className="hidden sm:flex absolute top-1/2 -right-10 -translate-y-1/2 flex-col gap-2">
+              {user?.profilePicture && (
+                <Button
+                  type="primary"
+                  danger
+                  size="small"
+                  shape="circle"
+                  icon={<X size={12} />}
+                  onClick={handleRemoveProfilePicture}
+                  loading={loading}
+                  className="settings-icon-btn"
+                  title="Remove"
+                />
+              )}
+              <Upload {...uploadProps}>
+                <Button
+                  type="primary"
+                  size="small"
+                  shape="circle"
+                  icon={<UploadIcon size={12} />}
+                  className="settings-icon-btn"
+                  title="Upload"
+                />
+              </Upload>
+            </div>
+
+            {/* Mobile: keep compact overlay buttons */}
+            <div className="sm:hidden absolute -bottom-1 -right-1 flex gap-1">
               {user?.profilePicture && (
                 <Button
                   type="primary"
