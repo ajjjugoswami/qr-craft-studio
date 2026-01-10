@@ -42,14 +42,14 @@ const ThemeSettings: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Appearance Mode Card */}
-      <Card className="shadow-sm">
-        <div className="flex items-center gap-3 mb-4">
-          <Palette className="text-primary" size={24} />
+      <Card className="shadow-sm !p-3 sm:!p-4">
+        <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+          <Palette className="text-primary" size={20} />
           <div>
-            <Title level={4} className="!mb-0">Appearance</Title>
-            <Text type="secondary" className="text-sm">
+            <Title level={5} className="!mb-0 text-sm sm:text-base">Appearance</Title>
+            <Text type="secondary" className="text-xs sm:text-sm">
               Choose your preferred theme appearance
             </Text>
           </div>
@@ -59,31 +59,31 @@ const ThemeSettings: React.FC = () => {
           value={mode}
           onChange={handleModeChange}
           block
-          size="large"
+          size="middle"
           options={[
             {
               label: (
-                <div className="flex items-center justify-center gap-2 py-2">
-                  <Sun size={18} />
-                  <span className="font-medium">Light</span>
+                <div className="flex items-center justify-center gap-1.5 py-1.5 sm:py-2">
+                  <Sun size={16} />
+                  <span className="font-medium text-xs sm:text-sm">Light</span>
                 </div>
               ),
               value: 'light',
             },
             {
               label: (
-                <div className="flex items-center justify-center gap-2 py-2">
-                  <Moon size={18} />
-                  <span className="font-medium">Dark</span>
+                <div className="flex items-center justify-center gap-1.5 py-1.5 sm:py-2">
+                  <Moon size={16} />
+                  <span className="font-medium text-xs sm:text-sm">Dark</span>
                 </div>
               ),
               value: 'dark',
             },
             {
               label: (
-                <div className="flex items-center justify-center gap-2 py-2">
-                  <Monitor size={18} />
-                  <span className="font-medium">System</span>
+                <div className="flex items-center justify-center gap-1.5 py-1.5 sm:py-2">
+                  <Monitor size={16} />
+                  <span className="font-medium text-xs sm:text-sm">System</span>
                 </div>
               ),
               value: 'system',
@@ -93,28 +93,29 @@ const ThemeSettings: React.FC = () => {
       </Card>
 
       {/* Theme Selection Card */}
-      <Card className="shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center">
-            <Palette className="mr-3 text-primary" size={24} />
-            <Title level={4} className="!mb-0">Color Theme</Title>
+      <Card className="shadow-sm !p-3 sm:!p-4">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <div className="flex items-center gap-2">
+            <Palette className="text-primary" size={20} />
+            <Title level={5} className="!mb-0 text-sm sm:text-base">Color Theme</Title>
           </div>
           <Button
             type="primary"
-            icon={<Save size={16} />}
+            size="small"
+            icon={<Save size={14} />}
             onClick={handleSave}
             loading={saving}
             disabled={!hasChanges}
           >
-            Save Theme
+            Save
           </Button>
         </div>
 
-        <Text type="secondary" className="mb-6 block">
+        <Text type="secondary" className="mb-3 sm:mb-4 block text-xs sm:text-sm">
           Choose your preferred accent color and click Save to apply.
         </Text>
 
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">{Object.entries(themes).map(([key, theme]) => {
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-3">{Object.entries(themes).map(([key, theme]) => {
             const isGradient = key.startsWith('gradient_');
             const isSelected = selectedTheme === key;
 

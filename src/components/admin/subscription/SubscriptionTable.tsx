@@ -1,8 +1,11 @@
 import React from 'react';
-import { Table, Tag, Avatar, Space } from 'antd';
+import { Table, Tag, Avatar, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useDateFormatter } from '@/hooks/useDateFormatter';
 import type { AdminSubscription } from '@/store/slices/adminSlice';
+import { useIsMobile } from '@/hooks/use-mobile';
+
+const { Text } = Typography;
 
 interface SubscriptionTableProps {
   subscriptions: AdminSubscription[];
@@ -22,6 +25,7 @@ const SubscriptionTable: React.FC<SubscriptionTableProps> = ({
   onTableChange,
 }) => {
   const formatter = useDateFormatter();
+  const isMobile = useIsMobile();
 
   const getPlanColor = (planType: string) => {
     const colors: Record<string, string> = {
@@ -29,7 +33,7 @@ const SubscriptionTable: React.FC<SubscriptionTableProps> = ({
       basic: 'blue',
       pro: 'purple',
       enterprise: 'gold',
-      trial: 'orange', // Premium level above all
+      trial: 'orange',
     };
     return colors[planType] || 'default';
   };
@@ -48,13 +52,74 @@ const SubscriptionTable: React.FC<SubscriptionTableProps> = ({
     return colors[status] || 'default';
   };
 
+  // Mobile card view
+  if (isMobile) {
+    return (
+      <div className="space-y-3">
+        {loading ? (
+          <div className="text-center py-8 text-muted-foreground text-sm">Loading...</div>
+        ) : subscriptions.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground text-sm">No subscriptions found</div>
+        ) : (
+          subscriptions.map((sub) => (
+            <div key={sub._id} className="bg-card border border-border rounded-xl p-3">
+              <div className="flex items-center gap-3 mb-2">
+                <Avatar 
+                  src={sub.userId?.profilePicture} 
+                  size="small"
+                >
+                  {sub.userId?.name?.charAt(0).toUpperCase() || '?'}
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <Text className="font-medium text-sm block truncate">{sub.userId?.name || 'Unknown'}</Text>
+                  <Text type="secondary" className="text-xs truncate block">{sub.userId?.email}</Text>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Tag color={getPlanColor(sub.planType)} className="capitalize text-xs !m-0">
+                  {sub.planType}
+                </Tag>
+                <Tag color={getStatusColor(sub.status)} className="capitalize text-xs !m-0">
+                  {sub.status}
+                </Tag>
+                <Text type="secondary" className="text-xs ml-auto">
+                  {sub.startDate ? formatter.format(sub.startDate, { dateStyle: 'short' }) : 'N/A'}
+                </Text>
+              </div>
+            </div>
+          ))
+        )}
+        {/* Pagination */}
+        {total > limit && (
+          <div className="flex justify-center gap-2 pt-2">
+            <button
+              onClick={() => onTableChange(page - 1, limit)}
+              disabled={page === 1}
+              className="px-3 py-1.5 text-xs rounded-lg bg-muted disabled:opacity-40"
+            >
+              Prev
+            </button>
+            <span className="px-3 py-1.5 text-xs text-muted-foreground">{page} / {Math.ceil(total / limit)}</span>
+            <button
+              onClick={() => onTableChange(page + 1, limit)}
+              disabled={page >= Math.ceil(total / limit)}
+              className="px-3 py-1.5 text-xs rounded-lg bg-muted disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   const columns: ColumnsType<AdminSubscription> = [
     {
       title: 'User',
       dataIndex: 'userId',
       key: 'user',
       render: (user: AdminSubscription['userId']) => (
-        <Space>
+        <div className="flex items-center gap-2">
           <Avatar 
             src={user?.profilePicture} 
             size="small"
@@ -62,10 +127,10 @@ const SubscriptionTable: React.FC<SubscriptionTableProps> = ({
             {user?.name?.charAt(0).toUpperCase() || '?'}
           </Avatar>
           <div>
-            <div className="font-medium">{user?.name || 'Unknown'}</div>
-            <div className="text-xs text-gray-500">{user?.email}</div>
+            <div className="font-medium text-xs">{user?.name || 'Unknown'}</div>
+            <div className="text-[10px] text-gray-500">{user?.email}</div>
           </div>
-        </Space>
+        </div>
       ),
     },
     {
@@ -73,7 +138,7 @@ const SubscriptionTable: React.FC<SubscriptionTableProps> = ({
       dataIndex: 'planType',
       key: 'planType',
       render: (planType: string) => (
-        <Tag color={getPlanColor(planType)} className="capitalize">
+        <Tag color={getPlanColor(planType)} className="capitalize text-xs">
           {planType}
         </Tag>
       ),
@@ -83,33 +148,10 @@ const SubscriptionTable: React.FC<SubscriptionTableProps> = ({
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
-        <Tag color={getStatusColor(status)} className="capitalize">
+        <Tag color={getStatusColor(status)} className="capitalize text-xs">
           {status}
         </Tag>
       ),
-    },
-    {
-      title: 'Start Date',
-      dataIndex: 'startDate',
-      key: 'startDate',
-      render: (date: string) => formatter.format(date, { dateStyle: 'medium' }),
-    },
-    {
-      title: 'End Date',
-      dataIndex: 'endDate',
-      key: 'endDate',
-      render: (date: string) => date ? formatter.format(date, { dateStyle: 'medium' }) : 'N/A',
-    },
-    {
-      title: 'Max QR Codes',
-      dataIndex: ['features', 'maxQRCodes'],
-      key: 'maxQRCodes',
-    },
-    {
-      title: 'Created',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      render: (date: string) => formatter.format(date, { dateStyle: 'medium' }),
     },
   ];
 
@@ -125,18 +167,16 @@ const SubscriptionTable: React.FC<SubscriptionTableProps> = ({
           current: page,
           pageSize: limit,
           total: total,
-          showSizeChanger: true,
+          showSizeChanger: false,
           showQuickJumper: false,
-          pageSizeOptions: ['10', '20', '50'],
           showTotal: (total, range) => 
-            <span className="text-xs sm:text-sm">{range[0]}-{range[1]} of {total}</span>,
+            <span className="text-xs">{range[0]}-{range[1]} of {total}</span>,
           size: 'small',
         }}
         onChange={(pagination) => 
           onTableChange(pagination.current || 1, pagination.pageSize || limit)
         }
-        scroll={{ x: 700 }}
-        className="text-xs sm:text-sm"
+        className="text-xs"
       />
     </div>
   );

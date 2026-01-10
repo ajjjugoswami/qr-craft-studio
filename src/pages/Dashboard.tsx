@@ -122,10 +122,10 @@ const Dashboard: React.FC = () => {
           </div>
           <Button
             type="primary"
-            size="large"
-            icon={<Plus size={18} />}
+            size="middle"
+            icon={<Plus size={16} />}
             onClick={() => navigate("/create")}
-            className="w-full sm:w-auto h-11 sm:h-10"
+            className="w-full sm:w-auto"
           >
             Create New
           </Button>

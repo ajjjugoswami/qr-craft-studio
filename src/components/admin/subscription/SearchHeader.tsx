@@ -24,14 +24,14 @@ const SearchHeader: React.FC<SearchHeaderProps> = ({
   loading,
 }) => {
   return (
-    <div className="mb-4 flex items-center justify-between">
+    <div className="mb-4 space-y-3">
       <div>
-        <Title level={5} className="mb-0">{title}</Title>
-        <Text type="secondary">
+        <Title level={5} className="!mb-0 !text-sm sm:!text-base">{title}</Title>
+        <Text type="secondary" className="text-xs sm:text-sm">
           {description}
         </Text>
       </div>
-      <Space>
+      <div className="flex items-center gap-2">
         <Input
           placeholder="Search by user name or email"
           allowClear
@@ -39,7 +39,7 @@ const SearchHeader: React.FC<SearchHeaderProps> = ({
           value={searchValue}
           onChange={(e) => onSearchChange(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') onSearch(); }}
-          style={{ width: 250 }}
+          className="flex-1"
           prefix={<Search size={14} />}
         />
         <Tooltip title="Refresh">
@@ -52,7 +52,7 @@ const SearchHeader: React.FC<SearchHeaderProps> = ({
             size="small"
           />
         </Tooltip>
-      </Space>
+      </div>
     </div>
   );
 };

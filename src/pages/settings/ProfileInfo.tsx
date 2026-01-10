@@ -303,38 +303,39 @@ const ProfileInfo: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Profile Information Card */}
-      <Card className="shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <Title level={4} className="mb-0 flex items-center gap-2">
-            <User size={18} />
+      <Card className="shadow-sm !p-3 sm:!p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+          <Title level={5} className="!mb-0 flex items-center gap-2 text-sm sm:text-base">
+            <User size={16} />
             Profile Information
             <Tooltip 
-              title="Manage your personal information, profile picture, and preferences. Your email cannot be changed after registration."
+              title="Manage your personal information, profile picture, and preferences."
               color="white"
               overlayInnerStyle={{ color: '#333' }}
             >
-              <HelpCircle size={16} className="text-muted-foreground hover:text-foreground transition-colors cursor-help" />
+              <HelpCircle size={14} className="text-muted-foreground hover:text-foreground transition-colors cursor-help" />
             </Tooltip>
           </Title>
           <Button
             type="primary"
-            icon={<Check size={16} />}
+            size="small"
+            icon={<Check size={14} />}
             onClick={handleSaveProfile}
             loading={loading}
           >
-            Save Changes
+            Save
           </Button>
         </div>
 
-        <div className="flex items-center space-x-6 mb-6">
-          <div className="relative group">
+        <div className="flex items-start sm:items-center gap-4 sm:gap-6 mb-4 sm:mb-6">
+          <div className="relative group flex-shrink-0">
             <Avatar
-              size={80}
+              size={60}
               src={user?.profilePicture}
-              className="bg-primary text-primary-foreground text-xl font-semibold"
-              icon={<User size={32} />}
+              className="bg-primary text-primary-foreground text-lg font-semibold"
+              icon={<User size={24} />}
             >
               {user?.name && !user.profilePicture ? getInitials(user.name) : ''}
             </Avatar>
@@ -343,55 +344,55 @@ const ProfileInfo: React.FC = () => {
                 <Button
                   size="small"
                   shape="circle"
-                  icon={<Eye size={16} />}
+                  icon={<Eye size={14} />}
                   onClick={handleAvatarClick}
-                  className="opacity-0 group-hover:opacity-100 bg-white text-gray-700 border-white hover:bg-gray-100 transition-opacity duration-200"
+                  className="opacity-0 group-hover:opacity-100 bg-white text-gray-700 border-white hover:bg-gray-100 transition-opacity duration-200 !w-7 !h-7 !min-h-0"
                   title="View full size"
                 />
               </div>
             )}
-            <div className="absolute -bottom-2 -right-2 flex gap-1">
+            <div className="absolute -bottom-1 -right-1 flex gap-1">
               {user?.profilePicture && (
                 <Button
                   size="small"
                   shape="circle"
-                  icon={<X size={14} />}
+                  icon={<X size={12} />}
                   onClick={handleRemoveProfilePicture}
                   loading={loading}
-                  className="bg-red-500 text-white border-red-500 hover:bg-red-600"
-                  title="Remove profile picture"
+                  className="bg-red-500 text-white border-red-500 hover:bg-red-600 !w-6 !h-6 !min-h-0"
+                  title="Remove"
                 />
               )}
               <Upload {...uploadProps}>
                 <Button
                   size="small"
                   shape="circle"
-                  icon={<UploadIcon size={14} />}
-                  className="bg-primary text-primary-foreground border-primary hover:bg-primary/90"
-                  title="Upload new picture"
+                  icon={<UploadIcon size={12} />}
+                  className="bg-primary text-primary-foreground border-primary hover:bg-primary/90 !w-6 !h-6 !min-h-0"
+                  title="Upload"
                 />
               </Upload>
             </div>
           </div>
-          <div className="flex-1">
-            <div className="text-sm text-gray-500 mb-2">
+          <div className="flex-1 min-w-0">
+            <div className="text-xs sm:text-sm text-gray-500 mb-1">
               Member since {new Date().toLocaleDateString('en-US', {
                 month: 'long',
                 year: 'numeric'
               })}
             </div>
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-success/10 text-success text-sm font-medium">
+            <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-success/10 text-success text-xs font-medium">
               {user?.isAdmin ? 'Admin' : 'User'}
             </div>
             {profilePictureFile && (
-              <div className="mt-2 flex items-center gap-2 text-sm text-blue-600">
-                <span>{profilePictureFile.name}</span>
+              <div className="mt-1.5 flex items-center gap-1.5 text-xs text-blue-600">
+                <span className="truncate max-w-[120px]">{profilePictureFile.name}</span>
                 <Button
                   size="small"
                   type="text"
-                  icon={<X size={12} />}
+                  icon={<X size={10} />}
                   onClick={() => setProfilePictureFile(null)}
-                  className="text-red-500 hover:text-red-700"
+                  className="text-red-500 hover:text-red-700 !w-4 !h-4 !min-h-0 !p-0"
                 />
               </div>
             )}
