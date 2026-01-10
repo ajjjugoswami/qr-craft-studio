@@ -9,6 +9,7 @@ import SecuritySettings from './settings/SecuritySettings';
 import WatermarkSettings from '@/components/settings/WatermarkSettings';
 import WhiteLabelSettings from '@/components/settings/WhiteLabelSettings';
 import SubscriptionManagement from '@/components/payment/SubscriptionManagement';
+import MobileSettingsWizard from './settings/MobileSettingsWizard';
 import { usePayment } from '@/hooks/usePayment';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -112,6 +113,22 @@ const Profile: React.FC = () => {
     },
   ];
 
+  // Mobile: Use wizard UX
+  if (isMobile) {
+    return (
+      <DashboardLayout>
+        <div className="max-w-lg mx-auto">
+          <div className="text-center mb-4">
+            <Title level={4} className="!mb-1">Settings</Title>
+            <Text type="secondary" className="text-xs">Manage your account</Text>
+          </div>
+          <MobileSettingsWizard />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Desktop: Use tabs
   return (
     <DashboardLayout>
       <div className="max-w-5xl mx-auto">
@@ -125,8 +142,8 @@ const Profile: React.FC = () => {
           activeKey={activeKey}
           onChange={handleTabChange}
           items={tabItems}
-          size={isMobile ? 'small' : 'large'}
-          tabBarGutter={isMobile ? 8 : 24}
+          size="large"
+          tabBarGutter={24}
           className="profile-tabs"
         />
       </div>

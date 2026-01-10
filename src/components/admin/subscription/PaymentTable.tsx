@@ -1,7 +1,8 @@
 import React from 'react';
-import { Table, Tag, Avatar, Space } from 'antd';
+import { Table, Tag, Avatar, Space, Card, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useDateFormatter } from '@/hooks/useDateFormatter';
+import { useIsMobile } from '@/hooks/use-mobile';
 import type { AdminPayment } from '@/store/slices/adminSlice';
 
 interface PaymentTableProps {
@@ -22,13 +23,14 @@ const PaymentTable: React.FC<PaymentTableProps> = ({
   onTableChange,
 }) => {
   const formatter = useDateFormatter();
+  const isMobile = useIsMobile();
 
   const formatCurrency = (amount: number, currency = 'INR') => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: currency,
       minimumFractionDigits: 0,
-    }).format(amount / 100); // Assuming amount is in paisa
+    }).format(amount / 100);
   };
 
   const getPlanColor = (planType: string) => {
@@ -37,7 +39,7 @@ const PaymentTable: React.FC<PaymentTableProps> = ({
       basic: 'blue',
       pro: 'purple',
       enterprise: 'gold',
-      trial: 'orange', // Premium level
+      trial: 'orange',
     };
     return colors[planType] || 'default';
   };
@@ -56,6 +58,73 @@ const PaymentTable: React.FC<PaymentTableProps> = ({
     return colors[status] || 'default';
   };
 
+  // Mobile Card View
+  const MobilePaymentCard = ({ payment }: { payment: AdminPayment }) => (
+    <Card className="mb-2" bodyStyle={{ padding: 12 }}>
+      <div className="flex items-start gap-3">
+        <Avatar src={payment.userId?.profilePicture} size={36}>
+          {payment.userId?.name?.charAt(0).toUpperCase() || '?'}
+        </Avatar>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-medium truncate">{payment.userId?.name || 'Unknown'}</div>
+          <div className="text-xs text-muted-foreground truncate">{payment.userId?.email}</div>
+        </div>
+        <div className="text-right">
+          <div className="text-sm font-semibold">{formatCurrency(payment.amount, payment.currency)}</div>
+          <Tag color={getStatusColor(payment.status)} className="text-xs capitalize mt-1">
+            {payment.status}
+          </Tag>
+        </div>
+      </div>
+      <div className="flex items-center justify-between mt-2 pt-2 border-t border-border">
+        <div className="flex items-center gap-2">
+          <Tag color={getPlanColor(payment.planType)} className="text-xs capitalize">
+            {payment.planType}
+          </Tag>
+          <span className="text-xs text-muted-foreground">{payment.planDuration}mo</span>
+        </div>
+        <span className="text-xs text-muted-foreground">
+          {formatter.format(payment.createdAt, { dateStyle: 'medium' })}
+        </span>
+      </div>
+    </Card>
+  );
+
+  if (isMobile) {
+    return (
+      <div>
+        {loading ? (
+          <div className="text-center py-8 text-muted-foreground text-sm">Loading...</div>
+        ) : (
+          <>
+            {payments.map((payment) => (
+              <MobilePaymentCard key={payment._id} payment={payment} />
+            ))}
+            <div className="flex justify-center gap-2 mt-4">
+              <Button
+                disabled={page <= 1}
+                onClick={() => onTableChange(page - 1, limit)}
+                size="small"
+              >
+                Prev
+              </Button>
+              <span className="px-3 py-1 text-sm">
+                {page} / {Math.ceil(total / limit) || 1}
+              </span>
+              <Button
+                disabled={page >= Math.ceil(total / limit)}
+                onClick={() => onTableChange(page + 1, limit)}
+                size="small"
+              >
+                Next
+              </Button>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
   const columns: ColumnsType<AdminPayment> = [
     {
       title: 'User',
@@ -63,14 +132,11 @@ const PaymentTable: React.FC<PaymentTableProps> = ({
       key: 'user',
       render: (user: AdminPayment['userId']) => (
         <Space>
-          <Avatar 
-            src={user?.profilePicture} 
-            size="small"
-          >
+          <Avatar src={user?.profilePicture} size="small">
             {user?.name?.charAt(0).toUpperCase() || '?'}
           </Avatar>
           <div>
-            <div className="font-medium">{user?.name || 'Unknown'}</div>
+            <div className="font-medium text-sm">{user?.name || 'Unknown'}</div>
             <div className="text-xs text-gray-500">{user?.email}</div>
           </div>
         </Space>
@@ -88,7 +154,7 @@ const PaymentTable: React.FC<PaymentTableProps> = ({
       title: 'Amount',
       dataIndex: 'amount',
       key: 'amount',
-      render: (amount: number, record: AdminPayment) => 
+      render: (amount: number, record: AdminPayment) =>
         formatCurrency(amount, record.currency),
     },
     {
@@ -100,9 +166,7 @@ const PaymentTable: React.FC<PaymentTableProps> = ({
           <Tag color={getPlanColor(planType)} className="capitalize">
             {planType}
           </Tag>
-          <div className="text-xs text-gray-500">
-            {record.planDuration} months
-          </div>
+          <div className="text-xs text-gray-500">{record.planDuration} months</div>
         </div>
       ),
     },
@@ -120,13 +184,12 @@ const PaymentTable: React.FC<PaymentTableProps> = ({
       title: 'Payment ID',
       dataIndex: 'paymentId',
       key: 'paymentId',
-      render: (paymentId: string) => (
+      render: (paymentId: string) =>
         paymentId ? (
           <span className="font-mono text-xs">{paymentId}</span>
         ) : (
           <span className="text-gray-400">Pending</span>
-        )
-      ),
+        ),
     },
     {
       title: 'Created',
@@ -149,10 +212,9 @@ const PaymentTable: React.FC<PaymentTableProps> = ({
         showSizeChanger: true,
         showQuickJumper: true,
         pageSizeOptions: ['10', '20', '50', '100'],
-        showTotal: (total, range) => 
-          `${range[0]}-${range[1]} of ${total} payments`,
+        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} payments`,
       }}
-      onChange={(pagination) => 
+      onChange={(pagination) =>
         onTableChange(pagination.current || 1, pagination.pageSize || limit)
       }
       scroll={{ x: 1000 }}
