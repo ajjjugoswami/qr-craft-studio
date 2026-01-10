@@ -305,94 +305,22 @@
   color: hsl(var(--foreground)) !important;
 }
 
-/* Compact mode (used in Settings / Admin on mobile) */
-.settings-compact .ant-input,
-.settings-compact .ant-input-affix-wrapper,
-.settings-compact .ant-input-number,
-.settings-compact .ant-picker,
-.settings-compact .ant-select:not(.ant-select-customize-input) .ant-select-selector {
-  min-height: 36px !important;
-  height: 36px !important;
-  font-size: 13px !important;
-}
-
-@media (max-width: 640px) {
-  /* Mobile baseline: keep controls tappable, but don't affect desktop */
-  .ant-input,
-  .ant-input-affix-wrapper,
-  .ant-input-number,
-  .ant-picker,
-  .ant-select:not(.ant-select-customize-input) .ant-select-selector {
-    min-height: 40px !important;
-    height: 40px !important;
-    font-size: 14px !important;
-  }
-}
-
-/* Compact mode (used in Settings / Admin on mobile) */
-.settings-compact .ant-form-item {
-  margin-bottom: 10px !important;
-}
-
-.settings-compact .ant-form-item-label > label {
-  height: auto !important;
-  font-size: 12px !important;
-  padding-bottom: 4px !important;
-}
-
-.settings-save-btn {
-  height: 32px !important;
-  padding: 0 14px !important;
-  font-size: 12px !important;
-}
-
-.settings-icon-btn {
-  width: 26px !important;
-  height: 26px !important;
-  min-width: 26px !important;
-  padding: 0 !important;
-}
-
-@media (max-width: 640px) {
-  .settings-save-btn {
-    height: 30px !important;
-    padding: 0 12px !important;
-    font-size: 12px !important;
-  }
-}
-
-/* Textarea specific styles - more specific selectors */
-.ant-input.ant-input,
+/* Textarea specific styles */
 textarea.ant-input {
   height: auto !important;
-  min-height: 32px !important;
+  min-height: 80px !important;
   resize: vertical !important;
   line-height: 1.6 !important;
   padding: 8px 12px !important;
 }
 
-/* Regular input fields should stay fixed height */
-input.ant-input:not(textarea) {
-  height: 32px !important;
-  min-height: 32px !important;
-  padding: 4px 12px !important;
-}
-
+/* Large size inputs */
 .ant-input-lg,
 .ant-input-affix-wrapper-lg,
 .ant-select-lg .ant-select-selector,
 .ant-picker-large {
-  min-height: 36px !important;
-  height: 36px !important;
-}
-
-/* Textarea large size - more specific */
-textarea.ant-input.ant-input-lg,
-.ant-input-lg.ant-input[data-type="textarea"] {
-  min-height: 40px !important;
-  height: auto !important;
-  padding: 10px 16px !important;
-  line-height: 1.6 !important;
+  min-height: 44px !important;
+  height: 44px !important;
 }
 
 /* Keep inner text vertically centered after forcing control heights */

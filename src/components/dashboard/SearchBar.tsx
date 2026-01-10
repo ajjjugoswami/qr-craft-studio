@@ -16,33 +16,31 @@ const SearchBar: React.FC<SearchBarProps> = ({
   onViewModeChange,
 }) => {
   return (
-    <div className="flex items-center gap-2 w-full sm:w-auto">
+    <div className="flex items-center gap-3 w-full sm:w-auto">
       <Input
-        placeholder="Search..."
-        prefix={<Search size={14} className="text-muted-foreground" />}
+        placeholder="Search QR codes..."
+        prefix={<Search size={16} className="text-muted-foreground" />}
         value={searchTerm}
         onChange={(e) => onSearchChange(e.target.value)}
-        className="flex-1 min-w-0 sm:w-40 md:w-56 !text-xs"
+        className="flex-1 min-w-0 sm:w-48 md:w-64"
         allowClear
-        size="small"
       />
       <Segmented
         value={viewMode}
         onChange={(value) => onViewModeChange(value as 'list' | 'grid')}
-        size="small"
         options={[
           {
             label: (
-              <div className="flex items-center justify-center px-0.5">
-                <List size={14} />
+              <div className="flex items-center justify-center px-1">
+                <List size={16} />
               </div>
             ),
             value: 'list',
           },
           {
             label: (
-              <div className="flex items-center justify-center px-0.5">
-                <LayoutGrid size={14} />
+              <div className="flex items-center justify-center px-1">
+                <LayoutGrid size={16} />
               </div>
             ),
             value: 'grid',
