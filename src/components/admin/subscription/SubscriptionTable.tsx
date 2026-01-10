@@ -114,26 +114,31 @@ const SubscriptionTable: React.FC<SubscriptionTableProps> = ({
   ];
 
   return (
-    <Table<AdminSubscription>
-      rowKey="_id"
-      dataSource={subscriptions}
-      columns={columns}
-      loading={loading}
-      pagination={{
-        current: page,
-        pageSize: limit,
-        total: total,
-        showSizeChanger: true,
-        showQuickJumper: true,
-        pageSizeOptions: ['10', '20', '50', '100'],
-        showTotal: (total, range) => 
-          `${range[0]}-${range[1]} of ${total} subscriptions`,
-      }}
-      onChange={(pagination) => 
-        onTableChange(pagination.current || 1, pagination.pageSize || limit)
-      }
-      scroll={{ x: 800 }}
-    />
+    <div className="overflow-x-auto -mx-3 sm:mx-0">
+      <Table<AdminSubscription>
+        rowKey="_id"
+        dataSource={subscriptions}
+        columns={columns}
+        loading={loading}
+        size="small"
+        pagination={{
+          current: page,
+          pageSize: limit,
+          total: total,
+          showSizeChanger: true,
+          showQuickJumper: false,
+          pageSizeOptions: ['10', '20', '50'],
+          showTotal: (total, range) => 
+            <span className="text-xs sm:text-sm">{range[0]}-{range[1]} of {total}</span>,
+          size: 'small',
+        }}
+        onChange={(pagination) => 
+          onTableChange(pagination.current || 1, pagination.pageSize || limit)
+        }
+        scroll={{ x: 700 }}
+        className="text-xs sm:text-sm"
+      />
+    </div>
   );
 };
 

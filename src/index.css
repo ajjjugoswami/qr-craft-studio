@@ -1172,15 +1172,125 @@ h5.ant-typography {
 /* ============================== */
 /* Mobile App-like Styles         */
 /* ============================== */
+
+/* Mobile Typography - Matching Landing Page */
 @media (max-width: 640px) {
+  /* Base text sizing for mobile */
+  body {
+    font-size: 14px !important;
+  }
+  
+  /* Headings - proportional sizing like landing page */
+  h1.ant-typography,
+  .ant-typography h1 {
+    font-size: 1.5rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  h2.ant-typography,
+  .ant-typography h2 {
+    font-size: 1.25rem !important;
+    line-height: 1.25 !important;
+  }
+  
+  h3.ant-typography,
+  .ant-typography h3 {
+    font-size: 1.125rem !important;
+    line-height: 1.3 !important;
+  }
+  
+  h4.ant-typography,
+  .ant-typography h4 {
+    font-size: 1rem !important;
+    line-height: 1.4 !important;
+  }
+  
+  h5.ant-typography,
+  .ant-typography h5 {
+    font-size: 0.875rem !important;
+    line-height: 1.4 !important;
+  }
+  
+  /* Cards */
   .ant-card {
     border-radius: 12px !important;
   }
   
+  .ant-card-body {
+    padding: 12px !important;
+  }
+  
+  /* Buttons - touch-friendly */
   .ant-btn {
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    min-height: 40px !important;
+  }
+  
+  .ant-btn-sm {
+    min-height: 32px !important;
+    font-size: 13px !important;
+  }
+  
+  .ant-btn-lg {
+    min-height: 44px !important;
+    font-size: 15px !important;
+  }
+  
+  /* Inputs - touch-friendly */
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-select-selector,
+  .ant-picker {
+    min-height: 40px !important;
+    font-size: 14px !important;
     border-radius: 8px !important;
   }
   
+  /* Tables - mobile responsive */
+  .ant-table {
+    font-size: 12px !important;
+  }
+  
+  .ant-table-thead > tr > th {
+    padding: 8px 6px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+  }
+  
+  .ant-table-tbody > tr > td {
+    padding: 8px 6px !important;
+  }
+  
+  /* Tags smaller on mobile */
+  .ant-tag {
+    font-size: 10px !important;
+    padding: 2px 6px !important;
+    line-height: 1.4 !important;
+  }
+  
+  /* Tabs - mobile optimized */
+  .ant-tabs-tab {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+  }
+  
+  .ant-tabs-nav {
+    margin-bottom: 12px !important;
+  }
+  
+  /* Pagination */
+  .ant-pagination {
+    font-size: 13px !important;
+  }
+  
+  .ant-pagination-item {
+    min-width: 28px !important;
+    height: 28px !important;
+    line-height: 26px !important;
+  }
+  
+  /* Modal - bottom sheet style */
   .ant-modal-content {
     border-radius: 16px 16px 0 0 !important;
     max-height: 90vh !important;
@@ -1199,75 +1309,204 @@ h5.ant-typography {
     width: 100% !important;
   }
   
+  .ant-modal-header {
+    padding: 12px 16px !important;
+  }
+  
+  .ant-modal-body {
+    padding: 12px 16px !important;
+  }
+  
+  .ant-modal-footer {
+    padding: 12px 16px !important;
+  }
+  
+  /* Drawer */
   .ant-drawer-content-wrapper {
     width: 100% !important;
     max-width: 100% !important;
   }
+  
+  /* Form items spacing */
+  .ant-form-item {
+    margin-bottom: 12px !important;
+  }
+  
+  .ant-form-item-label {
+    padding-bottom: 4px !important;
+  }
+  
+  .ant-form-item-label > label {
+    font-size: 13px !important;
+  }
+  
+  /* Avatar smaller on mobile */
+  .ant-avatar {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 14px !important;
+  }
+  
+  .ant-avatar-lg {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  /* Statistics */
+  .ant-statistic-title {
+    font-size: 11px !important;
+  }
+  
+  .ant-statistic-content {
+    font-size: 20px !important;
+  }
+  
+  /* Collapse/Accordion */
+  .ant-collapse-header {
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+  }
+  
+  .ant-collapse-content-box {
+    padding: 10px 12px !important;
+  }
+  
+  /* Space component */
+  .ant-space {
+    gap: 6px !important;
+  }
+  
+  /* Dropdown menus */
+  .ant-dropdown-menu-item {
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Tablet and small laptops */
+@media (min-width: 641px) and (max-width: 1024px) {
+  body {
+    font-size: 15px !important;
+  }
+  
+  .ant-card-body {
+    padding: 16px !important;
+  }
+  
+  .ant-btn {
+    min-height: 42px !important;
+  }
+  
+  .ant-table-thead > tr > th {
+    padding: 10px 8px !important;
+  }
+  
+  .ant-table-tbody > tr > td {
+    padding: 10px 8px !important;
+  }
 }
 
 /* ============================== */
-/* Mobile-first Utilities         */
+/* Mobile Responsive Tables       */
 /* ============================== */
-.card-compact .ant-card-body {
-  padding: 12px !important;
+@media (max-width: 768px) {
+  /* Horizontal scroll for tables */
+  .ant-table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  .ant-table {
+    min-width: 600px !important;
+  }
+  
+  /* Hide less important columns on mobile */
+  .hide-on-mobile {
+    display: none !important;
+  }
 }
 
-.avatar-primary {
-  background: hsl(var(--primary)) !important;
-  color: hsl(var(--primary-foreground)) !important;
-}
-
-.dashboard-mobile-drawer .ant-drawer-body {
-  padding: 0 !important;
-}
-
-.safe-area-inset-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.safe-area-inset-top {
-  padding-top: env(safe-area-inset-top);
-}
-
-.chart-tooltip {
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: 10px;
-  box-shadow: 0 10px 40px hsl(var(--foreground) / 0.15);
-  padding: 10px 12px;
-  color: hsl(var(--foreground));
+/* Mobile card-style tables */
+.mobile-table-card {
+  display: none;
 }
 
 @media (max-width: 640px) {
-  .ant-card {
-    border-radius: 12px !important;
+  .mobile-table-card {
+    display: block;
   }
-
-  .ant-btn {
-    border-radius: 8px !important;
+  
+  .desktop-table {
+    display: none !important;
   }
+}
 
-  .ant-modal-content {
-    border-radius: 16px 16px 0 0 !important;
-    max-height: 90vh !important;
-    overflow-y: auto !important;
+/* ============================== */
+/* Profile Tabs Mobile            */
+/* ============================== */
+@media (max-width: 640px) {
+  .profile-tabs .ant-tabs-nav {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
   }
-
-  .ant-modal-wrap {
-    align-items: flex-end !important;
-    display: flex !important;
+  
+  .profile-tabs .ant-tabs-tab {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    flex-shrink: 0 !important;
   }
+  
+  .profile-tabs .ant-tabs-content-holder {
+    padding: 12px !important;
+  }
+}
 
-  .ant-modal {
-    margin: 0 !important;
-    padding: 0 !important;
-    max-width: 100% !important;
+/* ============================== */
+/* Admin Tabs Mobile              */
+/* ============================== */
+@media (max-width: 640px) {
+  .admin-tabs .ant-tabs-nav {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  .admin-tabs .ant-tabs-tab {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .admin-tabs .ant-tabs-content-holder {
+    padding: 12px !important;
+  }
+}
+
+/* ============================== */
+/* Responsive Grid Utilities      */
+/* ============================== */
+@media (max-width: 640px) {
+  .mobile-full-width {
     width: 100% !important;
   }
-
-  .ant-drawer-content-wrapper {
-    width: 100% !important;
-    max-width: 100% !important;
+  
+  .mobile-stack {
+    flex-direction: column !important;
+  }
+  
+  .mobile-gap-2 {
+    gap: 8px !important;
+  }
+  
+  .mobile-p-3 {
+    padding: 12px !important;
+  }
+  
+  .mobile-text-sm {
+    font-size: 14px !important;
+  }
+  
+  .mobile-text-xs {
+    font-size: 12px !important;
   }
 }
 
@@ -1275,19 +1514,25 @@ h5.ant-typography {
 /* Touch-friendly Styles          */
 /* ============================== */
 @media (max-width: 1024px) {
-  .ant-btn {
+  /* Ensure touch targets are at least 44px */
+  .ant-btn:not(.ant-btn-sm) {
     min-height: 44px !important;
-    padding-left: 16px !important;
-    padding-right: 16px !important;
   }
-
-  .ant-input,
+  
+  .ant-input:not(.ant-input-sm),
   .ant-select-selector {
     min-height: 44px !important;
   }
-
-  .ant-tabs-tab {
-    padding: 12px 16px !important;
+  
+  /* Better tap targets for interactive elements */
+  .ant-checkbox-wrapper,
+  .ant-radio-wrapper {
+    padding: 8px 0 !important;
+  }
+  
+  /* Larger click area for links in tables */
+  .ant-table-tbody .ant-btn {
+    padding: 8px 12px !important;
   }
 }
 

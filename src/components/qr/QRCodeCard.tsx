@@ -366,14 +366,14 @@ const QRCodeCard: React.FC<QRCodeCardProps> = React.memo(({ qrCode, onEdit, onDe
     );
   }
 
-  // List View Card (original)
+  // List View Card (original) - Mobile Optimized
   return (
     <>
-      <Card className="qr-card glass-card mb-4 hover:shadow-md transition-shadow" styles={{ body: { padding: '16px 24px' } }}>
-        <div className="flex items-center gap-4">
+      <Card className="qr-card glass-card mb-3 hover:shadow-md transition-shadow" styles={{ body: { padding: '12px 16px' } }}>
+        <div className="flex items-center gap-3">
           {/* QR Preview Mini */}
           <div
-            className="w-20 h-20 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+            className="w-14 h-14 sm:w-20 sm:h-20 rounded-lg flex items-center justify-center flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
             style={{ 
               background: qrCode.template?.showGradient && qrCode.template?.gradientColor
                 ? `linear-gradient(135deg, ${qrCode.template.backgroundColor} 0%, ${qrCode.template.gradientColor} 100%)`
@@ -381,13 +381,13 @@ const QRCodeCard: React.FC<QRCodeCardProps> = React.memo(({ qrCode, onEdit, onDe
             }}
             onClick={() => setDownloadModalOpen(true)}
           >
-            <div className="w-16 h-16 bg-white rounded flex items-center justify-center">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded flex items-center justify-center">
               <QRCodeOnly
                 content={qrCode.content}
                 template={qrCode.template}
                 styling={qrCode.styling}
                 qrId={qrCode.id}
-                size={58}
+                size={48}
                 qrType={qrCode.type}
               />
             </div>
@@ -395,30 +395,30 @@ const QRCodeCard: React.FC<QRCodeCardProps> = React.memo(({ qrCode, onEdit, onDe
 
           {/* Info */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 mb-1">
-              <Text strong className="text-base truncate">
+            <div className="flex items-center gap-2 mb-1">
+              <Text strong className="text-sm sm:text-base truncate">
                 {qrCode.name}
               </Text>
               {qrCode.password && (
                 <Tooltip title="Password Protected">
-                  <Lock size={14} className="text-amber-500" />
+                  <Lock size={12} className="text-amber-500 flex-shrink-0" />
                 </Tooltip>
               )}
               {qrCode.scanLimit && (
                 <Tooltip title={`Scan Limit: ${qrCode.scanLimit}`}>
-                  <Target size={14} className="text-blue-500" />
+                  <Target size={12} className="text-blue-500 flex-shrink-0" />
                 </Tooltip>
               )}
             </div>
-            <Text type="secondary" className="text-sm truncate block">
-              {qrCode.content.substring(0, 50)}
-              {qrCode.content.length > 50 && '...'}
+            <Text type="secondary" className="text-xs sm:text-sm truncate block hidden sm:block">
+              {qrCode.content.substring(0, 40)}
+              {qrCode.content.length > 40 && '...'}
             </Text>
-            <div className="flex items-center gap-4 mt-2">
+            <div className="flex flex-wrap items-center gap-2 mt-1 sm:mt-2">
               <Text type="secondary" className="text-xs">
                 <span style={{ color: 'hsl(var(--primary))' }}>{qrCode.scans}</span> scans
               </Text>
-              <Tag color={qrCode.status === 'active' ? 'success' : 'error'} className="m-0 flex items-center gap-1">
+              <Tag color={qrCode.status === 'active' ? 'success' : 'error'} className="m-0 flex items-center gap-1 text-[10px]">
                 {qrCode.status === 'active' ? (
                   <CheckCircle size={10} />
                 ) : (
@@ -426,59 +426,41 @@ const QRCodeCard: React.FC<QRCodeCardProps> = React.memo(({ qrCode, onEdit, onDe
                 )}
                 {qrCode.status}
               </Tag>
-              <Text type="secondary" className="text-xs">
-                {formatDate(qrCode.createdAt)}
-              </Text>
+              <Tag color={typeColors[qrCode.type]} className="uppercase text-[10px] m-0 hidden sm:inline-flex">
+                {qrCode.type}
+              </Tag>
             </div>
           </div>
 
-          {/* Type Badge */}
-          <Tag color={typeColors[qrCode.type]} className="uppercase text-xs">
-            {qrCode.type}
-          </Tag>
-
-          {/* Actions */}
-          <div className="flex items-center gap-1">
+          {/* Actions - Compact on mobile */}
+          <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
             <Tooltip title="Preview">
               <button
-                className="w-8 h-8 flex items-center justify-center rounded hover:bg-muted transition-colors"
+                className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded hover:bg-muted transition-colors"
                 onClick={() => setDownloadModalOpen(true)}
               >
-                <Eye size={16} />
+                <Eye size={14} />
               </button>
             </Tooltip>
             <Tooltip title="Analytics">
               <button 
-                className="w-8 h-8 flex items-center justify-center rounded hover:bg-muted transition-colors"
+                className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded hover:bg-muted transition-colors hidden sm:flex"
                 onClick={() => navigate(`/analytics/${qrCode.id}`)}
               >
-                <BarChart3 size={16} />
+                <BarChart3 size={14} />
               </button>
             </Tooltip>
             <Dropdown menu={{ items: downloadMenuItems }} placement="bottomRight" trigger={['click']}>
               <Tooltip title="Download">
-                <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-muted transition-colors">
-                  <Download size={16} />
+                <button className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded hover:bg-muted transition-colors">
+                  <Download size={14} />
                 </button>
               </Tooltip>
             </Dropdown>
-            <Popconfirm
-              title="Delete QR Code"
-              description="Are you sure you want to delete this QR code?"
-              onConfirm={() => onDelete(qrCode.id)}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Tooltip title="Delete">
-                <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-destructive/10 text-destructive transition-colors">
-                  <Trash2 size={16} />
-                </button>
-              </Tooltip>
-            </Popconfirm>
             <Dropdown menu={{ items: actionsMenuItems }} placement="bottomRight" trigger={['click']}>
-              <Tooltip title="More Actions">
-                <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-muted transition-colors">
-                  <MoreHorizontal size={16} />
+              <Tooltip title="More">
+                <button className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded hover:bg-muted transition-colors">
+                  <MoreHorizontal size={14} />
                 </button>
               </Tooltip>
             </Dropdown>
