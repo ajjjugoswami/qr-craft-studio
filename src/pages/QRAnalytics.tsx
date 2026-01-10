@@ -208,51 +208,73 @@ const QRAnalytics: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="animate-fade-in space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-6 flex-wrap">
-          <Button icon={<ArrowLeft size={18} />} onClick={() => navigate('/dashboard')} />
-          <div className="flex-1 min-w-0">
-            <Title level={2} className="!mb-0">{qrCode?.name || 'QR Code'}</Title>
-            <Text type="secondary">QR Code Analytics & Scan Details</Text>
-          </div>
+      <div className="animate-fade-in space-y-4 sm:space-y-6 pb-6">
+        {/* Header - Mobile Optimized */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <Button icon={<Download size={16} />} onClick={downloadCSV}>
-              Export CSV
+            <Button
+              icon={<ArrowLeft size={16} />}
+              onClick={() => navigate('/dashboard')}
+              size="small"
+              className="sm:size-middle"
+            />
+            <div className="min-w-0">
+              <Title level={3} className="!mb-0 text-lg sm:text-2xl">{qrCode?.name || 'QR Code'}</Title>
+              <Text type="secondary" className="text-sm">QR Code Analytics & Scan Details</Text>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Button
+              icon={<Download size={14} />}
+              onClick={downloadCSV}
+              size="small"
+              className="sm:size-middle"
+            >
+              <span className="hidden sm:inline">Export CSV</span>
             </Button>
             <Segmented
               options={[{ label: 'Real', value: 'real' }, { label: 'Demo', value: 'demo' }]}
               value={mode}
               onChange={(val: string | number) => setMode(val as 'real' | 'demo')}
-              size="middle"
+              className="sm:size-middle"
             />
           </div>
         </div>
 
-        {/* Stats Overview */}
-        <Row gutter={[16, 16]}>
-          <Col xs={24} sm={12} lg={6}>
-            <Card className="hover:shadow-md transition-shadow">
-              <Statistic title="Total Scans" value={totalScans} prefix={<Eye size={20} className="text-primary mr-2" />} valueStyle={{ color: '#6366f1' }} />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <Card className="hover:shadow-md transition-shadow">
-              <Statistic title="Unique Locations" value={(analytics?.analytics && Object.keys(analytics.analytics.countries || {}).length) || locationData.length} prefix={<MapPin size={20} className="text-orange-500 mr-2" />} valueStyle={{ color: '#f59e0b' }} />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} lg={6}>
-            <Card className="hover:shadow-md transition-shadow">
-              <Statistic title="Growth Rate" value={12.5} suffix="%" prefix={<TrendingUp size={20} className="text-purple-500 mr-2" />} valueStyle={{ color: '#8b5cf6' }} />
-            </Card>
-          </Col>
-        </Row>
+        {/* Stats Overview - Mobile Optimized */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          <Card className="hover:shadow-md transition-shadow">
+            <Statistic
+              title={<span className="text-sm sm:text-base">Total Scans</span>}
+              value={totalScans}
+              prefix={<Eye size={16} className="text-primary mr-1 sm:mr-2" />}
+              valueStyle={{ color: '#6366f1', fontSize: '24px' }}
+            />
+          </Card>
+          <Card className="hover:shadow-md transition-shadow">
+            <Statistic
+              title={<span className="text-sm sm:text-base">Unique Locations</span>}
+              value={(analytics?.analytics && Object.keys(analytics.analytics.countries || {}).length) || locationData.length}
+              prefix={<MapPin size={16} className="text-orange-500 mr-1 sm:mr-2" />}
+              valueStyle={{ color: '#f59e0b', fontSize: '24px' }}
+            />
+          </Card>
+          <Card className="hover:shadow-md transition-shadow sm:col-span-2 lg:col-span-1">
+            <Statistic
+              title={<span className="text-sm sm:text-base">Growth Rate</span>}
+              value={12.5}
+              suffix="%"
+              prefix={<TrendingUp size={16} className="text-purple-500 mr-1 sm:mr-2" />}
+              valueStyle={{ color: '#8b5cf6', fontSize: '24px' }}
+            />
+          </Card>
+        </div>
 
-        {/* Charts Row */}
-        <Row gutter={[16, 16]}>
-          <Col xs={24} lg={12}>
-            <Card title="Scans Over Time" className="h-full">
-              <ResponsiveContainer width="100%" height={250}>
+        {/* Charts Row - Mobile Optimized */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <Card title={<span className="text-base sm:text-lg">Scans Over Time</span>} className="h-full">
+            <div className="h-64 sm:h-80">
+              <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={scansOverTime}>
                   <defs>
                     <linearGradient id="colorScans" x1="0" y1="0" x2="0" y2="1">
@@ -267,21 +289,21 @@ const QRAnalytics: React.FC = () => {
                   <Area type="monotone" dataKey="scans" stroke="#6366f1" strokeWidth={2} fillOpacity={1} fill="url(#colorScans)" />
                 </AreaChart>
               </ResponsiveContainer>
-            </Card>
-          </Col>
-          <Col xs={24} lg={12}>
-            <Card title="Device Distribution" className="h-full">
-              <ResponsiveContainer width="100%" height={250}>
+            </div>
+          </Card>
+          <Card title={<span className="text-base sm:text-lg">Device Distribution</span>} className="h-full">
+            <div className="h-64 sm:h-80">
+              <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={deviceTypeData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={5} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                  <Pie data={deviceTypeData} cx="50%" cy="50%" innerRadius={40} outerRadius={80} paddingAngle={5} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
                     {deviceTypeData.map((_, index) => (<Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />))}
                   </Pie>
                   <Tooltip />
                 </PieChart>
               </ResponsiveContainer>
-            </Card>
-          </Col>
-        </Row>
+            </div>
+          </Card>
+        </div>
 
         {/* More Charts */}
         <Row gutter={[16, 16]}>
