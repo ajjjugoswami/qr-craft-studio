@@ -14,6 +14,30 @@ interface MobileActionBarProps {
   saving: boolean;
 }
 
+const IconAction: React.FC<{
+  onClick: () => void;
+  disabled?: boolean;
+  label: string;
+  icon: React.ReactNode;
+}> = ({ onClick, disabled, label, icon }) => {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      className={`
+        w-10 h-10 rounded-xl border border-border bg-muted/40
+        flex items-center justify-center
+        transition-colors
+        ${disabled ? 'opacity-40' : 'hover:bg-muted'}
+      `}
+    >
+      {icon}
+    </button>
+  );
+};
+
 const MobileActionBar: React.FC<MobileActionBarProps> = ({
   currentStep,
   totalSteps,
@@ -28,56 +52,49 @@ const MobileActionBar: React.FC<MobileActionBarProps> = ({
   const isLastStep = currentStep === totalSteps - 1;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border p-3 z-40 lg:hidden safe-area-bottom">
+    <div className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-lg border-t border-border px-3 py-2 z-40 lg:hidden safe-area-bottom">
       <div className="flex items-center gap-2 max-w-md mx-auto">
-        {/* Back Button */}
-        <Button
-          size="large"
+        <IconAction
           onClick={onPrev}
           disabled={currentStep === 0}
-          icon={<ChevronLeft size={18} />}
-          className="flex-shrink-0 !px-3"
+          label="Back"
+          icon={<ChevronLeft size={18} className="text-foreground" />}
         />
 
-        {/* Undo Button */}
-        <Button
-          size="large"
+        <IconAction
           onClick={onUndo}
           disabled={!canUndo}
-          icon={<Undo2 size={18} />}
-          className="flex-shrink-0 !px-3"
+          label="Undo"
+          icon={<Undo2 size={18} className="text-foreground" />}
         />
 
-        {/* Preview Button */}
-        <Button
-          size="large"
+        <IconAction
           onClick={onPreview}
-          icon={<Eye size={18} />}
-          className="flex-shrink-0 !px-3"
+          label="Preview"
+          icon={<Eye size={18} className="text-foreground" />}
         />
 
-        {/* Primary Action */}
         {isLastStep ? (
           <Button
             type="primary"
-            size="large"
+            size="middle"
             onClick={onSave}
             loading={saving}
             disabled={saving}
-            icon={<Save size={18} />}
+            icon={<Save size={16} />}
             className="flex-1 !font-semibold"
           >
-            Save QR
+            Save
           </Button>
         ) : (
           <Button
             type="primary"
-            size="large"
+            size="middle"
             onClick={onNext}
             className="flex-1 !font-semibold"
           >
-            <span>Next</span>
-            <ChevronRight size={18} className="ml-1" />
+            Next
+            <ChevronRight size={16} className="ml-1" />
           </Button>
         )}
       </div>
