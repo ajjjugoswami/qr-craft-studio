@@ -12,3 +12,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://qr-craft-studio.vercel.app/sitemap.xml
