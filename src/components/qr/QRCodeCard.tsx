@@ -203,88 +203,81 @@ const QRCodeCard: React.FC<QRCodeCardProps> = React.memo(({ qrCode, onEdit, onDe
 
           {/* QR Preview */}
           <div 
-            className="w-full min-h-[150px] rounded-lg flex items-center justify-center mb-3 relative overflow-hidden"
+            className="w-full min-h-[120px] sm:min-h-[150px] rounded-lg flex items-center justify-center mb-3 relative overflow-hidden"
           >
-            <div className="  flex items-center justify-center bg-white rounded-lg">
+            <div className="flex items-center justify-center bg-white rounded-lg p-2">
               <QRCodeOnly
                 content={qrCode.content}
                 template={qrCode.template}
                 styling={qrCode.styling}
                 qrId={qrCode.id}
-                size={150}
+                size={window.innerWidth < 640 ? 120 : 150}
                 qrType={qrCode.type}
               />
             </div>
           </div>
 
           {/* Title Row */}
-          <div className="mb-2">
-            <Text strong className="text-sm truncate block">
+          <div className="mb-2 min-h-[2rem] flex items-center">
+            <Text strong className="text-xs sm:text-sm truncate block text-center w-full leading-tight">
               {qrCode.name}
             </Text>
           </div>
 
-          {/* Info Row */}
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <Text className="text-xs text-muted-foreground">{qrCode.scans}</Text>
-              <Text className="text-xs text-muted-foreground">scans</Text>
+          {/* Info Row - Mobile Optimized */}
+          <div className="flex flex-col gap-2 mb-2">
+            {/* Scans Row */}
+            <div className="flex items-center justify-center">
+              <Text className="text-xs sm:text-sm text-muted-foreground font-medium">
+                {qrCode.scans} scan{qrCode.scans !== 1 ? 's' : ''}
+              </Text>
             </div>
-            <Tag color={typeColors[qrCode.type]} className="m-0 uppercase text-xs">
-              {qrCode.type}
-            </Tag>
-            <Tag color={qrCode.status === 'active' ? 'success' : 'error'} className="m-0 text-xs flex items-center gap-1">
-              {qrCode.status === 'active' ? (
-                <CheckCircle size={10} />
-              ) : (
-                <XCircle size={10} />
-              )}
-              {qrCode.status}
-            </Tag>
+            
+            {/* Tags Row */}
+            <div className="flex items-center justify-center gap-1 sm:gap-2 flex-wrap">
+              <Tag color={typeColors[qrCode.type]} className="m-0 uppercase text-[10px] sm:text-xs px-1.5 py-0.5">
+                {qrCode.type}
+              </Tag>
+              <Tag color={qrCode.status === 'active' ? 'success' : 'error'} className="m-0 text-[10px] sm:text-xs px-1.5 py-0.5 flex items-center gap-1">
+                {qrCode.status === 'active' ? (
+                  <CheckCircle size={8} />
+                ) : (
+                  <XCircle size={8} />
+                )}
+                {qrCode.status}
+              </Tag>
+            </div>
           </div>
 
           {/* Actions Row */}
-          <div className="flex items-center justify-between pt-2 border-t border-border">
+          <div className="flex items-center justify-center gap-1 sm:gap-2 pt-2 border-t border-border">
             <Tooltip title="Preview">
               <button
-                className="p-2 rounded hover:bg-muted transition-colors"
+                className="p-1.5 sm:p-2 rounded hover:bg-muted transition-colors"
                 onClick={() => setDownloadModalOpen(true)}
               >
-                <Eye size={16} />
+                <Eye size={14} />
               </button>
             </Tooltip>
             <Tooltip title="Analytics">
               <button
-                className="p-2 rounded hover:bg-muted transition-colors"
+                className="p-1.5 sm:p-2 rounded hover:bg-muted transition-colors"
                 onClick={() => navigate(`/analytics/${qrCode.id}`)}
               >
-                <BarChart3 size={16} />
+                <BarChart3 size={14} />
               </button>
             </Tooltip>
             <Dropdown menu={{ items: downloadMenuItems }} placement="bottomRight" trigger={['click']}>
               <Tooltip title="Download">
-                <button className="p-2 rounded hover:bg-muted transition-colors">
-                  <Download size={16} />
+                <button className="p-1.5 sm:p-2 rounded hover:bg-muted transition-colors">
+                  <Download size={14} />
                 </button>
               </Tooltip>
             </Dropdown>
-            <Popconfirm
-              title="Delete QR Code"
-              description="Are you sure you want to delete this QR code?"
-              onConfirm={() => onDelete(qrCode.id)}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Tooltip title="Delete">
-                <button className="p-2 rounded hover:bg-destructive/10 text-destructive transition-colors">
-                  <Trash2 size={16} />
-                </button>
-              </Tooltip>
-            </Popconfirm>
             <Dropdown menu={{ items: actionsMenuItems }} placement="bottomRight" trigger={['click']}>
               <Tooltip title="More Actions">
-                <button className="p-2 rounded hover:bg-muted transition-colors">
-                  <MoreHorizontal size={16} />
+                <button className="p-1.5 sm:p-2 rounded hover:bg-muted transition-colors">
+                  <MoreHorizontal size={14} />
                 </button>
               </Tooltip>
             </Dropdown>
@@ -414,19 +407,19 @@ const QRCodeCard: React.FC<QRCodeCardProps> = React.memo(({ qrCode, onEdit, onDe
               {qrCode.content.substring(0, 40)}
               {qrCode.content.length > 40 && '...'}
             </Text>
-            <div className="flex flex-wrap items-center gap-2 mt-1 sm:mt-2">
-              <Text type="secondary" className="text-xs">
-                <span style={{ color: 'hsl(var(--primary))' }}>{qrCode.scans}</span> scans
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1 sm:mt-2">
+              <Text type="secondary" className="text-xs sm:text-sm">
+                <span style={{ color: 'hsl(var(--primary))' }} className="font-medium">{qrCode.scans}</span> scan{qrCode.scans !== 1 ? 's' : ''}
               </Text>
-              <Tag color={qrCode.status === 'active' ? 'success' : 'error'} className="m-0 flex items-center gap-1 text-[10px]">
+              <Tag color={qrCode.status === 'active' ? 'success' : 'error'} className="m-0 flex items-center gap-1 text-[10px] sm:text-xs px-1.5 py-0.5">
                 {qrCode.status === 'active' ? (
-                  <CheckCircle size={10} />
+                  <CheckCircle size={8} />
                 ) : (
-                  <XCircle size={10} />
+                  <XCircle size={8} />
                 )}
                 {qrCode.status}
               </Tag>
-              <Tag color={typeColors[qrCode.type]} className="uppercase text-[10px] m-0 hidden sm:inline-flex">
+              <Tag color={typeColors[qrCode.type]} className="uppercase text-[10px] sm:text-xs m-0 px-1.5 py-0.5">
                 {qrCode.type}
               </Tag>
             </div>
