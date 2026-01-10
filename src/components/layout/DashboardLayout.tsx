@@ -286,8 +286,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               className="flex items-center justify-center"
             />
           </Tooltip>
-          <Badge dot status="success" offset={[-8, 40]}>
-            <Avatar
+             <Avatar
               className="avatar-primary cursor-pointer"
               size={48}
               src={user?.profilePicture}
@@ -295,8 +294,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             >
               {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
             </Avatar>
-          </Badge>
-        </div>
+         </div>
       </header>
 
       {/* Mobile Drawer */}
@@ -307,7 +305,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         onClose={() => setMobileMenuOpen(false)}
         open={mobileMenuOpen}
         width={280}
-        className="lg:hidden dashboard-mobile-drawer"
+        className="lg:hidden dashboard-mobile-drawer p-0"
       >
         <div className="absolute top-3 right-3 z-10">
           <Button

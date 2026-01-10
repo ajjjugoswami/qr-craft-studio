@@ -2218,4 +2218,10 @@ h5.ant-typography {
 
 .ant-segmented-item-label{
   display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ant-drawer .ant-drawer-body{
+  padding: 0px;
 }
