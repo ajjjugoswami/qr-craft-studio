@@ -46,7 +46,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             value: 'grid',
           },
         ]}
-        className="segmented-animated"
+        // className="segmented-animated h-10"
       />
     </div>
   );

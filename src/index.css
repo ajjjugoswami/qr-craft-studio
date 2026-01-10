@@ -2215,3 +2215,7 @@ h5.ant-typography {
 .mobile-step-dot.completed {
   background: hsl(var(--primary) / 0.5);
 }
+
+.ant-segmented-item-label{
+  display: flex;
+}
