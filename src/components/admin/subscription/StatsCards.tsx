@@ -17,48 +17,48 @@ const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
   };
 
   return (
-    <Row gutter={[16, 16]} className="mb-6">
-      <Col xs={24} sm={12} lg={6}>
-        <Card>
+    <Row gutter={[12, 12]} className="mb-4">
+      <Col xs={12} sm={12} lg={6}>
+        <Card bodyStyle={{ padding: 12 }}>
           <Statistic
-            title="Total Revenue"
+            title={<span className="text-xs">Total Revenue</span>}
             value={stats?.totalRevenue || 0}
             precision={0}
-            valueStyle={{ color: '#3f8600' }}
-            prefix={<DollarSign size={20} />}
+            valueStyle={{ color: '#3f8600', fontSize: 18 }}
+            prefix={<DollarSign size={16} />}
             formatter={(value) => formatCurrency(Number(value))}
           />
         </Card>
       </Col>
-      <Col xs={24} sm={12} lg={6}>
-        <Card>
+      <Col xs={12} sm={12} lg={6}>
+        <Card bodyStyle={{ padding: 12 }}>
           <Statistic
-            title="Active Subscriptions"
+            title={<span className="text-xs">Active Subs</span>}
             value={stats?.activeSubscriptions || 0}
-            valueStyle={{ color: '#1890ff' }}
-            prefix={<Users size={20} />}
+            valueStyle={{ color: '#1890ff', fontSize: 18 }}
+            prefix={<Users size={16} />}
           />
         </Card>
       </Col>
-      <Col xs={24} sm={12} lg={6}>
-        <Card>
+      <Col xs={12} sm={12} lg={6}>
+        <Card bodyStyle={{ padding: 12 }}>
           <Statistic
-            title="Total Payments"
+            title={<span className="text-xs">Payments</span>}
             value={stats?.totalPayments || 0}
-            valueStyle={{ color: '#722ed1' }}
-            prefix={<CreditCard size={20} />}
+            valueStyle={{ color: '#722ed1', fontSize: 18 }}
+            prefix={<CreditCard size={16} />}
           />
         </Card>
       </Col>
-      <Col xs={24} sm={12} lg={6}>
-        <Card>
+      <Col xs={12} sm={12} lg={6}>
+        <Card bodyStyle={{ padding: 12 }}>
           <Statistic
-            title="Conversion Rate"
+            title={<span className="text-xs">Conversion</span>}
             value={stats?.conversionRate || 0}
             precision={1}
             suffix="%"
-            valueStyle={{ color: '#f5222d' }}
-            prefix={<TrendingUp size={20} />}
+            valueStyle={{ color: '#f5222d', fontSize: 18 }}
+            prefix={<TrendingUp size={16} />}
           />
         </Card>
       </Col>

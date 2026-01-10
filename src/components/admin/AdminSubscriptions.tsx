@@ -5,9 +5,10 @@ import StatsCards from './subscription/StatsCards';
 import SubscriptionTable from './subscription/SubscriptionTable';
 import SearchHeader from './subscription/SearchHeader';
 import PaymentTable from './subscription/PaymentTable';
- 
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const AdminSubscriptions: React.FC = () => {
+  const isMobile = useIsMobile();
   const {
     stats,
     subscriptions,
@@ -64,7 +65,7 @@ const AdminSubscriptions: React.FC = () => {
         <div>
           <SearchHeader
             title="Payment History"
-            description="Track all payment transactions and their status"
+            description="Track all payment transactions"
             searchValue={localSearch}
             onSearchChange={setLocalSearch}
             onSearch={onSearch}
@@ -102,7 +103,7 @@ const AdminSubscriptions: React.FC = () => {
         activeKey={activeTab}
         onChange={setActiveTab}
         items={tabItems}
-        size="large"
+        size={isMobile ? 'small' : 'large'}
       />
     </div>
   );
