@@ -1101,8 +1101,44 @@ h5.ant-typography {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Safe Area for iOS */
+.safe-area-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 12px);
+}
+
+.safe-area-top {
+  padding-top: max(env(safe-area-inset-top, 0px), 12px);
+}
+
+/* Scrollbar hide utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
 /* ============================== */

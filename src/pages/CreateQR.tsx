@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { Button, Card, Typography, message, Drawer } from 'antd';
-import { Check, Settings2, Eye, ChevronLeft, ChevronRight, Undo2 } from 'lucide-react';
+import { Button, Card, Typography, message } from 'antd';
+import { Check, Settings2, ChevronLeft, ChevronRight, Undo2 } from 'lucide-react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { qrCodeAPI } from '@/lib/api';
 import DashboardLayout from '../components/layout/DashboardLayout';
@@ -14,12 +14,22 @@ import QRCodePreview from '../components/qr/QRCodePreview';
 import AdvancedSettings from '../components/qr/AdvancedSettings';
 import { useQRCodes } from '../hooks/useQRCodes';
 import { useStyleHistory } from '../hooks/useStyleHistory';
+import { useIsMobile } from '../hooks/use-mobile';
 import {
   QRTemplate,
   QRStyling,
   QRType,
   defaultStyling,
 } from '../types/qrcode';
+
+// Mobile-optimized components
+import {
+  MobileStepNavigation,
+  MobileQRPreviewSheet,
+  MobileActionBar,
+  MobileTemplateGrid,
+  MobileQRTypeSelector,
+} from '../components/mobile/qr';
 
 const { Text } = Typography;
 
@@ -41,6 +51,7 @@ const CreateQR: React.FC = () => {
   const { saveQRCode, updateQRCode, getQRCode } = useQRCodes();
   const previewRef = useRef<HTMLDivElement>(null);
   const { pushStyle, undo, canUndo } = useStyleHistory();
+  const isMobile = useIsMobile();
 
   const { id } = useParams<{ id?: string }>();
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -208,9 +219,17 @@ const CreateQR: React.FC = () => {
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
-        return <TemplateSelector selectedTemplate={template} onSelect={setTemplate} />;
+        return isMobile ? (
+          <MobileTemplateGrid selectedTemplate={template} onSelect={setTemplate} />
+        ) : (
+          <TemplateSelector selectedTemplate={template} onSelect={setTemplate} />
+        );
       case 1:
-        return <QRTypeSelector selectedType={type} onSelect={setType} />;
+        return isMobile ? (
+          <MobileQRTypeSelector selectedType={type} onSelect={setType} />
+        ) : (
+          <QRTypeSelector selectedType={type} onSelect={setType} />
+        );
       case 2:
         return (
           <ContentEditor
@@ -243,29 +262,15 @@ const CreateQR: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="animate-fade-in">
-        {/* Mobile Step Indicator */}
-        <div className="lg:hidden mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <Text className="text-sm font-medium">
-              Step {currentStep + 1} of {steps.length}
-            </Text>
-            <Text type="secondary" className="text-sm">
-              {steps[currentStep].title}
-            </Text>
-          </div>
-          <div className="flex gap-1">
-            {steps.map((_, index) => (
-              <div
-                key={index}
-                onClick={() => goToStep(index)}
-                className={`flex-1 h-1.5 rounded-full transition-colors cursor-pointer ${
-                  index <= currentStep ? 'bg-primary' : 'bg-muted'
-                }`}
-              />
-            ))}
-          </div>
-        </div>
+      <div className="animate-fade-in pb-20 lg:pb-0">
+        {/* Mobile Step Navigation */}
+        {isMobile && (
+          <MobileStepNavigation
+            steps={steps}
+            currentStep={currentStep}
+            onStepClick={goToStep}
+          />
+        )}
 
         {/* Desktop Steps - Matching Reference Design */}
         <Card className="mb-4 md:mb-6 hidden lg:block bg-card border-border">
@@ -322,55 +327,9 @@ const CreateQR: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6">
           {/* Main Content */}
           <div className="lg:col-span-3">
-            <Card className="min-h-[400px] md:min-h-[500px]">
+            <Card className={`${isMobile ? 'min-h-[350px] !p-3' : 'min-h-[500px]'}`}>
               {renderStepContent()}
             </Card>
-            
-            {/* Mobile Navigation */}
-            <div className="flex items-center justify-between gap-2 mt-4 lg:hidden">
-              <Button
-                size="large"
-                onClick={handlePrev}
-                disabled={currentStep === 0}
-                icon={<ChevronLeft size={18} />}
-                className="flex-1"
-              >
-                Back
-              </Button>
-
-              <Button
-                size="large"
-                onClick={handleUndo}
-                disabled={!canUndo}
-                icon={<Undo2 size={18} />}
-                className="flex-shrink-0"
-              >
-                Undo
-              </Button>
-
-              {currentStep === steps.length - 1 ? (
-                <Button
-                  type="primary"
-                  size="large"
-                  onClick={handleSave}
-                  loading={saving}
-                  disabled={saving}
-                  className="flex-1"
-                >
-                  Save QR Code
-                </Button>
-              ) : (
-                <Button
-                  type="primary"
-                  size="large"
-                  onClick={handleNext}
-                  className="flex-1"
-                >
-                  Next
-                  <ChevronRight size={18} className="ml-1" />
-                </Button>
-              )}
-            </div>
           </div>
 
           {/* Desktop Preview */}
@@ -457,60 +416,34 @@ const CreateQR: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Preview FAB */}
-        <button
-          onClick={() => setShowPreviewDrawer(true)}
-          className="lg:hidden fixed bottom-20 right-4 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center z-40"
-        >
-          <Eye size={24} />
-        </button>
+        {/* Mobile Action Bar */}
+        {isMobile && (
+          <MobileActionBar
+            currentStep={currentStep}
+            totalSteps={steps.length}
+            onPrev={handlePrev}
+            onNext={handleNext}
+            onUndo={handleUndo}
+            onSave={handleSave}
+            onPreview={() => setShowPreviewDrawer(true)}
+            canUndo={canUndo}
+            saving={saving}
+          />
+        )}
 
-        {/* Mobile Preview Drawer */}
-        <Drawer
-          title="Preview"
-          placement="bottom"
-          onClose={() => setShowPreviewDrawer(false)}
+        {/* Mobile Preview Sheet */}
+        <MobileQRPreviewSheet
           open={showPreviewDrawer}
-          height="80vh"
-          className="lg:hidden"
-          extra={
-            template ? (
-              <Button
-                type="primary"
-                size="small"
-                icon={<Settings2 size={14} />}
-                onClick={() => {
-                  setShowPreviewDrawer(false);
-                  setShowTemplateEditor(true);
-                }}
-              >
-                Edit Template
-              </Button>
-            ) : null
-          }
-        >
-          <div className="flex flex-col items-center py-4">
-            <QRCodePreview
-              ref={previewRef}
-              content={content}
-              template={template}
-              styling={styling}
-              editable={!!template}
-              onTemplateChange={setTemplate}
-              qrId={editingId || undefined}
-              qrType={type}
-            />
-            {template ? (
-              <Text type="secondary" className="text-xs mt-4 text-center">
-                Tap text to edit inline
-              </Text>
-            ) : (
-              <Text type="secondary" className="text-xs mt-4 text-center">
-                Plain QR code • Customize in Design step
-              </Text>
-            )}
-          </div>
-        </Drawer>
+          onClose={() => setShowPreviewDrawer(false)}
+          content={content}
+          template={template}
+          styling={styling}
+          onTemplateChange={setTemplate}
+          onEditTemplate={() => setShowTemplateEditor(true)}
+          qrId={editingId || undefined}
+          qrType={type}
+          previewRef={previewRef}
+        />
 
         {/* Template Editor Modal */}
         <TemplateEditorModal
