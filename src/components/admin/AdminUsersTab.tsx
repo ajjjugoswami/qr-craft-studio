@@ -401,6 +401,7 @@ const AdminUsersTab: React.FC = memo(() => {
         onCancel={() => setPreviewVisible(false)}
         centered
         width={isMobile ? "100%" : 600}
+        destroyOnHidden
       >
         <img
           alt={previewTitle}

@@ -484,6 +484,7 @@ const ProfileInfo: React.FC = () => {
         onCancel={() => setPreviewVisible(false)}
         centered
         width={600}
+        destroyOnHidden
       >
         <img
           alt="Profile Picture"
@@ -504,6 +505,7 @@ const ProfileInfo: React.FC = () => {
         onCancel={handleCropCancel}
         centered
         width={500}
+        destroyOnHidden
         footer={
           <div className="flex justify-end gap-2 mt-2">
             <Button onClick={handleCropCancel} size="small">

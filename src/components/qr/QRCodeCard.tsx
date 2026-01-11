@@ -356,7 +356,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = React.memo(
             width={480}
             centered
             className="qr-preview-modal"
-            destroyOnClose
+            destroyOnHidden
           >
             <div className="flex flex-col items-center py-4 px-2">
               <Spin
@@ -568,7 +568,7 @@ const QRCodeCard: React.FC<QRCodeCardProps> = React.memo(
           width="90%"
           centered
           className="qr-preview-modal"
-          destroyOnClose
+          destroyOnHidden
         >
           <div className="flex flex-col items-center py-4 px-2">
             <Spin

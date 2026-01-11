@@ -46,6 +46,7 @@ const LimitReachedDialog: React.FC<LimitReachedDialogProps> = ({
       width={420}
       className="limit-reached-modal"
       maskClosable={false}
+      destroyOnHidden
     >
       <div className="p-5">
         {/* Header */}

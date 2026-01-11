@@ -220,7 +220,7 @@ const UserSubscriptionModal: React.FC<UserSubscriptionModalProps> = ({
       onCancel={handleCancel}
       footer={null}
       width={600}
-      destroyOnClose
+      destroyOnHidden
     >
       {dataLoading ? (
         <div className="text-center py-8">Loading subscription data…</div>

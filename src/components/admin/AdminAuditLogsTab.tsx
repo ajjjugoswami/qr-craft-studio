@@ -185,6 +185,7 @@ const AdminAuditLogsTab: React.FC = memo(() => {
       />
 
       <Modal
+      destroyOnHidden
         title={
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingRight: 48,marginTop: -4,marginBottom: 4 }}>
             <span>Audit Log Details</span>

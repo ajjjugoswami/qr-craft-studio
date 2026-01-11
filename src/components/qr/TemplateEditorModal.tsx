@@ -865,6 +865,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
           Done
         </Button>,
       ]}
+      destroyOnHidden
     >
       <div className="flex gap-6">
         {/* Editor Panel */}
