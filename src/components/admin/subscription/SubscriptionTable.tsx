@@ -162,7 +162,7 @@ const SubscriptionTable: React.FC<SubscriptionTableProps> = ({
         dataSource={subscriptions}
         columns={columns}
         loading={loading}
-        size="small"
+        size="middle"
         pagination={{
           current: page,
           pageSize: limit,
@@ -171,7 +171,7 @@ const SubscriptionTable: React.FC<SubscriptionTableProps> = ({
           showQuickJumper: false,
           showTotal: (total, range) => 
             <span className="text-xs">{range[0]}-{range[1]} of {total}</span>,
-          size: 'small',
+          size: 'default',
         }}
         onChange={(pagination) => 
           onTableChange(pagination.current || 1, pagination.pageSize || limit)

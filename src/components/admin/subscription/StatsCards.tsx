@@ -2,20 +2,13 @@ import React from 'react';
 import { Card, Statistic, Row, Col } from 'antd';
 import { DollarSign, Users, CreditCard, TrendingUp } from 'lucide-react';
 import type { SubscriptionStats } from '@/store/slices/adminSlice';
+import { formatStatsCurrency } from '@/utils/currencyFormatter';
 
 interface StatsCardsProps {
   stats: SubscriptionStats | null;
 }
 
 const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
-  const formatCurrency = (amount: number, currency = 'INR') => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 0,
-    }).format(amount / 100); // Assuming amount is in paisa
-  };
-
   return (
     <Row gutter={[12, 12]} className="mb-4">
       <Col xs={12} sm={12} lg={6}>
@@ -25,8 +18,7 @@ const StatsCards: React.FC<StatsCardsProps> = ({ stats }) => {
             value={stats?.totalRevenue || 0}
             precision={0}
             valueStyle={{ color: '#3f8600', fontSize: 18 }}
-            prefix={<DollarSign size={16} />}
-            formatter={(value) => formatCurrency(Number(value))}
+            formatter={(value) => formatStatsCurrency(Number(value))}
           />
         </Card>
       </Col>

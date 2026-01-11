@@ -22,6 +22,7 @@ import { usePayment } from '@/hooks/usePayment';
 import type { PaymentHistory } from '@/types/payment';
 import LogoLoader from '@/components/common/LogoLoader';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { formatCurrency } from '@/utils/currencyFormatter';
 
 const { Title, Text } = Typography;
 
@@ -82,7 +83,7 @@ const SubscriptionManagement: React.FC<SubscriptionManagementProps> = ({
   };
 
   const formatPrice = (amount: number) => {
-    return `₹${amount.toLocaleString('en-IN')}`;
+    return formatCurrency(amount);
   };
 
   const formatDate = (dateString: string) => {

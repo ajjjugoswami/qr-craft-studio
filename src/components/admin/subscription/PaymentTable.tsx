@@ -4,6 +4,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { useDateFormatter } from '@/hooks/useDateFormatter';
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { AdminPayment } from '@/store/slices/adminSlice';
+import { formatCurrencyIntl } from '@/utils/currencyFormatter';
 
 interface PaymentTableProps {
   payments: AdminPayment[];
@@ -24,14 +25,6 @@ const PaymentTable: React.FC<PaymentTableProps> = ({
 }) => {
   const formatter = useDateFormatter();
   const isMobile = useIsMobile();
-
-  const formatCurrency = (amount: number, currency = 'INR') => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 0,
-    }).format(amount / 100);
-  };
 
   const getPlanColor = (planType: string) => {
     const colors: Record<string, string> = {
@@ -70,7 +63,7 @@ const PaymentTable: React.FC<PaymentTableProps> = ({
           <div className="text-xs text-muted-foreground truncate">{payment.userId?.email}</div>
         </div>
         <div className="text-right">
-          <div className="text-sm font-semibold">{formatCurrency(payment.amount, payment.currency)}</div>
+          <div className="text-sm font-semibold">{formatCurrencyIntl(payment.amount, payment.currency)}</div>
           <Tag color={getStatusColor(payment.status)} className="text-xs capitalize mt-1">
             {payment.status}
           </Tag>
@@ -155,7 +148,7 @@ const PaymentTable: React.FC<PaymentTableProps> = ({
       dataIndex: 'amount',
       key: 'amount',
       render: (amount: number, record: AdminPayment) =>
-        formatCurrency(amount, record.currency),
+        formatCurrencyIntl(amount, record.currency),
     },
     {
       title: 'Plan',
