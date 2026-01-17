@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Building2, Globe, Check } from "lucide-react";
+import { ArrowRight, Building2, Lock, Check } from "lucide-react";
 import AnimatedSection from "./AnimatedSection";
 
 const features = [
-  "Custom domain support",
+  "Password protected QR codes",
   "Remove QR Studio branding",
   "Your logo everywhere",
   "Branded scan pages",
@@ -40,14 +40,15 @@ const WhiteLabelSection = () => {
                   </div>
                 </div>
 
-                {/* Custom domain */}
+                {/* Password Protection */}
                 <div className="bg-background rounded-lg p-3 border border-primary/50">
                   <div className="text-[10px] text-primary mb-1.5 flex items-center gap-1">
-                    <Globe className="h-3 w-3" />
-                    Custom Domain
+                    <Lock className="h-3 w-3" />
+                    Password Protection
                   </div>
-                  <div className="text-xs font-mono bg-primary/10 px-2 py-1.5 rounded text-primary">
-                    qr.yourcompany.com
+                  <div className="text-xs font-mono bg-primary/10 px-2 py-1.5 rounded text-primary flex items-center gap-2">
+                    <span>••••••••</span>
+                    <span className="text-[9px] text-primary/70">Secure Access</span>
                   </div>
                 </div>
               </div>
