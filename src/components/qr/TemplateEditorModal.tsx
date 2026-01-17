@@ -381,8 +381,9 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
     </div>
   );
 
-  // Content Tab for mobile
-  const ContentTab = () => (
+
+  // Use inline JSX instead of component functions to prevent re-mounting on state change
+  const contentTabContent = (
     <div className="space-y-3 overflow-y-auto px-1" style={{ maxHeight: isMobile ? 'calc(100vh - 200px)' : 520 }}>
       {/* Main Title & Subtitle */}
       <Card size="small" className="border-border" bodyStyle={{ padding: isMobile ? 8 : 12 }}>
@@ -519,8 +520,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
     </div>
   );
 
-  // Style Tab for mobile
-  const StyleTab = () => (
+  const styleTabContent = (
     <div className="space-y-3 overflow-y-auto px-1" style={{ maxHeight: isMobile ? 'calc(100vh - 200px)' : 520 }}>
       {/* Typography */}
       <Card size="small" className="border-border" bodyStyle={{ padding: isMobile ? 8 : 12 }}>
@@ -672,8 +672,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
     </div>
   );
 
-  // Layout Tab (color presets) for mobile
-  const LayoutTab = () => (
+  const layoutTabContent = (
     <div className="space-y-3 overflow-y-auto px-1" style={{ maxHeight: isMobile ? 'calc(100vh - 200px)' : 520 }}>
       {/* QR Label */}
       <Card size="small" className="border-border" bodyStyle={{ padding: isMobile ? 8 : 12 }}>
@@ -778,17 +777,17 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
     {
       key: "content",
       label: <span className="flex items-center gap-1 text-xs"><Type size={12} />Content</span>,
-      children: <ContentTab />,
+      children: contentTabContent,
     },
     {
       key: "style",
       label: <span className="flex items-center gap-1 text-xs"><Palette size={12} />Style</span>,
-      children: <StyleTab />,
+      children: styleTabContent,
     },
     {
       key: "layout",
       label: <span className="flex items-center gap-1 text-xs"><Layout size={12} />Layout</span>,
-      children: <LayoutTab />,
+      children: layoutTabContent,
     },
   ];
 
