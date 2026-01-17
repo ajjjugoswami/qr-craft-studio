@@ -1,7 +1,29 @@
-import axios from 'axios';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 
 // export const API_URL = 'http://localhost:3000/api';
 export const API_URL = 'https://be-link-generator.vercel.app/api';
+
+// Retry configuration
+const RETRY_CONFIG = {
+  maxRetries: 3,
+  baseDelay: 500, // ms
+  maxDelay: 3000, // ms
+  retryableStatuses: [408, 429, 500, 502, 503, 504], // Timeout, rate limit, server errors
+};
+
+// Helper to delay with exponential backoff
+const delay = (attempt: number): Promise<void> => {
+  const ms = Math.min(RETRY_CONFIG.baseDelay * Math.pow(2, attempt), RETRY_CONFIG.maxDelay);
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+// Check if error is retryable
+const isRetryable = (error: AxiosError): boolean => {
+  const status = error?.response?.status;
+  // Retry on network errors (no response) or specific status codes
+  if (!error.response) return true; // Network error
+  return status ? RETRY_CONFIG.retryableStatuses.includes(status) : false;
+};
 
 const api = axios.create({
   baseURL: API_URL,
@@ -22,16 +44,28 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Global response handler for auth errors
+// Global response handler with retry logic for transient failures
 api.interceptors.response.use(
   (res) => res,
-  (error) => {
+  async (error: AxiosError) => {
+    const config = error.config as AxiosRequestConfig & { _retryCount?: number };
     const status = error?.response?.status;
-    const url = error?.config?.url || '';
+    const url = config?.url || '';
+
+    // Initialize retry count
+    config._retryCount = config._retryCount || 0;
+
+    // Retry logic for transient failures (not for auth endpoints)
+    const isAuthEndpoint = url.includes('/auth/signin') || url.includes('/auth/signup');
+    if (!isAuthEndpoint && isRetryable(error) && config._retryCount < RETRY_CONFIG.maxRetries) {
+      config._retryCount += 1;
+      console.log(`Retrying request (${config._retryCount}/${RETRY_CONFIG.maxRetries}): ${url}`);
+      await delay(config._retryCount);
+      return api.request(config);
+    }
 
     // Only auto-logout/redirect for 401s on protected routes (when token exists)
     const hasToken = !!localStorage.getItem('qc-token');
-    const isAuthEndpoint = url.includes('/auth/signin') || url.includes('/auth/signup');
 
     if (status === 401 && hasToken && !isAuthEndpoint) {
       // clear stored auth and redirect to signin
