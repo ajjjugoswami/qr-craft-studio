@@ -46,8 +46,8 @@ import QRCodePreview from "./QRCodePreview";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 // Custom styles for template editor inputs
-const inputStyles = { height: 28, minHeight: 28 };
-const selectStyles = { height: 28, minHeight: 28 };
+const inputStyles = { height: 32, minHeight: 32 };
+const selectStyles = { height: 32, minHeight: 32 };
 
 interface TemplateEditorModalProps {
   open: boolean;
