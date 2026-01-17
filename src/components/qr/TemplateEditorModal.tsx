@@ -45,6 +45,10 @@ import {
 import QRCodePreview from "./QRCodePreview";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+// Custom styles for template editor inputs
+const inputStyles = { height: 28, minHeight: 28 };
+const selectStyles = { height: 28, minHeight: 28 };
+
 interface TemplateEditorModalProps {
   open: boolean;
   onClose: () => void;
@@ -305,6 +309,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
                 onChange={(e) => updateField(field.id, { value: e.target.value })}
                 placeholder="Enter content..."
                 size="small"
+                style={inputStyles}
                 className="flex-1 text-xs"
               />
               <Popover
@@ -337,6 +342,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
                   options={fontWeightOptions}
                   className="w-full"
                   size="small"
+                  style={selectStyles}
                 />
               </div>
             </div>
@@ -397,6 +403,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
                 onChange={(e) => onTemplateChange({ ...template, title: e.target.value })}
                 placeholder="Enter title"
                 size="small"
+                style={inputStyles}
                 className="flex-1 text-xs"
               />
               <Popover
@@ -428,6 +435,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
                 options={fontWeightOptions}
                 className="w-full"
                 size="small"
+                style={selectStyles}
               />
             </div>
           </div>
@@ -440,6 +448,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
                 onChange={(e) => onTemplateChange({ ...template, subtitle: e.target.value })}
                 placeholder="Enter subtitle"
                 size="small"
+                style={inputStyles}
                 className="flex-1 text-xs"
               />
               <Popover
@@ -471,6 +480,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
                 options={fontWeightOptions}
                 className="w-full"
                 size="small"
+                style={selectStyles}
               />
             </div>
           </div>
@@ -534,6 +544,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
               options={fontFamilyOptions}
               className="w-full"
               size="small"
+              style={selectStyles}
               showSearch
               optionFilterProp="label"
             />
@@ -550,6 +561,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
               ]}
               className="w-full"
               size="small"
+              style={selectStyles}
             />
           </div>
         </div>
@@ -617,6 +629,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
                   ]}
                   className="w-full"
                   size="small"
+                  style={selectStyles}
                 />
               </div>
             </div>
@@ -665,6 +678,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
               ]}
               className="w-full"
               size="small"
+              style={selectStyles}
             />
           </div>
         </div>
@@ -682,6 +696,7 @@ const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
           onChange={(e) => onTemplateChange({ ...template, qrLabel: e.target.value })}
           placeholder="e.g., Scan for details"
           size="small"
+          style={inputStyles}
           className="text-xs"
         />
       </Card>
