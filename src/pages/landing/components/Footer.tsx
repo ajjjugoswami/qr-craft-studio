@@ -49,6 +49,12 @@ const Footer = () => {
             >
               Contact
             </Link>
+            <Link
+              to="/refunds"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Refunds
+            </Link>
           </nav>
 
           {/* Copyright */}
