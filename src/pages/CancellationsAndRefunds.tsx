@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import SEOHead from "@/components/SEOHead";
 
 const CancellationsAndRefunds = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="Cancellation & Refund Policy" description="QR Studio cancellation and refund policy. Understand our refund process for subscription plans." path="/refunds" />
       <div className="max-w-4xl mx-auto px-4 py-12">
         <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
           <ArrowLeft className="w-4 h-4" />

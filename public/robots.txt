@@ -1,3 +1,19 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /create
+Disallow: /edit/
+Disallow: /analytics
+Disallow: /settings
+Disallow: /pricing
+Disallow: /admin/
+Disallow: /submissions
+Disallow: /sign-in
+Disallow: /forgot-password
+Disallow: /otp-verification
+Disallow: /r/
+
+# Allow specific crawlers
 User-agent: Googlebot
 Allow: /
 
@@ -8,9 +24,6 @@ User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
-Allow: /
-
-User-agent: *
 Allow: /
 
 Sitemap: https://qr-craft-studio.vercel.app/sitemap.xml

@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import SEOHead from "@/components/SEOHead";
 
 const TermsAndConditions = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="Terms and Conditions" description="QR Studio terms and conditions. Read our terms of service for using the QR code generator platform." path="/terms-and-conditions" />
       <div className="max-w-4xl mx-auto px-4 py-12">
         <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
           <ArrowLeft className="w-4 h-4" />

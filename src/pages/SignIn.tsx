@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useMemo, useRef, useState } from "react";
+import SEOHead from "@/components/SEOHead";
 import { Input, Button, message } from "antd";
 import { Eye, EyeOff, Shield, Zap } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
@@ -115,6 +116,7 @@ const SignIn: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEOHead title="Sign In" description="Sign in to your QR Studio account. Access your QR codes, analytics, and design tools." path="/sign-in" noindex />
       {/* SEO */}
       <header className="sr-only">
         <h1>Sign in to QR Studio</h1>
