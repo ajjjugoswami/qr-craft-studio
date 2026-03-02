@@ -7,26 +7,26 @@ import MobileCarousel from "./MobileCarousel";
 const useCases = [
   {
     icon: <Building2 className="h-5 w-5" />,
-    title: "Restaurants",
-    description: "Digital menus, table ordering, WiFi access, and reviews",
+    title: "Restaurant QR Codes",
+    description: "Digital menus, table ordering, WiFi access QR codes, and Google review links",
     color: "bg-orange-500/10 text-orange-500",
   },
   {
     icon: <Users className="h-5 w-5" />,
-    title: "Events",
-    description: "Ticketing, check-ins, schedules, and networking",
+    title: "Event QR Codes",
+    description: "Ticketing, check-in QR codes, event schedules, and networking vCards",
     color: "bg-purple-500/10 text-purple-500",
   },
   {
     icon: <CreditCard className="h-5 w-5" />,
-    title: "Retail",
-    description: "Product info, promotions, loyalty programs, and payments",
+    title: "Retail & Product QR Codes",
+    description: "Product info pages, promotions, loyalty programs, and payment QR codes",
     color: "bg-blue-500/10 text-blue-500",
   },
   {
     icon: <FileText className="h-5 w-5" />,
-    title: "Marketing",
-    description: "Campaigns, lead capture, social media, and analytics",
+    title: "Marketing QR Codes",
+    description: "Campaign tracking, lead capture, social media links, and scan analytics",
     color: "bg-green-500/10 text-green-500",
   },
 ];
@@ -60,12 +60,12 @@ const UseCasesSection = () => {
               <span>Use Cases</span>
             </div>
             <h2 className="text-xl md:text-2xl font-semibold mb-2 tracking-tight">
-              Perfect for Every
-              <span className="text-primary"> Business Need</span>
+              QR Code Solutions for Every
+              <span className="text-primary"> Business & Industry</span>
             </h2>
             <p className="text-xs text-muted-foreground max-w-lg mx-auto">
-              See how businesses across industries use QR Studio to connect
-              with their customers.
+              Discover how restaurants, retailers, event organizers, and marketers use QR Studio
+              to connect with customers and track engagement.
             </p>
           </div>
         </AnimatedSection>

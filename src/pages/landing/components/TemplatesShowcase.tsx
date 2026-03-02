@@ -111,12 +111,12 @@ const TemplatesShowcase = () => {
               <span>100+ Templates</span>
             </div>
             <h2 className="text-xl md:text-2xl font-semibold mb-2 tracking-tight">
-              Professional Templates for
-              <span className="text-primary"> Every Industry</span>
+              QR Code Templates for
+              <span className="text-primary"> Every Industry & Brand</span>
             </h2>
             <p className="text-xs text-muted-foreground max-w-lg mx-auto">
-              Choose from our curated collection of stunning QR code templates
-              designed for restaurants, events, business cards, and more.
+              Browse 100+ professionally designed QR code templates for restaurants, events,
+              business cards, social media, retail, and marketing campaigns.
             </p>
           </div>
         </AnimatedSection>

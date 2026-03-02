@@ -14,33 +14,33 @@ import AnimatedSection from "./AnimatedSection";
 const premiumFeatures = [
   {
     icon: <Image className="h-6 w-6" />,
-    title: "Logo Upload",
-    description: "Brand your QR codes with custom logos",
+    title: "QR Code with Logo",
+    description: "Upload your brand logo to create branded QR codes",
   },
   {
     icon: <Palette className="h-6 w-6" />,
-    title: "50+ Templates",
-    description: "Professional designs for every use case",
+    title: "50+ QR Code Templates",
+    description: "Professional QR code designs for every industry",
   },
   {
     icon: <BarChart3 className="h-6 w-6" />,
-    title: "Advanced Analytics",
-    description: "Track scans, locations & devices",
+    title: "QR Code Analytics",
+    description: "Track scans, locations, devices & referrers",
   },
   {
     icon: <Zap className="h-6 w-6" />,
     title: "Dynamic QR Codes",
-    description: "Update destination anytime",
+    description: "Change QR code destination URL anytime",
   },
   {
     icon: <Shield className="h-6 w-6" />,
-    title: "Password Protection",
-    description: "Secure access to your content",
+    title: "Password Protected QR",
+    description: "Secure QR code content with password access",
   },
   {
     icon: <Clock className="h-6 w-6" />,
-    title: "Expiration Control",
-    description: "Set dates and scan limits",
+    title: "QR Code Expiration",
+    description: "Set expiry dates and scan limits on QR codes",
   },
 ];
 
@@ -55,12 +55,12 @@ const FeaturesSection = () => {
               <span>Pro Features</span>
             </div>
             <h2 className="text-xl md:text-2xl font-semibold mb-2 tracking-tight">
-              Professional Tools for
-              <span className="text-primary"> Better Results</span>
+              Advanced QR Code Features for
+              <span className="text-primary"> Business & Marketing</span>
             </h2>
             <p className="text-xs text-muted-foreground max-w-lg mx-auto">
-              Unlock advanced tools to create, track, and optimize your QR
-              code campaigns.
+              Unlock professional QR code tools — analytics, dynamic links, password protection,
+              and white label branding for your campaigns.
             </p>
           </div>
         </AnimatedSection>

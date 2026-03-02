@@ -73,11 +73,11 @@ const QRTypesSection = () => {
               <span>12 QR Code Types</span>
             </div>
             <h2 className="text-xl md:text-2xl font-semibold mb-2 tracking-tight">
-              One Tool, Endless Possibilities
+              Generate QR Codes for <span className="text-primary">Any Purpose</span>
             </h2>
             <p className="text-xs text-muted-foreground max-w-lg mx-auto">
-              Create QR codes for websites, contact cards, WiFi networks,
-              social media, and more.
+              Create QR codes for website URLs, digital business cards (vCard), WiFi networks,
+              social media profiles, WhatsApp, email, SMS & more.
             </p>
           </div>
         </AnimatedSection>

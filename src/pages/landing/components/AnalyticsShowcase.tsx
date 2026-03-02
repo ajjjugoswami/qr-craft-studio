@@ -46,12 +46,12 @@ const AnalyticsShowcase = () => {
                 <span>Real-Time Analytics</span>
               </div>
               <h2 className="text-xl md:text-2xl font-semibold mb-3 tracking-tight">
-                Track Every Scan with
-                <span className="text-primary"> Powerful Insights</span>
+                QR Code Scan Analytics &
+                <span className="text-primary"> Performance Tracking</span>
               </h2>
               <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
-                Understand your audience better with comprehensive analytics.
-                See who scans your QR codes, when, and from where.
+                Monitor QR code performance with real-time scan analytics.
+                Track scan counts, geographic locations, device types, and time-based heatmaps.
               </p>
 
               <div className="grid grid-cols-2 gap-3 mb-5">

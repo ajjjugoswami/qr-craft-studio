@@ -11,10 +11,10 @@ const CTASection = () => {
         <AnimatedSection>
           <Card className="max-w-2xl mx-auto p-6 md:p-8 text-center bg-gradient-to-br from-primary/5 to-transparent border-primary/20">
             <h2 className="text-xl md:text-2xl font-semibold mb-2">
-              Ready to Create Your First QR Code?
+              Start Creating Custom QR Codes — Free
             </h2>
             <p className="text-xs text-muted-foreground mb-5 max-w-md mx-auto">
-              Start for free today. No credit card required. Upgrade anytime.
+              Join thousands of businesses using QR Studio to generate, customize, and track QR codes. No credit card required.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-2 justify-center px-4 sm:px-0">
               <Link to="/signup" className="w-full sm:w-auto">
