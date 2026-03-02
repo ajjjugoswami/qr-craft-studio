@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import SEOHead from "@/components/SEOHead";
 
 const ShippingPolicy = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="Shipping Policy" description="QR Studio shipping policy. All products are digital and delivered instantly upon purchase." path="/shipping-policy" />
       <div className="max-w-4xl mx-auto px-4 py-12">
         <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
           <ArrowLeft className="w-4 h-4" />

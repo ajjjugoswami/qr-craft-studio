@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import SEOHead from "@/components/SEOHead";
 
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="Privacy Policy" description="QR Studio privacy policy. Learn how we collect, use, and protect your data when using our QR code generator." path="/privacy-policy" />
       <div className="max-w-4xl mx-auto px-4 py-12">
         <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
           <ArrowLeft className="w-4 h-4" />

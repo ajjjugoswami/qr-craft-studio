@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import SEOHead from "@/components/SEOHead";
 import {
   Typography,
   Card,
@@ -63,6 +64,7 @@ const Contact: React.FC = () => {
 
   return (
     <DashboardLayout>
+      <SEOHead title="Contact Us" description="Get in touch with QR Studio support. We're here to help with your QR code questions, feedback, and technical issues." path="/contact" />
       <div className="max-w-6xl mx-auto p-3 sm:p-6 animate-fade-in">
         {/* Header Section */}
         <div className="text-center mb-6 sm:mb-12">
