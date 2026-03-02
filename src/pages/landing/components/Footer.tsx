@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="flex items-center gap-2">
             <img
               src="/logo.png"
-              alt="QR Studio"
+              alt="QR Studio - Free QR Code Generator"
               className="h-6 w-6 object-contain"
             />
             <span className="font-semibold text-xs">
@@ -18,18 +18,18 @@ const Footer = () => {
           </div>
 
           {/* Links */}
-          <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[10px]">
+          <nav aria-label="Footer navigation" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[10px]">
             <a
               href="#features"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              Features
+              QR Code Features
             </a>
             <a
               href="#analytics"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              Analytics
+              Scan Analytics
             </a>
             <Link
               to="/privacy-policy"
@@ -47,13 +47,19 @@ const Footer = () => {
               to="/contact"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              Contact
+              Contact Us
             </Link>
             <Link
               to="/refunds"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              Refunds
+              Refund Policy
+            </Link>
+            <Link
+              to="/shipping-policy"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Shipping Policy
             </Link>
           </nav>
 

@@ -24,12 +24,12 @@ const WatermarkSection = () => {
                 <span>Custom Watermark</span>
               </div>
               <h2 className="text-xl md:text-2xl font-semibold mb-3 tracking-tight">
-                Add Your Signature
-                <span className="text-primary"> To Every QR Code</span>
+                Custom QR Code Watermark
+                <span className="text-primary"> & Branding</span>
               </h2>
               <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                Customize or remove the watermark on your QR codes. Add your
-                company name, tagline, or remove it entirely.
+                Add your company name, tagline, or logo as a watermark on QR codes.
+                Remove the default watermark for a clean, professional look.
               </p>
 
               <ul className="space-y-2 mb-5">

@@ -6,23 +6,23 @@ const steps = [
   {
     step: "01",
     icon: <Target className="h-5 w-5" />,
-    title: "Choose Your Type",
+    title: "Select QR Code Type",
     description:
-      "Select from 12 QR code types including URL, vCard, WiFi, social media, and more.",
+      "Choose from 12+ QR code types: URL, vCard, WiFi, email, SMS, phone, location, Instagram, WhatsApp & more.",
   },
   {
     step: "02",
     icon: <Palette className="h-5 w-5" />,
-    title: "Customize Design",
+    title: "Customize QR Design",
     description:
-      "Add your logo, pick colors, choose patterns, and apply professional templates.",
+      "Add your logo, brand colors, dot patterns, corner styles, and frames. Use 50+ professional templates.",
   },
   {
     step: "03",
     icon: <Download className="h-5 w-5" />,
-    title: "Download & Track",
+    title: "Download & Track Scans",
     description:
-      "Export in PNG, WEBP and JPG. Track every scan with real-time analytics.",
+      "Export high-resolution QR codes in PNG, WEBP & JPG. Track every scan with real-time analytics dashboard.",
   },
 ];
 
@@ -37,10 +37,10 @@ const HowItWorks = () => {
               <span>Simple Process</span>
             </div>
             <h2 className="text-xl md:text-2xl font-semibold mb-2 tracking-tight">
-              Create QR Codes in 3 Easy Steps
+              How to Make a QR Code in 3 Steps
             </h2>
             <p className="text-xs text-muted-foreground max-w-lg mx-auto">
-              From idea to scannable code in under a minute
+              Generate professional QR codes online — from idea to scannable code in under a minute
             </p>
           </div>
         </AnimatedSection>

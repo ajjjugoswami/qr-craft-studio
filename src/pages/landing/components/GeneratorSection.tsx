@@ -11,11 +11,11 @@ const GeneratorSection = () => {
         <AnimatedSection>
           <div className="text-center mb-6 md:mb-8">
             <h2 className="text-xl md:text-2xl font-semibold mb-2 tracking-tight">
-              Create Your QR Code
+              Free Online QR Code Generator
             </h2>
             <p className="text-xs text-muted-foreground max-w-md mx-auto">
-              No signup required. Generate and download your QR code
-              instantly.
+              No signup required. Generate, customize, and download your QR code
+              instantly in PNG, WEBP, or JPG format.
             </p>
           </div>
         </AnimatedSection>

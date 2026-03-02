@@ -37,12 +37,12 @@ const CustomizationSection = () => {
                 <span>Full Customization</span>
               </div>
               <h2 className="text-xl md:text-2xl font-semibold mb-3 tracking-tight">
-                Make It Uniquely
-                <span className="text-primary"> Yours</span>
+                Customize QR Code Design
+                <span className="text-primary"> to Match Your Brand</span>
               </h2>
               <p className="text-xs text-muted-foreground mb-5 leading-relaxed">
-                Customize every aspect of your QR codes with colors, patterns,
-                logos, and frames. Match your brand perfectly.
+                Design QR codes with custom colors, dot patterns, corner styles,
+                logos, and frames. Create branded QR codes that match your identity perfectly.
               </p>
 
               <div className="grid grid-cols-2 gap-3 mb-5">

@@ -5,10 +5,10 @@ import { ArrowRight, Shield, Lock, Clock, Check } from "lucide-react";
 import AnimatedSection from "./AnimatedSection";
 
 const features = [
-  "Password-protect your QR codes",
-  "Set expiration dates",
-  "Limit number of scans",
-  "Disable anytime",
+  "Password-protect your QR code content",
+  "Set QR code expiration dates",
+  "Limit number of QR code scans",
+  "Disable QR codes anytime",
 ];
 
 const SecuritySection = () => {
@@ -24,12 +24,12 @@ const SecuritySection = () => {
                 <span>Security & Control</span>
               </div>
               <h2 className="text-xl md:text-2xl font-semibold mb-3 tracking-tight">
-                Full Control Over
+                Secure & Control
                 <span className="text-primary"> Your QR Codes</span>
               </h2>
               <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                Protect your content with passwords, set expiration dates, and
-                limit the number of scans. You're always in control.
+                Add password protection to QR codes, set expiration dates, and
+                limit scan counts. Full control over your QR code security and access.
               </p>
 
               <ul className="space-y-2 mb-5">

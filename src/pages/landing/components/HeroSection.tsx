@@ -30,16 +30,16 @@ const HeroSection = () => {
           {/* Main Headline - Smaller on mobile */}
           <AnimatedSection delay={100}>
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight mb-2 sm:mb-3 md:mb-4 leading-[1.15]">
-              Create Stunning
-              <span className="block text-primary">QR Codes in Seconds</span>
+              Free QR Code Generator
+              <span className="block text-primary">with Custom Design & Analytics</span>
             </h1>
           </AnimatedSection>
 
           {/* Subheadline - Shorter on mobile */}
           <AnimatedSection delay={200}>
             <p className="text-sm md:text-sm text-muted-foreground max-w-xl mx-auto mb-4 sm:mb-6 md:mb-8 leading-relaxed px-2">
-              <span className="sm:hidden">Create beautiful, trackable QR codes with custom designs.</span>
-              <span className="hidden sm:inline">Design beautiful, trackable QR codes with custom colors, logos, and templates. Perfect for marketing, events, and business.</span>
+              <span className="sm:hidden">Generate custom QR codes for URLs, vCards, WiFi & social media — free online.</span>
+              <span className="hidden sm:inline">Create and download custom QR codes for URLs, vCards, WiFi, social media & more. Add your logo, pick colors, choose templates, and track scans with real-time analytics — all free online.</span>
             </p>
           </AnimatedSection>
 
