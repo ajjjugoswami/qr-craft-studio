@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 
 const SITE_URL = "https://qr-craft-studio.vercel.app";
 const SITE_NAME = "QR Studio";
-const DEFAULT_IMAGE = `${SITE_URL}/logo.png`;
+const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
 
 interface SEOHeadProps {
   title: string;
