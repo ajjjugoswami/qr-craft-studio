@@ -48,6 +48,27 @@ const landingStructuredData = [
   },
   {
     "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "QR Studio",
+    "url": "https://qr-craft-studio.vercel.app/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://qr-craft-studio.vercel.app/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://qr-craft-studio.vercel.app/" },
+      { "@type": "ListItem", "position": 2, "name": "QR Code Generator", "item": "https://qr-craft-studio.vercel.app/#generator" },
+      { "@type": "ListItem", "position": 3, "name": "Features", "item": "https://qr-craft-studio.vercel.app/#features" },
+      { "@type": "ListItem", "position": 4, "name": "Pricing", "item": "https://qr-craft-studio.vercel.app/pricing" }
+    ]
+  },
+  {
+    "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
       {
@@ -90,8 +111,8 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <SEOHead
-        title="QR Studio - Professional QR Code Generator | Create Custom QR Codes"
-        description="Create beautiful, customizable QR codes for URLs, vCards, WiFi, social media and more. Professional QR code generator with templates, analytics, branding & white label options. Free to use."
+        title="QR Studio - Free QR Code Generator | Custom Design, Analytics & Branding"
+        description="Create free custom QR codes for URLs, vCards, WiFi, social media & more. Professional QR code generator with 50+ templates, real-time scan analytics, white labeling & logo branding. Download PNG, WEBP, JPG."
         path="/"
         structuredData={landingStructuredData}
       />

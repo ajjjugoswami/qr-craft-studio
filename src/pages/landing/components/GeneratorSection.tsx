@@ -5,7 +5,8 @@ const GeneratorSection = () => {
   return (
     <section
       id="generator"
-      className="py-10 md:py-12 lg:py-16 bg-muted/20 border-y border-border/50"
+      className="py-10 md:py-12 lg:py-16 bg-muted/20 border-y border-border/50 contain-layout"
+      aria-label="Free QR Code Generator Tool"
     >
       <div className="container mx-auto px-4 lg:px-8">
         <AnimatedSection>

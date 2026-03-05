@@ -15,7 +15,7 @@ const TrialBanner = () => {
   }, []);
 
   return (
-    <div className={`fixed top-14 left-0 right-0 z-40 transition-all duration-200  shadow-sm py-2 sm:py-3 px-4 ${
+    <div className={`fixed top-14 left-0 right-0 z-40 transition-[background-color,border-color] duration-200 shadow-sm py-2 sm:py-3 px-4 ${
       isScrolled 
         ? 'bg-background/95 backdrop-blur-md border-border' 
         : 'bg-primary/5 border-primary/30'

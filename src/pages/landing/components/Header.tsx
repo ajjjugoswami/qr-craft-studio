@@ -26,8 +26,10 @@ const Header = () => {
           <Link to="/" className="flex items-center gap-2">
             <img
               src="/logo.png"
-              alt="QR Studio"
-              className="h-8 w-auto object-contain"
+              alt="QR Studio - Free QR Code Generator"
+              width={32}
+              height={32}
+              className="h-8 w-8 object-contain"
             />
             <span className="font-semibold text-base tracking-tight">
               QR<span className="text-primary">Studio</span>

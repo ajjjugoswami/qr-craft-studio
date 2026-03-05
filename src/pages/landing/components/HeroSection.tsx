@@ -16,7 +16,7 @@ const HeroSection = () => {
   const isMobile = useIsMobile();
 
   return (
-    <section className="relative pt-40 pb-6 md:pt-36 md:pb-12 lg:pt-40 lg:pb-16">
+    <section className="relative pt-40 pb-6 md:pt-36 md:pb-12 lg:pt-40 lg:pb-16 min-h-[420px] md:min-h-[480px]">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
           {/* Badge - Hide on mobile to save space */}

@@ -16,11 +16,12 @@ const AnimatedSection = ({
   return (
     <div
       ref={ref}
-      className={`transition-all duration-500 ease-out ${className}`}
+      className={`transition-[opacity,transform] duration-500 ease-out will-change-[opacity,transform] ${className}`}
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? "translateY(0)" : "translateY(20px)",
         transitionDelay: `${delay}ms`,
+        minHeight: 0,
       }}
     >
       {children}
