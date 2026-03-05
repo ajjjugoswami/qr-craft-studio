@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,38 +16,46 @@ import AdminRoute from "./components/AdminRoute";
 import RouteChangeListener from "./components/RouteChangeListener";
 import GlobalDialogs from "./components/layout/GlobalDialogs";
 import { hslToRgb } from "./utils/colorUtils";
+import LogoLoader from "./components/common/LogoLoader";
 
-// Import all page components directly (no lazy loading)
+// Eagerly load landing page for FCP
 import LandingPage from "./pages/landing/LandingPage";
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
-import ForgotPassword from "./pages/ForgotPassword";
-import OTPVerification from "./pages/OTPVerification";
-import Dashboard from "./pages/Dashboard";
-import CreateQR from "./pages/CreateQR";
-import MainAnalytics from "./pages/Analytics";
-import QRAnalytics from "./pages/QRAnalytics";
-import CompareQRCodesPage from "./pages/CompareQRCodes";
-import Redirector from "./pages/Redirector";
-import QRUnavailable from "./pages/QRUnavailable";
-import FAQs from "./pages/FAQs";
-import Contact from "./pages/Contact";
-import Submissions from "./pages/Submissions";
-import AdminDataPage from "./pages/AdminData";
-import Profile from "./pages/Profile";
-import PricingPage from "./pages/PricingPage";
-import NotFound from "./pages/NotFound";
-import ShippingPolicy from "./pages/ShippingPolicy";
-import TermsAndConditions from "./pages/TermsAndConditions";
-import CancellationsAndRefunds from "./pages/CancellationsAndRefunds";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
+
+// Lazy load all other pages
+const SignIn = lazy(() => import("./pages/SignIn"));
+const SignUp = lazy(() => import("./pages/SignUp"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const OTPVerification = lazy(() => import("./pages/OTPVerification"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const CreateQR = lazy(() => import("./pages/CreateQR"));
+const MainAnalytics = lazy(() => import("./pages/Analytics"));
+const QRAnalytics = lazy(() => import("./pages/QRAnalytics"));
+const CompareQRCodesPage = lazy(() => import("./pages/CompareQRCodes"));
+const Redirector = lazy(() => import("./pages/Redirector"));
+const QRUnavailable = lazy(() => import("./pages/QRUnavailable"));
+const FAQs = lazy(() => import("./pages/FAQs"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Submissions = lazy(() => import("./pages/Submissions"));
+const AdminDataPage = lazy(() => import("./pages/AdminData"));
+const Profile = lazy(() => import("./pages/Profile"));
+const PricingPage = lazy(() => import("./pages/PricingPage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const ShippingPolicy = lazy(() => import("./pages/ShippingPolicy"));
+const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
+const CancellationsAndRefunds = lazy(() => import("./pages/CancellationsAndRefunds"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 
 const queryClient = new QueryClient();
+
+const LazyFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <LogoLoader />
+  </div>
+);
 
 const AppContent = () => {
   const { mode, currentTheme, theme: themeConfig } = useTheme();
   
-  // Detect system preference for mode calculation
   const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const effectiveMode = mode === 'system' ? (systemPrefersDark ? 'dark' : 'light') : mode;
   
@@ -74,99 +83,97 @@ const AppContent = () => {
       <TooltipProvider>
         <BrowserRouter>
           <RouteChangeListener />
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/otp-verification" element={<OTPVerification />} />
-            <Route
-              path="/dashboard"
-              element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
-            />
-            <Route
-              path="/create"
-              element={<ProtectedRoute><CreateQR /></ProtectedRoute>}
-            />
-            <Route
-              path="/edit/:id"
-              element={<ProtectedRoute><CreateQR /></ProtectedRoute>}
-            />
-            <Route
-              path="/analytics"
-              element={<ProtectedRoute><MainAnalytics /></ProtectedRoute>}
-            />
-            <Route
-              path="/analytics/:id"
-              element={<ProtectedRoute><QRAnalytics /></ProtectedRoute>}
-            />
-            <Route
-              path="/compare"
-              element={<ProtectedRoute><CompareQRCodesPage /></ProtectedRoute>}
-            />
-            <Route
-              path="/settings"
-              element={<ProtectedRoute><Profile /></ProtectedRoute>}
-            />
-            <Route
-              path="/settings/profile"
-              element={<ProtectedRoute><Profile /></ProtectedRoute>}
-            />
-            <Route
-              path="/settings/theme"
-              element={<ProtectedRoute><Profile /></ProtectedRoute>}
-            />
-            <Route
-              path="/settings/watermark"
-              element={<ProtectedRoute><Profile /></ProtectedRoute>}
-            />
-            <Route
-              path="/settings/whitelabel"
-              element={<ProtectedRoute><Profile /></ProtectedRoute>}
-            />
-            <Route
-              path="/settings/subscription"
-              element={<ProtectedRoute><Profile /></ProtectedRoute>}
-            />
-            <Route
-              path="/settings/security"
-              element={<ProtectedRoute><Profile /></ProtectedRoute>}
-            />
-            <Route
-              path="/pricing"
-              element={<ProtectedRoute><PricingPage /></ProtectedRoute>}
-            />
-            <Route path="/faqs" element={<FAQs />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/shipping-policy" element={<ShippingPolicy />} />
-            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-            <Route path="/refunds" element={<CancellationsAndRefunds />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/submissions" element={<AdminRoute><Submissions /></AdminRoute>} />
-            <Route path="/admin/users" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
-            <Route path="/admin/subscriptions" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
-            <Route path="/admin/audit-logs" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
-            <Route path="/admin/plan-pricing" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
+          <Suspense fallback={<LazyFallback />}>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/otp-verification" element={<OTPVerification />} />
+              <Route
+                path="/dashboard"
+                element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
+              />
+              <Route
+                path="/create"
+                element={<ProtectedRoute><CreateQR /></ProtectedRoute>}
+              />
+              <Route
+                path="/edit/:id"
+                element={<ProtectedRoute><CreateQR /></ProtectedRoute>}
+              />
+              <Route
+                path="/analytics"
+                element={<ProtectedRoute><MainAnalytics /></ProtectedRoute>}
+              />
+              <Route
+                path="/analytics/:id"
+                element={<ProtectedRoute><QRAnalytics /></ProtectedRoute>}
+              />
+              <Route
+                path="/compare"
+                element={<ProtectedRoute><CompareQRCodesPage /></ProtectedRoute>}
+              />
+              <Route
+                path="/settings"
+                element={<ProtectedRoute><Profile /></ProtectedRoute>}
+              />
+              <Route
+                path="/settings/profile"
+                element={<ProtectedRoute><Profile /></ProtectedRoute>}
+              />
+              <Route
+                path="/settings/theme"
+                element={<ProtectedRoute><Profile /></ProtectedRoute>}
+              />
+              <Route
+                path="/settings/watermark"
+                element={<ProtectedRoute><Profile /></ProtectedRoute>}
+              />
+              <Route
+                path="/settings/whitelabel"
+                element={<ProtectedRoute><Profile /></ProtectedRoute>}
+              />
+              <Route
+                path="/settings/subscription"
+                element={<ProtectedRoute><Profile /></ProtectedRoute>}
+              />
+              <Route
+                path="/settings/security"
+                element={<ProtectedRoute><Profile /></ProtectedRoute>}
+              />
+              <Route
+                path="/pricing"
+                element={<ProtectedRoute><PricingPage /></ProtectedRoute>}
+              />
+              <Route path="/faqs" element={<FAQs />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/shipping-policy" element={<ShippingPolicy />} />
+              <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+              <Route path="/refunds" element={<CancellationsAndRefunds />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/submissions" element={<AdminRoute><Submissions /></AdminRoute>} />
+              <Route path="/admin/users" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
+              <Route path="/admin/subscriptions" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
+              <Route path="/admin/audit-logs" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
+              <Route path="/admin/plan-pricing" element={<AdminRoute><AdminDataPage /></AdminRoute>} />
 
-            {/* Public redirect route for scanned QR codes (no auth required) */}
-            <Route path="/r/:id" element={<Redirector />} />
-            <Route path="/r" element={<Redirector />} />
+              {/* Public redirect route for scanned QR codes */}
+              <Route path="/r/:id" element={<Redirector />} />
+              <Route path="/r" element={<Redirector />} />
 
-            {/* QR unavailable when expired or scan limit reached */}
-            <Route path="/qr/unavailable/:id" element={<QRUnavailable />} />
+              {/* QR unavailable when expired or scan limit reached */}
+              <Route path="/qr/unavailable/:id" element={<QRUnavailable />} />
 
-            <Route path="*" element={<NotFound />}/>
-          </Routes>
+              <Route path="*" element={<NotFound />}/>
+            </Routes>
+          </Suspense>
           
-          {/* Global Dialogs - Inside Router context */}
           <GlobalDialogs />
         </BrowserRouter>
         
-        {/* Global Toasters */}
         <Toaster />
         <Sonner />
-        
-        {/* Vercel Analytics */}
         <Analytics />
       </TooltipProvider>
     </ConfigProvider>
